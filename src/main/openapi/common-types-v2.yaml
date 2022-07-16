@@ -1,0 +1,177 @@
+openapi: 3.0.1
+
+info:
+  version: '1.0'
+  title: Common object definitions
+  description: "These object definitions are shared among multiple contracts"
+
+paths: {}
+
+components:
+
+  parameters:
+  
+    containerId:
+      name: containerId
+      in: path
+      required: true
+      description: 'ID of the container to query stat from'
+      schema:
+        type: string
+        
+    fromTimestamp:
+      name: fromTimestamp
+      in: query
+      required: true
+      schema:
+        type: string
+      description: >
+                    Defines the beginning of the query range - you are interested in data which time is >= than this timestamp.  
+                      
+                    Format is mixed. It can be
+                     * a UNIX timestamp in UTC (seconds since Epoch) e.g.: `1657261221` - means 2022-07-08 6:20:21 GMT  
+                       (note: server and client clock might be different! see: /v2/system/clock endpoint to query server time)
+                     * a relative time spec compared to current time in form of 'now[-X<m|h|d>]' where 'm' means minutes, 'h' means hours and 'd' means days,
+                       e.g.: `now-10m` means 10 minutes earlier compared to current time,
+                       `now-2h` means 2 hours earlier and so on
+                       
+                    This must point to the past!  
+                    (note: server validates according to his own clock!)
+      example: now-1h
+                    
+    toTimestamp:
+      name: toTimestamp
+      in: query
+      required: false
+      schema:
+        type: string
+      description: >
+                    Defines the end of the query range - you are interested in data which time is <= than this timestamp.
+                      
+                    **Default value:** the current timestamp, so 'now' if you do not specify this parameter.
+                      
+                    Format is mixed. It can be
+                     * a UNIX timestamp in UTC (seconds since Epoch) e.g.: `1657261221` - means 2022-07-08 6:20:21 GMT  
+                       (note: server and client clock might be different! see: /v2/system/clock endpoint to query server time)
+                     * a relative time spec compared to current time in form of 'now[-X<m|h|d>]' where 'm' means minutes, 'h' means hours and 'd' means days,
+                       e.g.: `now-10m` means 10 minutes earlier compared to current time,
+                       `now-2h` means 2 hours earlier and so on
+                       
+                    Can not point to the future!  
+                    (note: server validates according to his own clock!)
+
+  schemas:
+
+    MessageResponseClass:
+      type: object
+      properties:
+        status:
+          type: string
+          description: "Textual description of the status"
+          enum: [ok, failed, warning]
+          example: "ok | warning | failed"
+        message:
+          type: string
+          description: "Human readable error/success/result message"
+
+    ErrorMessageResponseClass:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [failed]
+          example: "failed"
+        message:
+          type: string
+          description: "Human readable description of the failure"
+
+
+    BaseResponseClass:
+      type: object
+      required:
+      - requestReceivedAt
+      properties:
+        requestReceivedAt:
+          type: integer
+          format: int32
+          description: "The server time in UNIX timestamp in UTC (seconds since Epoch) when this response was received and processing was started"
+          example: 1543355710
+        processingTookMillis:
+          type: integer
+          format: int32
+          description: "Number of milliseconds the processing took on server side"
+        messages:
+          type: array
+          description: 'List of human readable messages might help you understand better why you not got back what you requested (e.g. if returned a different interval) and fine tune your queries'
+          items:
+            type: string
+
+    ContainerClass:
+      type: object
+      required:
+      - id
+      properties:
+        id:
+          type: string
+          description: "The ID of the container - this is typically a UUID like value"
+          example: "d72c640b-d963-4789-bd48-9a38f381eaa6"
+        name:
+          type: string
+          description: "The name of the container"
+          example: "My Website"
+
+    ContainerResponseClass:
+      allOf:
+      - $ref: '#/components/schemas/BaseResponseClass'
+      type: object
+      required:
+      - container
+      properties:
+        container:
+          $ref: '#/components/schemas/ContainerClass'
+
+    TileTypeEnum:
+      type: string
+      enum: [frontpage, page, article]
+      description: "Possible values for type of tiles"                    
+
+      
+    # note: model generation made mistake here: own added properties were missing
+    # googling lead here: https://github.com/swagger-api/swagger-core/issues/1601
+    # thats the reason why inheritance looks like this
+    ContainerQueryRangeResponseClass:
+      allOf:
+      - $ref: '#/components/schemas/ContainerResponseClass'    
+      type: object
+      required:
+      - requestedFromTimestamp
+      - requestedToTimestamp
+      properties:
+        container:
+          $ref: '#/components/schemas/ContainerClass'
+        requestedFromTimestamp:
+          type: integer
+          format: int32
+          description: 'In the request you requested data starting by this UNIX timestamp in UTC (seconds since Epoch)'
+          example: 1543355608
+        requestedToTimestamp:
+          type: integer
+          format: int32
+          description: "In the request you requested data until this UNIX timestamp in UTC (seconds since Epoch)"
+          example: 1543355708
+        dataFromTimestamp:
+          type: integer
+          format: int32
+          description: 'This response contains data starting by this UNIX timestamp in UTC (seconds since Epoch) - will be always rounded to at least minutes or even more (see section "Interval of your interest" above!)'
+          example: 1543355608
+        dataToTimestamp:
+          type: integer
+          format: int32
+          description: "This response contains data until this UNIX timestamp in UTC (seconds since Epoch)"
+          example: 1543355708
+      
+
+
+
+          
+      
