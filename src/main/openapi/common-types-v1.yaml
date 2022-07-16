@@ -1,0 +1,124 @@
+openapi: 3.0.1
+
+info:
+  version: '1.0'
+  title: Common object definitions
+  description: "These object definitions are shared among multiple contracts"
+
+paths: {}
+
+components:
+  schemas:
+
+    MessageResponseClass:
+      type: object
+      properties:
+        status:
+          type: string
+          description: "Textual description of the status"
+          enum: [ok, failed, warning]
+          example: "ok | warning | failed"
+        message:
+          type: string
+          description: "Human readable error/success/result message"
+
+    BaseResponseClass:
+      type: object
+      properties:
+        requestReceivedAt:
+          type: integer
+          format: int32
+          description: "The server time in UNIX timestamp in UTC (seconds since Epoch) when this response was received and processing was started"
+          example: 1543355710
+        processingTookMillis:
+          type: integer
+          format: int32
+          description: "Number of milliseconds the processing took on server side"
+        messages:
+          type: array
+          description: 'List of human readable messages might help you understand better why you not got back what you requested (e.g. if returned a different interval) and fine tune your queries'
+          items:
+            type: string
+
+    TileTypeEnum:
+      type: string
+      enum: [frontpage, page, article]
+      description: "Possible values for type of tiles"                    
+
+    ContainerClass:
+      type: object
+      properties:
+        id:
+          type: string
+          description: "The ID of the container - this is typically a UUID like value"
+          example: "d72c640b-d963-4789-bd48-9a38f381eaa6"
+        name:
+          type: string
+          description: "The name of the container"
+          example: "My Website"
+
+
+      
+    # note: model generation made mistake here: own added properties were missing
+    # googling lead here: https://github.com/swagger-api/swagger-core/issues/1601
+    # thats the reason why inheritance looks like this
+    IntervalBasedResponseClass:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponseClass'    
+      type: object
+      properties:
+        container:
+          $ref: '#/components/schemas/ContainerClass'
+        requestedFromTimestamp:
+          type: integer
+          format: int32
+          description: 'In the request you requested data starting by this UNIX timestamp in UTC (seconds since Epoch)'
+          example: 1543355608
+        requestedToTimestamp:
+          type: integer
+          format: int32
+          description: "In the request you requested data until this UNIX timestamp in UTC (seconds since Epoch)"
+          example: 1543355708
+        dataFromTimestamp:
+          type: integer
+          format: int32
+          description: 'This response contains data starting by this UNIX timestamp in UTC (seconds since Epoch) - will be always rounded to at least minutes or even more (see section "Interval of your interest" above!)'
+          example: 1543355608
+        dataToTimestamp:
+          type: integer
+          format: int32
+          description: "This response contains data until this UNIX timestamp in UTC (seconds since Epoch)"
+          example: 1543355708
+      
+    IntervalClass:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: 'Basically the index of the interval - within the returned data interval'
+        starts:
+          type: integer
+          format: int32
+          description: 'Beginning of interval in seconds relative to the returned global data time-frame. If you want to know absolute timestamp then add this to /dataFromTimestamp attribute value'
+          example: 0
+        length:
+          type: integer
+          format: int32
+          description: 'Length of this interval in seconds'
+          example: 100
+
+    # note: model generation made mistake here: own added properties were missing
+    # googling lead here: https://github.com/swagger-api/swagger-core/issues/1601
+    # thats the reason why inheritance looks like this
+    IntervalBasedResponseWithResolutionClass:
+      allOf:
+        - $ref: '#/components/schemas/IntervalBasedResponseClass'    
+      type: object
+      properties:
+        resolutionIntervals:
+          type: array
+          description: 'The data returned has a break down into these intervals. Please read generic "Requesting a break down of stats within the interval" section above to understand it better!'
+          items:
+            $ref: '#/components/schemas/IntervalClass'
+          
+      

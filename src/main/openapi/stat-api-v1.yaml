@@ -1,0 +1,960 @@
+openapi: 3.0.1
+
+info:
+  version: '1.0'
+  title: Keytiles Statistics query API
+  description: >
+            Provides endpoints to query statistics data stored by Keytiles service
+              
+            ## Interval of your interest
+
+            It is common in these queries that you need to define the time interval you are curious about.
+
+            ### Defining the requested interval
+
+            You need to define a query interval with timestamps you are curious about. You can:
+             * go with classic **from-to** fashion - using `fromTimestamp` and `toTimestamp` query parameters together or
+             * go with **delta approach** - using `fromTimestamp` and `tMinusMinutes` query parameters together
+              
+            If you do not specify any of the above mentioned parameters then the default mechanism is the is **delta approach**.
+            And query will go with default values of `fromTimestamp` (default: now()) and `tMinusMinutes` (default: Container setting) params. 
+            See parameter descriptions for more details!
+
+            ### And the returned interval actually ...
+
+            ... might be different than what you requested. As Keytiles works with 1 minute long time frames in the background - aggregating
+            counters into these time frames. But this resolution of statistics is only kept for a limited time. After that time data is aggregated
+            hourly level. Far more in the past then only daily resolution is available.
+              
+            It is easier to understand what does it mean exactly for you by taking an example. Let's assume:
+             * current time is 16:48:22
+             * and you are requesting `tMinusMinutes = 10` - which means 10 minutes look back
+             * then basically **you are requesting data for 16:38:22 - 16:48:22** time interval ...
+             * ... BUT in this case **you will get back data for 16:38:00 - 16:48:22 instead** of your requested interval
+             
+            This kind of "rounding" is happening due to the mechanism Keytiles organizes data behind the scenes.
+            Beginning of your "fromTimestamp" is floored down to the closest minute (by removing seconds).
+            
+            ### In the response
+            
+            You will get back this "rounded" actual interval the response really has data for in
+            `/dataFromTimestamp` and `/dataToTimestamp` attributes
+
+            ## Requesting a break down of stats within the interval
+
+            Let's assume you query the data for the last 12 hours (with `tMinusMinutes = 720`). But you want to see the data not
+            fully aggregated but separately for each hour within the 12 hours interval. Basically you want to see 12 intervals - each having the counters separated.
+              
+            This is **possible by adding** the `resolution` parameter to your query. However **there are restrictions here...**
+            
+            ### The reason of restrictions
+            
+            Keytiles
+              
+             1. Keeps **minute based** resolution only for a limited time...
+             1. Over that time only **hourly based** resolution is available but... it is also just kept until a limited time...
+             1. Over that time only **daily based** resolution is available.
+             
+            Keytiles is doing this to keep the data in an efficient form (saving resources) based on the fact that 
+            **it is very very unlikely** that you want to have detailed statistics for 12 minutes of visits from 7 months earlier...
+            
+            ### Therefore...
+            
+            If you query data from a week earlier - as minute based resolution will not be available by that time - if you send in
+            `resolution` **< 1 hour** then your whish of getting this resolution can not be served... :-(
+              
+            What will happen instead is that you **will get back a "400 - Bad request"** error where in the error Keytiles will tell you
+            the problem and also give you a hint about how the request should be modified being able to fulfill that.
+            
+            ### In the reponse
+            
+            You might notice that the response has a section `/resolutionIntervals`.
+              
+            If you are not requesting this break down then it has only just one element - which is the full interval your data is returned for.
+            But if you have requested this break down then here you will find the interval definitions carrying your break down.
+            
+            The data (counter-set) which is returned deeper in the response will refer to one of these intervals by having attribute called
+            `intervalId` - then you will know to which interval of the requested break down that data belongs to.
+            
+servers:
+- url: https://api.keytiles.com/api
+  description: PROD server
+- url: https://api-test.keytiles.com/api
+  description: TEST server
+   
+tags:
+- name: System
+  description: Queries for system values
+- name: Tile counters
+  description: Queries for tile statistics
+- name: Referrer counters
+  description: Queries for referrer statistics
+- name: Visitors
+  description: Queries help you to know more about your visitors
+
+paths:
+
+  '/v1/stat/counters/{containerId}/tiles':
+  
+    get:
+      summary: "To query counters of tiles"
+      tags:
+      - Tile counters
+      description: >
+                Returns the counters of tiles and also information about the tiles.
+                  
+                **IMPORTANT!** Regarding query intervals make sure you read the information about "Interval of your interest" - described in the generic section above!
+                  
+                You might further specify your interest with the below parameters.  
+      parameters:
+        - $ref: '#/components/parameters/containerId'
+        - $ref: '#/components/parameters/fromTimestamp'
+        - $ref: '#/components/parameters/toTimestamp'
+        - $ref: '#/components/parameters/tMinusMinutes'
+        - $ref: '#/components/parameters/resolution'
+        - $ref: '#/components/parameters/tileIdsOnly'
+        - $ref: '#/components/parameters/tileTypesOnly'
+        - $ref: '#/components/parameters/userAgentTypesOnly'
+        - $ref: '#/components/parameters/tileGroupPathPrefix'
+
+      security:
+      - basicAuth: []
+
+      responses:
+        '200':
+          description: "OK response"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TileCountersResponseClass'
+        '404':
+          description: "The given containerId does not exist"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
+        '401':
+          description: "Authentication failed - you provided invalid credentials or not provided credentials at all"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
+        '403':
+          description: "You have no permission to read statistics of the given Container"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
+        '400':
+          description: "Something was wrong with the request"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
+
+
+  '/v1/stat/counters/{containerId}/tiles/aggregatedLevel0CountersPerInterval':
+  
+    get:
+      summary: "Fully aggregated counters only - for level0. This is ommitting tile based granularity so /tiles array will be empty"
+      tags:
+      - Tile counters
+      description: >
+                Returns the sum of all counters of tiles. If you request resolution then this is done / intervals 
+                  
+                **IMPORTANT!** Regarding query intervals make sure you read the information about "Interval of your interest" - described in the generic section above!
+                  
+                You might further specify your interest with the below parameters.
+      parameters:
+        - $ref: '#/components/parameters/containerId'
+        - $ref: '#/components/parameters/fromTimestamp'
+        - $ref: '#/components/parameters/toTimestamp'
+        - $ref: '#/components/parameters/tMinusMinutes'
+        - $ref: '#/components/parameters/resolution'
+        - $ref: '#/components/parameters/tileIdsOnly'
+        - $ref: '#/components/parameters/tileTypesOnly'
+        - $ref: '#/components/parameters/userAgentTypesOnly'
+        - $ref: '#/components/parameters/tileGroupPathPrefix'
+
+      security:
+      - basicAuth: []
+
+      responses:
+        '200':
+          description: "OK response"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TileCountersResponseClass'
+        '404':
+          description: "The given containerId does not exist"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
+        '401':
+          description: "Authentication failed - you provided invalid credentials or not provided credentials at all"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
+        '403':
+          description: "You have no permission to read statistics of the given Container"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
+        '400':
+          description: "Something was wrong with the request"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
+
+
+  '/v1/stat/counters/{containerId}/external-referrers':
+  
+    get:
+      summary: "To query the external referrer distribution counters"
+      tags:
+      - Referrer counters
+      description: >
+                Returns the break down for external referrers
+                  
+                **IMPORTANT!** Regarding query intervals make sure you read the information about "Interval of your interest" - described in the generic section above!
+                  
+                You might further specify your interest with the below parameters.
+      parameters:
+        - $ref: '#/components/parameters/containerId'
+        - $ref: '#/components/parameters/fromTimestamp'
+        - $ref: '#/components/parameters/toTimestamp'
+        - $ref: '#/components/parameters/tMinusMinutes'
+        - $ref: '#/components/parameters/resolution'
+        - name: categoriesOnly
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/ExternalReferrerCategoryEnum'
+          description: >
+                        Comma separated list of referrer categories you want to limit the query for
+          example: 'search,social'
+        - $ref: '#/components/parameters/userAgentTypesOnly'
+        
+
+      security:
+      - basicAuth: []
+
+      responses:
+        '200':
+          description: "OK response"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExternalReferrerCountersResponseClass'
+        '404':
+          description: "The given containerId does not exist"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
+        '401':
+          description: "Authentication failed - you provided invalid credentials or not provided credentials at all"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
+        '403':
+          description: "You have no permission to read statistics of the given Container"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
+        '400':
+          description: "Something was wrong with the request"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
+
+
+  '/v1/stat/counters/{containerId}/visitors/environment':
+  
+    get:
+      summary: "Provides statistics about the technical environment of your visitors"
+      tags:
+      - Visitors
+      description: >
+                To optimize your website better for user experience it might be important to know more
+                about the technical devices and environment your visitors are using.
+      parameters:
+        - $ref: '#/components/parameters/containerId'
+        - $ref: '#/components/parameters/fromTimestamp'
+        - $ref: '#/components/parameters/toTimestamp'
+        - $ref: '#/components/parameters/tMinusMinutes'
+        - $ref: '#/components/parameters/userAgentTypesOnly'
+
+      security:
+      - basicAuth: []
+
+      responses:
+        '200':
+          description: "OK response"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VisitorsEnvironmentResponseClass'
+        '404':
+          description: "The given containerId does not exist"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
+        '401':
+          description: "Authentication failed - you provided invalid credentials or not provided credentials at all"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
+        '403':
+          description: "You have no permission to read statistics of the given Container"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
+        '400':
+          description: "Something was wrong with the request"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
+
+  '/v1/stat/counters/{containerId}/visitors/behavior':
+  
+    get:
+      summary: "Provides statistics about how your visitors behaving on your site"
+      tags:
+      - Visitors
+      description: >
+                To optimize your website better for user experience it might be important to how your visitors
+                are browsing your site
+      parameters:
+        - $ref: '#/components/parameters/containerId'
+        - $ref: '#/components/parameters/fromTimestamp'
+        - $ref: '#/components/parameters/toTimestamp'
+        - $ref: '#/components/parameters/tMinusMinutes'
+        - $ref: '#/components/parameters/userAgentTypesOnly'
+
+      security:
+      - basicAuth: []
+
+      responses:
+        '200':
+          description: "OK response"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VisitorsBehaviorResponseClass'
+        '404':
+          description: "The given containerId does not exist"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
+        '401':
+          description: "Authentication failed - you provided invalid credentials or not provided credentials at all"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
+        '403':
+          description: "You have no permission to read statistics of the given Container"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
+        '400':
+          description: "Something was wrong with the request"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
+
+
+  '/v1/system/clock':
+    get:
+      summary: "To query the system clock"
+      tags:
+      - System
+      description: >
+                Returns the system clock
+                  
+                Since you often phrase queries when you need to include timestamps it makes sense to be able to query the system clock
+                which you can use to calculate potential diff in between your local (machine) clock and the server time. Considering this into
+                queries might help a lot to significantly improve your server queries
+
+      responses:
+        '200':
+          description: "OK response"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemClockResponseClass'
+
+components:
+
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: "Basic HTTP authentication is used which means you need to send your Keytiles username/password in the header - API operations are handled on behalf of the given user. For more info visit: https://en.wikipedia.org/wiki/Basic_access_authentication"
+      
+  parameters:
+    containerId:
+      name: containerId
+      in: path
+      required: true
+      description: 'ID of the container to query stat from'
+      schema:
+        type: string
+        
+    fromTimestamp:
+      name: fromTimestamp
+      in: query
+      required: false
+      schema:
+        type: integer
+        format: int32
+      description: >
+                    **Only together with:** `toTimestamp` or `tMinusMinutes`
+                      
+                    **Default value:** current timestamp when server receives the request - so now()
+                      
+                    The value is a UNIX timestamp in UTC (seconds since Epoch) to start the query from.
+                      
+                    In case used with:
+                     * **toTimestamp** then this is the lower timestamp of the queried time interval. In from-to fashion natrually.
+                     * **tMinusMinutes** then this is the starting upper timestamp of the query interval while tMinusMinutes provides the "look back" interval
+                      
+                    Here is an example for calculation: given you want timestamp "2018-11-27 21:55:08" (UTC) the value should be 1543355708.
+      example: 1543355708
+    toTimestamp:
+      name: toTimestamp
+      in: query
+      required: false
+      schema:
+        type: integer
+        format: int32
+      description: >
+                    **Only together with:** `fromTimestamp`
+                      
+                    **Excludes together with:** `tMinusMinutes`
+                      
+                    **Default value:** none - you must explicitly provide a value here
+                      
+                    **Special value:** 'now' - which means the current time if given
+                      
+                    The value is a UNIX timestamp in UTC (seconds since Epoch) to finish the query at. To put it this way:
+                    This parameter defines the upper timestamp of the queried time interval (while fromTimestamp parameter
+                    defines the lower timestamp of the interval)
+                    
+                    Here is an example for calculation: given you want timestamp "2018-11-27 21:55:08" (UTC) the value should be 1543355708.
+      example: 1543355708
+      
+    tMinusMinutes:
+      name: tMinusMinutes
+      in: query
+      required: false
+      schema:
+        type: integer
+        format: int32
+      description: >
+                    **Together with:** `fromTimestamp`
+                      
+                    **Excludes together with:** `toTimestamp`
+                      
+                    **Default value:** The Container (containerId refers to) has a default setting for this called LOOK_BACK_TIME_WINDOW_SECONDS
+                      
+                    Number of seconds to look back - relative to `fromTimestamp`. If `fromTimestamp` is not provided then still it is used - with
+                    it's default value (which is now()) 
+      example: 600
+    resolution:
+      name: resolution
+      in: query
+      required: false
+      schema:
+        type: string
+      description: >
+                    **Default value:** the entire interval length - so you just get the counters for the entire interval you queried
+                      
+                    **Example value:** ?resolution=2h
+                      
+                    It is possible to request the counters not fully aggregated but with a break down within the queried interval.
+                    By adding this parameter you are requesting this option. You can specify the value in different units.
+                     * 'm' = minutes
+                     * 'h' = hours
+                     * 'd' = days
+                     
+                    So '1m' = 1 minute, '2h' = 2 hours, '1d' = 1 day
+                     
+                    Please read generic "Requesting a break down of stats within the interval" above for the details how does it work!
+      example: '10m|2h|1d'
+    tileIdsOnly:
+      name: tileIdsOnly
+      in: query
+      required: false
+      schema:
+        type: string
+      description: >
+                    **Example value:** ?tileIdsOnly=tile123,tile456,tile789
+                      
+                    Comma separated list of tileIds you want to limit the query for - of course in this case only the counters of these tiles are aggregated 
+      example: 'tile123,tile456,tile789'
+
+    tileTypesOnly:
+      name: tileTypesOnly
+      in: query
+      required: false
+      schema:
+        type: string
+      description: >
+                    **Example value:** ?tileTypesOnly=article **OR** ?tileTypesOnly=page,frontpage
+                      
+                    Comma separated list of tile types you want to limit the query for 
+      example: 'article,page'
+      
+    tileGroupPathPrefix:
+      name: tileGroupPathPrefix
+      in: query
+      required: false
+      schema:
+        type: string
+      description: >
+                    **Example value:** ?tileGroupPathPrefix=/politics/inner-politics
+                      
+                    You can query only those tile counters where the collected stat data matches for the given prefix. 
+                    To put it this way: you are just interested in stat data under a certain structure of your content 
+      example: '/politics/inner-politics'
+
+
+    userAgentTypesOnly:
+      name: userAgentTypesOnly
+      in: query
+      required: false
+      schema:
+        type: string
+      example: 'browser-desktop,unknown'
+      description: >
+                    **Example value:** ?userAgentTypesOnly=browser-desktop,unknown
+                      
+                    Comma separated list of *userAgentType*s you want to limit the query for.
+                      
+                    The set of *userAgentType*s is limited. Keytiles gives a few "out of the box" values but you can also define a
+                    limited number of custom values if you need (e.g. for recognizing traffic coming from your iOS App). These are defined
+                    in the settings of your data Container - see the Management API for more details here!)  
+                      
+                    The built-in values are the following:
+                     * **browser-desktop** - visitor is using a standard web browser running on a desktop computer
+                     * **browser-mobile** - visitor is using a standard web browser running on a mobile device
+                     * **other** - if during hit-collection (see Hit Collection API!) if an unsupported *userAgentType* is coming in
+                    Keytiles system will fall back to this value then (but of course it is also possible that the Hit sender himself
+                     * **unknown** - if during hit-collection (see Hit Collection API!) if an unsupported *userAgentType* was not given or was NULL
+                    then Keytiles system will fall back to this value
+  
+  schemas:
+  
+    SystemClockResponseClass:
+      type: object
+      properties:
+        serverTime:
+          type: integer
+          format: int32
+          description: "Current server time in UNIX timestamp in UTC (seconds since Epoch) when this response was generated"
+          example: 1543355710
+  
+    # note: model generation made mistake here: own added properties were missing
+    # googling lead here: https://github.com/swagger-api/swagger-core/issues/1601
+    # thats the reason why inheritance looks like this
+    TileCountersResponseClass:
+      allOf:
+        - $ref: 'common-types-v1.0.yaml#/components/schemas/IntervalBasedResponseWithResolutionClass'    
+        - type: object
+        - properties:
+            aggregatedLevel0CountersPerInterval:
+              type: array
+              items:
+                $ref: '#/components/schemas/TileCountersForIntervalClass'
+            tiles:
+              type: array
+              items:
+                $ref: '#/components/schemas/TileClass'
+
+    
+    TileClass:
+      type: object
+      properties:
+        id:
+          type: string
+          description: "ID of the tile"
+        firstSeen:
+          type: integer
+          format: int32
+          description: "When did we registered the first pageview for this tile? Basically: publish time of this tile. UNIX timestamp (seconds since Epoch) in UTC."
+          example: 1543355708
+        lastSeen:
+          type: integer
+          format: int32
+          description: "When did we registered the last pageview for this tile? UNIX timestamp (seconds since Epoch) in UTC."
+          example: 1543355708
+        type:
+          $ref: 'common-types-v1.0.yaml#/components/schemas/TileTypeEnum'
+        tileGroupPaths:
+          type: array
+          items:
+            $ref: '#/components/schemas/TileGroupPathClass'
+
+          
+    TileGroupPathClass:
+      type: object
+      properties:
+        path:
+          type: string
+          description: "The section path"
+          example: "/politics/ausland"
+        counters:
+          type: array
+          items:
+            $ref: '#/components/schemas/TileCountersForIntervalClass'
+        urls:
+          type: array
+          items:
+            type: string
+            example: "https://mywebsite.com/politics/ausland"
+        titles:
+          type: array
+          items:
+            type: string
+            example: "My tile title"
+
+    # note: model generation made mistake here: own added properties were missing
+    # googling lead here: https://github.com/swagger-api/swagger-core/issues/1601
+    # thats the reason why inheritance looks like this
+    TileCountersForIntervalClass:
+      allOf:
+        - $ref: '#/components/schemas/TileCountersClass'    
+        - type: object
+        - properties:
+            intervalId:
+              type: integer
+              description: >
+                        Refers to the interval defined in section `/resolutionIntervals` this set of counters belongs to
+
+    TileCountersClass:
+      type: object
+      description: >
+                    This is a set of counters Keytiles collected for the tile.  
+                      
+                    **IMPORTANT!** Only those counters will be here who's value is not 0! So for example if "refSearch=0" would be true then you will not see *refSearch* under the counters!
+      properties:
+        pageview:
+          type: integer
+          format: int64
+          example: 146
+          description: The number of unique pageviews (unique means only per visit session - if visitor visits the same tile multiple times in the same visit session it is just counted once) within the query range.
+        vsessStarted:
+          type: integer
+          format: int64
+          example: 146
+          description: The number of visit sessions started on this tile. So basically it shows how many visitors started the visit here (entry point) within the query range.        
+        bounce:
+          type: integer
+          format: int64
+          example: 146
+          description: Number of "Bounce" visits on this tile within the query range.
+        newVisitor:
+          type: integer
+          format: int64
+          example: 146
+          description: "Number of new visitors on this tile within the query range. New visitor means: we never saw this visitor earlier, or it was ages ago so should be treated as someone new."
+        bounceNewVisitor:
+          type: integer
+          format: int64
+          example: 146
+          description: "Among the *bounce* counter value how many of them were new visitors within the query range."
+        refSearch:
+          type: integer
+          format: int64
+          example: 146
+          description: "How many visitors arrived to this tile from a search page during the query range."
+        refInternal:
+          type: integer
+          format: int64
+          example: 146
+          description: "How many visitors arrived to this tile from another tile of your website within the query range."
+        refLink:
+          type: integer
+          format: int64
+          example: 146
+          description: "How many visitors arrived to this tile from an external site (which is not search/social site) within the query range."
+        refSocial:
+          type: integer
+          format: int64
+          example: 146
+          description: "How many visitors arrived to this tile from a social external site during the query range."
+        refDirect:
+          type: integer
+          format: int64
+          example: 146
+          description: "How many visitors arrived directly to this tile (so not from extarnal sites, not from another tile either - basically this means (s)he started here) within the query range."
+          
+    # note: model generation made mistake here: own added properties were missing
+    # googling lead here: https://github.com/swagger-api/swagger-core/issues/1601
+    # thats the reason why inheritance looks like this
+    ExternalReferrerCountersResponseClass:
+      allOf:
+      - $ref: 'common-types-v1.0.yaml#/components/schemas/IntervalBasedResponseWithResolutionClass'    
+      - type: object
+      - properties:
+          search:
+            type: array
+            items:
+              $ref: '#/components/schemas/ExternalReferrerClass'
+            description: "Referrers categorized into 'Search' type"
+          social:
+            type: array
+            items:
+              $ref: '#/components/schemas/ExternalReferrerClass'
+            description: "Referrers categorized into 'Social' type"
+          link:
+            type: array
+            items:
+              $ref: '#/components/schemas/ExternalReferrerClass'
+            description: "External referrers who are not 'Search' neither 'Social' are going into this category"
+
+          
+    ExternalReferrerClass:
+      type: object
+      properties:
+        name:
+          type: string
+          description: "The name of the referrer like Google, Facebook, etc."
+        url:
+          type: string
+          description: "The url we have seen the visitor coming from"
+        countersPerInterval:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExternalReferrerCountersClass'
+          
+    ExternalReferrerCountersClass:
+      type: object
+      properties:
+        intervalId:
+          type: integer
+          description: >
+                    Refers to the interval defined in section `/resolutionIntervals` this set of counters belongs to
+        entryCount:
+          type: integer
+          format: int64
+          example: 146
+          description: "Number of visits arrived from this referrer"
+
+          
+    ExternalReferrerCategoryEnum:
+      type: string
+      enum: [search, social, link]
+      description: "Possible values for external referrer category"
+      
+    ReferrerCategoryEnum:
+      type: string
+      enum: [direct, search, social, link, internal]
+      description: "Possible values for referrer category"
+
+
+    # note: model generation made mistake here: own added properties were missing
+    # googling lead here: https://github.com/swagger-api/swagger-core/issues/1601
+    # thats the reason why inheritance looks like this
+    VisitorsEnvironmentResponseClass:
+      allOf:
+      - $ref: 'common-types-v1.0.yaml#/components/schemas/IntervalBasedResponseClass'    
+      - type: object
+      - properties:
+          screenResolution:
+            type: array
+            items:
+              $ref: '#/components/schemas/ScreenResolutionCounterClass'
+            description: "Returns a list of counters showing different resolutions we captured and how many times each in the query range"
+          webClientLocale:
+            type: array
+            items:
+              $ref: '#/components/schemas/WebClientLocaleCounterClass'
+            description: "Returns a list of counters showing different locales of web clients we captured and how many times each in the query range"
+          operatingSystem:
+            type: array
+            items:
+              $ref: '#/components/schemas/OperatingSystemCounterClass'
+            description: "Returns a list of counters showing different operating systems we captured and how many times each in the query range"
+          webClient:
+            type: array
+            items:
+              $ref: '#/components/schemas/WebClientCounterClass'
+            description: "Returns a list of counters showing different operating systems we captured and how many times each in the query range"
+          cookieSupport:
+            type: object
+            description: "Shows you how many times we detected a visit session with Cookies enabled vs disabled"
+            properties:
+              cookiesEnabledCount:
+                type: integer
+                format: int64
+                example: 146
+              cookiesDisabledCount:
+                type: integer
+                format: int64
+                example: 146
+
+
+    ScreenResolutionCounterClass:
+      type: object
+      properties:
+        resolution:
+          type: string
+          description: Gives you the screen resolution in "<width> x <height>" format
+          example: 1980x1080
+        count:
+          type: integer
+          format: int64
+          example: 146
+ 
+    WebClientLocaleCounterClass:
+      type: object
+      properties:
+        locale:
+          type: string
+          description: The localce data of the visitor's device or user agent.
+          example: "en-US"
+        count:
+          type: integer
+          format: int64
+          example: 146
+          
+    OperatingSystemCounterClass:
+      type: object
+      properties:
+        opSystemType:
+          type: string
+          description: The name (and possibly version) of the Operating System the visitor's web client is running on
+          example: "Linux"
+        count:
+          type: integer
+          format: int64
+          example: 146
+
+    WebClientCounterClass:
+      type: object
+      properties:
+        userAgentType:
+          type: string
+          description: The identified type of the visitor's user agent
+          enum: [browser-desktop, browser-mobile, other, unknown, ...]
+          example: "browser-desktop"
+        webClient:
+          description: The type, name (and possibly version) of the web clients (e.g. browsers) the visitors using to visit the page.
+          example: "Google Chrome v83.0"
+        count:
+          type: integer
+          format: int64
+          example: 146
+
+
+    # note: model generation made mistake here: own added properties were missing
+    # googling lead here: https://github.com/swagger-api/swagger-core/issues/1601
+    # thats the reason why inheritance looks like this
+    VisitorsBehaviorResponseClass:
+      allOf:
+      - $ref: 'common-types-v1.0.yaml#/components/schemas/IntervalBasedResponseClass'    
+      - type: object
+      - properties:
+          browserTabs:
+            type: array
+            items:
+              $ref: '#/components/schemas/BrowserTabUsageStatClass'
+            description: "Shows you how many in parallel windows (browser tabs) your visitors typically using in 1 visit session"
+          visitSessions:
+            type: array
+            items:
+              $ref: '#/components/schemas/VisitSessionStatClass'
+            description: "Shows you how your visitors behaving during the visit sessions"
+
+
+    VisitSessionStatClass:
+      type: object
+      properties:
+        userAgentType:
+          type: string
+          description: The identified type of the visitor's user agent as a grouping factor - we provide stats / each type
+          enum: [browser-desktop, browser-mobile, other, unknown, ...]
+          example: "browser-desktop"
+        countOfVisitSessions:
+          type: integer
+          description: Total number of opened visit sessions
+          example: 812
+        avgVisitSessionLengthInSeconds:
+          type: integer
+          description: The avg length of a visit session in seconds
+          example: 72
+        lengthInMinutesDistribution:
+          description: We give you a minute based distribution in terms visit session length here
+          type: array
+          items:
+            type: object
+            properties:
+              lengthInMin:
+                type: integer
+                description: Visit session was this long (if a visit session was lets say 98 seconds long then it goes to lengthInMin=1 - so we floor down here)
+                example: 2
+              visitSessionCount:
+                type: integer
+                format: int64
+                example: 146
+                description: In this number of visit sessions we detected that
+        numberOfTotalActionsDistribution:
+          description: We give you the distribution of how many actions your visitors did in how many visit sessions
+          type: array
+          items:
+            type: object
+            properties:
+              numOfActions:
+                type: integer
+                example: 2
+              visitSessionCount:
+                type: integer
+                format: int64
+                example: 146
+                description: In this number of visit sessions we detected that
+        
+
+    BrowserTabUsageStatClass:
+      type: object
+      properties:
+        userAgentType:
+          type: string
+          description: The identified type of the visitor's user agent
+          enum: [browser-desktop, browser-mobile, other, unknown, ...]
+          example: "browser-desktop"
+        tabCountDistribution:
+          description: Showing you the distribution of in parallel used (means within 1 visit session) browser tabs
+          type: array
+          items:
+            type: object
+            properties:
+              openTabCount:
+                type: integer
+                description: We detected this many in parallel used browser tabs in the visit session
+                example: 2
+              visitSessionCount:
+                type: integer
+                format: int64
+                example: 146
+                description: In this number of visit sessions we detected that
+
+
+    

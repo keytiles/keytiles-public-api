@@ -1,0 +1,203 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.keytiles</groupId>
+	<artifactId>keytiles-public-api</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+	<packaging>jar</packaging>
+
+    <pluginRepositories>
+		<pluginRepository>
+			<id>keytiles-public-releases</id>
+			<name>Keytiles Nexus Public Releases repo</name>
+			<url>https://nexus.keytiles.com/nexus/content/repositories/public-releases/</url>
+		</pluginRepository>
+		<pluginRepository>
+			<id>keytiles-public-snapshots</id>
+			<name>Keytiles Nexus Public Snapshots repo</name>
+			<url>https://nexus.keytiles.com/nexus/content/repositories/public-snapshots/</url>
+		</pluginRepository>
+    </pluginRepositories>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+
+		<jackson.version>2.13.0</jackson.version>
+		
+		<keytiles.codegen.version>1.0.0</keytiles.codegen.version>
+
+		<!-- Plugins -->
+		<maven.release.plugin>2.5.3</maven.release.plugin>
+		<maven.os.plugin>1.6.0</maven.os.plugin>
+		<maven.buildhelper.plugin>3.3.0</maven.buildhelper.plugin>
+		<maven.swagger-codegen.plugin>3.0.34</maven.swagger-codegen.plugin>
+
+	</properties>
+
+	<dependencies>
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.13.2</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-annotations</artifactId>
+			<version>${jackson.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		
+		<!-- note: this is not needed anymore if modelStyle=simpleConsistent generation is done! 
+		<dependency>
+		    <groupId>io.swagger.core.v3</groupId>
+		    <artifactId>swagger-annotations</artifactId>
+		    <version>${swagger.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		-->
+
+	</dependencies>
+
+	<build>
+		<finalName>${project.artifactId}</finalName>
+
+		<resources>
+			<!-- let's make the openapi contract also available in the jar -->
+			<resource>
+				<directory>src/main/openapi</directory>
+				<targetPath>resources/openapi</targetPath>
+			</resource>
+		</resources>
+
+		<extensions>
+			<extension>
+				<groupId>kr.motd.maven</groupId>
+				<artifactId>os-maven-plugin</artifactId>
+				<version>${maven.os.plugin}</version>
+			</extension>
+		</extensions>
+
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>${maven.buildhelper.plugin}</version>
+				<executions>
+					<execution>
+						<id>add-source</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>add-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>${project.basedir}/target/generated-sources/swagger/src/main/java/</source>
+							</sources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>${maven.release.plugin}</version>
+				<configuration>
+					<tagNameFormat>@{project.version}</tagNameFormat>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>io.swagger.codegen.v3</groupId>
+				<artifactId>swagger-codegen-maven-plugin</artifactId>
+				<version>${maven.swagger-codegen.plugin}</version>
+				
+				<dependencies>
+					<dependency>
+						<groupId>com.keytiles</groupId>
+						<artifactId>keytiles-swagger-codegen</artifactId>
+						<version>${keytiles.codegen.version}</version>
+					</dependency>
+				</dependencies>
+				
+				<executions>
+					<execution>
+						<id>common-types-v2</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<inputSpec>${project.basedir}/src/main/openapi/common-types-v2.yaml</inputSpec>
+							<output>${project.basedir}/target/generated-sources/swagger/</output>
+							<modelPackage>com.keytiles.api.model.common.v2</modelPackage>
+							<language>com.keytiles.swagger.codegen.KeytilesJavaCodegen</language>
+							<!-- <library>resttemplate</library> -->
+							<generateApis>false</generateApis>
+							<generateModels>true</generateModels>
+							<generateApiTests>false</generateApiTests>
+							<generateApiDocumentation>false</generateApiDocumentation>
+							<generateModelTests>false</generateModelTests>
+							<generateModelDocumentation>false</generateModelDocumentation>
+							<generateSupportingFiles>false</generateSupportingFiles>
+							<configOptions>
+								<mavenExecutionId>common-types-v2</mavenExecutionId>
+								<nullableTagDefaultValue>true</nullableTagDefaultValue>
+								<addExplanationsToModel>false</addExplanationsToModel>
+								
+								<interfaceOnly>true</interfaceOnly>
+								<dateLibrary>java8</dateLibrary>
+							</configOptions>
+						</configuration>
+					</execution>				
+
+					<execution>
+						<id>stat-api-v2</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<inputSpec>${project.basedir}/src/main/openapi/stat-api-v2.yaml</inputSpec>
+							<output>${project.basedir}/target/generated-sources/swagger/</output>
+							<modelPackage>com.keytiles.api.model.stat.v2</modelPackage>
+							<language>com.keytiles.swagger.codegen.KeytilesJavaCodegen</language>
+							<!-- <library>resttemplate</library> -->
+							<library>resttemplate</library>
+							<generateApis>false</generateApis>
+							<generateModels>true</generateModels>
+							<instantiationTypes></instantiationTypes>
+							<generateApiTests>false</generateApiTests>
+							<generateApiDocumentation>false</generateApiDocumentation>
+							<generateModelTests>false</generateModelTests>
+							<generateModelDocumentation>false</generateModelDocumentation>
+							<generateSupportingFiles>false</generateSupportingFiles>
+							<configOptions>
+								<mavenExecutionId>stat-api-v2</mavenExecutionId>
+								<!-- warning! order really matters here! see README! -->
+								<addSchemaModelsToImportMappingsFromMavenExecutions>common-types-v2</addSchemaModelsToImportMappingsFromMavenExecutions>
+								<!-- default: true -->
+								<!-- excludeImportMappingsFromGeneration>false</excludeImportMappingsFromGeneration> -->
+								<nullableTagDefaultValue>true</nullableTagDefaultValue>
+								
+								<interfaceOnly>true</interfaceOnly>
+								<dateLibrary>java8</dateLibrary>
+							</configOptions>
+						</configuration>
+					</execution>
+
+
+				</executions>
+			</plugin>
+
+		</plugins>
+	</build>
+
+
+</project>

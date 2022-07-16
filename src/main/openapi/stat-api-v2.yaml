@@ -1,0 +1,1011 @@
+openapi: 3.0.0
+
+info:
+  version: '2.0'
+  title: Keytiles Statistics query API
+  description: >
+            Provides endpoints to query statistics data stored by Keytiles service  
+              
+            To specify / fine tune queries you use query parameters which we can group into a few groups.  
+              
+            ### Query range
+            
+            To make queries you need to specify the query time range. To do that you can use the:
+            
+             * **fromTimestamp** - Start of your query range inclusive (>=). This is a UNIX timstamp (seconds since Epoch, UTC).
+             
+             * **toTimestamp** - End of your query range inclusive (<=). This is either a UNIX timestamp or "now" as a string meaning current time
+            
+            ### Filtering
+            
+            Optionally you can filter the data due to several criteria.  
+              
+            For example if you are interested in only "view" event types then you can use the **eventTypesOnly=view** filter parameter.  
+            Or you can also filter for **tileIdsOnly=tileId1,tileId2** if you are just interested in specific tiles stat data.  
+              
+            For complete list please check the query parameters of the endpoints! Look for "***Only**" parameters!
+            
+            ### Details - your interest
+            
+            By default only the most relevant details are returned however in several endpoints you can definitely ask for more. You can do
+            this using the **interest** query parameter.  
+              
+            For example if you query the event counts for Tiles what you will get back by default is only the total number of events registered in
+            your query range.
+            
+            ### Grouping
+            
+            By default you just get the total event count of all event types captured by Keytiles in the query range. But if you want to  
+            comapre e.g. how many of different event types Keytiles captured in your query time range then you need a decomposition for event types
+            in the response so you can see how many occured / eventType like "view" 322, "download" 18, "contact-form-sent" 74.  
+              
+            To achieve this you can use the **groupBy=eventType** query parameter.  
+              
+            
+              
+            ### Limit / threshold
+            
+            If you have a high traffic website with many many Tiles then you might get back huge data from queries even for a relatively
+            short time range. Experience shows that most of this data might be not important for you in many cases.
+            
+            To take an example let's assume you want to display "view" performance  
+            
+servers:
+- url: https://api.keytiles.com/api
+  description: PROD server
+- url: https://api-test.keytiles.com/api
+  description: TEST server
+   
+tags:
+- name: System
+  description: Queries for system values
+- name: Container stat
+  description: Queries for container statistics
+- name: WebHits - Tile events
+  description: Queries for tile statistics for Containers collecting website analytics
+- name: WebHits - Referrer counters
+  description: Queries for referrer statistics for Containers collecting website analytics
+
+paths:
+
+  '/v2/system/clock':
+    get:
+      summary: "To query the Keytiles system clock"
+      tags:
+      - System
+      description: >
+                Returns the Keytiles system clock UNIX timestamp (UTC seconds since Epoch)
+                  
+                Since you often phrase queries when you need to include timestamps it makes sense to be able to query the system clock
+                which you can use to calculate potential diff in between your local (client machine) clock and Keytiles server time. Considering this into
+                queries might help a lot to significantly improve your server queries
+
+      responses:
+        '200':
+          description: "OK response"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemClockResponseClass'
+
+
+  '/v2/stat/counters/{containerId}/inbound-hits':
+  
+    get:
+      summary: "To query raw incoming write traffic at a Container level"
+      tags:
+      - Container stat
+      description: >
+                Keytiles tracks this data on hourly basis granulation.
+                  
+                **IMPORTANT!** Regarding query intervals make sure you read the information about "Interval of your interest" - described in the generic section above!
+                  
+                You might further specify your interest with the below parameters.  
+      parameters:
+        - $ref: 'common-types-v2.yaml#/components/parameters/containerId'
+        - $ref: 'common-types-v2.yaml#/components/parameters/fromTimestamp'
+        - $ref: 'common-types-v2.yaml#/components/parameters/toTimestamp'
+        - $ref: '#/components/parameters/groupByTime'
+
+      security:
+      - basicAuth: []
+
+      responses:
+        '200':
+          description: "OK response"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContainerInboundHitsResponseClass'
+        '404':
+          description: "The given containerId does not exist"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v2.yaml#/components/schemas/ErrorMessageResponseClass'
+        '401':
+          description: "Authentication failed - you provided invalid credentials or not provided credentials at all"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v2.yaml#/components/schemas/ErrorMessageResponseClass'
+        '403':
+          description: "You have no permission to read statistics of the given Container"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v2.yaml#/components/schemas/ErrorMessageResponseClass'
+        '400':
+          description: "Something was wrong with the request"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v2.yaml#/components/schemas/ErrorMessageResponseClass'
+
+
+  '/v2/stat/webhits/events/{containerId}/tiles':
+  
+    get:
+      summary: "To query event counts of tiles"
+      tags:
+      - WebHits - Tile events
+      description: >
+                Returns the measured event counts of tiles and also information about the tiles.
+                  
+                You might fine tune the query with the parameters.  
+      parameters:
+        - $ref: 'common-types-v2.yaml#/components/parameters/containerId'
+        - $ref: 'common-types-v2.yaml#/components/parameters/fromTimestamp'
+        - $ref: 'common-types-v2.yaml#/components/parameters/toTimestamp'
+        - $ref: '#/components/parameters/eventTypesOnly'
+        - $ref: '#/components/parameters/tileIdsOnly'
+        - $ref: '#/components/parameters/tileTypesOnly'
+        - $ref: '#/components/parameters/userAgentTypesOnly'
+        - $ref: '#/components/parameters/tileGroupPathMatchingOnly'
+        - $ref: '#/components/parameters/visitorTypesOnly'
+        - $ref: '#/components/parameters/tileLanguagesOnly'
+        - $ref: '#/components/parameters/trafficSourceTypesOnly'
+        - $ref: '#/components/parameters/trafficSourceNamesOnly'
+        - $ref: '#/components/parameters/interest'
+        - $ref: '#/components/parameters/includeTileDetails'
+        - $ref: '#/components/parameters/groupBy'
+
+      security:
+      - basicAuth: []
+
+      responses:
+        '200':
+          description: "OK response"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TileEventCountersResponseClass'
+        '404':
+          description: "The given containerId does not exist"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v2.yaml#/components/schemas/ErrorMessageResponseClass'
+        '401':
+          description: "Authentication failed - you provided invalid credentials or not provided credentials at all"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v2.yaml#/components/schemas/ErrorMessageResponseClass'
+        '403':
+          description: "You have no permission to read statistics of the given Container"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v2.yaml#/components/schemas/ErrorMessageResponseClass'
+        '400':
+          description: "Something was wrong with the request"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v2.yaml#/components/schemas/ErrorMessageResponseClass'
+
+
+  '/v2/stat/webhits/events/{containerId}/tiles/aggregatedLevel0CountersPerInterval':
+  
+    get:
+      summary: "Similar to '/v2/stat/webhits/events/{containerId}/tiles' query but this is ommitting tile based granularity so /tiles array will not be present."
+      tags:
+      - WebHits - Tile events
+      description: >
+                This query is perfect to visualize traffic summary without tile level break down. So this query is cheaper and executes faster. 
+                  
+                You might further specify your interest with the below parameters.
+      parameters:
+        - $ref: 'common-types-v2.yaml#/components/parameters/containerId'
+        - $ref: 'common-types-v2.yaml#/components/parameters/fromTimestamp'
+        - $ref: 'common-types-v2.yaml#/components/parameters/toTimestamp'
+        - $ref: '#/components/parameters/eventTypesOnly'
+        - $ref: '#/components/parameters/tileIdsOnly'
+        - $ref: '#/components/parameters/tileTypesOnly'
+        - $ref: '#/components/parameters/userAgentTypesOnly'
+        - $ref: '#/components/parameters/tileGroupPathMatchingOnly'
+        - $ref: '#/components/parameters/visitorTypesOnly'
+        - $ref: '#/components/parameters/tileLanguagesOnly'
+        - $ref: '#/components/parameters/trafficSourceTypesOnly'
+        - $ref: '#/components/parameters/trafficSourceNamesOnly'
+        - $ref: '#/components/parameters/interest'
+        - $ref: '#/components/parameters/groupBy'
+
+      security:
+      - basicAuth: []
+
+      responses:
+        '200':
+          description: "OK response"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AggregatedLevel0TileEventCountersResponseClass'
+        '404':
+          description: "The given containerId does not exist"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v2.yaml#/components/schemas/ErrorMessageResponseClass'
+        '401':
+          description: "Authentication failed - you provided invalid credentials or not provided credentials at all"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v2.yaml#/components/schemas/ErrorMessageResponseClass'
+        '403':
+          description: "You have no permission to read statistics of the given Container"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v2.yaml#/components/schemas/ErrorMessageResponseClass'
+        '400':
+          description: "Something was wrong with the request"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v2.yaml#/components/schemas/ErrorMessageResponseClass'
+
+
+  '/v2/stat/webhits/view/{containerId}/external-referrers':
+  
+    get:
+      summary: "To query the external referrer distribution counters"
+      tags:
+      - WebHits - Referrer counters
+      description: >
+                Returns the break down for external referrers
+                  
+                **IMPORTANT!** Regarding query intervals make sure you read the information about "Interval of your interest" - described in the generic section above!
+                  
+                You might further specify your interest with the below parameters.
+      parameters:
+        - $ref: 'common-types-v2.yaml#/components/parameters/containerId'
+        - $ref: 'common-types-v2.yaml#/components/parameters/fromTimestamp'
+        - $ref: 'common-types-v2.yaml#/components/parameters/toTimestamp'
+        - $ref: '#/components/parameters/groupByTime'
+        - name: categoriesOnly
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/ExternalReferrerCategoryEnum'
+          description: >
+                        Comma separated list of referrer categories you want to limit the query for
+          example: 'search,social'
+        - $ref: '#/components/parameters/userAgentTypesOnly'
+        
+
+      security:
+      - basicAuth: []
+
+      responses:
+        '200':
+          description: "OK response"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExternalReferrerCountersResponseClass'
+        '404':
+          description: "The given containerId does not exist"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v2.yaml#/components/schemas/ErrorMessageResponseClass'
+        '401':
+          description: "Authentication failed - you provided invalid credentials or not provided credentials at all"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v2.yaml#/components/schemas/ErrorMessageResponseClass'
+        '403':
+          description: "You have no permission to read statistics of the given Container"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v2.yaml#/components/schemas/ErrorMessageResponseClass'
+        '400':
+          description: "Something was wrong with the request"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v2.yaml#/components/schemas/ErrorMessageResponseClass'
+
+
+
+components:
+
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: "Basic HTTP authentication is used which means you need to send your Keytiles username/password in the header - API operations are handled on behalf of the given user. For more info visit: https://en.wikipedia.org/wiki/Basic_access_authentication"
+      
+  parameters:
+
+    eventTypesOnly:
+      name: eventTypesOnly
+      in: query
+      required: false
+      schema:
+        type: string
+      description: >
+                    Data filter option. Comma separated list of event types you want to limit the query for.
+      example: 'view,contact-form-sent'
+
+    tileIdsOnly:
+      name: tileIdsOnly
+      in: query
+      required: false
+      schema:
+        type: string
+      description: >
+                    Data filter option. Comma separated list of tileIds you want to limit the query for - of course in this case only the counters of these tiles are returned 
+      example: 'tile123,tile456,tile789'
+
+    tileTypesOnly:
+      name: tileTypesOnly
+      in: query
+      required: false
+      schema:
+        type: string
+      description: >
+                    **Example value:** ?tileTypesOnly=article **OR** ?tileTypesOnly=page,frontpage
+                      
+                    Data filter option. Comma separated list of tile types you want to limit the query for 
+      example: 'article,page'
+      
+    tileGroupPathMatchingOnly:
+      name: tileGroupPathMatchingOnly
+      in: query
+      required: false
+      schema:
+        type: string
+      description: >
+                    Data filter option. Returns counters only for those Tiles who's tileGroupPath is matching to this filter.  
+                      
+                    You can use the **'\*'** character to match any substring. But where and how you put this Asterisk character matters! Let us show
+                    you how through an example!
+                    
+                    Let's assume you have articles and pages (Tiles) in the following content areas:  
+                      
+                     * /auto
+                     * /tech
+                     * /tech/mobile-rumours
+                     * /tech/mobile
+                     * /tech/mobile/android
+                     * /tech/mobile/ios
+                     * /politics
+                      
+                    And now you execute queries with two different **tileGroupPathMatchingOnly** settings:
+                     1. **"/tech/mobile\*"** and
+                     1. **"/tech/mobile/\*"**
+                    
+                    In the first query **"/tech/mobile\*"** would match for everything begins with "/tech/mobile" string. So this would include *"/tech/mobile/android"*, *"/tech/mobile/ios"* Tiles but
+                    also would include *"/tech/mobile-rumours"* Tiles. Which are clearly two different areas right?  
+                      
+                    But what if you want to really limit for Tiles under the *"/tech/mobile"* area?  
+                      
+                    Well then you can use the second query value: **"/tech/mobile/\*"**. This would include *"/tech/mobile/android"*, *"/tech/mobile/ios"* but
+                    would NOT include *"/tech/mobile-rumours"* anymore - as that is not a match anymore. But we are not done yet! Please note: this
+                    would also include Tiles under *"/tech/mobile/"* group itself. Because **"/\*"** means "everything which is under this group"
+                    
+                    
+                     
+      example: '/tech/mobile/*'
+
+    userAgentTypesOnly:
+      name: userAgentTypesOnly
+      in: query
+      required: false
+      schema:
+        type: string
+      example: 'browser-desktop,NULL'
+      description: >
+                    Data filter option. Comma separated list of *userAgentType*s you want to limit the query for.
+                      
+                    The set of *userAgentType*s is limited. Keytiles gives a few "out of the box" values but you can also define a
+                    limited number of custom values if you need (e.g. for recognizing traffic coming from your iOS App). These are defined
+                    in the settings of your data Container - see the Management API for more details here!)  
+                      
+                    The built-in values are the following:
+                     * **browser-desktop** - visitor is using a standard web browser running on a desktop computer
+                     * **browser-mobile** - visitor is using a standard web browser running on a mobile device
+                     * **bot** - visitor was a known bot
+                     * **other** - if during hit-collection (see Hit Collection API!) if an unsupported *userAgentType* is coming in
+                    Keytiles system will fall back to this value
+                     * **NULL** - if during hit-collection (see Hit Collection API!) *userAgentType* was not given or was NULL
+                    then Keytiles system will fall back to this value
+
+    visitorTypesOnly:
+      name: visitorTypesOnly
+      in: query
+      required: false
+      schema:
+        type: string
+      description: >
+                    Data filter option. Comma separated list of *visitorType*s you want to limit the query for.
+                      
+                    **NULL** is a special value indicating cases where *visitorType* was not set.
+                      
+                    Please note that visitorTypes is something you introduce for your Container tracking! If you do not do this then all your
+                    traffic falls under "NULL" value here.
+      example: 'paid,NULL'
+
+    tileLanguagesOnly:
+      name: tileLanguagesOnly
+      in: query
+      required: false
+      schema:
+        type: string
+      description: >
+                    Data filter option. Comma separated list of languages codes. Only data captured on the given languages is returned if you
+                    apply this filter.  
+                      
+                    **NULL** is a special value indicating cases where *tileLanguage* was not identified/captured.
+      example: 'en,de'
+
+    trafficSourceTypesOnly:
+      name: trafficSourceTypesOnly
+      in: query
+      required: false
+      schema:
+        type: string
+      description: >
+                    Data filter option. Comma separated list of "link", "search", "social" or "direct" strings - indicating from which source
+                    the visitor arrived to your website.
+      example: 'link,direct'
+
+    trafficSourceNamesOnly:
+      name: trafficSourceNamesOnly
+      in: query
+      required: false
+      schema:
+        type: string
+      description: >
+                    Data filter option. Comma separated list of external source names - indicating from which source
+                    the visitor arrived to your website.
+      example: 'facebook,google.de'
+      
+    interest:
+      name: interest
+      in: query
+      required: false
+      schema:
+        type: string
+      description: >
+                    Comma separated list of your extra interest.  
+                      
+                    By default it is only the "c_evT" field which is added to the *TileCounterClass* (counters) in the response. But with extending
+                    your interest you can get more counters into these objects.  
+                      
+                    The possible values are the following:
+                     * **newVisitors** - you will get the "c_evNew" and the "c_evBncNew" counter field too if you specify **bounceVisitors** too
+                     * **bounceVisitors** - you will get the "c_evBnc" and the "c_evBncNew" counter field too if you specify **newVisitors** too
+                     * **referrerCounts** - you will get the "c_rf*" counter fields too
+                     * **visitSession** - you will get the "c_vsSt" and "c_noVs" counter fields too
+                    
+      example: 'newVisitors,bounceVisitors'
+
+    includeTileDetails:
+      name: includeTileDetails
+      in: query
+      required: false
+      schema:
+        type: string
+      description: >
+                    This is a boolean parameter so you can send 'true' or 'false' here as a value. By default the value is 'true'.  
+                      
+                    When you query the tile counters apart from the counters in the response Keytiles also returns information about the tiles
+                    like 'firstSeen', 'lastSeen' (see: *TileClass*) and 'titles' and 'urls' (see: *TileGroupPathClass*). The fact is that due to
+                    server side storage logic returning this information happens in an extra step making the query more expensive and slower.  
+                      
+                    However there are scenarios when you do not really need this data (you might know these from an earlier query) so to speed
+                    up the query you can tell Keytiles to save this effort.   
+                    
+      example: 'false'
+
+    groupByTime:
+      name: groupByTime
+      in: query
+      required: false
+      schema:
+        type: string
+      description: >
+                    **Default value:** the entire query range - you just get one datapoint
+                      
+                    It is possible to request the counters not fully aggregated but with a break down within the queried interval.
+                    By adding this parameter you are requesting this option. You can specify the value in different units.
+                     * 'h' = hours
+                     * 'd' = days
+                     
+                    So '2h' = 2 hours, '1d' = 1 day
+      example: 'eventType,time:1h'
+
+  
+    groupBy:
+      name: groupBy
+      in: query
+      required: false
+      schema:
+        type: string
+      description: >
+                    Comma separated list of criteria you want to have the data grouped by.  
+                      
+                    Normally without using this option you just get the requested counters (fine grained by *interest* parameter) aggregated into sum
+                    values in the query range. This will tell you "your site received 1242 events in this time range" without any further break down.
+                    However if you for example want to see "ok but how many different events did I get" you need a way to tell this wish to Keytiles.  
+                      
+                    In this case you could send in `groupBy=eventType` and as a result in the response instead of the one 1242 (sum) number you will see
+                    this came together from view 846, download 129 and contact-form-sent 267 times. So you get a break down by 'eventType' in this
+                    case. This is useful if your goal is to show on a bar chart for example the different event types ratio.  
+                      
+                    And if you want to get this data in an - let's say - hourly resolution then you can go further and send in `groupBy=eventType,time:1h`
+                    in this parameter.  
+                      
+                    There are more criteria not just 'eventType' or 'time' and you can combine them. But of course more criteria you request makes the response
+                    bigger and bigger as the returned counters are broke down into more and more groups so you have to keep an eye on what you really need!  
+                       
+                    The possible values are the following:
+                     * **time:x<m|h|d|w>** - you can specify a time window like '2h' which means 2 hours groups ('m'=minutes, 'h'=hours, 'd'=days, 'w'=weeks) with this - you get the counters aggregated per time window in the response
+                     * **eventType** - you get the counters aggregated per event types in the response
+                     * **userAgentType** - you get the counters aggregated per userAgent types in the response
+                     * **visitorType** - you get the counters aggregated per visitor types in the response
+                     * **tileGroupPath** - you get the counters aggregated per tileGroupPaths in the response
+                     * **tileLanguage** - you get the counters aggregated per languages in the response
+                     * **trafficSourceType** - you get the counters aggregated per traffic source types in the response like 'search', 'social', etc
+                     * **trafficSourceName[:max]** - you get the counters aggregated per traffic sources in the response like 'Facebook', etc
+                                                     but since there could be a lot you can optionally specify "max top 10" in which case you get your
+                                                     top 10 plus all 'other' as one group
+      example: 'eventType,time:1h'
+  
+    limit:
+      name: limit
+      in: query
+      required: false
+      schema:
+        type: integer
+      description: >
+                    Maximum number of tiles in the response. By saying `limit=100` you will get back the top 100 tiles only who received the
+                    most event counts alltogether during the query range.   
+  
+    threshold:
+      name: threshold
+      in: query
+      required: false
+      schema:
+        type: string
+      description: >
+                    In this parameter you 
+                    Maximum number of tiles in the response. By saying `limit=100` you will get back the top 100 tiles only who received the
+                    most event counts alltogether during the query range.   
+  
+  schemas:
+  
+    SystemClockResponseClass:
+      type: object
+      properties:
+        serverTime:
+          type: integer
+          format: int32
+          description: "Current server time in UNIX timestamp in UTC (seconds since Epoch) when this response was generated"
+          example: 1543355710
+
+    ContainerInboundHitsResponseClass:
+      allOf:
+        - $ref: 'common-types-v2.yaml#/components/schemas/ContainerQueryRangeResponseClass'    
+      type: object
+      properties:
+        groupByValues:
+          $ref: '#/components/schemas/GroupByTimeValueClass'
+        writeTraffic:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContainerInboundHitsCountersForIntervalClass'
+  
+    # note: model generation made mistake here: own added properties were missing
+    # googling lead here: https://github.com/swagger-api/swagger-core/issues/1601
+    # thats the reason why inheritance looks like this
+    ContainerInboundHitsCountersForIntervalClass:
+      allOf:
+      - $ref: '#/components/schemas/ContainerInboundHitsCountersClass'    
+      type: object
+      properties:
+        g_tId:
+          type: integer
+          description: numerical ID - Refers to the time interval defined in section `/groupByValues/time` this set of counters belongs to. 
+
+    ContainerInboundHitsCountersClass:
+      type: object
+      description: >
+                    This is a set of counters representing the inbound traffic a specific Container received via different endpoints  
+      properties:
+        viaTrackingScript:
+          type: integer
+          format: int64
+          example: 146
+          description: The number of hits received via the tracking script hit collection mechanism
+        viaWriteApi:
+          type: integer
+          format: int64
+          example: 146
+          description: The number of hits received via the hit write API in JSON format
+  
+    # note: model generation made mistake here: own added properties were missing
+    # googling lead here: https://github.com/swagger-api/swagger-core/issues/1601
+    # thats the reason why inheritance looks like this
+    TileEventCountersResponseClass:
+      allOf:
+        - $ref: 'common-types-v2.yaml#/components/schemas/ContainerQueryRangeResponseClass'    
+      type: object
+      properties:
+        groupByValues:
+          $ref: '#/components/schemas/GroupByValuesClass'
+        aggregatedLevel0Counters:
+          type: array
+          items:
+            $ref: '#/components/schemas/TileEventCountersClass'
+        tiles:
+          type: array
+          items:
+            $ref: '#/components/schemas/TileClass'
+
+    AggregatedLevel0TileEventCountersResponseClass:
+      allOf:
+        - $ref: 'common-types-v2.yaml#/components/schemas/ContainerQueryRangeResponseClass'    
+      type: object
+      properties:
+        groupByValues:
+          $ref: '#/components/schemas/GroupByValuesClass'
+        aggregatedLevel0Counters:
+          type: array
+          items:
+            $ref: '#/components/schemas/TileEventCountersClass'
+    
+    TileClass:
+      type: object
+      properties:
+        id:
+          type: string
+          description: "ID of the tile"
+        firstSeen:
+          type: integer
+          format: int32
+          description: "When did we registered the first event for this tile? Basically: publish time of this tile. UNIX timestamp (seconds since Epoch) in UTC."
+          example: 1543355708
+        lastSeen:
+          type: integer
+          format: int32
+          description: "When did we registered the last event for this tile? UNIX timestamp (seconds since Epoch) in UTC."
+          example: 1543355708
+        type:
+          $ref: 'common-types-v2.yaml#/components/schemas/TileTypeEnum'
+        tileGroupPaths:
+          type: array
+          items:
+            $ref: '#/components/schemas/TileGroupPathClass'
+
+          
+    TileGroupPathClass:
+      type: object
+      properties:
+        pathId:
+          type: integer
+          description: "Refers to the tile group path defined in section `/groupByValues/tileGroupPath` this record belongs to /groupByValues/tileGroupPath section"
+        counters:
+          type: array
+          items:
+            $ref: '#/components/schemas/TileEventCountersClass'
+        urls:
+          type: array
+          items:
+            type: string
+            example: "https://mywebsite.com/politics/ausland"
+        titles:
+          type: array
+          items:
+            type: string
+            example: "My tile title"
+
+
+    GroupByTimeIntervalClass:
+      type: object
+      properties:
+        starts:
+          type: integer
+          format: int32
+          description: 'Beginning of interval in seconds relative to the returned global data time-frame. If you want to know absolute timestamp then add this to `/dataFromTimestamp` attribute value'
+          example: 0
+        length:
+          type: integer
+          format: int32
+          description: 'Length of this interval in seconds'
+          example: 100
+
+    GroupByIntToStrMappingClass:
+      type: object
+      properties:
+        <numericalId>:
+          type: integer
+          description: 'The assigned integer ID'
+        value:
+          type: string
+          description: 'The mapped String value belongs to this numerical ID'
+
+
+    GroupByTimeValueClass:
+      type: object
+      description: >
+                    This object gives you concrete values for "groupByTime" criteria if you requested break down using the `groupByTime` parameter. 
+      properties:
+        time:
+          description: 'This entry is present only if you requested `groupBy=time:x` - so break down by time intervals - in your request. The keys in this object are numerical IDs of time intervals while values giving you attributes of each intervals. `g_tId` field of counter records referring to these IDs.'
+          type: object
+          properties:
+            <numericalId>:
+              $ref: '#/components/schemas/GroupByTimeIntervalClass'
+
+
+    GroupByValuesClass:
+      allOf:
+      - $ref: '#/components/schemas/GroupByTimeValueClass'    
+      type: object
+      description: >
+                    This object gives you concrete values for "groupBy" criteria if you requested data groups using the `groupBy` parameter. 
+      properties:
+        eventType:
+          description: 'This entry is present only if you requested `groupBy=eventType` - so break down by event types - in your request. The keys in this object are numerical IDs assigned to different event types. `g_eTy` field of counter records referring to these IDs.'
+          type: object
+          properties:
+            <numericalId>:
+              type: string
+              example: '<name of event>'
+        visitorType:
+          description: 'This entry is present only if you requested `groupBy=visitorType` - so break down by visitor types - in your request. In this case the keys in this object are numerical IDs assigned to different visitor types. `g_vTy` field of counter records referring to these IDs.'
+          type: object
+          properties:
+            <numericalId>:
+              type: string
+              example: '<the visitor type>'
+        userAgentType:
+          description: 'This entry is present only if you requested `groupBy=userAgentType` - so break down by user agent types - in your request. In this case the keys in this object are numerical IDs assigned to different user agent types. `g_uaTy` field of counter records referring to these IDs.'
+          type: object
+          properties:
+            <numericalId>:
+              type: string
+              example: '<the user agent type>'
+        tileGroupPath:
+          description: 'This entry is present only if you requested `groupBy=tileGroupPath` - so break down by tile group paths - in your request. In this case the keys in this object are numerical IDs assigned to different user agent types. `g_tGP` field of counter records referring to these IDs.'
+          type: object
+          properties:
+            <numericalId>:
+              type: string
+              example: '<tile group path>'
+
+
+    TileEventCountersClass:
+      type: object
+      description: >
+                    This is a set of event counters Keytiles collected for the Tile.  
+                      
+                    Given the fact you might get lots of lots of classes like this in the response the field names are really
+                    shortend to save space. Downside of this is being less human readable unfortunately.  
+                       
+                    There are two major type of fields in this object:  
+                     * "g_" prefixed fields: These are "groupBy" values describing to which group the counters belong to.
+                     * "c_" prefixed fields: These are "counter" fields which always giving you "how many times" something has happened.  
+                      
+                    Please note: to shorten the response size further only those "counter" fields are returned who's value is not 0! So for example 
+                    even if you requested `interest=referrerCounts` (so "c_rf*" fields should be added) if "c_rfSe" will not be there if visits from "search"
+                    referrer measured 0.
+      properties:
+        g_tId:
+          type: integer
+          description: numerical ID - Refers to the time interval defined in section `/groupByValues/time` this set of counters belongs to.
+          x-keytiles-serialize-only-if-non-default: true
+        g_eTy:
+          type: integer
+          description: numerical ID - Refers to the eventType defined in section `/groupByValues/eventType` this set of counters belongs to
+          x-keytiles-serialize-only-if-non-default: true
+        g_uaTy:
+          type: integer
+          description: numerical ID - Refers to the userAgent type defined in section `/groupByValues/userAgentType` this set of counters belongs to
+          x-keytiles-serialize-only-if-non-default: true
+        g_vTy:
+          type: integer
+          description: numerical ID - Refers to the visitor type defined in section `/groupByValues/visitorType` this set of counters belongs to
+          x-keytiles-serialize-only-if-non-default: true
+        g_tTy:
+          type: integer
+          description: numerical ID - Refers to the tile type defined in section `/groupByValues/tileType` this set of counters belongs to
+          x-keytiles-serialize-only-if-non-default: true
+        g_tLn:
+          type: string
+          example: en
+          description: tileLanguage - the language version (translation) of the Tile
+          x-keytiles-serialize-only-if-non-default: true
+        g_tsTy:
+          type: string
+          example: social
+          description: trafficSourceType - the visitor started his visit from this traffic source type
+          x-keytiles-serialize-only-if-non-default: true
+        g_tsNa:
+          type: string
+          example: Facebook
+          description: trafficSourceName - the visitor started his visit from this traffic source 
+          x-keytiles-serialize-only-if-non-default: true
+        g_caId:
+          type: string
+          example: Facebook
+          description: campaign Id - the visitor started his visit from this campaign 
+          x-keytiles-serialize-only-if-non-default: true
+          
+        c_evT:
+          type: integer
+          format: int64
+          example: 146
+          description: 'eventCount Total: The total number of times the event occured in the time range. This field is always present.'
+          x-keytiles-serialize-only-if-non-default: true
+        c_evNew:
+          type: integer
+          format: int64
+          example: 146
+          description: 'eventCount - from New visitors: The number of times the event occured in the time range from visitors who are considered being New visitors. This field is present only if you requested "newVisitor" in the *interest* parameter.'
+          x-keytiles-serialize-only-if-non-default: true
+        c_evBnc:
+          type: integer
+          format: int64
+          example: 146
+          description: 'eventCount - from Bounce visitors: Number of "bounce" events on this tile in the time range. This field is present only if you requested "bounceVisitor" in the *interest* parameter.'
+          x-keytiles-serialize-only-if-non-default: true
+        c_evBncNew:
+          type: integer
+          format: int64
+          example: 146
+          description: 'eventCount - from Bounce and New visitors: Number of "bounce" events on this tile in the time range from visitors who are considered being New visitors. This field is present only if you requested "newVisitor,bounceVisitor" in the *interest* parameter.'
+          x-keytiles-serialize-only-if-non-default: true
+
+        c_rfDi:
+          type: integer
+          format: int64
+          example: 146
+          description: 'referrer - Direct: Number of events in the time range from visitors arrived to this tile directly. This field is present only if you requested "referrerCounts" in the *interest* parameter.'      
+          x-keytiles-serialize-only-if-non-default: true
+        c_rfSe:
+          type: integer
+          format: int64
+          example: 146
+          description: 'referrer - from Search: Number of events in the time range from visitors arrived to this tile from a Search engine (Google, Bing, etc). This field is present only if you requested "referrerCounts" in the *interest* parameter.'
+          x-keytiles-serialize-only-if-non-default: true
+        c_rfSo:
+          type: integer
+          format: int64
+          example: 146
+          description: 'referrer - from Social: Number of events in the time range from visitors arrived to this tile from a Social (Facebook, LinkedIn, etc). This field is present only if you requested "referrerCounts" in the *interest* parameter.'
+          x-keytiles-serialize-only-if-non-default: true
+        c_rfLi:
+          type: integer
+          format: int64
+          example: 146
+          description: 'referrer - from Link: Number of events in the time range from visitors arrived to this tile from an extarnal website (link) which is not Search or Social site. This field is present only if you requested "referrerCounts" in the *interest* parameter.'
+          x-keytiles-serialize-only-if-non-default: true
+        c_rfCa:
+          type: integer
+          format: int64
+          example: 146
+          description: 'referrer - Campaign: Number of events in the time range from visitors arrived to this tile from a Campaign. This field is present only if you requested "referrerCounts" in the *interest* parameter.'
+          x-keytiles-serialize-only-if-non-default: true
+
+        c_vsSt:
+          type: integer
+          format: int64
+          example: 146
+          description: 'visitSessionStarted: Indicates how many visits started on this tile in the time range. This field is present only if you requested "visitSession" in the *interest* parameter.'      
+          x-keytiles-serialize-only-if-non-default: true
+        c_noVs:
+          type: integer
+          format: int64
+          example: 146
+          description: >
+                        noVisitSession: Indicates how many events occured in the time range done by visitors where we do know exactly we are not able to build visitSession for that visitor.  
+                          
+                        This happens when the inbound hit request (see the Hit collection API for more details here!) did not have *uniqueWebClientId*
+                        nor *pseudoUniqueWebClientId* values provided. If your visitor did not agree to Terms and Conditions Keytiles is allowed to
+                        apply a mechanism which is recognizing somehow his device this is the case for sure.
+                          
+                        It is good to know how many times the event occured from visitors like this because this has a key impact on the statistics
+                        Keytiles can collect. For example events generated by visits where Keytiles can not build a visitSession would be always
+                        "New" and "Bounce" visits - just to mention one. You could find more details about this topic on our website or just ask
+                        our Support channels if you want to know more.  
+                          
+                        For here to put it short: if this number gets significantly high compared to the "c_evT" value then you might have homework to do
+                        on your side to make your Keytiles stats better.
+          x-keytiles-serialize-only-if-non-default: true
+
+          
+    # note: model generation made mistake here: own added properties were missing
+    # googling lead here: https://github.com/swagger-api/swagger-core/issues/1601
+    # thats the reason why inheritance looks like this
+    ExternalReferrerCountersResponseClass:
+      allOf:
+      - $ref: 'common-types-v2.yaml#/components/schemas/ContainerQueryRangeResponseClass'    
+      type: object
+      properties:
+        search:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExternalReferrerClass'
+          description: "Referrers categorized into 'Search' type"
+        social:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExternalReferrerClass'
+          description: "Referrers categorized into 'Social' type"
+        link:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExternalReferrerClass'
+          description: "External referrers who are not 'Search' neither 'Social' are going into this category"
+
+          
+    ExternalReferrerClass:
+      type: object
+      properties:
+        name:
+          type: string
+          description: "The name of the referrer like Google, Facebook, etc."
+        url:
+          type: string
+          description: "The url we have seen the visitor coming from"
+        countersPerInterval:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExternalReferrerCountersClass'
+          
+    ExternalReferrerCountersClass:
+      type: object
+      properties:
+        intervalId:
+          type: integer
+          description: >
+                    Refers to the interval defined in section `/resolutionIntervals` this set of counters belongs to
+        entryCount:
+          type: integer
+          format: int64
+          example: 146
+          description: "Number of visits arrived from this referrer"
+          x-keytiles-serialize-only-if-non-default: true
+
+          
+    ExternalReferrerCategoryEnum:
+      type: string
+      enum: [search, social, link]
+      description: "Possible values for external referrer category"
+      
+    ReferrerCategoryEnum:
+      type: string
+      enum: [direct, search, social, link, internal]
+      description: "Possible values for referrer category"
+
+
+    
