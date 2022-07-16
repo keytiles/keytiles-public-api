@@ -6,19 +6,6 @@
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-    <pluginRepositories>
-		<pluginRepository>
-			<id>keytiles-public-releases</id>
-			<name>Keytiles Nexus Public Releases repo</name>
-			<url>https://nexus.keytiles.com/nexus/content/repositories/public-releases/</url>
-		</pluginRepository>
-		<pluginRepository>
-			<id>keytiles-public-snapshots</id>
-			<name>Keytiles Nexus Public Snapshots repo</name>
-			<url>https://nexus.keytiles.com/nexus/content/repositories/public-snapshots/</url>
-		</pluginRepository>
-    </pluginRepositories>
-
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
@@ -36,6 +23,33 @@
 		<maven.swagger-codegen.plugin>3.0.34</maven.swagger-codegen.plugin>
 
 	</properties>
+
+    <pluginRepositories>
+		<pluginRepository>
+			<id>keytiles-public-releases</id>
+			<name>Keytiles Nexus Public Releases repo</name>
+			<url>https://nexus.keytiles.com/nexus/content/repositories/public-releases/</url>
+		</pluginRepository>
+		<pluginRepository>
+			<id>keytiles-public-snapshots</id>
+			<name>Keytiles Nexus Public Snapshots repo</name>
+			<url>https://nexus.keytiles.com/nexus/content/repositories/public-snapshots/</url>
+		</pluginRepository>
+    </pluginRepositories>
+
+   	<distributionManagement>
+		<repository>
+			<id>keytiles-public-releases</id>
+			<name>Keytiles Nexus Public Releases repo</name>
+			<url>https://nexus.keytiles.com/nexus/content/repositories/public-releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>keytiles-public-snapshots</id>
+			<name>Keytiles Nexus Public Snapshots repo</name>
+			<url>https://nexus.keytiles.com/nexus/content/repositories/public-snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
+
 
 	<dependencies>
 
