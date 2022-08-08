@@ -206,66 +206,66 @@ paths:
                 $ref: 'common-types-v2.yaml#/components/schemas/ErrorMessageResponseClass'
 
 
-  '/v2/stat/webhits/events/{containerId}/tiles/aggregatedLevel0CountersPerInterval':
-  
-    get:
-      summary: "Similar to '/v2/stat/webhits/events/{containerId}/tiles' query but this is ommitting tile based granularity so /tiles array will not be present."
-      tags:
-      - WebHits - Tile events
-      description: >
-                This query is perfect to visualize traffic summary without tile level break down. So this query is cheaper and executes faster. 
-                  
-                You might further specify your interest with the below parameters.
-      parameters:
-        - $ref: 'common-types-v2.yaml#/components/parameters/containerId'
-        - $ref: 'common-types-v2.yaml#/components/parameters/fromTimestamp'
-        - $ref: 'common-types-v2.yaml#/components/parameters/toTimestamp'
-        - $ref: '#/components/parameters/eventTypesOnly'
-        - $ref: '#/components/parameters/tileIdsOnly'
-        - $ref: '#/components/parameters/tileTypesOnly'
-        - $ref: '#/components/parameters/userAgentTypesOnly'
-        - $ref: '#/components/parameters/tileGroupPathMatchingOnly'
-        - $ref: '#/components/parameters/visitorTypesOnly'
-        - $ref: '#/components/parameters/tileLanguagesOnly'
-        - $ref: '#/components/parameters/trafficSourceTypesOnly'
-        - $ref: '#/components/parameters/trafficSourceNamesOnly'
-        - $ref: '#/components/parameters/interest'
-        - $ref: '#/components/parameters/groupBy'
-
-      security:
-      - basicAuth: []
-
-      responses:
-        '200':
-          description: "OK response"
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AggregatedLevel0TileEventCountersResponseClass'
-        '404':
-          description: "The given containerId does not exist"
-          content:
-            application/json:
-              schema:
-                $ref: 'common-types-v2.yaml#/components/schemas/ErrorMessageResponseClass'
-        '401':
-          description: "Authentication failed - you provided invalid credentials or not provided credentials at all"
-          content:
-            application/json:
-              schema:
-                $ref: 'common-types-v2.yaml#/components/schemas/ErrorMessageResponseClass'
-        '403':
-          description: "You have no permission to read statistics of the given Container"
-          content:
-            application/json:
-              schema:
-                $ref: 'common-types-v2.yaml#/components/schemas/ErrorMessageResponseClass'
-        '400':
-          description: "Something was wrong with the request"
-          content:
-            application/json:
-              schema:
-                $ref: 'common-types-v2.yaml#/components/schemas/ErrorMessageResponseClass'
+#  '/v2/stat/webhits/events/{containerId}/tiles/aggregatedLevel0CountersPerInterval':
+#  
+#    get:
+#      summary: "Similar to '/v2/stat/webhits/events/{containerId}/tiles' query but this is ommitting tile based granularity so /tiles array will not be present."
+#      tags:
+#      - WebHits - Tile events
+#      description: >
+#                This query is perfect to visualize traffic summary without tile level break down. So this query is cheaper and executes faster. 
+#                  
+#                You might further specify your interest with the below parameters.
+#      parameters:
+#        - $ref: 'common-types-v2.yaml#/components/parameters/containerId'
+#        - $ref: 'common-types-v2.yaml#/components/parameters/fromTimestamp'
+#        - $ref: 'common-types-v2.yaml#/components/parameters/toTimestamp'
+#        - $ref: '#/components/parameters/eventTypesOnly'
+#        - $ref: '#/components/parameters/tileIdsOnly'
+#        - $ref: '#/components/parameters/tileTypesOnly'
+#        - $ref: '#/components/parameters/userAgentTypesOnly'
+#        - $ref: '#/components/parameters/tileGroupPathMatchingOnly'
+#        - $ref: '#/components/parameters/visitorTypesOnly'
+#        - $ref: '#/components/parameters/tileLanguagesOnly'
+#        - $ref: '#/components/parameters/trafficSourceTypesOnly'
+#        - $ref: '#/components/parameters/trafficSourceNamesOnly'
+#        - $ref: '#/components/parameters/interest'
+#        - $ref: '#/components/parameters/groupBy'
+#
+#      security:
+#      - basicAuth: []
+#
+#      responses:
+#        '200':
+#          description: "OK response"
+#          content:
+#            application/json:
+#              schema:
+#                $ref: '#/components/schemas/AggregatedLevel0TileEventCountersResponseClass'
+#        '404':
+#          description: "The given containerId does not exist"
+#          content:
+#            application/json:
+#              schema:
+#                $ref: 'common-types-v2.yaml#/components/schemas/ErrorMessageResponseClass'
+#        '401':
+#          description: "Authentication failed - you provided invalid credentials or not provided credentials at all"
+#          content:
+#            application/json:
+#              schema:
+#                $ref: 'common-types-v2.yaml#/components/schemas/ErrorMessageResponseClass'
+#        '403':
+#          description: "You have no permission to read statistics of the given Container"
+#          content:
+#            application/json:
+#              schema:
+#                $ref: 'common-types-v2.yaml#/components/schemas/ErrorMessageResponseClass'
+#        '400':
+#          description: "Something was wrong with the request"
+#          content:
+#            application/json:
+#              schema:
+#                $ref: 'common-types-v2.yaml#/components/schemas/ErrorMessageResponseClass'
 
 
   '/v2/stat/webhits/view/{containerId}/external-referrers':
@@ -616,8 +616,8 @@ components:
         - $ref: 'common-types-v2.yaml#/components/schemas/ContainerQueryRangeResponseClass'    
       type: object
       properties:
-        groupByValues:
-          $ref: '#/components/schemas/GroupByTimeValueClass'
+        groupByMappings:
+          $ref: '#/components/schemas/GroupByTimeIntToNameIdMappingClass'
         writeTraffic:
           type: array
           items:
@@ -659,28 +659,34 @@ components:
         - $ref: 'common-types-v2.yaml#/components/schemas/ContainerQueryRangeResponseClass'    
       type: object
       properties:
-        groupByValues:
-          $ref: '#/components/schemas/GroupByValuesClass'
-        aggregatedLevel0Counters:
+        groupByMappings:
+          $ref: '#/components/schemas/GroupByIntToNameIdMappingsClass'
+        counterColumns:
+            $ref: '#/components/schemas/TileEventCountersHeaderClass'
+        counterRows:
           type: array
           items:
-            $ref: '#/components/schemas/TileEventCountersClass'
+            $ref: '#/components/schemas/TileEventCountersDataClass'
+#        aggregatedLevel0Counters:
+#          type: array
+#          items:
+#            $ref: '#/components/schemas/TileEventCountersClass'
         tiles:
           type: array
           items:
             $ref: '#/components/schemas/TileClass'
 
-    AggregatedLevel0TileEventCountersResponseClass:
-      allOf:
-        - $ref: 'common-types-v2.yaml#/components/schemas/ContainerQueryRangeResponseClass'    
-      type: object
-      properties:
-        groupByValues:
-          $ref: '#/components/schemas/GroupByValuesClass'
-        aggregatedLevel0Counters:
-          type: array
-          items:
-            $ref: '#/components/schemas/TileEventCountersClass'
+#    AggregatedLevel0TileEventCountersResponseClass:
+#      allOf:
+#        - $ref: 'common-types-v2.yaml#/components/schemas/ContainerQueryRangeResponseClass'    
+#      type: object
+#      properties:
+#        groupByValues:
+#          $ref: '#/components/schemas/GroupByValuesClass'
+#        aggregatedLevel0Counters:
+#          type: array
+#          items:
+#            $ref: '#/components/schemas/TileEventCountersClass'
     
     TileClass:
       type: object
@@ -701,23 +707,27 @@ components:
         type:
           $ref: 'common-types-v2.yaml#/components/schemas/TileTypeEnum'
         tileGroupPaths:
-          type: array
-          items:
-            $ref: '#/components/schemas/TileGroupPathClass'
+          type: object
+          properties:
+            <tileGroupPathNumericalId>:
+              $ref: '#/components/schemas/TileGroupPathClass'
 
           
     TileGroupPathClass:
       type: object
+#      required:
+#      - pathId
       properties:
-        pathId:
-          type: integer
-          description: "Refers to the tile group path defined in section `/groupByValues/tileGroupPath` this record belongs to /groupByValues/tileGroupPath section"
-        counters:
-          type: array
-          items:
-            $ref: '#/components/schemas/TileEventCountersClass'
+#        pathId:
+#          type: integer
+#          description: "Refers to the tile group path defined in section `/groupByValues/tileGroupPath` this record belongs to /groupByValues/tileGroupPath section"
+#        counters:
+#          type: array
+#          items:
+#            $ref: '#/components/schemas/TileEventCountersClass'
         urls:
           type: array
+          default: ['a', 'b']
           items:
             type: string
             example: "https://mywebsite.com/politics/ausland"
@@ -743,65 +753,88 @@ components:
           example: 100
 
     GroupByIntToStrMappingClass:
+      nullable: true
       type: object
-      properties:
-        <numericalId>:
-          type: integer
-          description: 'The assigned integer ID'
-        value:
-          type: string
-          description: 'The mapped String value belongs to this numerical ID'
+      additionalProperties:
+        type: string
+        example: '<the name>'
 
-
-    GroupByTimeValueClass:
+    GroupByTimeIntToNameIdMappingClass:
       type: object
       description: >
                     This object gives you concrete values for "groupByTime" criteria if you requested break down using the `groupByTime` parameter. 
+      x-keytiles-serialize-only-if-non-default-properties:
+      - time
       properties:
         time:
           description: 'This entry is present only if you requested `groupBy=time:x` - so break down by time intervals - in your request. The keys in this object are numerical IDs of time intervals while values giving you attributes of each intervals. `g_tId` field of counter records referring to these IDs.'
           type: object
-          properties:
-            <numericalId>:
-              $ref: '#/components/schemas/GroupByTimeIntervalClass'
+          nullable: true
+          additionalProperties:
+            $ref: '#/components/schemas/GroupByTimeIntervalClass'
 
 
-    GroupByValuesClass:
+    GroupByIntToNameIdMappingsClass:
       allOf:
-      - $ref: '#/components/schemas/GroupByTimeValueClass'    
+      - $ref: '#/components/schemas/GroupByTimeIntToNameIdMappingClass'    
       type: object
       description: >
                     This object gives you concrete values for "groupBy" criteria if you requested data groups using the `groupBy` parameter. 
+      x-keytiles-serialize-only-if-non-default-properties:
+      - eventType
+      - visitorType
+      - userAgentType
+      - tileId
+      - tileGroupPath
       properties:
         eventType:
-          description: 'This entry is present only if you requested `groupBy=eventType` - so break down by event types - in your request. The keys in this object are numerical IDs assigned to different event types. `g_eTy` field of counter records referring to these IDs.'
-          type: object
-          properties:
-            <numericalId>:
-              type: string
-              example: '<name of event>'
+          $ref: '#/components/schemas/GroupByIntToStrMappingClass'
         visitorType:
-          description: 'This entry is present only if you requested `groupBy=visitorType` - so break down by visitor types - in your request. In this case the keys in this object are numerical IDs assigned to different visitor types. `g_vTy` field of counter records referring to these IDs.'
-          type: object
-          properties:
-            <numericalId>:
-              type: string
-              example: '<the visitor type>'
+          $ref: '#/components/schemas/GroupByIntToStrMappingClass'
         userAgentType:
-          description: 'This entry is present only if you requested `groupBy=userAgentType` - so break down by user agent types - in your request. In this case the keys in this object are numerical IDs assigned to different user agent types. `g_uaTy` field of counter records referring to these IDs.'
-          type: object
-          properties:
-            <numericalId>:
-              type: string
-              example: '<the user agent type>'
+          $ref: '#/components/schemas/GroupByIntToStrMappingClass'
+        tileId:
+          $ref: '#/components/schemas/GroupByIntToStrMappingClass'
         tileGroupPath:
-          description: 'This entry is present only if you requested `groupBy=tileGroupPath` - so break down by tile group paths - in your request. In this case the keys in this object are numerical IDs assigned to different user agent types. `g_tGP` field of counter records referring to these IDs.'
-          type: object
-          properties:
-            <numericalId>:
-              type: string
-              example: '<tile group path>'
+          $ref: '#/components/schemas/GroupByIntToStrMappingClass'
 
+
+    TileEventCountersHeaderClass:
+      type: object
+      description: >
+                    Provides 
+      properties:
+        groupByColumns:
+          type: array
+          items:
+            type: string
+          example: ['time', 'eventType', 'visitorType', 'userAgentType', 'tileId', 'tileGroupPath']
+          nullable: false
+        counterColumns:
+          type: array
+          items:
+            type: string
+          example: ['eventCountTotal', 'refSearch', 'refSocial', 'refLink', 'refDirect', 'refCampaign', 'eventCountNoSession', 'eventCountNewVisitor', 'eventCountBounceVisitor', 'eventCountBounceNewVisitor', 'visitSessionStartedCount', 'visitSessionFirstOfTypeCount']
+          nullable: false
+
+
+    TileEventCountersDataClass:
+      type: object
+      required:
+      - counters
+      properties:
+        groupBy:
+          type: array
+          items:
+            type: number
+#          example: [3,5,2]
+          nullable: false
+        counters:
+          type: array
+          items:
+            type: number
+#          example: [99,100,5]
+          nullable: false
 
     TileEventCountersClass:
       type: object
@@ -818,110 +851,97 @@ components:
                     Please note: to shorten the response size further only those "counter" fields are returned who's value is not 0! So for example 
                     even if you requested `interest=referrerCounts` (so "c_rf*" fields should be added) if "c_rfSe" will not be there if visits from "search"
                     referrer measured 0.
+      x-keytiles-serialize-only-if-non-default-properties:
+      - g_tId
+      - g_eTy
+      - g_uaTy
+      - g_vTy
+      # and so on...
       properties:
         g_tId:
           type: integer
           description: numerical ID - Refers to the time interval defined in section `/groupByValues/time` this set of counters belongs to.
-          x-keytiles-serialize-only-if-non-default: true
         g_eTy:
           type: integer
           description: numerical ID - Refers to the eventType defined in section `/groupByValues/eventType` this set of counters belongs to
-          x-keytiles-serialize-only-if-non-default: true
         g_uaTy:
           type: integer
           description: numerical ID - Refers to the userAgent type defined in section `/groupByValues/userAgentType` this set of counters belongs to
-          x-keytiles-serialize-only-if-non-default: true
         g_vTy:
           type: integer
           description: numerical ID - Refers to the visitor type defined in section `/groupByValues/visitorType` this set of counters belongs to
-          x-keytiles-serialize-only-if-non-default: true
         g_tTy:
           type: integer
           description: numerical ID - Refers to the tile type defined in section `/groupByValues/tileType` this set of counters belongs to
-          x-keytiles-serialize-only-if-non-default: true
         g_tLn:
           type: string
           example: en
           description: tileLanguage - the language version (translation) of the Tile
-          x-keytiles-serialize-only-if-non-default: true
         g_tsTy:
           type: string
           example: social
           description: trafficSourceType - the visitor started his visit from this traffic source type
-          x-keytiles-serialize-only-if-non-default: true
         g_tsNa:
           type: string
           example: Facebook
           description: trafficSourceName - the visitor started his visit from this traffic source 
-          x-keytiles-serialize-only-if-non-default: true
         g_caId:
           type: string
           example: Facebook
           description: campaign Id - the visitor started his visit from this campaign 
-          x-keytiles-serialize-only-if-non-default: true
           
         c_evT:
           type: integer
           format: int64
           example: 146
           description: 'eventCount Total: The total number of times the event occured in the time range. This field is always present.'
-          x-keytiles-serialize-only-if-non-default: true
         c_evNew:
           type: integer
           format: int64
           example: 146
           description: 'eventCount - from New visitors: The number of times the event occured in the time range from visitors who are considered being New visitors. This field is present only if you requested "newVisitor" in the *interest* parameter.'
-          x-keytiles-serialize-only-if-non-default: true
         c_evBnc:
           type: integer
           format: int64
           example: 146
           description: 'eventCount - from Bounce visitors: Number of "bounce" events on this tile in the time range. This field is present only if you requested "bounceVisitor" in the *interest* parameter.'
-          x-keytiles-serialize-only-if-non-default: true
         c_evBncNew:
           type: integer
           format: int64
           example: 146
           description: 'eventCount - from Bounce and New visitors: Number of "bounce" events on this tile in the time range from visitors who are considered being New visitors. This field is present only if you requested "newVisitor,bounceVisitor" in the *interest* parameter.'
-          x-keytiles-serialize-only-if-non-default: true
 
         c_rfDi:
           type: integer
           format: int64
           example: 146
           description: 'referrer - Direct: Number of events in the time range from visitors arrived to this tile directly. This field is present only if you requested "referrerCounts" in the *interest* parameter.'      
-          x-keytiles-serialize-only-if-non-default: true
         c_rfSe:
           type: integer
           format: int64
           example: 146
           description: 'referrer - from Search: Number of events in the time range from visitors arrived to this tile from a Search engine (Google, Bing, etc). This field is present only if you requested "referrerCounts" in the *interest* parameter.'
-          x-keytiles-serialize-only-if-non-default: true
         c_rfSo:
           type: integer
           format: int64
           example: 146
           description: 'referrer - from Social: Number of events in the time range from visitors arrived to this tile from a Social (Facebook, LinkedIn, etc). This field is present only if you requested "referrerCounts" in the *interest* parameter.'
-          x-keytiles-serialize-only-if-non-default: true
         c_rfLi:
           type: integer
           format: int64
           example: 146
           description: 'referrer - from Link: Number of events in the time range from visitors arrived to this tile from an extarnal website (link) which is not Search or Social site. This field is present only if you requested "referrerCounts" in the *interest* parameter.'
-          x-keytiles-serialize-only-if-non-default: true
         c_rfCa:
           type: integer
           format: int64
           example: 146
           description: 'referrer - Campaign: Number of events in the time range from visitors arrived to this tile from a Campaign. This field is present only if you requested "referrerCounts" in the *interest* parameter.'
-          x-keytiles-serialize-only-if-non-default: true
 
         c_vsSt:
           type: integer
           format: int64
           example: 146
           description: 'visitSessionStarted: Indicates how many visits started on this tile in the time range. This field is present only if you requested "visitSession" in the *interest* parameter.'      
-          x-keytiles-serialize-only-if-non-default: true
         c_noVs:
           type: integer
           format: int64
@@ -940,7 +960,6 @@ components:
                           
                         For here to put it short: if this number gets significantly high compared to the "c_evT" value then you might have homework to do
                         on your side to make your Keytiles stats better.
-          x-keytiles-serialize-only-if-non-default: true
 
           
     # note: model generation made mistake here: own added properties were missing
@@ -984,6 +1003,8 @@ components:
           
     ExternalReferrerCountersClass:
       type: object
+      x-keytiles-serialize-only-if-non-default-properties:
+      - entryCount
       properties:
         intervalId:
           type: integer
@@ -994,8 +1015,6 @@ components:
           format: int64
           example: 146
           description: "Number of visits arrived from this referrer"
-          x-keytiles-serialize-only-if-non-default: true
-
           
     ExternalReferrerCategoryEnum:
       type: string

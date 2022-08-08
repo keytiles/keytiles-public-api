@@ -14,7 +14,7 @@
 
 		<jackson.version>2.13.0</jackson.version>
 		
-		<keytiles.codegen.version>1.0.0</keytiles.codegen.version>
+		<keytiles.codegen.version>2.0.0-SNAPSHOT</keytiles.codegen.version>
 
 		<!-- Plugins -->
 		<maven.release.plugin>2.5.3</maven.release.plugin>
@@ -141,6 +141,36 @@
 				</dependencies>
 				
 				<executions>
+				
+					<execution>
+						<id>common-types-v1</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<inputSpec>${project.basedir}/src/main/openapi/common-types-v1.yaml</inputSpec>
+							<output>${project.basedir}/target/generated-sources/swagger/</output>
+							<modelPackage>com.keytiles.api.model.common.v1</modelPackage>
+							<language>com.keytiles.swagger.codegen.KeytilesJavaCodegen</language>
+							<!-- <library>resttemplate</library> -->
+							<generateApis>false</generateApis>
+							<generateModels>true</generateModels>
+							<generateApiTests>false</generateApiTests>
+							<generateApiDocumentation>false</generateApiDocumentation>
+							<generateModelTests>false</generateModelTests>
+							<generateModelDocumentation>false</generateModelDocumentation>
+							<generateSupportingFiles>false</generateSupportingFiles>
+							<configOptions>
+								<mavenExecutionId>common-types-v1</mavenExecutionId>
+								<addExplanationsToModel>false</addExplanationsToModel>
+								
+								<interfaceOnly>true</interfaceOnly>
+								<dateLibrary>java8</dateLibrary>
+							</configOptions>
+						</configuration>
+					</execution>
+									
 					<execution>
 						<id>common-types-v2</id>
 						<phase>generate-sources</phase>
@@ -162,7 +192,6 @@
 							<generateSupportingFiles>false</generateSupportingFiles>
 							<configOptions>
 								<mavenExecutionId>common-types-v2</mavenExecutionId>
-								<nullableTagDefaultValue>true</nullableTagDefaultValue>
 								<addExplanationsToModel>false</addExplanationsToModel>
 								
 								<interfaceOnly>true</interfaceOnly>
@@ -171,6 +200,111 @@
 						</configuration>
 					</execution>				
 
+					<execution>
+						<id>hitcollection-api-v1</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<inputSpec>${project.basedir}/src/main/openapi/hit-collection-api-v1.yaml</inputSpec>
+							<output>${project.basedir}/target/generated-sources/swagger/</output>
+							<modelPackage>com.keytiles.api.model.hitcollection.v1</modelPackage>
+							<language>com.keytiles.swagger.codegen.KeytilesJavaCodegen</language>
+							<!-- <library>resttemplate</library> -->
+							<library>resttemplate</library>
+							<generateApis>false</generateApis>
+							<generateModels>true</generateModels>
+							<instantiationTypes></instantiationTypes>
+							<generateApiTests>false</generateApiTests>
+							<generateApiDocumentation>false</generateApiDocumentation>
+							<generateModelTests>false</generateModelTests>
+							<generateModelDocumentation>false</generateModelDocumentation>
+							<generateSupportingFiles>false</generateSupportingFiles>
+							<configOptions>
+								<mavenExecutionId>hitcollection-api-v1</mavenExecutionId>
+								<addExplanationsToModel>false</addExplanationsToModel>
+								<!-- warning! order really matters here! see README! -->
+								<addSchemaModelsToImportMappingsFromMavenExecutions>common-types-v1</addSchemaModelsToImportMappingsFromMavenExecutions>
+								<!-- default: true -->
+								<!-- excludeImportMappingsFromGeneration>false</excludeImportMappingsFromGeneration> -->
+								
+								<interfaceOnly>true</interfaceOnly>
+								<dateLibrary>java8</dateLibrary>
+							</configOptions>
+						</configuration>
+					</execution>
+					
+					<execution>
+						<id>management-api-v1</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<inputSpec>${project.basedir}/src/main/openapi/management-api-v1.yaml</inputSpec>
+							<output>${project.basedir}/target/generated-sources/swagger/</output>
+							<modelPackage>com.keytiles.api.model.management.v1</modelPackage>
+							<language>com.keytiles.swagger.codegen.KeytilesJavaCodegen</language>
+							<!-- <library>resttemplate</library> -->
+							<library>resttemplate</library>
+							<generateApis>false</generateApis>
+							<generateModels>true</generateModels>
+							<instantiationTypes></instantiationTypes>
+							<generateApiTests>false</generateApiTests>
+							<generateApiDocumentation>false</generateApiDocumentation>
+							<generateModelTests>false</generateModelTests>
+							<generateModelDocumentation>false</generateModelDocumentation>
+							<generateSupportingFiles>false</generateSupportingFiles>
+							<configOptions>
+								<mavenExecutionId>management-api-v1</mavenExecutionId>
+								<addExplanationsToModel>false</addExplanationsToModel>
+								<!-- warning! order really matters here! see README! -->
+								<addSchemaModelsToImportMappingsFromMavenExecutions>common-types-v1</addSchemaModelsToImportMappingsFromMavenExecutions>
+								<!-- default: true -->
+								<!-- excludeImportMappingsFromGeneration>false</excludeImportMappingsFromGeneration> -->
+								
+								<interfaceOnly>true</interfaceOnly>
+								<dateLibrary>java8</dateLibrary>
+							</configOptions>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>stat-api-v1</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<inputSpec>${project.basedir}/src/main/openapi/stat-api-v1.yaml</inputSpec>
+							<output>${project.basedir}/target/generated-sources/swagger/</output>
+							<modelPackage>com.keytiles.api.model.stat.v1</modelPackage>
+							<language>com.keytiles.swagger.codegen.KeytilesJavaCodegen</language>
+							<!-- <library>resttemplate</library> -->
+							<library>resttemplate</library>
+							<generateApis>false</generateApis>
+							<generateModels>true</generateModels>
+							<instantiationTypes></instantiationTypes>
+							<generateApiTests>false</generateApiTests>
+							<generateApiDocumentation>false</generateApiDocumentation>
+							<generateModelTests>false</generateModelTests>
+							<generateModelDocumentation>false</generateModelDocumentation>
+							<generateSupportingFiles>false</generateSupportingFiles>
+							<configOptions>
+								<mavenExecutionId>stat-api-v1</mavenExecutionId>
+								<addExplanationsToModel>true</addExplanationsToModel>
+								<!-- warning! order really matters here! see README! -->
+								<addSchemaModelsToImportMappingsFromMavenExecutions>common-types-v1</addSchemaModelsToImportMappingsFromMavenExecutions>
+								<!-- default: true -->
+								<!-- excludeImportMappingsFromGeneration>false</excludeImportMappingsFromGeneration> -->
+								
+								<interfaceOnly>true</interfaceOnly>
+								<dateLibrary>java8</dateLibrary>
+							</configOptions>
+						</configuration>
+					</execution>
+										
 					<execution>
 						<id>stat-api-v2</id>
 						<phase>generate-sources</phase>
@@ -194,11 +328,11 @@
 							<generateSupportingFiles>false</generateSupportingFiles>
 							<configOptions>
 								<mavenExecutionId>stat-api-v2</mavenExecutionId>
+								<addExplanationsToModel>true</addExplanationsToModel>
 								<!-- warning! order really matters here! see README! -->
 								<addSchemaModelsToImportMappingsFromMavenExecutions>common-types-v2</addSchemaModelsToImportMappingsFromMavenExecutions>
 								<!-- default: true -->
 								<!-- excludeImportMappingsFromGeneration>false</excludeImportMappingsFromGeneration> -->
-								<nullableTagDefaultValue>true</nullableTagDefaultValue>
 								
 								<interfaceOnly>true</interfaceOnly>
 								<dateLibrary>java8</dateLibrary>

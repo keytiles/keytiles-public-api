@@ -112,7 +112,7 @@ components:
     # thats the reason why inheritance looks like this
     IntervalBasedResponseWithResolutionClass:
       allOf:
-        - $ref: '#/components/schemas/IntervalBasedResponseClass'    
+      - $ref: '#/components/schemas/IntervalBasedResponseClass'    
       type: object
       properties:
         resolutionIntervals:

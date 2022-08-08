@@ -132,25 +132,25 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
         '401':
           description: "Authentication failed - you provided invalid credentials or not provided credentials at all"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
         '403':
           description: "You have no permission to read statistics of the given Container"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
         '400':
           description: "Something was wrong with the request"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
 
 
   '/v1/stat/counters/{containerId}/tiles/aggregatedLevel0CountersPerInterval':
@@ -191,25 +191,25 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
         '401':
           description: "Authentication failed - you provided invalid credentials or not provided credentials at all"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
         '403':
           description: "You have no permission to read statistics of the given Container"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
         '400':
           description: "Something was wrong with the request"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
 
 
   '/v1/stat/counters/{containerId}/external-referrers':
@@ -256,25 +256,25 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
         '401':
           description: "Authentication failed - you provided invalid credentials or not provided credentials at all"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
         '403':
           description: "You have no permission to read statistics of the given Container"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
         '400':
           description: "Something was wrong with the request"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
 
 
   '/v1/stat/counters/{containerId}/visitors/environment':
@@ -308,25 +308,25 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
         '401':
           description: "Authentication failed - you provided invalid credentials or not provided credentials at all"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
         '403':
           description: "You have no permission to read statistics of the given Container"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
         '400':
           description: "Something was wrong with the request"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
 
   '/v1/stat/counters/{containerId}/visitors/behavior':
   
@@ -359,25 +359,25 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
         '401':
           description: "Authentication failed - you provided invalid credentials or not provided credentials at all"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
         '403':
           description: "You have no permission to read statistics of the given Container"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
         '400':
           description: "Something was wrong with the request"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
 
 
   '/v1/system/clock':
@@ -576,17 +576,17 @@ components:
     # thats the reason why inheritance looks like this
     TileCountersResponseClass:
       allOf:
-        - $ref: 'common-types-v1.0.yaml#/components/schemas/IntervalBasedResponseWithResolutionClass'    
-        - type: object
-        - properties:
-            aggregatedLevel0CountersPerInterval:
-              type: array
-              items:
-                $ref: '#/components/schemas/TileCountersForIntervalClass'
-            tiles:
-              type: array
-              items:
-                $ref: '#/components/schemas/TileClass'
+        - $ref: 'common-types-v1.yaml#/components/schemas/IntervalBasedResponseWithResolutionClass'    
+      type: object
+      properties:
+        aggregatedLevel0CountersPerInterval:
+          type: array
+          items:
+            $ref: '#/components/schemas/TileCountersForIntervalClass'
+        tiles:
+          type: array
+          items:
+            $ref: '#/components/schemas/TileClass'
 
     
     TileClass:
@@ -606,7 +606,7 @@ components:
           description: "When did we registered the last pageview for this tile? UNIX timestamp (seconds since Epoch) in UTC."
           example: 1543355708
         type:
-          $ref: 'common-types-v1.0.yaml#/components/schemas/TileTypeEnum'
+          $ref: 'common-types-v1.yaml#/components/schemas/TileTypeEnum'
         tileGroupPaths:
           type: array
           items:
@@ -641,12 +641,12 @@ components:
     TileCountersForIntervalClass:
       allOf:
         - $ref: '#/components/schemas/TileCountersClass'    
-        - type: object
-        - properties:
-            intervalId:
-              type: integer
-              description: >
-                        Refers to the interval defined in section `/resolutionIntervals` this set of counters belongs to
+      type: object
+      properties:
+        intervalId:
+          type: integer
+          description: >
+                    Refers to the interval defined in section `/resolutionIntervals` this set of counters belongs to
 
     TileCountersClass:
       type: object
@@ -711,24 +711,24 @@ components:
     # thats the reason why inheritance looks like this
     ExternalReferrerCountersResponseClass:
       allOf:
-      - $ref: 'common-types-v1.0.yaml#/components/schemas/IntervalBasedResponseWithResolutionClass'    
-      - type: object
-      - properties:
-          search:
-            type: array
-            items:
-              $ref: '#/components/schemas/ExternalReferrerClass'
-            description: "Referrers categorized into 'Search' type"
-          social:
-            type: array
-            items:
-              $ref: '#/components/schemas/ExternalReferrerClass'
-            description: "Referrers categorized into 'Social' type"
-          link:
-            type: array
-            items:
-              $ref: '#/components/schemas/ExternalReferrerClass'
-            description: "External referrers who are not 'Search' neither 'Social' are going into this category"
+      - $ref: 'common-types-v1.yaml#/components/schemas/IntervalBasedResponseWithResolutionClass'    
+      type: object
+      properties:
+        search:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExternalReferrerClass'
+          description: "Referrers categorized into 'Search' type"
+        social:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExternalReferrerClass'
+          description: "Referrers categorized into 'Social' type"
+        link:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExternalReferrerClass'
+          description: "External referrers who are not 'Search' neither 'Social' are going into this category"
 
           
     ExternalReferrerClass:
@@ -775,41 +775,41 @@ components:
     # thats the reason why inheritance looks like this
     VisitorsEnvironmentResponseClass:
       allOf:
-      - $ref: 'common-types-v1.0.yaml#/components/schemas/IntervalBasedResponseClass'    
-      - type: object
-      - properties:
-          screenResolution:
-            type: array
-            items:
-              $ref: '#/components/schemas/ScreenResolutionCounterClass'
-            description: "Returns a list of counters showing different resolutions we captured and how many times each in the query range"
-          webClientLocale:
-            type: array
-            items:
-              $ref: '#/components/schemas/WebClientLocaleCounterClass'
-            description: "Returns a list of counters showing different locales of web clients we captured and how many times each in the query range"
-          operatingSystem:
-            type: array
-            items:
-              $ref: '#/components/schemas/OperatingSystemCounterClass'
-            description: "Returns a list of counters showing different operating systems we captured and how many times each in the query range"
-          webClient:
-            type: array
-            items:
-              $ref: '#/components/schemas/WebClientCounterClass'
-            description: "Returns a list of counters showing different operating systems we captured and how many times each in the query range"
-          cookieSupport:
-            type: object
-            description: "Shows you how many times we detected a visit session with Cookies enabled vs disabled"
-            properties:
-              cookiesEnabledCount:
-                type: integer
-                format: int64
-                example: 146
-              cookiesDisabledCount:
-                type: integer
-                format: int64
-                example: 146
+      - $ref: 'common-types-v1.yaml#/components/schemas/IntervalBasedResponseClass'    
+      type: object
+      properties:
+        screenResolution:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScreenResolutionCounterClass'
+          description: "Returns a list of counters showing different resolutions we captured and how many times each in the query range"
+        webClientLocale:
+          type: array
+          items:
+            $ref: '#/components/schemas/WebClientLocaleCounterClass'
+          description: "Returns a list of counters showing different locales of web clients we captured and how many times each in the query range"
+        operatingSystem:
+          type: array
+          items:
+            $ref: '#/components/schemas/OperatingSystemCounterClass'
+          description: "Returns a list of counters showing different operating systems we captured and how many times each in the query range"
+        webClient:
+          type: array
+          items:
+            $ref: '#/components/schemas/WebClientCounterClass'
+          description: "Returns a list of counters showing different operating systems we captured and how many times each in the query range"
+        cookieSupport:
+          type: object
+          description: "Shows you how many times we detected a visit session with Cookies enabled vs disabled"
+          properties:
+            cookiesEnabledCount:
+              type: integer
+              format: int64
+              example: 146
+            cookiesDisabledCount:
+              type: integer
+              format: int64
+              example: 146
 
 
     ScreenResolutionCounterClass:
@@ -870,19 +870,19 @@ components:
     # thats the reason why inheritance looks like this
     VisitorsBehaviorResponseClass:
       allOf:
-      - $ref: 'common-types-v1.0.yaml#/components/schemas/IntervalBasedResponseClass'    
-      - type: object
-      - properties:
-          browserTabs:
-            type: array
-            items:
-              $ref: '#/components/schemas/BrowserTabUsageStatClass'
-            description: "Shows you how many in parallel windows (browser tabs) your visitors typically using in 1 visit session"
-          visitSessions:
-            type: array
-            items:
-              $ref: '#/components/schemas/VisitSessionStatClass'
-            description: "Shows you how your visitors behaving during the visit sessions"
+      - $ref: 'common-types-v1.yaml#/components/schemas/IntervalBasedResponseClass'    
+      type: object
+      properties:
+        browserTabs:
+          type: array
+          items:
+            $ref: '#/components/schemas/BrowserTabUsageStatClass'
+          description: "Shows you how many in parallel windows (browser tabs) your visitors typically using in 1 visit session"
+        visitSessions:
+          type: array
+          items:
+            $ref: '#/components/schemas/VisitSessionStatClass'
+          description: "Shows you how your visitors behaving during the visit sessions"
 
 
     VisitSessionStatClass:
