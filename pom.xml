@@ -225,7 +225,7 @@
 								<mavenExecutionId>hitcollection-api-v1</mavenExecutionId>
 								<addExplanationsToModel>false</addExplanationsToModel>
 								<!-- warning! order really matters here! see README! -->
-								<addSchemaModelsToImportMappingsFromMavenExecutions>common-types-v1</addSchemaModelsToImportMappingsFromMavenExecutions>
+								<addSchemaModelsToImportMappingsFromMavenExecutions>common-types-v1, common-types-v2</addSchemaModelsToImportMappingsFromMavenExecutions>
 								<!-- default: true -->
 								<!-- excludeImportMappingsFromGeneration>false</excludeImportMappingsFromGeneration> -->
 								
@@ -242,7 +242,7 @@
 							<goal>generate</goal>
 						</goals>
 						<configuration>
-							<inputSpec>${project.basedir}/src/main/openapi/management-api-v1.yaml</inputSpec>
+							<inputSpec>${project.basedir}/src/main/openapi/management-api-v1.1.yaml</inputSpec>
 							<output>${project.basedir}/target/generated-sources/swagger/</output>
 							<modelPackage>com.keytiles.api.model.management.v1</modelPackage>
 							<language>com.keytiles.swagger.codegen.KeytilesJavaCodegen</language>
@@ -260,7 +260,7 @@
 								<mavenExecutionId>management-api-v1</mavenExecutionId>
 								<addExplanationsToModel>false</addExplanationsToModel>
 								<!-- warning! order really matters here! see README! -->
-								<addSchemaModelsToImportMappingsFromMavenExecutions>common-types-v1</addSchemaModelsToImportMappingsFromMavenExecutions>
+								<addSchemaModelsToImportMappingsFromMavenExecutions>common-types-v1, common-types-v2</addSchemaModelsToImportMappingsFromMavenExecutions>
 								<!-- default: true -->
 								<!-- excludeImportMappingsFromGeneration>false</excludeImportMappingsFromGeneration> -->
 								

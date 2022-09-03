@@ -122,25 +122,25 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'common-types-v2.yaml#/components/schemas/ErrorMessageResponseClass'
+                $ref: 'common-types-v2.yaml#/components/schemas/BaseResponseClass'
         '401':
           description: "Authentication failed - you provided invalid credentials or not provided credentials at all"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v2.yaml#/components/schemas/ErrorMessageResponseClass'
+                $ref: 'common-types-v2.yaml#/components/schemas/BaseResponseClass'
         '403':
           description: "You have no permission to read statistics of the given Container"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v2.yaml#/components/schemas/ErrorMessageResponseClass'
+                $ref: 'common-types-v2.yaml#/components/schemas/BaseResponseClass'
         '400':
           description: "Something was wrong with the request"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v2.yaml#/components/schemas/ErrorMessageResponseClass'
+                $ref: 'common-types-v2.yaml#/components/schemas/BaseResponseClass'
 
 
   '/v2/stat/webhits/events/{containerId}/tiles':
@@ -185,25 +185,25 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'common-types-v2.yaml#/components/schemas/ErrorMessageResponseClass'
+                $ref: 'common-types-v2.yaml#/components/schemas/BaseResponseClass'
         '401':
           description: "Authentication failed - you provided invalid credentials or not provided credentials at all"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v2.yaml#/components/schemas/ErrorMessageResponseClass'
+                $ref: 'common-types-v2.yaml#/components/schemas/BaseResponseClass'
         '403':
           description: "You have no permission to read statistics of the given Container"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v2.yaml#/components/schemas/ErrorMessageResponseClass'
+                $ref: 'common-types-v2.yaml#/components/schemas/BaseResponseClass'
         '400':
           description: "Something was wrong with the request"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v2.yaml#/components/schemas/ErrorMessageResponseClass'
+                $ref: 'common-types-v2.yaml#/components/schemas/BaseResponseClass'
 
 
 #  '/v2/stat/webhits/events/{containerId}/tiles/aggregatedLevel0CountersPerInterval':
@@ -311,25 +311,25 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'common-types-v2.yaml#/components/schemas/ErrorMessageResponseClass'
+                $ref: 'common-types-v2.yaml#/components/schemas/BaseResponseClass'
         '401':
           description: "Authentication failed - you provided invalid credentials or not provided credentials at all"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v2.yaml#/components/schemas/ErrorMessageResponseClass'
+                $ref: 'common-types-v2.yaml#/components/schemas/BaseResponseClass'
         '403':
           description: "You have no permission to read statistics of the given Container"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v2.yaml#/components/schemas/ErrorMessageResponseClass'
+                $ref: 'common-types-v2.yaml#/components/schemas/BaseResponseClass'
         '400':
           description: "Something was wrong with the request"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v2.yaml#/components/schemas/ErrorMessageResponseClass'
+                $ref: 'common-types-v2.yaml#/components/schemas/BaseResponseClass'
 
 
 
@@ -650,6 +650,20 @@ components:
           format: int64
           example: 146
           description: The number of hits received via the hit write API in JSON format
+
+
+    TileEventCountersResponseProblemClass:
+      allOf:
+      - $ref: "common-types-v2.yaml#/components/schemas/ProblemBaseClass"
+      required:
+      - machineId
+      type: object
+      properties:
+        machineId:
+          type: string
+          enum: [error1, error2]
+          description: 'Every error/warning may get a machine readable id so problem could be undestood better programatically - see API/endpoint descriptions for details!'
+          nullable: true
   
     # note: model generation made mistake here: own added properties were missing
     # googling lead here: https://github.com/swagger-api/swagger-core/issues/1601
@@ -659,6 +673,13 @@ components:
         - $ref: 'common-types-v2.yaml#/components/schemas/ContainerQueryRangeResponseClass'    
       type: object
       properties:
+        problems:
+          type: array
+          items:
+            $ref: '#/components/schemas/TileEventCountersResponseProblemClass'
+          nullable: false
+          default: []
+          description: 'List of errors/warnings'
         groupByMappings:
           $ref: '#/components/schemas/GroupByIntToNameIdMappingsClass'
         counterColumns:

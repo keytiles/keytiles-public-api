@@ -62,28 +62,64 @@ components:
 
   schemas:
 
-    MessageResponseClass:
-      type: object
-      properties:
-        status:
-          type: string
-          description: "Textual description of the status"
-          enum: [ok, failed, warning]
-          example: "ok | warning | failed"
-        message:
-          type: string
-          description: "Human readable error/success/result message"
+    CommonErrorCodes:
+      type: string
+      enum:
+      - url_invalid
+      - actionToken_internalError
+      - actionToken_missing
+      - actionToken_invalid
+      - actionToken_unknownType
+      - authentication_missing
+      - authentication_internalError
+      - authentication_invalid_credentials
+      - authentication_userDisabled
+      - authentication_base64DecodeFailed
+      - authentication_unknownType
+      - authentication_methodNotSupported
+      - requestParameter_wrongFormat
+      - requestParameter_missing
+      - requestParameter_notSupportedValue
+      - requestParameter_invalid
 
-    ErrorMessageResponseClass:
+    ProblemPlaceEnum:
+      type: string
+      enum:
+      - queryParam
+      - urlParam
+      - url
+      - requestBody
+      - requestHeader
+      - responseBody
+      - responseHeader
+      - responseStatusCode
+      - remoteService
+      - cookie
+      description: 'This info piece is most useful for 400 - "Bad Request" problems but can be meaningful of course in other scenarios too. It marks the place which has the problem.'
+      nullable: true
+
+    # An entry like this describes a problem - typically we support list of problems
+    # A problem can be a Warning or an Error
+    ProblemBaseClass:
       type: object
+      required:
+      - severity
+      - message
+      - errorCodes
       properties:
-        status:
+        severity:
           type: string
-          enum: [failed]
-          example: "failed"
+          enum: [warning, error]
+          example: 'warning|error'
         message:
           type: string
-          description: "Human readable description of the failure"
+          description: 'The problem in human readable form'
+        place:
+          $ref: "#/components/schemas/ProblemPlaceEnum"
+        placeName:
+          type: string
+          nullable: true
+          description: 'If it makes sense it tells you which place was problematic. E.g. if a request parameter should be an Integer but you send in something wrong then "placeName" will tell you exactly which request parameter was wrong.'
 
 
     BaseResponseClass:
@@ -99,15 +135,29 @@ components:
         processingTookMillis:
           type: integer
           format: int32
+          nullable: true
           description: "Number of milliseconds the processing took on server side"
-        messages:
+        problems:
           type: array
-          description: 'List of human readable messages might help you understand better why you not got back what you requested (e.g. if returned a different interval) and fine tune your queries'
           items:
-            type: string
+            $ref: '#/components/schemas/ProblemBaseClass'
+          nullable: false
+          default: []
+          description: 'List of errors/warnings'
+
+
+    MessageResponseClass:
+      allOf:
+      - $ref: '#/components/schemas/BaseResponseClass'
+      type: object
+      properties:
+        message:
+          type: string
+          description: "The human readable message"
 
     ContainerClass:
       type: object
+      nullable: true
       required:
       - id
       properties:

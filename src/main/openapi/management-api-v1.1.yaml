@@ -1,0 +1,984 @@
+openapi: 3.0.1
+info:
+  title: Keytiles Management API
+  description: API to manage users, permissions, containers, etc.
+  version: 1.0.0
+  
+servers:
+- url: https://api.keytiles.com/api
+  description: PROD server
+- url: https://api-test.keytiles.com/api
+  description: TEST server
+
+   
+tags:
+- name: User management REST API
+  description: Manage user data
+- name: User related actions API
+  description: Actions related to users. RPC style endpoints
+- name: Token related actions API
+  description: >
+                To execute actions identified by Tokens
+                  
+                During user management there are procedures/flows involving - so called - Tokens. The goal of
+                having Tokens is to intentionally break the flow into multiple steps by decoupling the triggering
+                of the flow from the actual execution. This is happening due to security concerns.
+                  
+                The generated Tokens always have a limited validity period and always stores (internally) all
+                necessary information to complete the execution of the flow once triggered.
+                  
+                The generated Token IDs are never shared and never returned on responses but always sent out
+                to the e-mail address of the User.
+- name:  Container management REST API
+  description: Manage tracking and setup by managing the Container objects
+
+paths:
+  '/v1/management/users/rest':
+    post:
+      summary: Create a new user (registration)
+      description: >
+                    This endpoint can be used without authentication too to start a registration process. (Authentication
+                    can be added to authenticate as Keytiles Administrator who has more priviliges)  
+                      
+                    By sending in a pre-filled partial User resource you initiate the registration process. To
+                    complete the registration flow a Token will be generated and sent to the given e-mail address.
+                    Flow can be completed by executing that Token - see '/v1/management/tokens/actions/{tokenId}/execute'
+                    endpoint!
+      tags:
+      - User management REST API
+      security:
+      - {}
+      - basicAuth: []
+      requestBody:
+        description: 'The partial User resource to create'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreationClass'
+        
+      responses:
+        '201':
+          description: >
+                        The User resouce is created - all changes are saved. No further action is needed.
+                        
+                        This happens only if a valid Keytiles Administrator is creating the User. The ID of the new user is returned on the userId header
+          content:
+            'application/json':
+              schema:
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+          headers:
+            'X-UserId':
+              schema:
+                type: string
+              description: The ID of the new User resource
+          
+        '202':
+          description: >
+                        The User resouce is prepared but further action is needed to complete the registration.
+                        
+                        This is the behavior when endpoint is used without Keytiles Admin authentication.
+          content:
+            'application/json':
+              schema:
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+        '400':
+          description: "There are problems with the creation request. Further information is available in the response."
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+        '401':
+          description: "Authentication failed - you provided invalid credentials"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+        '403':
+          description: "You do not have permission to do this with the given (or not given at all) credentials"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'  
+        '409':
+          description: "This User can not be created as some unique constraints are violated - e.g. e-mail address is already taken. You get more info in the response."
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+
+  '/v1/management/users/rest/{userIdTerm}':
+    get:
+      summary: Query a specific user with one of its IDs
+      description: >
+                   Please note! However if a User account is disabled (isEnabled=false) the user can still query himself. This is required
+                   because he could not even realize his account is in a disabled state...
+      tags:
+      - User management REST API
+      security:
+      - basicAuth: []
+      parameters:
+        - name: userIdTerm
+          in: path
+          required: true
+          description: 'ID of the user to query - it can be both: the e-mail address or the id too'
+          schema:
+            type: string
+        
+      responses:
+        '200':
+          description: The User resouce is returned
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/UserClass'
+        '404':
+          description: "The given user does not exist"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+        '401':
+          description: "Authentication failed - you provided invalid credentials or not provided credentials at all"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+        '403':
+          description: "You do not have permission to do this with the given credentials"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+
+    put:
+      summary: Update the user data
+      description: >
+                    Only the User himself or a Keytiles administrator can trigger this request!
+                      
+                    Some fields can be modified only by Keytiles administrators. (See field descriptions for more details!) If you try to modify
+                    a field like that it might result in a 403 response!
+      tags:
+      - User management REST API
+      security:
+      - basicAuth: []
+      requestBody:
+        description: 'The modified User resource to save'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserClass'
+      parameters:
+        - name: userIdTerm
+          in: path
+          required: true
+          description: 'ID of the user to query - it can be both: the e-mail address or the id too'
+          schema:
+            type: string
+        
+      responses:
+        '200':
+          description: The User resouce is modified - all changes are saved. No further action is needed.
+          content:
+            'application/json':
+              schema:
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+        '202':
+          description: >
+                        The User resouce is can be partially modified already but further action is needed to complete the requested changes.
+                        
+                        Typically this happens when you wanted to modify the e-mail address of the user which requires additional action.
+          content:
+            'application/json':
+              schema:
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+        '400':
+          description: "There are problems with the update request. Further information is available in the response."
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+
+        '404':
+          description: "The given user does not exist"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+        '401':
+          description: "Authentication failed - you provided invalid credentials or not provided credentials at all"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+        '403':
+          description: "You do not have permission to do this with the given credentials"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+
+    delete:
+      summary: Remove the given User from the system
+      description: >
+                    **Important!** This action can not be undone!
+                      
+                    Only the User himself or a Keytiles administrator can trigger this request!  
+                      
+                    Please note! However if a User account is disabled (isEnabled=false) the user can still unregister. So this call
+                    will also work for disabled users if he wants to remove himself.
+      tags:
+      - User management REST API
+      security:
+      - basicAuth: []
+      parameters:
+        - name: userIdTerm
+          in: path
+          required: true
+          description: 'ID of the user to query - it can be both: the e-mail address or the id too'
+          schema:
+            type: string
+        
+      responses:
+        '200':
+          description: The User resouce is deleted.
+          content:
+            'application/json':
+              schema:
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+        '404':
+          description: "The given user does not exist"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+        '401':
+          description: "Authentication failed - you provided invalid credentials or not provided credentials at all"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+        '403':
+          description: "You do not have permission to do this with the given credentials"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+
+  '/v1/management/users/rest/{userIdTerm}/password':
+    put:
+      summary: Change the password of the user
+      description: >
+                    Password is - however due to its nature is a secret - subresource of the User object. With this call you can set
+                    a new value.
+                      
+                    Please note: To successfully authenticate you can either send user credentials (when you do know the current password you just
+                    want to change it) OR a one-time usable token you previously got via initiating the password reset action. 
+      tags:
+      - User management REST API
+      security:
+      - basicAuth: []
+      - OneTimeTokenAuth: []
+      parameters:
+        - name: userIdTerm
+          in: path
+          required: true
+          description: 'ID of the user to query - it can be both: the e-mail address or the id too'
+          schema:
+            type: string
+      requestBody:
+        description: The new password to set
+        content:
+          text/plain:
+            schema:
+              type: string
+              example: 'myNewPwd1234!'
+            
+      responses:
+        '200':
+          description: The password was changed successfully
+          content:
+            'application/json':
+              schema:
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+        '404':
+          description: "The given user does not exist"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+        '401':
+          description: "Authentication failed - you provided invalid credentials or token"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+        '403':
+          description: "You do not have permission to do this with the given credentials"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+
+  '/v1/management/users/actions/{userIdTerm}/password/reset':
+    get:
+      summary: Triggers password reset procedure
+      description: >
+                    To initiate password reset procedure you just send a GET call on this endpoint. The system will generate a one-time
+                    usable token for you which is sent to the e-mail address of the user. Using this token you can one-time authenticate
+                    for using the password change endpoint (see in the REST API part!)
+                      
+                    If you invoke this method again will generate a new one-time token and will invalidate the previously generated one! 
+                      
+                    Please note: Invoking this action does not require any credentials (no auth is needed)
+      tags:
+      - User related actions API
+      parameters:
+        - name: userIdTerm
+          in: path
+          required: true
+          description: 'ID of the user who''s password should be reset  - it can be both: the e-mail address or the id too'
+          schema:
+            type: string
+      responses:
+        '202':
+          description: You always get this answer - regardless if the user exists or not - due to security reasons. If the user exists he will receive an email with further instructions what to do next.
+          content:
+            'application/json':
+              schema:
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+ 
+
+  '/v1/management/users/actions/{userIdTerm}/password/check':
+    post:
+      summary: To verify if a password sent in the request body matches with the User's password or not
+      description: >
+                    If you build a login functionality anywhere you can use this action to check if the password the user entered on the UI is correct or not
+      tags:
+      - User related actions API
+      parameters:
+        - name: userIdTerm
+          in: path
+          required: true
+          description: 'ID of the user to query - it can be both: the e-mail address or the id too'
+          schema:
+            type: string
+      requestBody:
+        description: The password to challenge (simple text)
+        content:
+          text/plain:
+            schema:
+              type: string
+              example: 'myPwdToCheck1234!'
+        
+      responses:
+        '200':
+          description: The password check was successfully executed - you received the result in the body
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+        '400':
+          description: "The given user does not exist or password does not match - any how but we got a bad request"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+
+  '/v1/management/tokens/actions/{tokenId}/execute':
+    get:
+      summary: Triggers execution of the action identified by the given Token
+      description: >
+                    Please note: Invoking this action does not require any credentials (no auth is needed)
+      tags:
+      - Token related actions API
+      parameters:
+        - name: tokenId
+          in: path
+          required: true
+          description: 'ID of the Token to execute'
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The action represented by this Token is now completed
+          headers:
+            'X-UserId':
+              schema:
+                type: string
+              description: If the affected resource was a User resource then the ID of that user is returned here. Otherwise this header will not be present.
+            'X-ContainerId':
+              schema:
+                type: string
+              description: If the affected resource was a Container resource then the ID of that Container is returned here. Otherwise this header will not be present.
+          content:
+            'application/json':
+              schema:
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+        '404':
+          description: "The given Token does not exist (or was existing but not valid any longer)"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+
+  '/v1/management/containers/rest':
+    get:
+      summary: To query multiple Containers at once.
+      description: >
+                    If executed without the 'containerIds' query param then returns all Containers in a list the user
+                    has at least 'view' permission.  
+                      
+                    You can limit the request to only a specific set of Containers by using the 'containerIds' query param.
+      tags:
+      - Container management REST API
+      security:
+      - basicAuth: []
+      parameters:
+        - name: containerIds
+          in: query
+          required: false
+          description: >
+                        A comma separated list of Container IDs to query.  
+                          
+                        Please note! The method returns only Containers the user has at least 'view' permission to. So it is possible
+                        that in the response you do not get back all the Containers you requested if this rule is not fulfilled.
+          schema:
+            type: string
+        - $ref: '#/components/parameters/includeUserDetails'
+        
+      responses:
+        '200':
+          description: List of Container resources
+          content:
+            'application/json':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ContainerClass'
+        '401':
+          description: "Authentication failed - you provided invalid credentials or not provided credentials at all"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MachineReadableManagementEndpointMessageResponseClass'
+        '403':
+          description: "You do not have permission to do this with the given credentials"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MachineReadableManagementEndpointMessageResponseClass'
+                
+    post:
+      summary: To create a Container resource in order to establish tracking in Keytiles
+      description: >
+                    Any registered User can initiate creating a Container.
+                      
+                    If the user is Keytiles Admin then the Container is immediatelly created and usable.
+                    If the user is a normal user then extra validation step (via Token mechanism) is required
+                    to really create the Container 
+      tags:
+      - Container management REST API
+      security:
+      - basicAuth: []
+      requestBody:
+        description: >
+                      The resource is a partial Container resource with keeping the following rules:  
+                        
+                      The minimum attributes you need to set are:
+                         * name
+                         * options/trackedDomains
+                        
+                      All other attributes will take their default values if not provided.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContainerCreationClass'
+        
+      responses:
+        '201':
+          description: The Container resouce is created and usable. (This means the requesting user was a Keytiles Admin) The new resource URI is returned in the Location header
+          headers:
+             'X-ContainerId':
+              schema:
+                type: string
+              description: The ID of the new Container resource
+          content:
+            'application/json':
+              schema:
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+        '202':
+          description: The Container resouce creation request is accepted without errors but additional action is needed to complete. Instructions are sent to the user's e-mail address
+          content:
+            'application/json':
+              schema:
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+        '400':
+          description: "There are problems with the creation request. Further information is available in the response."
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+        '401':
+          description: "Authentication failed - you provided invalid credentials or not provided credentials at all"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+
+  '/v1/management/containers/rest/{containerId}':
+    get:
+      summary: Query a Container resource
+      description: Only a user with effective "admin" role (over the Container) or a Keytiles Admin can execute this request. 
+      tags:
+      - Container management REST API
+      security:
+      - basicAuth: []
+      parameters:
+        - name: containerId
+          in: path
+          required: true
+          description: 'the ID of the Container'
+          schema:
+            type: string
+        - $ref: '#/components/parameters/includeUserDetails'
+         
+      responses:
+        '200':
+          description: The Container resouce is returned
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/ContainerClass'
+        '404':
+          description: "The given Container does not exist"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MachineReadableManagementEndpointMessageResponseClass'
+        '401':
+          description: "Authentication failed - you provided invalid credentials or not provided credentials at all"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MachineReadableManagementEndpointMessageResponseClass'
+        '403':
+          description: "You do not have permission to do this with the given credentials"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MachineReadableManagementEndpointMessageResponseClass'
+
+    put:
+      summary: To update a Container
+      description: >
+                    Only Keytiles Admins or users with active "admin" role of the Container is allowed to execute this request 
+      tags:
+      - Container management REST API
+      security:
+      - basicAuth: []
+      parameters:
+        - name: containerId
+          in: path
+          required: true
+          description: 'the ID of the Container'
+          schema:
+            type: string
+      requestBody:
+        description: Please note that the "isEnabled" attribute is only allowed for Keytiles Admins to change!
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContainerClass'
+        
+      responses:
+        '200':
+          description: The Container resouce is updated successfully
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/MachineReadableManagementEndpointMessageResponseClass'
+        '400':
+          description: "There are problems with the update request. Further information is available in the response."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MachineReadableManagementEndpointMessageResponseClass'
+        '401':
+          description: "Authentication failed - you provided invalid credentials or not provided credentials at all"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MachineReadableManagementEndpointMessageResponseClass'
+        '403':
+          description: "You tried to do something you do not have permission to do so. Further information is available in the response."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MachineReadableManagementEndpointMessageResponseClass'
+                
+    delete:
+      summary: Remove the given Container from the system
+      description: >
+                    **Important!** This action can not be undone!
+                      
+                    The removal will also delete all tracking data associated with the Container!
+                      
+                    Only a user with effective "admin" role (over the Container) or a Keytiles Admin can execute this request.
+      tags:
+      - Container management REST API
+      security:
+      - basicAuth: []
+      parameters:
+        - name: containerId
+          in: path
+          required: true
+          description: 'the ID of the Container'
+          schema:
+            type: string
+        
+      responses:
+        '200':
+          description: The Container resouce is deleted.
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/MachineReadableManagementEndpointMessageResponseClass'
+        '404':
+          description: "The given Container does not exist"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MachineReadableManagementEndpointMessageResponseClass'
+        '401':
+          description: "Authentication failed - you provided invalid credentials or not provided credentials at all"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MachineReadableManagementEndpointMessageResponseClass'
+        '403':
+          description: "You do not have permission to do this with the given credentials"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MachineReadableManagementEndpointMessageResponseClass'
+
+components:
+
+  securitySchemes:
+    # username and password
+    basicAuth:
+      type: http
+      scheme: basic
+      description: "Basic HTTP authentication is used which means you need to send your Keytiles username/password in the header - API operations are handled on behalf of the given user. For more info visit: https://en.wikipedia.org/wiki/Basic_access_authentication"
+    # sometimes we generate tokens to authorize one-time operation (e.g. password reset)
+    OneTimeTokenAuth:
+      type: apiKey
+      in: header
+      name: X-Token
+      description: 'Some triggered (RPC style) actions result in a Token generation - which is sent (in some form) to the mail address of the User. Then you can use this Token to authenticate for executing a query. Note: typically these Tokens can be used once and also within a strict expiry period.' 
+
+  parameters:
+    includeUserDetails:
+      name: includeUserDetails
+      in: query
+      required: false
+      description: 'Whether to include the *userDetails* list into the Container resource or not - default is: FALSE. Valid values are natural values encoding a boolean so e.g. "true" or "false" or 0 or 1 etc.'
+      example: 'true'
+      schema:
+        type: boolean
+        
+  schemas:
+  
+    ManagementEndpointLocalErrorCodes:
+      type: string
+      enum:
+      - containerId_missing
+      - containerId_invalid
+      - containerData_missing
+      - containerData_invalid
+      - containerData_jsonDecodeFailed
+      - userIdTerm_missing
+      - userIdTerm_invalid
+      - userData_missing
+      - userData_invalid
+      - userData_jsonDecodeFailed
+      - passwordData_missing
+      - passwordData_invalid
+      - credentials
+
+    ManagementEndpointErrorCodes:
+      oneOf:
+      - $ref: "#/components/schemas/ManagementEndpointLocalErrorCodes"
+      - $ref: "common-types-v2.yaml#/components/schemas/CommonErrorCodes"
+
+  
+    ManagementEndpointProblemClass:
+      allOf:
+      - $ref: 'common-types-v2.yaml#/components/schemas/ProblemBaseClass'
+      type: object
+      properties:
+        errorCodes:
+          type: array
+          items:
+            $ref: "#/components/schemas/ManagementEndpointErrorCodes"
+          nullable: true
+    
+    MachineReadableManagementEndpointMessageResponseClass:
+      allOf:
+      - $ref: "common-types-v1.yaml#/components/schemas/MessageResponseClass"
+      type: object
+      properties:
+        problems:
+          type: array
+          items:
+            $ref: '#/components/schemas/ManagementEndpointProblemClass'
+          nullable: false
+          default: []
+          description: 'List of errors/warnings'
+        
+  
+    UserCreationClass:
+      type: object
+      properties:
+        email:
+          type: string
+          description: The desired e-mail address of the user (also this will be the username used during login later)
+          example: john.smith@domain.com
+        nickname:
+          type: string
+          minLength: 3
+          maxLength: 32
+          description: The nickname of the user. This will appear for other users and also the system will use this in notifications. But of course you do not need to use your real name... Single line plain string so any linefeed or tab or other characters will lead to request failure.
+          example: ironhawk
+        password:
+          type: string
+          minLength: 8
+          maxLength: 32
+          description: The password to set after successful e-mail validation flow. Single line plain string so any linefeed or tab or other characters will lead to request failure.
+
+    UserClass:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+          description: Randomly generated alpha-numeric unique id of the user
+          example: 5fc03-1262304000
+        version:
+          type: integer
+          description: This is the resource version (which is automatically incremented by every change). When you do an update (PUT) you need to send it back! The server will check if it is matching with the resource version he has. If not then that means someone else already did an update in the meantime therefore your request can not be accepted - otherwise you may overwrite the changes someone did.
+        email:
+          type: string
+          description: >
+                        The validated e-mail address of the user (also this is his username used during login).
+                          
+                        Please note that it is possible this attribute is not returned but returns 'secret' as value
+                        for confidentiality reasons! This may depend on the credentials and/or the request parameters
+                        you use to query this resource!  
+                          
+                        It is possible to change the e-mail address via a PUT request (so the login name basically) but depending on who
+                        is executing the request it may behave differently. If the user himself is initating the e-mail change then
+                        it will require a confirmation of the new e-mail address - a Token will be generated and sent out to the new
+                        e-mail address to complete the request. 
+          example: john.smith@domain.com
+        nickname:
+          type: string
+          minLength: 3
+          maxLength: 32
+          description: The nickname of the user. This will appear for other users and also the system will use this in notifications. But of course you do not need to use your real name...
+        lastLoginTimestamp:
+          type: integer
+          format: int32
+          description: When did this user log in recently? UNIX timestamp in UTC (seconds since Epoch)
+          example: 1543355608
+          readOnly: true
+        createdTimestamp:
+          type: integer
+          format: int32
+          description: When was this user created? UNIX timestamp in UTC (seconds since Epoch)
+          example: 1543355608
+          readOnly: true
+        isEnabled:
+          type: boolean
+          description: If FALSE then user account is disabled. Requires Keytiles Admin privilige to be able to modify this - read only otherwise
+        isKeytilesAdmin:
+          type: boolean
+          description: Tells if the user is a Keytiles Admin or not. Requires Keytiles Admin privilige to be able to modify this - read only otherwise
+        containers:
+          description: >
+                        List of Containers this user has access to.  
+                          
+                        This list is only visible if the resource is queried by the user himself or a Keytiles Admin. For all others this
+                        list comes empty as nobody else should see this information.
+          type: array
+          items:
+            type: object
+            properties:
+              containerId:
+                type: string
+                description: The alpha-numeric unique id of the Container
+              role:
+                $ref: '#/components/schemas/UserContainerRoleClass'
+
+    UserContainerRoleClass:
+          type: string
+          enum: [view, admin]
+          description: Defines the role of this link affecting what the User can do with this Container
+            
+    UserContainerLinkClass:
+      type: object
+      description: Represents a link between a User and a Container
+      properties:
+        userId:
+          type: string
+          description: The alpha-numeric unique id of the User
+        containerId:
+          type: string
+          description: The alpha-numeric unique id of the Container
+        role:
+          $ref: '#/components/schemas/UserContainerRoleClass'
+   
+   
+    ContainerCreationOptionsClass:
+      type: object
+      description: Containers have settings - options is the object represents a collection of settings. For creating a container it is enough to start with the mandatory settings. They can be tweaked later via PUT.
+      properties:
+        trackedDomains:
+          description: Mandatory setting. List of domain names the tracking in this Container will accept as hit origin.                      
+          type: array
+          uniqueItems: true
+          minLength: 1
+          items:
+            type: string
+
+    ContainerOptionsClass:
+      allOf:
+      - $ref: '#/components/schemas/ContainerCreationOptionsClass'
+      type: object
+      description: Containers have settings - options is the object represents a collection of settings
+      properties:
+        lookBackTimeWindowSeconds:
+          description: Optional setting. When the real time UI is started this is the default "look back" time period for queries for your users
+          nullable: true
+          type: integer
+          format: int32
+          minimum: 60
+          maximum: 86400
+        visitSessionTimeoutSeconds:
+          description: Optional setting. Controls the visitSession length for your tracking. If not set then the system default value is used which is 20 minutes.
+          nullable: true
+          type: integer
+          format: int32
+          minimum: 0
+        preservedQueryParams:
+          description: Optional setting. Normally Keytiles is cleaning the URLs the hits are coming from and as a part of this procedure all query parameters are also removed. Except the ones you list here in this array...
+          nullable: true
+          type: array
+          uniqueItems: true
+          items:
+            type: string
+        customUserAgentTypes:
+          description: >
+                        Optional setting. If you have custom developed web clients like native iOS / Android Apps you can assign a short name to them here and then you can start sending in *userAgenType* of those apps via the Hit Collection API so traffic through those web clients can be tracked segregated.  
+                          
+                        The value can only contain standard alpha-numeric values plus a '-' or '_' or '.' characters. To put it into other words: must match for this regex char set: [a-zA-Z0-9_-.]
+          nullable: true
+          type: array
+          maximum: 16
+          uniqueItems: true
+          items:
+            type: string
+            maxLength: 32
+
+   
+    ContainerCreationClass:
+      type: object
+      description: >
+                    Partial class of the ContainerClass - can be used in the REST POST endpoint during creating a container.  
+                      
+                    Any registered User of Keytiles has the possibility to create a Container and establish tracking.
+      properties:
+        name:
+          type: string
+          description: An informative name of your Container. Single line plain string so any linefeed or tab or other characters will lead to request failure.
+          maxLength: 64
+          minLength: 3
+        businessDomain:
+          type: string
+          description: Name of the Keytiles business domain this Container belongs to
+          example: "webhits_v1.0"
+        options:
+          $ref: '#/components/schemas/ContainerCreationOptionsClass'
+          
+    ContainerClass:
+      allOf:
+      - $ref: '#/components/schemas/ContainerCreationClass'
+      type: object
+      description: >
+                    Container is the basic object for data collection (a.k.a. tracking).
+                      
+                    In order to establish tracking with Keytiles you need to create a "container" for the tracking
+                    data.
+                      
+                    Any registered User of Keytiles has the possibility to create a Container and establish tracking.
+      properties:
+        options:
+          $ref: '#/components/schemas/ContainerOptionsClass'
+        id:
+          type: string
+          readOnly: true
+          description: Randomly generated alpha-numeric unique id of the Container
+          example: 5fc03-1262304000
+        version:
+          type: integer
+          description: This is the resource version (which is automatically incremented by every change). When you do an update (PUT) you need to send it back! The server will check if it is matching with the resource version he has. If not then that means someone else already did an update in the meantime therefore your request can not be accepted - otherwise you may overwrite the changes someone did.
+        createdTimestamp:
+          type: integer
+          format: int32
+          description: When was this Container created? UNIX timestamp in UTC (seconds since Epoch)
+          example: 1543355608
+          readOnly: true
+        isEnabled:
+          type: boolean
+          description: If FALSE then tracking is disabled. Requires Keytiles Admin privilige to be able to modify this - read only otherwise
+        users:
+          description: >
+                        List of user IDs has access over this Container.  
+                          
+                        This list is only visible if the resource is queried by a Container Admin or a Keytiles Admin. For all others this
+                        list comes empty as nobody else should see this information.
+          type: array
+          items:
+            type: object
+            properties:
+              userId:
+                type: string
+                description: The alpha-numeric unique id of the User
+              role:
+                $ref: '#/components/schemas/UserContainerRoleClass'
+        userDetails:
+          readOnly: true
+          description: >
+                        Provides more details about Users who has access over this Container - but there are some restrictions.  
+                          
+                        First of all - by default this list comes empty - you need to request this using the *includeUserDetails=true* query argument.  
+                          
+                        Furthermore
+                         * If the resource is queried by a Container Admin or a Keytiles Admin then it contains full info about every users so no restrictions
+                         * But if the resource is queried by a normal member of the Container then limited the way it only
+                         exposes e-mail addresses of the Container Admins - others mail address is kept in secret
+          type: array
+          items:
+            type: object
+            properties:
+              userId:
+                type: string
+                description: The ID of the User
+              nickname:
+                type: string
+              eMail:
+                type: string
+                description: The e-mail address of the user. BUT it is possible this field is masked out due to data protection rules and only returns 'secret' as value
+                    
+                    
+
