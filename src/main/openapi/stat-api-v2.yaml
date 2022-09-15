@@ -729,9 +729,9 @@ components:
           $ref: 'common-types-v2.yaml#/components/schemas/TileTypeEnum'
         tileGroupPaths:
           type: object
-          properties:
-            <tileGroupPathNumericalId>:
-              $ref: '#/components/schemas/TileGroupPathClass'
+          nullable: true
+          additionalProperties:
+            $ref: '#/components/schemas/TileGroupPathClass'
 
           
     TileGroupPathClass:
@@ -748,7 +748,6 @@ components:
 #            $ref: '#/components/schemas/TileEventCountersClass'
         urls:
           type: array
-          default: ['a', 'b']
           items:
             type: string
             example: "https://mywebsite.com/politics/ausland"

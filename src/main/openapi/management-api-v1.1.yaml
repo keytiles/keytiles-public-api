@@ -689,29 +689,60 @@ components:
         
   schemas:
   
+    # This enum defines error codes belong to management endpoints specifically
+    # note: no support in OpenApi for now how to document values so we just add the description as comments for now.
+    #       see: https://github.com/OAI/OpenAPI-Specification/issues/348 
     ManagementEndpointLocalErrorCodes:
       type: string
       enum:
+      # The ID of the container was not provided - it is missing
       - containerId_missing
+      # The ID of the Container is not valid - there is no Container with this ID
       - containerId_invalid
+      # The operation expected Container resource data in the request but it was missing
       - containerData_missing
+      # The operation could not understand the data which supposed to be a Container resource
       - containerData_invalid
+      # The operation could not decode the Container resource JSON representation - the JSON seems to be invalid somehow
       - containerData_jsonDecodeFailed
+      # Every Container must have at least one (normal) user as admin. Error is thrown when this is violated so if the operation would be completed there would not be admin 
+      - containerData_admin_missing
+      # 'userIdTerm' is either a user ID or the email of the user. The operation must know this to find the user but this information is missing
       - userIdTerm_missing
+      # 'userIdTerm' is either a user ID or the email of the user. The operation received an information which does not seem to be valid - user could not be found
       - userIdTerm_invalid
+      # The operation expected User resource data in the request but it was missing
       - userData_missing
+      # The operation could not understand the data which supposed to be a User resource
       - userData_invalid
+      # The operation could not decode the User resource JSON representation - the JSON seems to be invalid somehow
       - userData_jsonDecodeFailed
+      # The operation expected a password (string) as data but it was missing
       - passwordData_missing
+      # The password does not fulfill the requirements - might be too short or there are other problems
       - passwordData_invalid
-      - credentials
+      # The nickname of the user does not fulfill the requirements - might be too short or we detected other problems
+      - userData_nickname_invalid
+      # The given email address does not seem to be a valid email address
+      - userData_email_invalid
+      # The email address the user wants to register with / change to is already used by someone else
+      - userData_email_alreadyTaken
+      # When creating/updating (User, Container, etc) resources the incoming request tries to change a propperty which is readonly so not allowed 
+      - readonlyField_changed
+      # Protected fields are typically properties of a resource which can be just modified with higher level permissions (e.g. admin). When creating/updating (User, Container, etc) resources the incoming request tries to change a protected property to which most probably the caller does not have enough permission to do so.
+      - protectedField_changed
+      # When creating/updating (User, Container, etc) resources the incoming request does not contain required information to fulfill the request - a property or subresource is missing 
+      - requiredField_missing
+      
 
+    # Let's merge the "local" error codes with the "global" ones in this enum
+    # Management API endpoints can return the union of them 
     ManagementEndpointErrorCodes:
       oneOf:
       - $ref: "#/components/schemas/ManagementEndpointLocalErrorCodes"
       - $ref: "common-types-v2.yaml#/components/schemas/CommonErrorCodes"
 
-  
+    # Let's extend the global Problem class with our Management API specific error codes
     ManagementEndpointProblemClass:
       allOf:
       - $ref: 'common-types-v2.yaml#/components/schemas/ProblemBaseClass'
@@ -721,8 +752,10 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/ManagementEndpointErrorCodes"
-          nullable: true
+          nullable: false
+          default: []
     
+    # Let's extend the original response class with the above assembled machine readable Problems
     MachineReadableManagementEndpointMessageResponseClass:
       allOf:
       - $ref: "common-types-v1.yaml#/components/schemas/MessageResponseClass"

@@ -62,25 +62,45 @@ components:
 
   schemas:
 
+    # This enum defines global error codes which could appear basically in any API Endpoints
+    # note: no support in OpenApi for now how to document values so we just add the description as comments for now.
+    #       see: https://github.com/OAI/OpenAPI-Specification/issues/348 
     CommonErrorCodes:
       type: string
       enum:
+      # The URL of the request does not make sense - this endpoing does not exist
       - url_invalid
+      # ActionTokens are short lived information system is using to do something on behalf of a user or to find and execute a prepared action.
+      # This error means that however the system recognized a token on the request but for some reason could not perform the / validate the token, something failed somewhere 
       - actionToken_internalError
+      # The context of this error code is that a prepared, "waiting to be executed", identified by a short-lived token action was invoked but the ActionToken was not provided in the request. 
       - actionToken_missing
+      # The token either does not exist or already expired - anyways, the original flow/process should be repeated in this case to get a new token
       - actionToken_invalid
+      # Every ActionToken "knows" what he is doing / was created for. And it looks the system ran into a token which it does not recognize what to do with it. This is most likely a bug if you see this - please report to support@
       - actionToken_unknownType
+      # A propetected endpoint was invoked which requires a valid user to execute the operation on behalf - but the authentication information was simpply missing from the request 
       - authentication_missing
+      # A propetected endpoint was invoked which requires a valid user to execute the operation on behalf. The auth information was found on the request but system - for some reason - has failed to validate the info 
       - authentication_internalError
+      # A propetected endpoint was invoked which requires a valid user to execute the operation on behalf. The auth info was found in the request but either the user does not exist, or the provided password was not matching - anyhow, something was wrong with the given credentials
       - authentication_invalid_credentials
+      # A propetected endpoint was invoked which requires a valid user to execute the operation on behalf. Everything was fine (user found, ppassword ok, etc) but this user account is disabled so not allowed to execute any opration. Contact support@ to resolve this issue
       - authentication_userDisabled
+      # A propetected endpoint was invoked which requires a valid user to execute the operation on behalf. The auth info was there but the auth method is involving Base64 decode operation which decode has actually failed... So something is wrong with the data. This e.g. happens with BasicAuth method (username+password)
       - authentication_base64DecodeFailed
-      - authentication_unknownType
+      # A propetected endpoint was invoked which requires a valid user to execute the operation on behalf. Auth info was found on the request but the system does not support this type of authentication
       - authentication_methodNotSupported
+      # One of the request parameters/arguments were sent in a format which is not the expected one. For example we were expected a Boolean value like "true" but we received maybe "abc" - which can not be converted into a boolean
       - requestParameter_wrongFormat
+      # One of the mandatory request parameters/arguments was missing
       - requestParameter_missing
-      - requestParameter_notSupportedValue
+      # One of the request parameters/arguments is supposed to be either one of some predefined values (typically an Enum or similar), or something which requires a specific format for example and email address or similar - but something else has arrived which is therefore not supported / understood by the endpoint
       - requestParameter_invalid
+      # In REST style endpoints Keytiles is using resource versioning to detect and avoid issues might be caused by race conditions. When this situation is detected the endpoint is raising this error so the caller knows he should start over the whole thing because someone else has modified the same resource just in parallel.
+      - resourceVersion_mismatch
+      # There are certain processes / flows which require confirmation via e-mail. In these cases sending out the confirm email successfully is crucial part of the process. If this fails then this error code is raised because Keytiles knows exactly the process can not be finished for sure.
+      - mandatoryEmailSending_failed
 
     ProblemPlaceEnum:
       type: string
