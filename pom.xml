@@ -192,7 +192,7 @@
 							<generateSupportingFiles>false</generateSupportingFiles>
 							<configOptions>
 								<mavenExecutionId>common-types-v2</mavenExecutionId>
-								<addExplanationsToModel>false</addExplanationsToModel>
+								<addExplanationsToModel>true</addExplanationsToModel>
 								
 								<interfaceOnly>true</interfaceOnly>
 								<dateLibrary>java8</dateLibrary>
@@ -258,11 +258,11 @@
 							<generateSupportingFiles>false</generateSupportingFiles>
 							<configOptions>
 								<mavenExecutionId>management-api-v1</mavenExecutionId>
-								<addExplanationsToModel>false</addExplanationsToModel>
+								<addExplanationsToModel>true</addExplanationsToModel>
 								<!-- warning! order really matters here! see README! -->
 								<addSchemaModelsToImportMappingsFromMavenExecutions>common-types-v1, common-types-v2</addSchemaModelsToImportMappingsFromMavenExecutions>
 								<!-- default: true -->
-								<!-- excludeImportMappingsFromGeneration>false</excludeImportMappingsFromGeneration> -->
+								<!-- <excludeImportMappingsFromGeneration>false</excludeImportMappingsFromGeneration> -->
 								
 								<interfaceOnly>true</interfaceOnly>
 								<dateLibrary>java8</dateLibrary>

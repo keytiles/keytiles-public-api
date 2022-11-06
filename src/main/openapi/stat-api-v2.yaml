@@ -602,6 +602,51 @@ components:
   
   schemas:
   
+    # This enum defines error/warning codes belong to Stat API endpoints specifically
+    # note: no support in OpenApi for now how to document values so we just add the description as comments for now.
+    #       see: https://github.com/OAI/OpenAPI-Specification/issues/348 
+    StatApiEndpointLocalErrorCodes:
+      type: string
+      enum:
+      # You requested data from a specific timestamp in the query range but the 'from' timestamp was extended.
+      # This comes with a warning level message only. It happens when Keytiles data granularity does not allow to serve data from timestamp you specified in the query range but must be aligned (pull it earlier)
+      # See ContainerQueryRangeResponseClass.requestedFromTimestamp and ContainerQueryRangeResponseClass.dataFromTimestamp!
+      - queryRange_from_extended
+      # You requested data until (to) a specific timestamp in the query range but the 'to' timestamp was extended.
+      # This comes with a warning level message only. It happens when Keytiles data granularity does not allow to serve data until the specified timestamp in the query range but must be aligned (pushed it later)
+      # See ContainerQueryRangeResponseClass.requestedToTimestamp and ContainerQueryRangeResponseClass.dataToTimestamp!
+      - queryRange_to_extended
+      - queryRange_extended
+      - queryRange_corrected
+      - queryRange_from_corrected
+      - queryRange_to_corrected
+      # The ID of the container was not provided - it is missing
+      - containerId_missing
+      # The ID of the Container is not valid - there is no Container with this ID
+      - containerId_invalid
+      - containerSetup_invalid
+      
+
+    # Let's merge the "local" error codes with the "global" ones in this enum
+    # Stat API endpoints can return the union of them 
+    StatApiEndpointErrorCodes:
+      oneOf:
+      - $ref: "#/components/schemas/StatApiEndpointLocalErrorCodes"
+      - $ref: "common-types-v2.yaml#/components/schemas/CommonErrorCodes"
+
+    # Let's extend the global Problem class with our Management API specific error codes
+    StatApiEndpointProblemClass:
+      allOf:
+      - $ref: 'common-types-v2.yaml#/components/schemas/ProblemBaseClass'
+      type: object
+      properties:
+        errorCodes:
+          type: array
+          items:
+            $ref: "#/components/schemas/StatApiEndpointErrorCodes"
+          nullable: true
+          default: []  
+  
     SystemClockResponseClass:
       type: object
       properties:
@@ -651,23 +696,7 @@ components:
           example: 146
           description: The number of hits received via the hit write API in JSON format
 
-
-    TileEventCountersResponseProblemClass:
-      allOf:
-      - $ref: "common-types-v2.yaml#/components/schemas/ProblemBaseClass"
-      required:
-      - machineId
-      type: object
-      properties:
-        machineId:
-          type: string
-          enum: [error1, error2]
-          description: 'Every error/warning may get a machine readable id so problem could be undestood better programatically - see API/endpoint descriptions for details!'
-          nullable: true
   
-    # note: model generation made mistake here: own added properties were missing
-    # googling lead here: https://github.com/swagger-api/swagger-core/issues/1601
-    # thats the reason why inheritance looks like this
     TileEventCountersResponseClass:
       allOf:
         - $ref: 'common-types-v2.yaml#/components/schemas/ContainerQueryRangeResponseClass'    
@@ -676,53 +705,42 @@ components:
         problems:
           type: array
           items:
-            $ref: '#/components/schemas/TileEventCountersResponseProblemClass'
-          nullable: false
+            $ref: '#/components/schemas/StatApiEndpointProblemClass'
+          nullable: true
           default: []
           description: 'List of errors/warnings'
         groupByMappings:
           $ref: '#/components/schemas/GroupByIntToNameIdMappingsClass'
-        counterColumns:
+        resultColumns:
             $ref: '#/components/schemas/TileEventCountersHeaderClass'
-        counterRows:
+        aggregatedCounterRows:
           type: array
           items:
             $ref: '#/components/schemas/TileEventCountersDataClass'
-#        aggregatedLevel0Counters:
-#          type: array
-#          items:
-#            $ref: '#/components/schemas/TileEventCountersClass'
         tiles:
-          type: array
-          items:
+          type: object
+          nullable: true
+          description: Containes Tile counters and Tile details. This is a map. Keys are tileIds.
+          additionalProperties:
             $ref: '#/components/schemas/TileClass'
 
-#    AggregatedLevel0TileEventCountersResponseClass:
-#      allOf:
-#        - $ref: 'common-types-v2.yaml#/components/schemas/ContainerQueryRangeResponseClass'    
-#      type: object
-#      properties:
-#        groupByValues:
-#          $ref: '#/components/schemas/GroupByValuesClass'
-#        aggregatedLevel0Counters:
-#          type: array
-#          items:
-#            $ref: '#/components/schemas/TileEventCountersClass'
-    
+
     TileClass:
       type: object
       properties:
-        id:
-          type: string
-          description: "ID of the tile"
+#        id:
+#          type: string
+#          description: "ID of the tile"
         firstSeen:
           type: integer
           format: int32
+          nullable: true
           description: "When did we registered the first event for this tile? Basically: publish time of this tile. UNIX timestamp (seconds since Epoch) in UTC."
           example: 1543355708
         lastSeen:
           type: integer
           format: int32
+          nullable: true
           description: "When did we registered the last event for this tile? UNIX timestamp (seconds since Epoch) in UTC."
           example: 1543355708
         type:
@@ -730,22 +748,18 @@ components:
         tileGroupPaths:
           type: object
           nullable: true
+          description: Contains information about under which tileGroupPaths this Tile showed up in the query range. This is a map. Keys are ids assigned to tileGroupPath - you can resolve them 
           additionalProperties:
             $ref: '#/components/schemas/TileGroupPathClass'
+        counterRows:
+          type: array
+          items:
+            $ref: '#/components/schemas/TileEventCountersDataClass'
 
           
     TileGroupPathClass:
       type: object
-#      required:
-#      - pathId
       properties:
-#        pathId:
-#          type: integer
-#          description: "Refers to the tile group path defined in section `/groupByValues/tileGroupPath` this record belongs to /groupByValues/tileGroupPath section"
-#        counters:
-#          type: array
-#          items:
-#            $ref: '#/components/schemas/TileEventCountersClass'
         urls:
           type: array
           items:
@@ -781,13 +795,12 @@ components:
 
     GroupByTimeIntToNameIdMappingClass:
       type: object
-      description: >
-                    This object gives you concrete values for "groupByTime" criteria if you requested break down using the `groupByTime` parameter. 
+      nullable: true
       x-keytiles-serialize-only-if-non-default-properties:
       - time
       properties:
         time:
-          description: 'This entry is present only if you requested `groupBy=time:x` - so break down by time intervals - in your request. The keys in this object are numerical IDs of time intervals while values giving you attributes of each intervals. `g_tId` field of counter records referring to these IDs.'
+          description: This entry is present only if you requested `groupBy=time:x` - so break down by time intervals - in your request. The keys in this object are numerical IDs of time intervals while values giving you attributes of each intervals.
           type: object
           nullable: true
           additionalProperties:
@@ -798,6 +811,7 @@ components:
       allOf:
       - $ref: '#/components/schemas/GroupByTimeIntToNameIdMappingClass'    
       type: object
+      nullable: true
       description: >
                     This object gives you concrete values for "groupBy" criteria if you requested data groups using the `groupBy` parameter. 
       x-keytiles-serialize-only-if-non-default-properties:
@@ -822,7 +836,7 @@ components:
     TileEventCountersHeaderClass:
       type: object
       description: >
-                    Provides 
+                    You will get data as an array of values - like in a .csv file. This object gives you the name of the columns so the headers so to speak.
       properties:
         groupByColumns:
           type: array
@@ -856,130 +870,6 @@ components:
 #          example: [99,100,5]
           nullable: false
 
-    TileEventCountersClass:
-      type: object
-      description: >
-                    This is a set of event counters Keytiles collected for the Tile.  
-                      
-                    Given the fact you might get lots of lots of classes like this in the response the field names are really
-                    shortend to save space. Downside of this is being less human readable unfortunately.  
-                       
-                    There are two major type of fields in this object:  
-                     * "g_" prefixed fields: These are "groupBy" values describing to which group the counters belong to.
-                     * "c_" prefixed fields: These are "counter" fields which always giving you "how many times" something has happened.  
-                      
-                    Please note: to shorten the response size further only those "counter" fields are returned who's value is not 0! So for example 
-                    even if you requested `interest=referrerCounts` (so "c_rf*" fields should be added) if "c_rfSe" will not be there if visits from "search"
-                    referrer measured 0.
-      x-keytiles-serialize-only-if-non-default-properties:
-      - g_tId
-      - g_eTy
-      - g_uaTy
-      - g_vTy
-      # and so on...
-      properties:
-        g_tId:
-          type: integer
-          description: numerical ID - Refers to the time interval defined in section `/groupByValues/time` this set of counters belongs to.
-        g_eTy:
-          type: integer
-          description: numerical ID - Refers to the eventType defined in section `/groupByValues/eventType` this set of counters belongs to
-        g_uaTy:
-          type: integer
-          description: numerical ID - Refers to the userAgent type defined in section `/groupByValues/userAgentType` this set of counters belongs to
-        g_vTy:
-          type: integer
-          description: numerical ID - Refers to the visitor type defined in section `/groupByValues/visitorType` this set of counters belongs to
-        g_tTy:
-          type: integer
-          description: numerical ID - Refers to the tile type defined in section `/groupByValues/tileType` this set of counters belongs to
-        g_tLn:
-          type: string
-          example: en
-          description: tileLanguage - the language version (translation) of the Tile
-        g_tsTy:
-          type: string
-          example: social
-          description: trafficSourceType - the visitor started his visit from this traffic source type
-        g_tsNa:
-          type: string
-          example: Facebook
-          description: trafficSourceName - the visitor started his visit from this traffic source 
-        g_caId:
-          type: string
-          example: Facebook
-          description: campaign Id - the visitor started his visit from this campaign 
-          
-        c_evT:
-          type: integer
-          format: int64
-          example: 146
-          description: 'eventCount Total: The total number of times the event occured in the time range. This field is always present.'
-        c_evNew:
-          type: integer
-          format: int64
-          example: 146
-          description: 'eventCount - from New visitors: The number of times the event occured in the time range from visitors who are considered being New visitors. This field is present only if you requested "newVisitor" in the *interest* parameter.'
-        c_evBnc:
-          type: integer
-          format: int64
-          example: 146
-          description: 'eventCount - from Bounce visitors: Number of "bounce" events on this tile in the time range. This field is present only if you requested "bounceVisitor" in the *interest* parameter.'
-        c_evBncNew:
-          type: integer
-          format: int64
-          example: 146
-          description: 'eventCount - from Bounce and New visitors: Number of "bounce" events on this tile in the time range from visitors who are considered being New visitors. This field is present only if you requested "newVisitor,bounceVisitor" in the *interest* parameter.'
-
-        c_rfDi:
-          type: integer
-          format: int64
-          example: 146
-          description: 'referrer - Direct: Number of events in the time range from visitors arrived to this tile directly. This field is present only if you requested "referrerCounts" in the *interest* parameter.'      
-        c_rfSe:
-          type: integer
-          format: int64
-          example: 146
-          description: 'referrer - from Search: Number of events in the time range from visitors arrived to this tile from a Search engine (Google, Bing, etc). This field is present only if you requested "referrerCounts" in the *interest* parameter.'
-        c_rfSo:
-          type: integer
-          format: int64
-          example: 146
-          description: 'referrer - from Social: Number of events in the time range from visitors arrived to this tile from a Social (Facebook, LinkedIn, etc). This field is present only if you requested "referrerCounts" in the *interest* parameter.'
-        c_rfLi:
-          type: integer
-          format: int64
-          example: 146
-          description: 'referrer - from Link: Number of events in the time range from visitors arrived to this tile from an extarnal website (link) which is not Search or Social site. This field is present only if you requested "referrerCounts" in the *interest* parameter.'
-        c_rfCa:
-          type: integer
-          format: int64
-          example: 146
-          description: 'referrer - Campaign: Number of events in the time range from visitors arrived to this tile from a Campaign. This field is present only if you requested "referrerCounts" in the *interest* parameter.'
-
-        c_vsSt:
-          type: integer
-          format: int64
-          example: 146
-          description: 'visitSessionStarted: Indicates how many visits started on this tile in the time range. This field is present only if you requested "visitSession" in the *interest* parameter.'      
-        c_noVs:
-          type: integer
-          format: int64
-          example: 146
-          description: >
-                        noVisitSession: Indicates how many events occured in the time range done by visitors where we do know exactly we are not able to build visitSession for that visitor.  
-                          
-                        This happens when the inbound hit request (see the Hit collection API for more details here!) did not have *uniqueWebClientId*
-                        nor *pseudoUniqueWebClientId* values provided. If your visitor did not agree to Terms and Conditions Keytiles is allowed to
-                        apply a mechanism which is recognizing somehow his device this is the case for sure.
-                          
-                        It is good to know how many times the event occured from visitors like this because this has a key impact on the statistics
-                        Keytiles can collect. For example events generated by visits where Keytiles can not build a visitSession would be always
-                        "New" and "Bounce" visits - just to mention one. You could find more details about this topic on our website or just ask
-                        our Support channels if you want to know more.  
-                          
-                        For here to put it short: if this number gets significantly high compared to the "c_evT" value then you might have homework to do
-                        on your side to make your Keytiles stats better.
 
           
     # note: model generation made mistake here: own added properties were missing

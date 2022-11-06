@@ -752,7 +752,7 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/ManagementEndpointErrorCodes"
-          nullable: false
+          nullable: true
           default: []
     
     # Let's extend the original response class with the above assembled machine readable Problems

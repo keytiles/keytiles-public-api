@@ -45,7 +45,7 @@ components:
       enum: [frontpage, page, article]
       description: "Possible values for type of tiles"                    
 
-    ContainerClass:
+    ResponseContainerInfoClass:
       type: object
       properties:
         id:
@@ -68,7 +68,7 @@ components:
       type: object
       properties:
         container:
-          $ref: '#/components/schemas/ContainerClass'
+          $ref: '#/components/schemas/ResponseContainerInfoClass'
         requestedFromTimestamp:
           type: integer
           format: int32

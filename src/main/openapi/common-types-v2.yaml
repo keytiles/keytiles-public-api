@@ -115,6 +115,8 @@ components:
       - responseStatusCode
       - remoteService
       - cookie
+      - persistence
+      - calculated
       description: 'This info piece is most useful for 400 - "Bad Request" problems but can be meaningful of course in other scenarios too. It marks the place which has the problem.'
       nullable: true
 
@@ -125,7 +127,6 @@ components:
       required:
       - severity
       - message
-      - errorCodes
       properties:
         severity:
           type: string
@@ -140,10 +141,13 @@ components:
           type: string
           nullable: true
           description: 'If it makes sense it tells you which place was problematic. E.g. if a request parameter should be an Integer but you send in something wrong then "placeName" will tell you exactly which request parameter was wrong.'
+        # we need to make this field public in the model to allow override!
         errorCodes:
           type: array
           items:
-            type: string
+            $ref: "#/components/schemas/CommonErrorCodes"
+          default: []
+          nullable: true
 
     BaseResponseClass:
       type: object
@@ -160,11 +164,12 @@ components:
           format: int32
           nullable: true
           description: "Number of milliseconds the processing took on server side"
+        # we need to make this field public in the model to allow override!
         problems:
           type: array
           items:
             $ref: '#/components/schemas/ProblemBaseClass'
-          nullable: false
+          nullable: true
           default: []
           description: 'List of errors/warnings'
 
@@ -178,7 +183,7 @@ components:
           type: string
           description: "The human readable message"
 
-    ContainerClass:
+    ResponseContainerInfoClass:
       type: object
       nullable: true
       required:
@@ -201,10 +206,11 @@ components:
       - container
       properties:
         container:
-          $ref: '#/components/schemas/ContainerClass'
+          $ref: '#/components/schemas/ResponseContainerInfoClass'
 
     TileTypeEnum:
       type: string
+      nullable: true
       enum: [frontpage, page, article]
       description: "Possible values for type of tiles"                    
 
@@ -220,8 +226,6 @@ components:
       - requestedFromTimestamp
       - requestedToTimestamp
       properties:
-        container:
-          $ref: '#/components/schemas/ContainerClass'
         requestedFromTimestamp:
           type: integer
           format: int32
@@ -237,12 +241,13 @@ components:
           format: int32
           description: 'This response contains data starting by this UNIX timestamp in UTC (seconds since Epoch) - will be always rounded to at least minutes or even more (see section "Interval of your interest" above!)'
           example: 1543355608
+          nullable: true
         dataToTimestamp:
           type: integer
           format: int32
           description: "This response contains data until this UNIX timestamp in UTC (seconds since Epoch)"
           example: 1543355708
-      
+          nullable: true      
 
 
 
