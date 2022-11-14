@@ -11,7 +11,7 @@ info:
               Developer area and learn more!  
                 
               check [https://keytiles.com/developer-area/sending-in-traffic-from-ios-android-etc-apps](https://keytiles.com/developer-area/sending-in-traffic-from-ios-android-etc-apps)
-  version: 1.0.0
+  version: 1.1.0
   
 servers:
 - url: https://api.keytiles.com/api
@@ -71,10 +71,14 @@ components:
           description: >
                         Current client time as UNIX timestamp in UTC (seconds since Epoch) when this hit was generated.  
                           
-                        However this is not a mandatory field it is recommended to send this. The value should not point to the
-                        future. If this happens then it is corrected on server side to now() and raising a warning.  
+                        This is not a mandatory field - if you leave it out (or leave on 'null') server will automatically use the
+                        server side 'now()' timestamp.  
                           
-                        If the value points to the past then the hit will be counted accordingly - so it is possible to back date the hit.
+                        However this is possible to send in hits with back dated timestamps which will retrospectively correct
+                        data. (So replay of older, missed hits is possible!)  
+                          
+                        Value can not point into the future (due to server time!). If this happens then it is corrected on server side to 'now()'
+                        and raising a warning.  
           example: 1543355710
           nullable: true
         hitProducer:
@@ -87,7 +91,7 @@ components:
         method:
           type: string
           enum: [incremental, absolute]
-          description: Describes how the value is used. **incremental:** means the value is added to the stored value. **absolute:** means the value is overriding the current stored value.
+          description: Describes how the value is used. **incremental:** means the value is added to the stored values. **absolute:** means the value is overriding the current stored value.
           nullable: false
         value:
           type: integer
@@ -122,18 +126,38 @@ components:
         - $ref: '#/components/schemas/HitClass'
       type: object
       required:
-      - action
+      - eventType
       - userAgentType
       properties:
-        action:
+        eventType:
           type: string
-          enum: [pageview]
           description: >
                         Mandatory field. Defines what has happened (so eventually which counter to increase)  
                           
-                        Currently only 'pageview' is supported but in the near future more is coming...
-                        (like 'download' or even custom actions!)
+                        There are several pre-defined eventTypes, namely
+                         * pageview (default, by our tracking script)
+                         * view
+                         * download
+                         * upload
+                         * login
+                         * logout
+                         * ping
+                         
+                        but you can send in even totally custom strings as eventTypes! Keytiles will track them correctly.  
+                          
+                        **PLEASE NOTE:** Currently only 'pageview' is supported on our UIs but this will change soon :-)
+                        
           nullable: false
+        action:
+          type: string
+          deprecated: true
+          description: >
+                        Same as 'eventType' - earlier versions took that info in this parameter but this is deprecated by now - DO NOT USE IT!
+        eventParams:
+          type: string
+          nullable: true
+          description: >
+                        Reserved for future use - parameters of specific 'eventType' but for now it is just ignored.
         tileType:
           type: string
           enum: [frontpage, page, article]
@@ -144,6 +168,13 @@ components:
                           
                         To understand better what this field is you should check [https://keytiles.com/developer-area/hit-attributes](https://keytiles.com/developer-area/hit-attributes#tileType-attribute)  
           nullable: true
+        tileLanguage:
+          type: string
+          nullable: true
+          description: >
+                        Optional field. You can send in an ISO-639-1 two letters language code e.g. 'en'.  
+                          
+                        This would let Keytiles know in which language your visitor has viewed the tile.
         tileUrl:
           type: string
           description: >

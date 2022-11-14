@@ -225,6 +225,8 @@ components:
       required:
       - requestedFromTimestamp
       - requestedToTimestamp
+      - dataFromTimestamp
+      - dataToTimestamp
       properties:
         requestedFromTimestamp:
           type: integer
@@ -241,13 +243,11 @@ components:
           format: int32
           description: 'This response contains data starting by this UNIX timestamp in UTC (seconds since Epoch) - will be always rounded to at least minutes or even more (see section "Interval of your interest" above!)'
           example: 1543355608
-          nullable: true
         dataToTimestamp:
           type: integer
           format: int32
           description: "This response contains data until this UNIX timestamp in UTC (seconds since Epoch)"
           example: 1543355708
-          nullable: true      
 
 
 

@@ -4,6 +4,8 @@ info:
   version: '2.0'
   title: Keytiles Statistics query API
   description: >
+            > **PLEASE NOTE!** This is a work in progress! QueryAPI v2.0 is not released yet!
+             
             Provides endpoints to query statistics data stored by Keytiles service  
               
             To specify / fine tune queries you use query parameters which we can group into a few groups.  
@@ -472,7 +474,7 @@ components:
       schema:
         type: string
       description: >
-                    Data filter option. Comma separated list of "link", "search", "social" or "direct" strings - indicating from which source
+                    Data filter option. Comma separated list of "link", "search", "social", "campaign" or "direct" strings - indicating from which source
                     the visitor arrived to your website.
       example: 'link,direct'
 
@@ -571,6 +573,7 @@ components:
                      * **eventType** - you get the counters aggregated per event types in the response
                      * **userAgentType** - you get the counters aggregated per userAgent types in the response
                      * **visitorType** - you get the counters aggregated per visitor types in the response
+                     * **tileType** - you get the counters aggregated per tileTypes in the response
                      * **tileGroupPath** - you get the counters aggregated per tileGroupPaths in the response
                      * **tileLanguage** - you get the counters aggregated per languages in the response
                      * **trafficSourceType** - you get the counters aggregated per traffic source types in the response like 'search', 'social', etc
@@ -716,7 +719,10 @@ components:
         aggregatedCounterRows:
           type: array
           items:
-            $ref: '#/components/schemas/TileEventCountersDataClass'
+          #  $ref: '#/components/schemas/TileEventCountersDataClass'
+            type: array
+            items:
+              type: integer
         tiles:
           type: object
           nullable: true
@@ -754,7 +760,10 @@ components:
         counterRows:
           type: array
           items:
-            $ref: '#/components/schemas/TileEventCountersDataClass'
+            #$ref: '#/components/schemas/TileEventCountersDataClass'
+            type: array
+            items:
+              type: integer
 
           
     TileGroupPathClass:
@@ -818,8 +827,11 @@ components:
       - eventType
       - visitorType
       - userAgentType
-      - tileId
+      - tileLanguage
+      - tileType
       - tileGroupPath
+      - trafficSourceType
+      - trafficSourceName
       properties:
         eventType:
           $ref: '#/components/schemas/GroupByIntToStrMappingClass'
@@ -827,9 +839,15 @@ components:
           $ref: '#/components/schemas/GroupByIntToStrMappingClass'
         userAgentType:
           $ref: '#/components/schemas/GroupByIntToStrMappingClass'
-        tileId:
+        tileLanguage:
+          $ref: '#/components/schemas/GroupByIntToStrMappingClass'
+        tileType:
           $ref: '#/components/schemas/GroupByIntToStrMappingClass'
         tileGroupPath:
+          $ref: '#/components/schemas/GroupByIntToStrMappingClass'
+        trafficSourceType:
+          $ref: '#/components/schemas/GroupByIntToStrMappingClass'
+        trafficSourceName:
           $ref: '#/components/schemas/GroupByIntToStrMappingClass'
 
 
@@ -842,7 +860,7 @@ components:
           type: array
           items:
             type: string
-          example: ['time', 'eventType', 'visitorType', 'userAgentType', 'tileId', 'tileGroupPath']
+          example: ['time', 'eventType', 'visitorType', 'userAgentType', 'tileGroupPath', 'tileLanguage']
           nullable: false
         counterColumns:
           type: array
@@ -852,26 +870,13 @@ components:
           nullable: false
 
 
-    TileEventCountersDataClass:
-      type: object
-      required:
-      - counters
-      properties:
-        groupBy:
-          type: array
-          items:
-            type: number
-#          example: [3,5,2]
-          nullable: false
-        counters:
-          type: array
-          items:
-            type: number
-#          example: [99,100,5]
-          nullable: false
-
-
+#    TileEventCountersDataClass:
+#      type: array
+#      items:
+#        type: integer
+#      nullable: false
           
+
     # note: model generation made mistake here: own added properties were missing
     # googling lead here: https://github.com/swagger-api/swagger-core/issues/1601
     # thats the reason why inheritance looks like this
