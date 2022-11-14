@@ -2,7 +2,7 @@ openapi: 3.0.1
 info:
   title: Keytiles Management API
   description: API to manage users, permissions, containers, etc.
-  version: 1.0.0
+  version: 1.1.0
   
 servers:
 - url: https://api.keytiles.com/api
