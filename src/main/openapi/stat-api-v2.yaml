@@ -60,13 +60,13 @@ servers:
    
 tags:
 - name: System
-  description: Queries for system values
+  description: Query system values
 - name: Container stat
-  description: Queries for container statistics
-- name: WebHits - Tile events
-  description: Queries for tile statistics for Containers collecting website analytics
+  description: Query container level statistics
+- name: WebHits - Event counters
+  description: Query measured event statistics in Containers which are collecting website analytics
 - name: WebHits - Referrer counters
-  description: Queries for referrer statistics for Containers collecting website analytics
+  description: Query referrer statistics in Containers which are collecting website analytics
 
 paths:
 
@@ -145,14 +145,82 @@ paths:
                 $ref: 'common-types-v2.yaml#/components/schemas/BaseResponseClass'
 
 
-  '/v2/stat/webhits/events/{containerId}/tiles':
+  '/v2/stat/webhits/{containerId}/eventcounts':
   
     get:
-      summary: "To query event counts of tiles"
+      summary: "To query aggregated event counts measured by the Container"
       tags:
-      - WebHits - Tile events
+      - WebHits - Event counters
       description: >
-                Returns the measured event counts of tiles and also information about the tiles.
+                If you are interested in measured traffic regardless which tiles received them then this is the endpoint
+                you should use. It aggregates everything from all tiles. 
+                  
+                Ideal to display global graphs.
+                  
+                You might fine tune the query with the parameters.  
+      parameters:
+        - $ref: 'common-types-v2.yaml#/components/parameters/containerId'
+        - $ref: 'common-types-v2.yaml#/components/parameters/fromTimestamp'
+        - $ref: 'common-types-v2.yaml#/components/parameters/toTimestamp'
+        - $ref: '#/components/parameters/eventTypesOnly'
+        - $ref: '#/components/parameters/tileTypesOnly'
+        - $ref: '#/components/parameters/userAgentTypesOnly'
+        - $ref: '#/components/parameters/tileGroupPathMatchingOnly'
+        - $ref: '#/components/parameters/visitorTypesOnly'
+        - $ref: '#/components/parameters/tileLanguagesOnly'
+        - $ref: '#/components/parameters/trafficSourceTypesOnly'
+        - $ref: '#/components/parameters/trafficSourceNamesOnly'
+        - $ref: '#/components/parameters/interest'
+        - $ref: '#/components/parameters/groupBy'
+
+      security:
+      - basicAuth: []
+
+      responses:
+        '200':
+          description: "OK response"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventCountersResponseClass'
+        '404':
+          description: "The given containerId does not exist"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v2.yaml#/components/schemas/BaseResponseClass'
+        '401':
+          description: "Authentication failed - you provided invalid credentials or not provided credentials at all"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v2.yaml#/components/schemas/BaseResponseClass'
+        '403':
+          description: "You have no permission to read statistics of the given Container"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v2.yaml#/components/schemas/BaseResponseClass'
+        '400':
+          description: "Something was wrong with the request"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v2.yaml#/components/schemas/BaseResponseClass'
+
+
+  '/v2/stat/webhits/{containerId}/eventcounts/tiles':
+  
+    get:
+      summary: "To query event counts measure on a tile level basis"
+      tags:
+      - WebHits - Event counters
+      description: >
+                Returns the measured event counts segregated by tiles and also information about the tiles themselves.  
+                  
+                Although you also receive the aggregated counts in the response for comfort you should not use this endpoint
+                if you are not interested in tile level segregation! Then simply use the '/eventcounts' one! This query is more
+                expensive and thus can be significantly slower too.  
                   
                 You might fine tune the query with the parameters.  
       parameters:
@@ -353,6 +421,8 @@ components:
         type: string
       description: >
                     Data filter option. Comma separated list of event types you want to limit the query for.
+                      
+                    note: if you have comma in your event names (strange, but ok...) you can escape that with '\\' character!  
       example: 'view,contact-form-sent'
 
     tileIdsOnly:
@@ -363,6 +433,8 @@ components:
         type: string
       description: >
                     Data filter option. Comma separated list of tileIds you want to limit the query for - of course in this case only the counters of these tiles are returned 
+                      
+                    note: if you have comma in your tileIds (strange, but ok...) you can escape that with '\\' character!  
       example: 'tile123,tile456,tile789'
 
     tileTypesOnly:
@@ -372,8 +444,6 @@ components:
       schema:
         type: string
       description: >
-                    **Example value:** ?tileTypesOnly=article **OR** ?tileTypesOnly=page,frontpage
-                      
                     Data filter option. Comma separated list of tile types you want to limit the query for 
       example: 'article,page'
       
@@ -384,7 +454,10 @@ components:
       schema:
         type: string
       description: >
-                    Data filter option. Returns counters only for those Tiles who's tileGroupPath is matching to this filter.  
+                    Data filter option. Comma separated list of matchers (see below) which returns counters only for those Tiles who's tileGroupPath is matching to one of the listed matchers.
+                    (So they combined with an OR operator if you send in more)  
+                      
+                    note: if you have comma in your matcher (strange, but ok...) you can escape that with '\\' character!  
                       
                     You can use the **'\*'** character to match any substring. But where and how you put this Asterisk character matters! Let us show
                     you how through an example!
@@ -411,10 +484,8 @@ components:
                     Well then you can use the second query value: **"/tech/mobile/\*"**. This would include *"/tech/mobile/android"*, *"/tech/mobile/ios"* but
                     would NOT include *"/tech/mobile-rumours"* anymore - as that is not a match anymore. But we are not done yet! Please note: this
                     would also include Tiles under *"/tech/mobile/"* group itself. Because **"/\*"** means "everything which is under this group"
-                    
-                    
                      
-      example: '/tech/mobile/*'
+      example: '/tech/mobile/*, */errors/*'
 
     userAgentTypesOnly:
       name: userAgentTypesOnly
@@ -425,6 +496,8 @@ components:
       example: 'browser-desktop,NULL'
       description: >
                     Data filter option. Comma separated list of *userAgentType*s you want to limit the query for.
+                      
+                    note: if you have comma in your userAgent types (strange, but ok...) you can escape that with '\\' character!  
                       
                     The set of *userAgentType*s is limited. Keytiles gives a few "out of the box" values but you can also define a
                     limited number of custom values if you need (e.g. for recognizing traffic coming from your iOS App). These are defined
@@ -447,6 +520,8 @@ components:
         type: string
       description: >
                     Data filter option. Comma separated list of *visitorType*s you want to limit the query for.
+                      
+                    note: if you have comma in your visitor types (strange, but ok...) you can escape that with '\\' character!  
                       
                     **NULL** is a special value indicating cases where *visitorType* was not set.
                       
@@ -628,6 +703,9 @@ components:
       # The ID of the Container is not valid - there is no Container with this ID
       - containerId_invalid
       - containerSetup_invalid
+      # This happens on 400 "Bad request" if user sends in *Only filter parameter however this filter can not be supported
+      # by that query endpoint. In this case user must remove that filter which is named
+      - filter_not_supported
       
 
     # Let's merge the "local" error codes with the "global" ones in this enum
@@ -699,8 +777,8 @@ components:
           example: 146
           description: The number of hits received via the hit write API in JSON format
 
-  
-    TileEventCountersResponseClass:
+
+    EventCountersResponseClass:
       allOf:
         - $ref: 'common-types-v2.yaml#/components/schemas/ContainerQueryRangeResponseClass'    
       type: object
@@ -715,17 +793,25 @@ components:
         groupByMappings:
           $ref: '#/components/schemas/GroupByIntToNameIdMappingsClass'
         resultColumns:
-            $ref: '#/components/schemas/TileEventCountersHeaderClass'
+            $ref: '#/components/schemas/EventCountersHeaderClass'
         aggregatedCounterRows:
           type: array
+          description: >
+                        These are the rows of the data - each row represented by an array of Integer values.  
+                          
+                        In rows the number of columns and the index of each colum is identical to the description you find in /resultColumns entry!
           items:
-          #  $ref: '#/components/schemas/TileEventCountersDataClass'
             type: array
             items:
               type: integer
+  
+    TileEventCountersResponseClass:
+      allOf:
+        - $ref: '#/components/schemas/EventCountersResponseClass'    
+      type: object
+      properties:
         tiles:
           type: object
-          nullable: true
           description: Containes Tile counters and Tile details. This is a map. Keys are tileIds.
           additionalProperties:
             $ref: '#/components/schemas/TileClass'
@@ -737,30 +823,43 @@ components:
 #        id:
 #          type: string
 #          description: "ID of the tile"
+        type:
+          type: integer
+          format: int32
+          description: > 
+                        Gives you the type of the tile. The integer is the ID of the tile type which you can get back from /groupByMappings/tileType part  
+                          
+                        note: this value is always present
         firstSeen:
           type: integer
           format: int32
           nullable: true
-          description: "When did we registered the first event for this tile? Basically: publish time of this tile. UNIX timestamp (seconds since Epoch) in UTC."
+          description: >
+                        When did we register the first event for this tile? Basically: publish time of this tile. UNIX timestamp (seconds since Epoch) in UTC.  
+                          
+                        note: this info you just get if you have NOT executed the request with ?includeTileDetails=false!
           example: 1543355708
         lastSeen:
           type: integer
           format: int32
           nullable: true
-          description: "When did we registered the last event for this tile? UNIX timestamp (seconds since Epoch) in UTC."
+          description: >
+                        When did we register the last event for this tile? UNIX timestamp (seconds since Epoch) in UTC.  
+                          
+                        note: this info you just get if you have NOT executed the request with ?includeTileDetails=false!
           example: 1543355708
-        type:
-          $ref: 'common-types-v2.yaml#/components/schemas/TileTypeEnum'
         tileGroupPaths:
           type: object
           nullable: true
-          description: Contains information about under which tileGroupPaths this Tile showed up in the query range. This is a map. Keys are ids assigned to tileGroupPath - you can resolve them 
+          description: >
+                        Contains information about under which tileGroupPaths this Tile showed up in the query range. This is a map. Keys are IDs assigned to tileGroupPath - you can resolve them  
+                          
+                        note: this info you just get if you have NOT executed the request with ?includeTileDetails=false!
           additionalProperties:
             $ref: '#/components/schemas/TileGroupPathClass'
         counterRows:
           type: array
           items:
-            #$ref: '#/components/schemas/TileEventCountersDataClass'
             type: array
             items:
               type: integer
@@ -771,11 +870,13 @@ components:
       properties:
         urls:
           type: array
+          description: 'The list of (cleaned, means: removed query arguments, anchors) URLs we captured for this tile under this tileGroupPath'
           items:
             type: string
             example: "https://mywebsite.com/politics/ausland"
         titles:
           type: array
+          description: 'The list of titles we captured for this tile under this tileGroupPath. Please note: normally this should just be one title! If you see more than it is against our recommended best practices and you should take actions!'
           items:
             type: string
             example: "My tile title"
@@ -798,6 +899,10 @@ components:
     GroupByIntToStrMappingClass:
       nullable: true
       type: object
+      description: >
+                    To save lots of space Keytiles maps Strings to unique Integers (acting as IDs) - this way can return counter rows 
+                    as just Integer arrays. Of course to make it readable again you need the reverse mapping: which Integer encodes which Strings?
+                    This is this mapping.  
       additionalProperties:
         type: string
         example: '<the name>'
@@ -851,10 +956,10 @@ components:
           $ref: '#/components/schemas/GroupByIntToStrMappingClass'
 
 
-    TileEventCountersHeaderClass:
+    EventCountersHeaderClass:
       type: object
       description: >
-                    You will get data as an array of values - like in a .csv file. This object gives you the name of the columns so the headers so to speak.
+                    You will get data as an array of Integer values - like in a .csv file. This object gives you the name of the columns so the headers so to speak.
       properties:
         groupByColumns:
           type: array
@@ -869,13 +974,6 @@ components:
           example: ['eventCountTotal', 'refSearch', 'refSocial', 'refLink', 'refDirect', 'refCampaign', 'eventCountNoSession', 'eventCountNewVisitor', 'eventCountBounceVisitor', 'eventCountBounceNewVisitor', 'visitSessionStartedCount', 'visitSessionFirstOfTypeCount']
           nullable: false
 
-
-#    TileEventCountersDataClass:
-#      type: array
-#      items:
-#        type: integer
-#      nullable: false
-          
 
     # note: model generation made mistake here: own added properties were missing
     # googling lead here: https://github.com/swagger-api/swagger-core/issues/1601
