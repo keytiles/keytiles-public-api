@@ -37,20 +37,25 @@ info:
             
             ### Grouping
             
-            By default you just get the total event count of all event types captured by Keytiles in the query range. But if you want to  
-            comapre e.g. how many of different event types Keytiles captured in your query time range then you need a decomposition for event types
-            in the response so you can see how many occured / eventType like "view" 322, "download" 18, "contact-form-sent" 74.  
+            By default you just get the total event count of all event types captured by Keytiles in the query range. But if you want to
+            compare / see / distinguish this "total count" by different view points then you can request Keytiles to "group the data" by
+            different things.  
               
-            To achieve this you can use the **groupBy=eventType** query parameter.  
+            For example if you want to see event counts / different tileTypes you can use **groupBy=tileType** query parameter. To see
+            the event count distribution regarding the different eventTypes Keytiles captured you can use **groupBy=eventType**. And
+            you can also combine them like **groupBy=eventType,tileType** to get a full decomposition by these two grouping factors.  
               
+            Please refer to the "groupBy" parameter description to see all possible options!
             
-              
             ### Limit / threshold
             
-            If you have a high traffic website with many many Tiles then you might get back huge data from queries even for a relatively
+            If you have a high traffic website with many many Tiles (content) then you might get back huge data from queries even for a relatively
             short time range. Experience shows that most of this data might be not important for you in many cases.
             
-            To take an example let's assume you want to display "view" performance  
+            Therefore you have the possibility to limit Keytiles response size by defining "send me only the top X" tiles (as most relevant info)
+            and leave out the rest.
+            
+            Please refer to the "limit" and "threshold" parameter descriptions for more details on endpoints supporting this!
             
 servers:
 - url: https://api.keytiles.com/api
@@ -239,6 +244,8 @@ paths:
         - $ref: '#/components/parameters/interest'
         - $ref: '#/components/parameters/includeTileDetails'
         - $ref: '#/components/parameters/groupBy'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/threshold'
 
       security:
       - basicAuth: []
@@ -674,9 +681,13 @@ components:
       schema:
         type: string
       description: >
-                    In this parameter you 
-                    Maximum number of tiles in the response. By saying `limit=100` you will get back the top 100 tiles only who received the
-                    most event counts alltogether during the query range.   
+                    In this parameter you can setup a threshold either with absolute value or with percentage.  
+                      
+                    If you use:
+                     * absolute value, like 'threshold=10' then you will get back only those tiles and their details who received at least 10 hits
+                       during the query range
+                     * percentage value, like 'threshold=3%' then you will get back only those tiles and their details who received at least 3% of the
+                       hits got by the tile which received the most hits during the query range
   
   schemas:
   
@@ -742,8 +753,8 @@ components:
         - $ref: 'common-types-v2.yaml#/components/schemas/ContainerQueryRangeResponseClass'    
       type: object
       properties:
-        groupByMappings:
-          $ref: '#/components/schemas/GroupByTimeIntToNameIdMappingClass'
+        keyColumnMappings:
+          $ref: '#/components/schemas/TimeColumnIntIdToIntervalMappingClass'
         writeTraffic:
           type: array
           items:
@@ -790,8 +801,8 @@ components:
           nullable: true
           default: []
           description: 'List of errors/warnings'
-        groupByMappings:
-          $ref: '#/components/schemas/GroupByIntToNameIdMappingsClass'
+        keyColumnsMappings:
+          $ref: '#/components/schemas/KeyColumnsIntIdMappingsClass'
         resultColumns:
             $ref: '#/components/schemas/EventCountersHeaderClass'
         aggregatedCounterRows:
@@ -882,7 +893,7 @@ components:
             example: "My tile title"
 
 
-    GroupByTimeIntervalClass:
+    TimeIntervalClass:
       type: object
       properties:
         starts:
@@ -896,7 +907,7 @@ components:
           description: 'Length of this interval in seconds'
           example: 100
 
-    GroupByIntToStrMappingClass:
+    IntIdToStrMappingClass:
       nullable: true
       type: object
       description: >
@@ -907,7 +918,7 @@ components:
         type: string
         example: '<the name>'
 
-    GroupByTimeIntToNameIdMappingClass:
+    TimeColumnIntIdToIntervalMappingClass:
       type: object
       nullable: true
       x-keytiles-serialize-only-if-non-default-properties:
@@ -918,12 +929,12 @@ components:
           type: object
           nullable: true
           additionalProperties:
-            $ref: '#/components/schemas/GroupByTimeIntervalClass'
+            $ref: '#/components/schemas/TimeIntervalClass'
 
 
-    GroupByIntToNameIdMappingsClass:
+    KeyColumnsIntIdMappingsClass:
       allOf:
-      - $ref: '#/components/schemas/GroupByTimeIntToNameIdMappingClass'    
+      - $ref: '#/components/schemas/TimeColumnIntIdToIntervalMappingClass'    
       type: object
       nullable: true
       description: >
@@ -939,40 +950,47 @@ components:
       - trafficSourceName
       properties:
         eventType:
-          $ref: '#/components/schemas/GroupByIntToStrMappingClass'
+          $ref: '#/components/schemas/IntIdToStrMappingClass'
         visitorType:
-          $ref: '#/components/schemas/GroupByIntToStrMappingClass'
+          $ref: '#/components/schemas/IntIdToStrMappingClass'
         userAgentType:
-          $ref: '#/components/schemas/GroupByIntToStrMappingClass'
+          $ref: '#/components/schemas/IntIdToStrMappingClass'
         tileLanguage:
-          $ref: '#/components/schemas/GroupByIntToStrMappingClass'
+          $ref: '#/components/schemas/IntIdToStrMappingClass'
         tileType:
-          $ref: '#/components/schemas/GroupByIntToStrMappingClass'
+          $ref: '#/components/schemas/IntIdToStrMappingClass'
         tileGroupPath:
-          $ref: '#/components/schemas/GroupByIntToStrMappingClass'
+          $ref: '#/components/schemas/IntIdToStrMappingClass'
         trafficSourceType:
-          $ref: '#/components/schemas/GroupByIntToStrMappingClass'
+          $ref: '#/components/schemas/IntIdToStrMappingClass'
         trafficSourceName:
-          $ref: '#/components/schemas/GroupByIntToStrMappingClass'
+          $ref: '#/components/schemas/IntIdToStrMappingClass'
 
 
     EventCountersHeaderClass:
       type: object
       description: >
-                    You will get data as an array of Integer values - like in a .csv file. This object gives you the name of the columns so the headers so to speak.
+                    You will get data as an array of Integer values - like in a .csv file. This object gives you the name of the columns. So the 'headers' so to speak.  
+                      
+                    In the data rows (int array) you will always have 'keyColumns' + 'counterColumns' number of integers and you need to interpret them in this order.
       properties:
-        groupByColumns:
+        keyColumns:
           type: array
           items:
             type: string
           example: ['time', 'eventType', 'visitorType', 'userAgentType', 'tileGroupPath', 'tileLanguage']
           nullable: false
+          description: This array tells you the names for key columns - in an index maintained form. This just has values if you request 'groupBy' setup. 
         counterColumns:
           type: array
           items:
             type: string
           example: ['eventCountTotal', 'refSearch', 'refSocial', 'refLink', 'refDirect', 'refCampaign', 'eventCountNoSession', 'eventCountNewVisitor', 'eventCountBounceVisitor', 'eventCountBounceNewVisitor', 'visitSessionStartedCount', 'visitSessionFirstOfTypeCount']
           nullable: false
+          description: >
+                        This array tells you the names of counter columns - in an index maintained form. But please keep in mind: these are always placed after the 'keyColumns'!  
+                          
+                        Please note: what you get here depends on what you request using the '?interest=' parameter.
 
 
     # note: model generation made mistake here: own added properties were missing
