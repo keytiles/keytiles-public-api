@@ -99,6 +99,8 @@ components:
       - requestParameter_invalid
       # One of the request parameters/arguments is not supported by this endpoint
       - requestParameter_not_supported
+      # One of the request parameters/arguments is pointless to be used in this context - would be ignored and we want the user to know this
+      - requestParameter_pointless
       # In REST style endpoints Keytiles is using resource versioning to detect and avoid issues might be caused by race conditions. When this situation is detected the endpoint is raising this error so the caller knows he should start over the whole thing because someone else has modified the same resource just in parallel.
       - resourceVersion_mismatch
       # There are certain processes / flows which require confirmation via e-mail. In these cases sending out the confirm email successfully is crucial part of the process. If this fails then this error code is raised because Keytiles knows exactly the process can not be finished for sure.
@@ -209,13 +211,6 @@ components:
       properties:
         container:
           $ref: '#/components/schemas/ResponseContainerInfoClass'
-
-    # Let's deprecate this! We do not need this so strict anymore
-#    TileTypeEnum:
-#      type: string
-#      nullable: true
-#      enum: [frontpage, page, article]
-#      description: "Possible values for type of tiles"                    
 
       
     # note: model generation made mistake here: own added properties were missing

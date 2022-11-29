@@ -1,18 +1,12 @@
 openapi: 3.0.0
 
 info:
-  version: '2.0-beta'
+  version: '2.0'
   title: Keytiles Statistics query API
   description: >
-            
-            # Disclaimer
-            
-            **PLEASE NOTE! This is an early release of v2 API which is currently in Beta test phase!**  
-            This means things can still change!
+            > **PLEASE NOTE!** This is a work in progress! QueryAPI v2.0 is not released yet!
              
-            # Overview
-            
-            This API provides endpoints to query statistics data stored by Keytiles service.  
+            Provides endpoints to query statistics data stored by Keytiles service  
               
             To specify / fine tune queries you use query parameters which we can group into a few groups.  
               
@@ -70,10 +64,91 @@ servers:
   description: TEST server
    
 tags:
+- name: System
+  description: Query system values
+- name: Container stat
+  description: Query container level statistics
 - name: WebHits - Event counters
   description: Query measured event statistics in Containers which are collecting website analytics
+- name: WebHits - Referrer counters
+  description: Query referrer statistics in Containers which are collecting website analytics
 
 paths:
+
+  '/v2/system/clock':
+    get:
+      summary: "To query the Keytiles system clock"
+      tags:
+      - System
+      description: >
+                Returns the Keytiles system clock UNIX timestamp (UTC seconds since Epoch)
+                  
+                Since you often phrase queries when you need to include timestamps it makes sense to be able to query the system clock
+                which you can use to calculate potential diff in between your local (client machine) clock and Keytiles server time. Considering this into
+                queries might help a lot to significantly improve your server queries
+
+      responses:
+        '200':
+          description: "OK response"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemClockResponseClass'
+
+
+  '/v2/stat/counters/{containerId}/inbound-hits':
+  
+    get:
+      summary: "To query raw incoming write traffic at a Container level"
+      tags:
+      - Container stat
+      description: >
+                Keytiles tracks this data on hourly basis granulation.
+                  
+                **IMPORTANT!** Regarding query intervals make sure you read the information about "Interval of your interest" - described in the generic section above!
+                  
+                You might further specify your interest with the below parameters.  
+      parameters:
+        - $ref: 'common-types-v2.yaml#/components/parameters/containerId'
+        - $ref: 'common-types-v2.yaml#/components/parameters/fromTimestamp'
+        - $ref: 'common-types-v2.yaml#/components/parameters/toTimestamp'
+        - $ref: '#/components/parameters/groupByTime'
+
+      security:
+      - basicAuth: []
+
+      responses:
+        '200':
+          description: "OK response"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContainerInboundHitsResponseClass'
+        '404':
+          description: "The given containerId does not exist"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v2.yaml#/components/schemas/BaseResponseClass'
+        '401':
+          description: "Authentication failed - you provided invalid credentials or not provided credentials at all"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v2.yaml#/components/schemas/BaseResponseClass'
+        '403':
+          description: "You have no permission to read statistics of the given Container"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v2.yaml#/components/schemas/BaseResponseClass'
+        '400':
+          description: "Something was wrong with the request"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v2.yaml#/components/schemas/BaseResponseClass'
+
 
   '/v2/stat/webhits/{containerId}/eventcounts':
   
@@ -208,6 +283,131 @@ paths:
               schema:
                 $ref: 'common-types-v2.yaml#/components/schemas/BaseResponseClass'
 
+
+#  '/v2/stat/webhits/events/{containerId}/tiles/aggregatedLevel0CountersPerInterval':
+#  
+#    get:
+#      summary: "Similar to '/v2/stat/webhits/events/{containerId}/tiles' query but this is ommitting tile based granularity so /tiles array will not be present."
+#      tags:
+#      - WebHits - Tile events
+#      description: >
+#                This query is perfect to visualize traffic summary without tile level break down. So this query is cheaper and executes faster. 
+#                  
+#                You might further specify your interest with the below parameters.
+#      parameters:
+#        - $ref: 'common-types-v2.yaml#/components/parameters/containerId'
+#        - $ref: 'common-types-v2.yaml#/components/parameters/fromTimestamp'
+#        - $ref: 'common-types-v2.yaml#/components/parameters/toTimestamp'
+#        - $ref: '#/components/parameters/eventTypesOnly'
+#        - $ref: '#/components/parameters/tileIdsOnly'
+#        - $ref: '#/components/parameters/tileTypesOnly'
+#        - $ref: '#/components/parameters/userAgentTypesOnly'
+#        - $ref: '#/components/parameters/tileGroupPathMatchingOnly'
+#        - $ref: '#/components/parameters/visitorTypesOnly'
+#        - $ref: '#/components/parameters/tileLanguagesOnly'
+#        - $ref: '#/components/parameters/trafficSourceTypesOnly'
+#        - $ref: '#/components/parameters/trafficSourceNamesOnly'
+#        - $ref: '#/components/parameters/interest'
+#        - $ref: '#/components/parameters/groupBy'
+#
+#      security:
+#      - basicAuth: []
+#
+#      responses:
+#        '200':
+#          description: "OK response"
+#          content:
+#            application/json:
+#              schema:
+#                $ref: '#/components/schemas/AggregatedLevel0TileEventCountersResponseClass'
+#        '404':
+#          description: "The given containerId does not exist"
+#          content:
+#            application/json:
+#              schema:
+#                $ref: 'common-types-v2.yaml#/components/schemas/ErrorMessageResponseClass'
+#        '401':
+#          description: "Authentication failed - you provided invalid credentials or not provided credentials at all"
+#          content:
+#            application/json:
+#              schema:
+#                $ref: 'common-types-v2.yaml#/components/schemas/ErrorMessageResponseClass'
+#        '403':
+#          description: "You have no permission to read statistics of the given Container"
+#          content:
+#            application/json:
+#              schema:
+#                $ref: 'common-types-v2.yaml#/components/schemas/ErrorMessageResponseClass'
+#        '400':
+#          description: "Something was wrong with the request"
+#          content:
+#            application/json:
+#              schema:
+#                $ref: 'common-types-v2.yaml#/components/schemas/ErrorMessageResponseClass'
+
+
+  '/v2/stat/webhits/view/{containerId}/external-referrers':
+  
+    get:
+      summary: "To query the external referrer distribution counters"
+      tags:
+      - WebHits - Referrer counters
+      description: >
+                Returns the break down for external referrers
+                  
+                **IMPORTANT!** Regarding query intervals make sure you read the information about "Interval of your interest" - described in the generic section above!
+                  
+                You might further specify your interest with the below parameters.
+      parameters:
+        - $ref: 'common-types-v2.yaml#/components/parameters/containerId'
+        - $ref: 'common-types-v2.yaml#/components/parameters/fromTimestamp'
+        - $ref: 'common-types-v2.yaml#/components/parameters/toTimestamp'
+        - $ref: '#/components/parameters/groupByTime'
+        - name: categoriesOnly
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/ExternalReferrerCategoryEnum'
+          description: >
+                        Comma separated list of referrer categories you want to limit the query for
+          example: 'search,social'
+        - $ref: '#/components/parameters/userAgentTypesOnly'
+        
+
+      security:
+      - basicAuth: []
+
+      responses:
+        '200':
+          description: "OK response"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExternalReferrerCountersResponseClass'
+        '404':
+          description: "The given containerId does not exist"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v2.yaml#/components/schemas/BaseResponseClass'
+        '401':
+          description: "Authentication failed - you provided invalid credentials or not provided credentials at all"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v2.yaml#/components/schemas/BaseResponseClass'
+        '403':
+          description: "You have no permission to read statistics of the given Container"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v2.yaml#/components/schemas/BaseResponseClass'
+        '400':
+          description: "Something was wrong with the request"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v2.yaml#/components/schemas/BaseResponseClass'
 
 
 
@@ -572,6 +772,56 @@ components:
           nullable: true
           default: []  
   
+    SystemClockResponseClass:
+      type: object
+      properties:
+        serverTime:
+          type: integer
+          format: int32
+          description: "Current server time in UNIX timestamp in UTC (seconds since Epoch) when this response was generated"
+          example: 1543355710
+
+    ContainerInboundHitsResponseClass:
+      allOf:
+        - $ref: 'common-types-v2.yaml#/components/schemas/ContainerQueryRangeResponseClass'    
+      type: object
+      properties:
+        keyColumnMappings:
+          $ref: '#/components/schemas/TimeColumnIntIdToIntervalMappingClass'
+        writeTraffic:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContainerInboundHitsCountersForIntervalClass'
+  
+    # note: model generation made mistake here: own added properties were missing
+    # googling lead here: https://github.com/swagger-api/swagger-core/issues/1601
+    # thats the reason why inheritance looks like this
+    ContainerInboundHitsCountersForIntervalClass:
+      allOf:
+      - $ref: '#/components/schemas/ContainerInboundHitsCountersClass'    
+      type: object
+      properties:
+        g_tId:
+          type: integer
+          description: numerical ID - Refers to the time interval defined in section `/groupByValues/time` this set of counters belongs to. 
+
+    ContainerInboundHitsCountersClass:
+      type: object
+      description: >
+                    This is a set of counters representing the inbound traffic a specific Container received via different endpoints  
+      properties:
+        viaTrackingScript:
+          type: integer
+          format: int64
+          example: 146
+          description: The number of hits received via the tracking script hit collection mechanism
+        viaWriteApi:
+          type: integer
+          format: int64
+          example: 146
+          description: The number of hits received via the hit write API in JSON format
+
+
     EventCountersResponseClass:
       allOf:
         - $ref: 'common-types-v2.yaml#/components/schemas/ContainerQueryRangeResponseClass'    
@@ -790,6 +1040,71 @@ components:
                         But please keep in mind: these are always placed after the 'keyColumns'!    
                           
                         Please note: what you get here depends on what you request using the '?interest=' parameter. See 'interest' parameter description for more details!
+
+
+    # note: model generation made mistake here: own added properties were missing
+    # googling lead here: https://github.com/swagger-api/swagger-core/issues/1601
+    # thats the reason why inheritance looks like this
+    ExternalReferrerCountersResponseClass:
+      allOf:
+      - $ref: 'common-types-v2.yaml#/components/schemas/ContainerQueryRangeResponseClass'    
+      type: object
+      properties:
+        search:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExternalReferrerClass'
+          description: "Referrers categorized into 'Search' type"
+        social:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExternalReferrerClass'
+          description: "Referrers categorized into 'Social' type"
+        link:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExternalReferrerClass'
+          description: "External referrers who are not 'Search' neither 'Social' are going into this category"
+
+          
+    ExternalReferrerClass:
+      type: object
+      properties:
+        name:
+          type: string
+          description: "The name of the referrer like Google, Facebook, etc."
+        url:
+          type: string
+          description: "The url we have seen the visitor coming from"
+        countersPerInterval:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExternalReferrerCountersClass'
+          
+    ExternalReferrerCountersClass:
+      type: object
+      x-keytiles-serialize-only-if-non-default-properties:
+      - entryCount
+      properties:
+        intervalId:
+          type: integer
+          description: >
+                    Refers to the interval defined in section `/resolutionIntervals` this set of counters belongs to
+        entryCount:
+          type: integer
+          format: int64
+          example: 146
+          description: "Number of visits arrived from this referrer"
+          
+    ExternalReferrerCategoryEnum:
+      type: string
+      enum: [search, social, link]
+      description: "Possible values for external referrer category"
+      
+    ReferrerCategoryEnum:
+      type: string
+      enum: [direct, search, social, link, internal]
+      description: "Possible values for referrer category"
 
 
     
