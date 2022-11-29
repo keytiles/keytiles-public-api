@@ -141,9 +141,10 @@ components:
                          * upload
                          * login
                          * logout
+                         * filled (e.g. a form)
                          * ping
                          
-                        but you can send in even totally custom strings as eventTypes! Keytiles will track them correctly.  
+                        but you can send in even totally **custom strings as eventTypes**! Keytiles will track them correctly.  
                           
                         **PLEASE NOTE:** Currently only 'pageview' is supported on our UIs but this will change soon :-)
                         
@@ -160,11 +161,21 @@ components:
                         Reserved for future use - parameters of specific 'eventType' but for now it is just ignored.
         tileType:
           type: string
-          enum: [frontpage, page, article]
           description: >
-                        Optional field. If not given then 'article' is used.  
+                        Optional field. If not given then 'article' will be used.  
                           
-                        Keytiles supports to categorize your tiles by type.  
+                        There are a few pre-defined types which you might consider to use if they fit to your use case however **you can also define your own types** too.
+                        By convention you should not put spaces or weird characters into this string (however technically it is not causing any issues)  
+                          
+                        The predefined types are:
+                         * frontpage
+                         * page
+                         * article
+                         * file
+                         * form
+                         * post
+                         * comment
+                         * profile
                           
                         To understand better what this field is you should check [https://keytiles.com/developer-area/hit-attributes](https://keytiles.com/developer-area/hit-attributes#tileType-attribute)  
           nullable: true
