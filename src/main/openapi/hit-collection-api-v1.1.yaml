@@ -141,8 +141,9 @@ components:
                          * upload
                          * login
                          * logout
-                         * filled (e.g. a form)
+                         * submitted (e.g. a form)
                          * ping
+                         * scrolledTo
                          
                         but you can send in even totally **custom strings as eventTypes**! Keytiles will track them correctly.  
                           
@@ -158,7 +159,15 @@ components:
           type: string
           nullable: true
           description: >
-                        Reserved for future use - parameters of specific 'eventType' but for now it is just ignored.
+                        This is a string representation of a JSON object which carries parameters related to how the 'eventType' is processed. 
+                        Due to its nature the content of this key-value pairs might be specific to the 'eventType'. But it also has generic entries.  
+                          
+                        Generic entries:
+                         * **skipUniqueFilter** - boolean
+                           Optional parameter. By default it is "false" as Keytiles by default measures incoming events belong to the same tileId just once
+                           per VisitSession (forming up the term e.g. "unique pageview"). But if you set this to "true" then Keytiles will not make
+                           the event "unique" in the VisitSession but if it occurs 5 times then will be measured 5 times.   
+                         
         tileType:
           type: string
           description: >

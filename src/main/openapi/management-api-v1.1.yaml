@@ -733,6 +733,12 @@ components:
       - protectedField_changed
       # When creating/updating (User, Container, etc) resources the incoming request does not contain required information to fulfill the request - a property or subresource is missing 
       - requiredField_missing
+      # The key to manage key-value is missing
+      - key_missing
+      # The key to manage key-value is not found or something is wrong with it
+      - key_invalid
+      # The key-value request data is invalid
+      - keyValueData_invalid
       
 
     # Let's merge the "local" error codes with the "global" ones in this enum

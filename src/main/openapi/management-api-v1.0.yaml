@@ -1,7 +1,10 @@
 openapi: 3.0.1
 info:
   title: Keytiles Management API
-  description: API to manage users, permissions, containers, etc.
+  description: >
+                **DEPRECATED!** as we have newer version. Visit https://www.keytiles.com/developer-area/keytiles-apis!  
+                
+                API to manage users, permissions, containers, etc.
   version: 1.0.0
   
 servers:
@@ -65,7 +68,7 @@ paths:
           content:
             'application/json':
               schema:
-                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'versions/common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
           headers:
             'X-UserId':
               schema:
@@ -80,31 +83,31 @@ paths:
           content:
             'application/json':
               schema:
-                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'versions/common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
         '400':
           description: "There are problems with the creation request. Further information is available in the response."
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'versions/common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
         '401':
           description: "Authentication failed - you provided invalid credentials"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'versions/common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
         '403':
           description: "You do not have permission to do this with the given (or not given at all) credentials"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'  
+                $ref: 'versions/common-types-v1.0.yaml#/components/schemas/MessageResponseClass'  
         '409':
           description: "This User can not be created as some unique constraints are violated - e.g. e-mail address is already taken. You get more info in the response."
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'versions/common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
 
   '/v1/management/users/rest/{userIdTerm}':
     get:
@@ -136,19 +139,19 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'versions/common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
         '401':
           description: "Authentication failed - you provided invalid credentials or not provided credentials at all"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'versions/common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
         '403':
           description: "You do not have permission to do this with the given credentials"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'versions/common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
 
     put:
       summary: Update the user data
@@ -181,7 +184,7 @@ paths:
           content:
             'application/json':
               schema:
-                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'versions/common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
         '202':
           description: >
                         The User resouce is can be partially modified already but further action is needed to complete the requested changes.
@@ -190,32 +193,32 @@ paths:
           content:
             'application/json':
               schema:
-                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'versions/common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
         '400':
           description: "There are problems with the update request. Further information is available in the response."
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'versions/common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
 
         '404':
           description: "The given user does not exist"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'versions/common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
         '401':
           description: "Authentication failed - you provided invalid credentials or not provided credentials at all"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'versions/common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
         '403':
           description: "You do not have permission to do this with the given credentials"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'versions/common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
 
     delete:
       summary: Remove the given User from the system
@@ -244,25 +247,25 @@ paths:
           content:
             'application/json':
               schema:
-                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'versions/common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
         '404':
           description: "The given user does not exist"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'versions/common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
         '401':
           description: "Authentication failed - you provided invalid credentials or not provided credentials at all"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'versions/common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
         '403':
           description: "You do not have permission to do this with the given credentials"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'versions/common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
 
   '/v1/management/users/rest/{userIdTerm}/password':
     put:
@@ -299,25 +302,25 @@ paths:
           content:
             'application/json':
               schema:
-                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'versions/common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
         '404':
           description: "The given user does not exist"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'versions/common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
         '401':
           description: "Authentication failed - you provided invalid credentials or token"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'versions/common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
         '403':
           description: "You do not have permission to do this with the given credentials"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'versions/common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
 
   '/v1/management/users/actions/{userIdTerm}/password/reset':
     get:
@@ -345,7 +348,7 @@ paths:
           content:
             'application/json':
               schema:
-                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'versions/common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
  
 
   '/v1/management/users/actions/{userIdTerm}/password/check':
@@ -382,7 +385,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'versions/common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
 
   '/v1/management/tokens/actions/{tokenId}/execute':
     get:
@@ -413,13 +416,13 @@ paths:
           content:
             'application/json':
               schema:
-                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'versions/common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
         '404':
           description: "The given Token does not exist (or was existing but not valid any longer)"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'versions/common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
 
   '/v1/management/containers/rest':
     get:
@@ -460,13 +463,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'versions/common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
         '403':
           description: "You do not have permission to do this with the given credentials"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'versions/common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
                 
     post:
       summary: To create a Container resource in order to establish tracking in Keytiles
@@ -505,25 +508,25 @@ paths:
           content:
             'application/json':
               schema:
-                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'versions/common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
         '202':
           description: The Container resouce creation request is accepted without errors but additional action is needed to complete. Instructions are sent to the user's e-mail address
           content:
             'application/json':
               schema:
-                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'versions/common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
         '400':
           description: "There are problems with the creation request. Further information is available in the response."
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'versions/common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
         '401':
           description: "Authentication failed - you provided invalid credentials or not provided credentials at all"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'versions/common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
 
   '/v1/management/containers/rest/{containerId}':
     get:
@@ -554,19 +557,19 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'versions/common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
         '401':
           description: "Authentication failed - you provided invalid credentials or not provided credentials at all"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'versions/common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
         '403':
           description: "You do not have permission to do this with the given credentials"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'versions/common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
 
     put:
       summary: To update a Container
@@ -596,25 +599,25 @@ paths:
           content:
             'application/json':
               schema:
-                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'versions/common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
         '400':
           description: "There are problems with the update request. Further information is available in the response."
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'versions/common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
         '401':
           description: "Authentication failed - you provided invalid credentials or not provided credentials at all"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'versions/common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
         '403':
           description: "You tried to do something you do not have permission to do so. Further information is available in the response."
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'versions/common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
                 
     delete:
       summary: Remove the given Container from the system
@@ -642,25 +645,25 @@ paths:
           content:
             'application/json':
               schema:
-                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'versions/common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
         '404':
           description: "The given Container does not exist"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'versions/common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
         '401':
           description: "Authentication failed - you provided invalid credentials or not provided credentials at all"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'versions/common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
         '403':
           description: "You do not have permission to do this with the given credentials"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'versions/common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
 
 components:
 
@@ -805,42 +808,42 @@ components:
 
     ContainerOptionsClass:
       allOf:
-      - $ref: '#/components/schemas/ContainerCreationOptionsClass'
-      type: object
-      description: Containers have settings - options is the object represents a collection of settings
-      properties:
-        lookBackTimeWindowSeconds:
-          description: Optional setting. When the real time UI is started this is the default "look back" time period for queries for your users
-          nullable: true
-          type: integer
-          format: int32
-          minimum: 60
-          maximum: 86400
-        visitSessionTimeoutSeconds:
-          description: Optional setting. Controls the visitSession length for your tracking. If not set then the system default value is used which is 20 minutes.
-          nullable: true
-          type: integer
-          format: int32
-          minimum: 0
-        preservedQueryParams:
-          description: Optional setting. Normally Keytiles is cleaning the URLs the hits are coming from and as a part of this procedure all query parameters are also removed. Except the ones you list here in this array...
-          nullable: true
-          type: array
-          uniqueItems: true
-          items:
-            type: string
-        customUserAgentTypes:
-          description: >
-                        Optional setting. If you have custom developed web clients like native iOS / Android Apps you can assign a short name to them here and then you can start sending in *userAgenType* of those apps via the Hit Collection API so traffic through those web clients can be tracked segregated.  
-                          
-                        The value can only contain standard alpha-numeric values plus a '-' or '_' or '.' characters. To put it into other words: must match for this regex char set: [a-zA-Z0-9_-.]
-          nullable: true
-          type: array
-          maximum: 16
-          uniqueItems: true
-          items:
-            type: string
-            maxLength: 32
+        - $ref: '#/components/schemas/ContainerCreationOptionsClass'
+        - type: object
+          description: Containers have settings - options is the object represents a collection of settings
+          properties:
+            lookBackTimeWindowSeconds:
+              description: Optional setting. When the real time UI is started this is the default "look back" time period for queries for your users
+              nullable: true
+              type: integer
+              format: int32
+              minimum: 60
+              maximum: 86400
+            visitSessionTimeoutSeconds:
+              description: Optional setting. Controls the visitSession length for your tracking. If not set then the system default value is used which is 20 minutes.
+              nullable: true
+              type: integer
+              format: int32
+              minimum: 0
+            preservedQueryParams:
+              description: Optional setting. Normally Keytiles is cleaning the URLs the hits are coming from and as a part of this procedure all query parameters are also removed. Except the ones you list here in this array...
+              nullable: true
+              type: array
+              uniqueItems: true
+              items:
+                type: string
+            customUserAgentTypes:
+              description: >
+                            Optional setting. If you have custom developed web clients like native iOS / Android Apps you can assign a short name to them here and then you can start sending in *userAgenType* of those apps via the Hit Collection API so traffic through those web clients can be tracked segregated.  
+                              
+                            The value can only contain standard alpha-numeric values plus a '-' or '_' or '.' characters. To put it into other words: must match for this regex char set: [a-zA-Z0-9_-.]
+              nullable: true
+              type: array
+              maximum: 16
+              uniqueItems: true
+              items:
+                type: string
+                maxLength: 32
 
    
     ContainerCreationClass:
@@ -864,73 +867,73 @@ components:
           
     ContainerClass:
       allOf:
-      - $ref: '#/components/schemas/ContainerCreationClass'
-      type: object
-      description: >
-                    Container is the basic object for data collection (a.k.a. tracking).
-                      
-                    In order to establish tracking with Keytiles you need to create a "container" for the tracking
-                    data.
-                      
-                    Any registered User of Keytiles has the possibility to create a Container and establish tracking.
-      properties:
-        options:
-          $ref: '#/components/schemas/ContainerOptionsClass'
-        id:
-          type: string
-          readOnly: true
-          description: Randomly generated alpha-numeric unique id of the Container
-          example: 5fc03-1262304000
-        version:
-          type: integer
-          description: This is the resource version (which is automatically incremented by every change). When you do an update (PUT) you need to send it back! The server will check if it is matching with the resource version he has. If not then that means someone else already did an update in the meantime therefore your request can not be accepted - otherwise you may overwrite the changes someone did.
-        createdTimestamp:
-          type: integer
-          format: int32
-          description: When was this Container created? UNIX timestamp in UTC (seconds since Epoch)
-          example: 1543355608
-          readOnly: true
-        isEnabled:
-          type: boolean
-          description: If FALSE then tracking is disabled. Requires Keytiles Admin privilige to be able to modify this - read only otherwise
-        users:
+        - $ref: '#/components/schemas/ContainerCreationClass'
+        - type: object
           description: >
-                        List of user IDs has access over this Container.  
+                        Container is the basic object for data collection (a.k.a. tracking).
                           
-                        This list is only visible if the resource is queried by a Container Admin or a Keytiles Admin. For all others this
-                        list comes empty as nobody else should see this information.
-          type: array
-          items:
-            type: object
-            properties:
-              userId:
-                type: string
-                description: The alpha-numeric unique id of the User
-              role:
-                $ref: '#/components/schemas/UserContainerRoleClass'
-        userDetails:
-          readOnly: true
-          description: >
-                        Provides more details about Users who has access over this Container - but there are some restrictions.  
+                        In order to establish tracking with Keytiles you need to create a "container" for the tracking
+                        data.
                           
-                        First of all - by default this list comes empty - you need to request this using the *includeUserDetails=true* query argument.  
-                          
-                        Furthermore
-                         * If the resource is queried by a Container Admin or a Keytiles Admin then it contains full info about every users so no restrictions
-                         * But if the resource is queried by a normal member of the Container then limited the way it only
-                         exposes e-mail addresses of the Container Admins - others mail address is kept in secret
-          type: array
-          items:
-            type: object
-            properties:
-              userId:
-                type: string
-                description: The ID of the User
-              nickname:
-                type: string
-              eMail:
-                type: string
-                description: The e-mail address of the user. BUT it is possible this field is masked out due to data protection rules and only returns 'secret' as value
+                        Any registered User of Keytiles has the possibility to create a Container and establish tracking.
+          properties:
+            options:
+              $ref: '#/components/schemas/ContainerOptionsClass'
+            id:
+              type: string
+              readOnly: true
+              description: Randomly generated alpha-numeric unique id of the Container
+              example: 5fc03-1262304000
+            version:
+              type: integer
+              description: This is the resource version (which is automatically incremented by every change). When you do an update (PUT) you need to send it back! The server will check if it is matching with the resource version he has. If not then that means someone else already did an update in the meantime therefore your request can not be accepted - otherwise you may overwrite the changes someone did.
+            createdTimestamp:
+              type: integer
+              format: int32
+              description: When was this Container created? UNIX timestamp in UTC (seconds since Epoch)
+              example: 1543355608
+              readOnly: true
+            isEnabled:
+              type: boolean
+              description: If FALSE then tracking is disabled. Requires Keytiles Admin privilige to be able to modify this - read only otherwise
+            users:
+              description: >
+                            List of user IDs has access over this Container.  
+                              
+                            This list is only visible if the resource is queried by a Container Admin or a Keytiles Admin. For all others this
+                            list comes empty as nobody else should see this information.
+              type: array
+              items:
+                type: object
+                properties:
+                  userId:
+                    type: string
+                    description: The alpha-numeric unique id of the User
+                  role:
+                    $ref: '#/components/schemas/UserContainerRoleClass'
+            userDetails:
+              readOnly: true
+              description: >
+                            Provides more details about Users who has access over this Container - but there are some restrictions.  
+                              
+                            First of all - by default this list comes empty - you need to request this using the *includeUserDetails=true* query argument.  
+                              
+                            Furthermore
+                             * If the resource is queried by a Container Admin or a Keytiles Admin then it contains full info about every users so no restrictions
+                             * But if the resource is queried by a normal member of the Container then limited the way it only
+                             exposes e-mail addresses of the Container Admins - others mail address is kept in secret
+              type: array
+              items:
+                type: object
+                properties:
+                  userId:
+                    type: string
+                    description: The ID of the User
+                  nickname:
+                    type: string
+                  eMail:
+                    type: string
+                    description: The e-mail address of the user. BUT it is possible this field is masked out due to data protection rules and only returns 'secret' as value
                     
                     
 
