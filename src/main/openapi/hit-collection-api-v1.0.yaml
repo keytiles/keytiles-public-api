@@ -2,7 +2,7 @@ openapi: 3.0.1
 info:
   title: Keytiles Hit Collection API
   description: >
-              **DEPRECATED!** as we have newer version. Visit https://www.keytiles.com/developer-area/keytiles-apis!  
+              **DEPRECATED!** as we have newer version. Visit [https://www.keytiles.com/developer-area/keytiles-apis](https://www.keytiles.com/developer-area/keytiles-apis)!  
                 
               API to collect hits received by the tracked website
                 

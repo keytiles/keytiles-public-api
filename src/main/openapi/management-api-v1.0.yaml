@@ -2,7 +2,7 @@ openapi: 3.0.1
 info:
   title: Keytiles Management API
   description: >
-                **DEPRECATED!** as we have newer version. Visit https://www.keytiles.com/developer-area/keytiles-apis!  
+                **DEPRECATED!** as we have newer version. Visit [https://www.keytiles.com/developer-area/keytiles-apis](https://www.keytiles.com/developer-area/keytiles-apis)!  
                 
                 API to manage users, permissions, containers, etc.
   version: 1.0.0
