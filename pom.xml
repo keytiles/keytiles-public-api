@@ -271,13 +271,13 @@
 					</execution>
 
 					<execution>
-						<id>stat-api-v1</id>
+						<id>query-api-v1</id>
 						<phase>generate-sources</phase>
 						<goals>
 							<goal>generate</goal>
 						</goals>
 						<configuration>
-							<inputSpec>${project.basedir}/src/main/openapi/stat-api-v1.yaml</inputSpec>
+							<inputSpec>${project.basedir}/src/main/openapi/query-api-v1.0.yaml</inputSpec>
 							<output>${project.basedir}/target/generated-sources/swagger/</output>
 							<modelPackage>com.keytiles.api.model.stat.v1</modelPackage>
 							<language>com.keytiles.swagger.codegen.KeytilesJavaCodegen</language>
@@ -292,7 +292,7 @@
 							<generateModelDocumentation>false</generateModelDocumentation>
 							<generateSupportingFiles>false</generateSupportingFiles>
 							<configOptions>
-								<mavenExecutionId>stat-api-v1</mavenExecutionId>
+								<mavenExecutionId>query-api-v1</mavenExecutionId>
 								<addExplanationsToModel>true</addExplanationsToModel>
 								<!-- warning! order really matters here! see README! -->
 								<addSchemaModelsToImportMappingsFromMavenExecutions>common-types-v1</addSchemaModelsToImportMappingsFromMavenExecutions>
@@ -306,13 +306,13 @@
 					</execution>
 										
 					<execution>
-						<id>stat-api-v2</id>
+						<id>query-api-v2</id>
 						<phase>generate-sources</phase>
 						<goals>
 							<goal>generate</goal>
 						</goals>
 						<configuration>
-							<inputSpec>${project.basedir}/src/main/openapi/stat-api-v2.yaml</inputSpec>
+							<inputSpec>${project.basedir}/src/main/openapi/query-api-v2.0.yaml</inputSpec>
 							<output>${project.basedir}/target/generated-sources/swagger/</output>
 							<modelPackage>com.keytiles.api.model.stat.v2</modelPackage>
 							<language>com.keytiles.swagger.codegen.KeytilesJavaCodegen</language>
@@ -327,7 +327,7 @@
 							<generateModelDocumentation>false</generateModelDocumentation>
 							<generateSupportingFiles>false</generateSupportingFiles>
 							<configOptions>
-								<mavenExecutionId>stat-api-v2</mavenExecutionId>
+								<mavenExecutionId>query-api-v2</mavenExecutionId>
 								<addExplanationsToModel>true</addExplanationsToModel>
 								<!-- warning! order really matters here! see README! -->
 								<addSchemaModelsToImportMappingsFromMavenExecutions>common-types-v2</addSchemaModelsToImportMappingsFromMavenExecutions>
