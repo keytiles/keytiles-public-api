@@ -86,7 +86,7 @@ tags:
 - name: System
   description: Queries for system values
 - name: Tile counters
-  description: Queries for tile statistics
+  description: Queries for tile statistics. DEPRECATED! We have better for this in Query API v2.0 - see [https://www.keytiles.com/developer-area/keytiles-apis](https://www.keytiles.com/developer-area/keytiles-apis)
 - name: Referrer counters
   description: Queries for referrer statistics
 - name: Visitors
@@ -98,6 +98,7 @@ paths:
   
     get:
       summary: "To query counters of tiles"
+      deprecated: true
       tags:
       - Tile counters
       description: >
@@ -157,6 +158,7 @@ paths:
   
     get:
       summary: "Fully aggregated counters only - for level0. This is ommitting tile based granularity so /tiles array will be empty"
+      deprecated: true
       tags:
       - Tile counters
       description: >

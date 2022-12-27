@@ -72,8 +72,66 @@ servers:
 tags:
 - name: WebHits - Event counters
   description: Query measured event statistics in Containers which are collecting website analytics
+- name: Other queries
 
 paths:
+
+  '/v2/stat/webhits/{containerId}/idmappings':
+  
+    get:
+      summary: "To query String => numericalId mapping records belong to the Container"
+      tags:
+      - Other queries
+      description: >
+                To optimize storage and response size Keytiles maps String identifiers to Numerical IDs. These are things like
+                'eventType' or 'userAgentType' etc.  
+                
+                These mapping records also keep track on when did we see first or last time the given incoming String.  
+                  
+                With this endpoint you have the possibility to query these mappings - even for a specific time range - so
+                you can use them as parameters for *Only filters in Event counter queries
+      parameters:
+        - $ref: 'common-types-v2.yaml#/components/parameters/containerId'
+        - $ref: 'common-types-v2.yaml#/components/parameters/fromTimestamp'
+        - $ref: 'common-types-v2.yaml#/components/parameters/toTimestamp'
+        - $ref: '#/components/parameters/mappingTypes'
+        - $ref: '#/components/parameters/includeFirstLastSeenTs'
+
+      security:
+      - basicAuth: []
+
+      responses:
+        '200':
+          description: "OK response"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetIdMappingsResponseClass'
+        '404':
+          description: "The given containerId does not exist"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v2.yaml#/components/schemas/BaseResponseClass'
+        '401':
+          description: "Authentication failed - you provided invalid credentials or not provided credentials at all"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v2.yaml#/components/schemas/BaseResponseClass'
+        '403':
+          description: "You have no permission to read statistics of the given Container"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v2.yaml#/components/schemas/BaseResponseClass'
+        '400':
+          description: "Something was wrong with the request"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v2.yaml#/components/schemas/BaseResponseClass'
+
 
   '/v2/stat/webhits/{containerId}/eventcounts':
   
@@ -517,8 +575,34 @@ components:
                     Maybe you want to sort the 'top 100' tiles based on 'visitSessionStartedCount' because you are curious about the top landing
                     pages?  
                       
+    mappingTypes:
+      name: mappingTypes
+      in: query
+      required: true
+      schema:
+        type: string
+      description: >
+                    Comma separated list - at least one element - of the following:
+                     * eventType
+                     * userAgentType
+                     * visitorType
+                     * tileType
+                     * tileLanguage
+                     * tileGroupPath
+                     * referrerName
                     
-                    
+    includeFirstLastSeenTs:
+      name: includeFirstLastSeenTs
+      in: query
+      required: false
+      schema:
+        type: string
+      description: >
+                    This is a boolean parameter so you can send 'true' or 'false' here as a value. By default the value is 'false'.  
+                      
+                    This controls whether to add first/last seen timetamps to each record or not. In most of the cases this is irrelevant
+                    so to save response size by default we do not do this
+      example: 'false'
   
   schemas:
   
@@ -791,5 +875,72 @@ components:
                           
                         Please note: what you get here depends on what you request using the '?interest=' parameter. See 'interest' parameter description for more details!
 
+    MappingRecordClass:
+      type: object
+      x-keytiles-serialize-only-if-non-default-properties:
+      - firstSeenTs
+      - lastSeenTs
+      properties:
+        strId:
+          type: string
+          nullable: false
+        intId:
+          type: integer
+          nullable: false
+        firstSeenTs:
+          type: integer
+          nullable: true
+        lastSeenTs:
+          type: integer
+          nullable: true
+    
+    GetIdMappingsResponseClass:
+      allOf:
+        - $ref: 'common-types-v2.yaml#/components/schemas/ContainerQueryRangeResponseClass'    
+      type: object
+      x-keytiles-serialize-only-if-non-default-properties:
+      - eventTypes
+      - visitorTypes
+      - userAgentTypes
+      - tileLanguages
+      - tileTypes
+      - tileGroupPaths
+      - trafficSourceNames
+      properties:
+        eventTypes:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/MappingRecordClass'
+        visitorTypes:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/MappingRecordClass'
+        userAgentTypes:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/MappingRecordClass'
+        tileLanguages:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/MappingRecordClass'
+        tileTypes:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/MappingRecordClass'
+        tileGroupPaths:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/MappingRecordClass'
+        trafficSourceNames:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/MappingRecordClass'
 
     
