@@ -304,7 +304,7 @@ paths:
       description: >
                 Returns the break down for external referrers
                   
-                **IMPORTANT!** You find details in our [query-api v1.0](/?url=/keytiles-public-api/src/main/openapi/query-api-v1.0.yaml) contract!
+                **IMPORTANT!** You find details in our [query-api v1.0](/swagger-ui/?url=https://raw.githubusercontent.com/keytiles/keytiles-public-api/main/src/main/openapi/query-api-v1.0.yaml) contract!
 
 
 components:
