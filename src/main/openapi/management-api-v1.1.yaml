@@ -31,6 +31,8 @@ tags:
                 to the e-mail address of the User.
 - name:  Container management REST API
   description: Manage tracking and setup by managing the Container objects
+- name: Configuration
+  description: Query different Keytiles configurations
 
 paths:
   '/v1/management/users/rest':
@@ -662,6 +664,28 @@ paths:
               schema:
                 $ref: '#/components/schemas/MachineReadableManagementEndpointMessageResponseClass'
 
+
+  '/v1/management/config/referrerclassification':
+    get:
+      summary: Query Keytiles Referrer Classification config
+      description: >
+                    Returns the current Keytiles server side configuration which is used to classify traffic sources (aka Referrers)  
+                       
+                    More info: [https://www.keytiles.com/docs/how-does-referrer-grouping-work](https://www.keytiles.com/docs/how-does-referrer-grouping-work) 
+      tags:
+      - Configuration
+         
+      responses:
+        '200':
+          description: The Container resouce is returned
+          content:
+            'application/json':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ReferrerClassifierConfigClass'
+
+
 components:
 
   securitySchemes:
@@ -948,7 +972,7 @@ components:
           example: "webhits_v1.0"
         options:
           $ref: '#/components/schemas/ContainerCreationOptionsClass'
-          
+    
     ContainerClass:
       allOf:
       - $ref: '#/components/schemas/ContainerCreationClass'
@@ -1019,5 +1043,22 @@ components:
                 type: string
                 description: The e-mail address of the user. BUT it is possible this field is masked out due to data protection rules and only returns 'secret' as value
                     
+    ReferrerClassifierConfigClass:
+      type: object
+      properties:
+        name:
+          type: string
+        domainRegex:
+          type: string
+          description: Regex pattern matched against the domain name
+        pathRegex:
+          type: string
+          description: Regex pattern - if given then matched against the URI path part of the url
+        classifierClassName:
+          type: string
+          description: Name of the plugin responsible for doing the classification. We have 'SearchReferrer', 'SocialReferrer' and 'LinkReferrer' plugins (basically)
+        options:
+          type: string
+          description: Options are plugin dependent key:value pairs - encoded into a string format.  
                     
 
