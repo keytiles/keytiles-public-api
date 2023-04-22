@@ -407,10 +407,10 @@ components:
                      * **browser-desktop** - visitor is using a standard web browser running on a desktop computer
                      * **browser-mobile** - visitor is using a standard web browser running on a mobile device
                      * **bot** - visitor was a known bot
-                     * **other** - if during hit-collection (see Hit Collection API!) if an unsupported *userAgentType* is coming in
-                    Keytiles system will fall back to this value
-                     * **NULL** - if during hit-collection (see Hit Collection API!) *userAgentType* was not given or was NULL
-                    then Keytiles system will fall back to this value
+                     * **unknown** - if during hit-collection (see Hit Collection API!) *userAgentType* was not given or was NULL
+                    then Keytiles system will fall back to this value  
+                      
+                    tip: see [/v2/stat/webhits/{containerId}/idmappings](#/WebHits%20-%20Event%20counters/get_v2_stat_webhits__containerId__eventcounts) endpoint docs! With that you can query which userAgentTypes Keytiles have seen. 
 
     visitorTypesOnly:
       name: visitorTypesOnly
