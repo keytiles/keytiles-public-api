@@ -599,15 +599,27 @@ components:
       schema:
         type: string
       description: >
-                    **note:** This parameter is only used if you use '?limit=' or '?threshold=' parameters! Otherwise it is skipped. Server
-                    will not sort the tiles anyhow as this is extra effort without a purpose to do it on server side.  
-                      
                     When you use 'limit' or 'threshold' parameters you can optionally define which Counter column should be used to order the
-                    records so term like 'top 100 Tiles' becomes well defined.  
+                    records so term like 'top 100 Tiles' becomes well defined. Sorts the tiles in desc order based on the returned event counter field you specify here.  
                       
-                    By default this is the 'eventCountTotal' field - if you omit this parameter. But maybe you actually want something different...
+                    **note:** This parameter is only used if you use '?limit=' or '?threshold=' parameters! Otherwise query will fail. Reason: server
+                    will not sort the tiles anyhow without reason as this is extra effort to do it on server side.  
+                      
+                    You can use any event counter (see '?interest' parameter!) which is in the response for this.  
+                      
+                    By default the 'eventCountTotal' field is used - if you omit this parameter. But maybe you actually want something different...
                     Maybe you want to sort the 'top 100' tiles based on 'visitSessionStartedCount' because you are curious about the top landing
                     pages?  
+                      
+                    In some cases you also have extra options here which are the following:
+                     * 'eventCountTotal[:eventType1,eventType2,...,eventTypeN]'  
+                       If you use 'eventCountTotal' then you also have the possibility to provide a comma separated list of event types. If you do then                     
+                       only the SUM of those event types are used to form up the 'eventCountTotal' and participate in the sorting.  
+                       Some notes to consider:
+                         * This possibility can be only used together with using '?groupBy=eventType' - otherwise your query will fail
+                         * If you also use '?eventTypesOnly' filter then you can only use those event types which are part of the filter too - otherwise your
+                       query will fail.
+                      
                       
     mappingTypes:
       name: mappingTypes
@@ -668,6 +680,8 @@ components:
       - filter_not_supported
       # If 'sortBy' is pointing to a column which is not available due to 'interest' parameter this error is raised
       - sorting_column_not_in_interest
+      # If 'sortBy=eventCountTotal:evenType1,eventType2,...' then we need to have 'groupBy=eventType' param at least
+      - groupBy_eventType_not_set 
       
 
     # Let's merge the "local" error codes with the "global" ones in this enum
