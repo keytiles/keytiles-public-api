@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '2.0-beta'
+  version: '2.1.0'
   title: Keytiles Statistics query API
   description: >
             
@@ -275,6 +275,42 @@ paths:
                 $ref: 'common-types-v2.yaml#/components/schemas/BaseResponseClass'
 
 
+  '/v1/system/clock':
+    get:
+      summary: "To query the system clock"
+      tags:
+      - System
+      description: >
+                Returns the system clock
+                  
+                Since you often phrase queries when you need to include timestamps it makes sense to be able to query the system clock
+                which you can use to calculate potential diff in between your local (machine) clock and the server time. Considering this into
+                queries might help a lot to significantly improve your server queries  
+                  
+                *note:* This endpoint is actually still coming from API v1 as you can see - we added it here for better visbility only.
+
+      responses:
+        '200':
+          description: "OK response"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemClockResponseClass'
+
+  '/v1/stat/counters/{containerId}/external-referrers':
+  
+    get:
+      summary: "To query the external referrer distribution counters"
+      tags:
+      - Referrer counters
+      description: >
+                Returns the break down for external referrers  
+                  
+                *note:* This endpoint is actually still coming from API v1 as you can see - we added it here for better visbility only.  
+                  
+                **IMPORTANT!** You find details in our [query-api v1.0](/swagger-ui/?url=https%3A%2F%2Fraw.githubusercontent.com%2Fkeytiles%2Fkeytiles-public-api%2Fmain%2Fsrc%2Fmain%2Fopenapi%2Fquery-api-v1.0.yaml) contract!
+
+
 components:
 
   securitySchemes:
@@ -446,18 +482,23 @@ components:
                       
                     The possible values are the following:
                      * **newVisitors**  
-                       You will get the 'eventCountNoSession' and 'eventCountNewVisitor' counters additionally. If you request **bounceVisitors**
-                       too then 'eventCountBounceNewVisitor' counter is also added.
+                       You will get the 'eventCountUnknownNewVsRetVisitor' and 'eventCountNewVisitor' counters additionally. You can compute the number of
+                       "returning" visitors with the formula 'eventCountTotal - eventCountUnknownNewVsRetVisitor - eventCountNewVisitor'.  
                      * **bounceVisitors**  
-                       You will get the 'eventCountNoSession' and 'eventCountBounceVisitor' counters additionally. If you request **newVisitors**
-                       too then 'eventCountBounceNewVisitor' counter is also added.
+                       You will get the 'eventCountNoSession' and 'eventCountBounceVisitor' counters additionally. You can compute the number of "non-bounce" visitors
+                       with the formula 'eventCountTotal - eventCountNoSession - eventCountBounceVisitor'.
+                     * **newVisitors,bounceVisitors**  
+                       If you request both together then you do not simply get union of counters but actually a few more too. You would get 'eventCountNoSession', 'eventCountBounceUnknownNewVsRetVisitor',
+                       'eventCountNewVisitor', 'eventCountBounceVisitor' and 'eventCountBounceNewVisitor'.  
+                       We really recommend to check and read our article (see below) explaining things!
                      * **referrerCounts**  
                        You will get the 'eventCountDirect', 'eventCountSearchReferrer', 'eventCountSocialReferrer', 'eventCountLinkReferrer' 
-                       and 'eventCountCampaignReferrer' counters additionally.
+                       and 'eventCountCampaignReferrer' counters additionally. If you are curious about how many internal (visitor is visiting a certain article coming
+                       from another page on your website already) click happened you can compute this with formula 'eventCountTotal - eventCountDirect - eventCountSearchReferrer - eventCountSocialReferrer - eventCountLinkReferrer' easily. 
                      * **visitSession**  
                        You will get the 'eventCountNoSession', 'visitSessionStartedCount' and 'visitSessionEventFirstOfTypeCount' counters additionally.
-                     
-                     You can find more information about the event counters in our website Developer Area here: 
+                       
+                     You can find more information about the available event counters in our website Developer Area here: 
                      [Returned event counters and their meaning](https://www.keytiles.com/developer-area/query-api-v2/webhits-event-counter-queries#event-counters-reference)
                     
       example: 'newVisitors,bounceVisitors'
@@ -959,6 +1000,14 @@ components:
           items:
             $ref: '#/components/schemas/MappingRecordClass'
 
+    SystemClockResponseClass:
+      type: object
+      properties:
+        serverTime:
+          type: integer
+          format: int32
+          description: "Current server time in UNIX timestamp in UTC (seconds since Epoch) when this response was generated"
+          example: 1543355710
 
 
     

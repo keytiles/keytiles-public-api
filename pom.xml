@@ -207,7 +207,7 @@
 							<goal>generate</goal>
 						</goals>
 						<configuration>
-							<inputSpec>${project.basedir}/src/main/openapi/hit-collection-api-v1.1.yaml</inputSpec>
+							<inputSpec>${project.basedir}/src/main/openapi/hit-collection-api-v1.yaml</inputSpec>
 							<output>${project.basedir}/target/generated-sources/swagger/</output>
 							<modelPackage>com.keytiles.api.model.hitcollection.v1</modelPackage>
 							<language>com.keytiles.swagger.codegen.KeytilesJavaCodegen</language>
@@ -242,7 +242,7 @@
 							<goal>generate</goal>
 						</goals>
 						<configuration>
-							<inputSpec>${project.basedir}/src/main/openapi/management-api-v1.1.yaml</inputSpec>
+							<inputSpec>${project.basedir}/src/main/openapi/management-api-v1.yaml</inputSpec>
 							<output>${project.basedir}/target/generated-sources/swagger/</output>
 							<modelPackage>com.keytiles.api.model.management.v1</modelPackage>
 							<language>com.keytiles.swagger.codegen.KeytilesJavaCodegen</language>
@@ -312,7 +312,7 @@
 							<goal>generate</goal>
 						</goals>
 						<configuration>
-							<inputSpec>${project.basedir}/src/main/openapi/query-api-v2.0.yaml</inputSpec>
+							<inputSpec>${project.basedir}/src/main/openapi/query-api-v2.yaml</inputSpec>
 							<output>${project.basedir}/target/generated-sources/swagger/</output>
 							<modelPackage>com.keytiles.api.model.stat.v2</modelPackage>
 							<language>com.keytiles.swagger.codegen.KeytilesJavaCodegen</language>
