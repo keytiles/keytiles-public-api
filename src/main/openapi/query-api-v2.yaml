@@ -92,7 +92,7 @@ paths:
       - Other queries
       description: >
                 To optimize storage and response size Keytiles maps String identifiers to Numerical IDs. These are things like
-                'eventType' or 'userAgentType' etc.  
+                `eventType` or `userAgentType` etc.  
                 
                 These mapping records also keep track on when did we see first or last time the given incoming String.  
                   
@@ -215,7 +215,7 @@ paths:
                 Returns the measured event counts segregated by tiles and also information about the tiles themselves.  
                   
                 Although you also receive the aggregated counts in the response for comfort you should not use this endpoint
-                if you are not interested in tile level segregation! Then simply use the '/eventcounts' one! This query is more
+                if you are not interested in tile level segregation! Then simply use the `/eventcounts` one! This query is more
                 expensive and thus can be significantly slower too.  
                   
                 You might fine tune the query with the parameters.  
@@ -330,7 +330,7 @@ components:
       description: >
                     Data filter option. Comma separated list of event types you want to limit the query for.
                       
-                    note: if you have comma in your event names (strange, but ok...) you can escape that with '\\' character!  
+                    note: if you have comma in your event names (strange, but ok...) you can escape that with `\\` character!  
       example: 'view,contact-form-sent'
 
     tileIdsOnly:
@@ -342,7 +342,7 @@ components:
       description: >
                     Data filter option. Comma separated list of tileIds you want to limit the query for - of course in this case only the counters of these tiles are returned 
                       
-                    note: if you have comma in your tileIds (strange, but ok...) you can escape that with '\\' character!  
+                    note: if you have comma in your tileIds (strange, but ok...) you can escape that with `\\` character!  
       example: 'tile123,tile456,tile789'
 
     tileTypesOnly:
@@ -365,7 +365,7 @@ components:
                     Data filter option. Comma separated list of matchers (see below) which returns counters only for those Tiles who's tileGroupPath is matching to one of the listed matchers.
                     (So they combined with an OR operator if you send in more)  
                       
-                    note: if you have comma in your matcher (strange, but ok...) you can escape that with '\\' character!  
+                    note: if you have comma in your matcher (strange, but ok...) you can escape that with `\\` character!  
                       
                     You can use the **'\*'** character to match any substring. But where and how you put this Asterisk character matters! Let us show
                     you how through an example!
@@ -405,7 +405,7 @@ components:
       description: >
                     Data filter option. Comma separated list of *userAgentType*s you want to limit the query for.
                       
-                    note: if you have comma in your userAgent types (strange, but ok...) you can escape that with '\\' character!  
+                    note: if you have comma in your userAgent types (strange, but ok...) you can escape that with `\\` character!  
                       
                     The built-in values are the following:
                      * **browser-desktop** - visitor is using a standard web browser running on a desktop computer
@@ -425,7 +425,7 @@ components:
       description: >
                     Data filter option. Comma separated list of *visitorType*s you want to limit the query for.
                       
-                    note: if you have comma in your visitor types (strange, but ok...) you can escape that with '\\' character!  
+                    note: if you have comma in your visitor types (strange, but ok...) you can escape that with `\\` character!  
                       
                     **NULL** is a special value indicating cases where *visitorType* was not set.
                       
@@ -477,26 +477,26 @@ components:
       description: >
                     Comma separated list of your extra interest.  
                       
-                    It is "extra interest" because by default only the 'eventCountTotal' counter is returned. But with extending
+                    It is "extra interest" because by default only the `eventCountTotal` counter is returned. But with extending
                     your interest you can get more counters.  
                       
                     The possible values are the following:
                      * **newVisitors**  
-                       You will get the 'eventCountUnknownNewVsRetVisitor' and 'eventCountNewVisitor' counters additionally. You can compute the number of
-                       "returning" visitors with the formula 'eventCountTotal - eventCountUnknownNewVsRetVisitor - eventCountNewVisitor'.  
+                       You will get the `eventCountUnknownNewVsRetVisitor` and `eventCountNewVisitor` counters additionally. You can compute the number of
+                       "returning" visitors with the formula `eventCountTotal - eventCountUnknownNewVsRetVisitor - eventCountNewVisitor`.  
                      * **bounceVisitors**  
-                       You will get the 'eventCountNoSession' and 'eventCountBounceVisitor' counters additionally. You can compute the number of "non-bounce" visitors
-                       with the formula 'eventCountTotal - eventCountNoSession - eventCountBounceVisitor'.
+                       You will get the `eventCountNoSession` and `eventCountBounceVisitor` counters additionally. You can compute the number of "non-bounce" visitors
+                       with the formula `eventCountTotal - eventCountNoSession - eventCountBounceVisitor`.
                      * **newVisitors,bounceVisitors**  
-                       If you request both together then you do not simply get union of counters but actually a few more too. You would get 'eventCountNoSession', 'eventCountBounceUnknownNewVsRetVisitor',
-                       'eventCountNewVisitor', 'eventCountBounceVisitor' and 'eventCountBounceNewVisitor'.  
+                       If you request both together then you do not simply get union of counters but actually a few more too. You would get `eventCountNoSession`, `eventCountBounceUnknownNewVsRetVisitor`,
+                       `eventCountNewVisitor`, `eventCountBounceVisitor` and `eventCountBounceNewVisitor`.  
                        We really recommend to check and read our article (see below) explaining things!
                      * **referrerCounts**  
-                       You will get the 'eventCountDirect', 'eventCountSearchReferrer', 'eventCountSocialReferrer', 'eventCountLinkReferrer' 
-                       and 'eventCountCampaignReferrer' counters additionally. If you are curious about how many internal (visitor is visiting a certain article coming
-                       from another page on your website already) click happened you can compute this with formula 'eventCountTotal - eventCountDirect - eventCountSearchReferrer - eventCountSocialReferrer - eventCountLinkReferrer' easily. 
+                       You will get the `eventCountDirect`, `eventCountSearchReferrer`, `eventCountSocialReferrer`, `eventCountLinkReferrer` 
+                       and `eventCountCampaignReferrer` counters additionally. If you are curious about how many internal (visitor is visiting a certain article coming
+                       from another page on your website already) click happened you can compute this with formula `eventCountTotal - eventCountDirect - eventCountSearchReferrer - eventCountSocialReferrer - eventCountLinkReferrer` easily. 
                      * **visitSession**  
-                       You will get the 'eventCountNoSession', 'visitSessionStartedCount' and 'visitSessionEventFirstOfTypeCount' counters additionally.
+                       You will get the `eventCountNoSession`, `visitSessionStartedCount` and `visitSessionEventFirstOfTypeCount` counters additionally.
                        
                      You can find more information about the available event counters in our website Developer Area here: 
                      [Returned event counters and their meaning](https://www.keytiles.com/developer-area/query-api-v2/webhits-event-counter-queries#event-counters-reference)
@@ -510,10 +510,10 @@ components:
       schema:
         type: string
       description: >
-                    This is a boolean parameter so you can send 'true' or 'false' here as a value. By default the value is 'true'.  
+                    This is a boolean parameter so you can send `true` or `false` here as a value. By default the value is `true`.  
                       
                     When you query the tile counters apart from the counters in the response Keytiles also returns information about the tiles
-                    like 'firstSeen', 'lastSeen' (see: *TileClass*) and 'titles' and 'urls' (see: *TileGroupPathClass*). The fact is that due to
+                    like `firstSeen`, `lastSeen` (see: *TileClass*) and `titles` and `urls` (see: *TileGroupPathClass*). The fact is that due to
                     server side storage logic returning this information happens in an extra step making the query more expensive and slower.  
                       
                     However there are scenarios when you do not really need this data (you might know these from an earlier query) so to speed
@@ -532,10 +532,10 @@ components:
                       
                     It is possible to request the counters not fully aggregated but with a break down within the queried interval.
                     By adding this parameter you are requesting this option. You can specify the value in different units.
-                     * 'h' = hours
-                     * 'd' = days
+                     * `h` = hours
+                     * `d` = days
                      
-                    So '2h' = 2 hours, '1d' = 1 day
+                    So `2h` = 2 hours, `1d` = 1 day
       example: 'eventType,time:1h'
 
   
@@ -553,27 +553,27 @@ components:
                     However if you for example want to see "ok but how many different events did I get" you need a way to tell this wish to Keytiles.  
                       
                     In this case you could send in `groupBy=eventType` and as a result in the response instead of the one 1242 (sum) number you will see
-                    this came together from view 846, download 129 and contact-form-sent 267 times. So you get a break down by 'eventType' in this
+                    this came together from view 846, download 129 and contact-form-sent 267 times. So you get a break down by `eventType` in this
                     case. This is useful if your goal is to show on a bar chart for example the different event types ratio.  
                       
                     And if you want to get this data in an - let's say - hourly resolution then you can go further and send in `groupBy=eventType,time:1h`
                     in this parameter.  
                       
-                    There are more criteria not just 'eventType' or 'time' and you can combine them. But of course more criteria you request makes the response
+                    There are more criteria not just `eventType` or `time` and you can combine them. But of course more criteria you request makes the response
                     bigger and bigger as the returned counters are broke down into more and more groups so you have to keep an eye on what you really need!  
                        
                     The possible values are the following:
-                     * **time:x<m|h|d|w>** - you can specify a time window like '2h' which means 2 hours groups ('m'=minutes, 'h'=hours, 'd'=days, 'w'=weeks) with this - you get the counters aggregated per time window in the response
+                     * **time:x<m|h|d|w>** - you can specify a time window like `2h` which means 2 hours groups (`m`=minutes, `h`=hours, `d`=days, `w`=weeks) with this - you get the counters aggregated per time window in the response
                      * **eventType** - you get the counters aggregated per event types in the response
                      * **userAgentType** - you get the counters aggregated per userAgent types in the response
                      * **visitorType** - you get the counters aggregated per visitor types in the response
                      * **tileType** - you get the counters aggregated per tileTypes in the response
                      * **tileGroupPath** - you get the counters aggregated per tileGroupPaths in the response
                      * **tileLanguage** - you get the counters aggregated per languages in the response
-                     * **trafficSourceType** - you get the counters aggregated per traffic source types in the response like 'search', 'social', etc
-                     * **trafficSourceName[:max]** - you get the counters aggregated per traffic sources in the response like 'Facebook', etc
+                     * **trafficSourceType** - you get the counters aggregated per traffic source types in the response like `search`, `social`, etc
+                     * **trafficSourceName[:max]** - you get the counters aggregated per traffic sources in the response like `Facebook`, etc
                                                      but since there could be a lot you can optionally specify "max top 10" in which case you get your
-                                                     top 10 plus all 'other' as one group
+                                                     top 10 plus all `other` as one group
       example: 'eventType,time:1h'
   
     limit:
@@ -596,9 +596,9 @@ components:
                     In this parameter you can setup a threshold either with absolute value or with percentage.  
                       
                     If you use
-                     * absolute value, like 'threshold=10' then you will get back only those tiles and their details who received at least 10 hits
+                     * absolute value, like `threshold=10` then you will get back only those tiles and their details who received at least 10 hits
                        during the query range
-                     * percentage value, like 'threshold=3.5%' then you will get back only those tiles and their details who received at least 3.5% of the
+                     * percentage value, like `threshold=3.5%` then you will get back only those tiles and their details who received at least 3.5% of the
                        hits got by the tile which received the most hits during the query range                      
 
     sortBy:
@@ -608,25 +608,25 @@ components:
       schema:
         type: string
       description: >
-                    When you use 'limit' or 'threshold' parameters you can optionally define which Counter column should be used to order the
+                    When you use `limit` or `threshold` parameters you can optionally define which Counter column should be used to order the
                     records so term like 'top 100 Tiles' becomes well defined. Sorts the tiles in desc order based on the returned event counter field you specify here.  
                       
-                    **note:** This parameter is only used if you use '?limit=' or '?threshold=' parameters! Otherwise query will fail. Reason: server
+                    **note:** This parameter is only used if you use `?limit=` or `?threshold=` parameters! Otherwise query will fail. Reason: server
                     will not sort the tiles anyhow without reason as this is extra effort to do it on server side.  
                       
-                    You can use any event counter (see '?interest' parameter!) which is in the response for this.  
+                    You can use any event counter (see `?interest` parameter!) which is in the response for this.  
                       
-                    By default the 'eventCountTotal' field is used - if you omit this parameter. But maybe you actually want something different...
-                    Maybe you want to sort the 'top 100' tiles based on 'visitSessionStartedCount' because you are curious about the top landing
+                    By default the `eventCountTotal` field is used - if you omit this parameter. But maybe you actually want something different...
+                    Maybe you want to sort the 'top 100' tiles based on `visitSessionStartedCount` because you are curious about the top landing
                     pages?  
                       
                     In some cases you also have extra options here which are the following:
-                     * 'eventCountTotal[:eventType1,eventType2,...,eventTypeN]'  
-                       If you use 'eventCountTotal' then you also have the possibility to provide a comma separated list of event types. If you do then                     
-                       only the SUM of those event types are used to form up the 'eventCountTotal' and participate in the sorting.  
+                     * `eventCountTotal[:eventType1,eventType2,...,eventTypeN]`  
+                       If you use `eventCountTotal` then you also have the possibility to provide a comma separated list of event types. If you do then                     
+                       only the SUM of those event types are used to form up the `eventCountTotal` and participate in the sorting.  
                        Some notes to consider:
-                         * This possibility can be only used together with using '?groupBy=eventType' - otherwise your query will fail
-                         * If you also use '?eventTypesOnly' filter then you can only use those event types which are part of the filter too - otherwise your
+                         * This possibility can be only used together with using `?groupBy=eventType` - otherwise your query will fail
+                         * If you also use `?eventTypesOnly` filter then you can only use those event types which are part of the filter too - otherwise your
                        query will fail.
                       
                       
@@ -653,7 +653,7 @@ components:
       schema:
         type: string
       description: >
-                    This is a boolean parameter so you can send 'true' or 'false' here as a value. By default the value is 'false'.  
+                    This is a boolean parameter so you can send `true` or `false` here as a value. By default the value is `false`.  
                       
                     This controls whether to add first/last seen timetamps to each record or not. In most of the cases this is irrelevant
                     so to save response size by default we do not do this
@@ -734,7 +734,7 @@ components:
           description: >
                         These are the rows of the data - each row represented by an array of Integer values.  
                           
-                        In rows the number of columns and the index of each colum is identical to the description you find in /resultColumns entry!
+                        In rows the number of columns and the index of each colum is identical to the description you find in `/resultColumns` entry!
           items:
             type: array
             items:
@@ -762,7 +762,7 @@ components:
           type: integer
           format: int32
           description: > 
-                        Gives you the type of the tile. The integer is the ID of the tile type which you can get back from /groupByMappings/tileType part  
+                        Gives you the type of the tile. The integer is the ID of the tile type which you can get back from `/groupByMappings/tileType` part  
                           
                         note: this value is always present
         firstSeen:
@@ -772,7 +772,7 @@ components:
           description: >
                         When did we register the first event for this tile? Basically: publish time of this tile. UNIX timestamp (seconds since Epoch) in UTC.  
                           
-                        note: this info you just get if you have NOT executed the request with ?includeTileDetails=false!
+                        note: this info you just get if you have NOT executed the request with `?includeTileDetails=false`!
           example: 1543355708
         lastSeen:
           type: integer
@@ -781,7 +781,7 @@ components:
           description: >
                         When did we register the last event for this tile? UNIX timestamp (seconds since Epoch) in UTC.  
                           
-                        note: this info you just get if you have NOT executed the request with ?includeTileDetails=false!
+                        note: this info you just get if you have NOT executed the request with `?includeTileDetails=false`!
           example: 1543355708
         tileGroupPaths:
           type: object
@@ -789,7 +789,7 @@ components:
           description: >
                         Contains information about under which tileGroupPaths this Tile showed up in the query range. This is a map. Keys are IDs assigned to tileGroupPath - you can resolve them  
                           
-                        note: this info you just get if you have NOT executed the request with ?includeTileDetails=false!
+                        note: this info you just get if you have NOT executed the request with `?includeTileDetails=false`!
           additionalProperties:
             $ref: '#/components/schemas/TileGroupPathClass'
         counterRows:
@@ -894,9 +894,9 @@ components:
     EventCountersHeaderClass:
       type: object
       description: >
-                    You will get data as an array of Integer values - like in a .csv file. This object gives you the name of the columns. So the 'headers' so to speak.  
+                    You will get data as an array of Integer values - like in a .csv file. This object gives you the name of the columns. So the `headers` so to speak.  
                       
-                    In the data rows (int array) you will always have 'keyColumns' + 'counterColumns' number of integers and you need to interpret them in this order.  
+                    In the data rows (int array) you will always have `keyColumns` + `counterColumns` number of integers and you need to interpret them in this order.  
                       
                     Possible counter columns are the following:
                     
@@ -908,7 +908,7 @@ components:
           example: ['time', 'eventType']
           nullable: false
           description: >
-                        This array tells you the names of key columns - in an index maintained form. This just has values if you request 'groupBy' setup.  
+                        This array tells you the names of key columns - in an index maintained form. This just has values if you request `groupBy` setup.  
                           
                         Possible key columns are the following:
                          * time
@@ -928,9 +928,9 @@ components:
           nullable: false
           description: >
                         This array tells you the names of counter columns - in an index maintained form.
-                        But please keep in mind: these are always placed after the 'keyColumns'!    
+                        But please keep in mind: these are always placed after the `keyColumns`!    
                           
-                        Please note: what you get here depends on what you request using the '?interest=' parameter. See 'interest' parameter description for more details!
+                        Please note: what you get here depends on what you request using the `?interest=` parameter. See 'interest' parameter description for more details!
 
     MappingRecordClass:
       type: object
