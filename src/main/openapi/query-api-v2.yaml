@@ -488,9 +488,9 @@ components:
                        You will get the `eventCountNoSession` and `eventCountBounceVisitor` counters additionally. You can compute the number of "non-bounce" visitors
                        with the formula `eventCountTotal - eventCountNoSession - eventCountBounceVisitor`.
                      * **newVisitors,bounceVisitors**  
-                       If you request both together then you do not simply get union of counters but actually a few more too. You would get `eventCountNoSession`, `eventCountBounceUnknownNewVsRetVisitor`,
-                       `eventCountNewVisitor`, `eventCountBounceVisitor` and `eventCountBounceNewVisitor`.  
-                       We really recommend to check and read our article (see below) explaining things!
+                       If you request both together then you do not simply get union of counters but actually a few more too. You would get `eventCountNoSession`, `eventCountUnknownNewVsRetVisitor`, 
+                       `eventCountNewVisitor`, `eventCountBounceVisitor`, `eventCountBounceNewVisitor` and `eventCountBounceUnknownNewVsRetVisitor`.  
+                       We *really recommend* to check and read our article (see below) explaining things!
                      * **referrerCounts**  
                        You will get the `eventCountDirect`, `eventCountSearchReferrer`, `eventCountSocialReferrer`, `eventCountLinkReferrer` 
                        and `eventCountCampaignReferrer` counters additionally. If you are curious about how many internal (visitor is visiting a certain article coming
