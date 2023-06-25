@@ -124,12 +124,7 @@ paths:
       security:
       - basicAuth: []
       parameters:
-        - name: userIdTerm
-          in: path
-          required: true
-          description: 'ID of the user to query - it can be both: the e-mail address or the id too'
-          schema:
-            type: string
+      - $ref: '#/components/parameters/userIdTerm'
         
       responses:
         '200':
@@ -178,12 +173,7 @@ paths:
             schema:
               $ref: '#/components/schemas/UserClass'
       parameters:
-        - name: userIdTerm
-          in: path
-          required: true
-          description: 'ID of the user to query - it can be both: the e-mail address or the id too'
-          schema:
-            type: string
+      - $ref: '#/components/parameters/userIdTerm'
         
       responses:
         '200':
@@ -245,12 +235,7 @@ paths:
       security:
       - basicAuth: []
       parameters:
-        - name: userIdTerm
-          in: path
-          required: true
-          description: 'ID of the user to query - it can be both: the e-mail address or the id too'
-          schema:
-            type: string
+      - $ref: '#/components/parameters/userIdTerm'
         
       responses:
         '200':
@@ -296,12 +281,7 @@ paths:
       - basicAuth: []
       - OneTimeTokenAuth: []
       parameters:
-        - name: userIdTerm
-          in: path
-          required: true
-          description: 'ID of the user to query - it can be both: the e-mail address or the id too'
-          schema:
-            type: string
+      - $ref: '#/components/parameters/userIdTerm'
       requestBody:
         description: The new password to set
         content:
@@ -376,12 +356,7 @@ paths:
       tags:
       - User related actions API
       parameters:
-        - name: userIdTerm
-          in: path
-          required: true
-          description: 'ID of the user to query - it can be both: the e-mail address or the id too'
-          schema:
-            type: string
+      - $ref: '#/components/parameters/userIdTerm'
       requestBody:
         description: The password to challenge (simple text)
         content:
@@ -454,17 +429,17 @@ paths:
       security:
       - basicAuth: []
       parameters:
-        - name: containerIds
-          in: query
-          required: false
-          description: >
-                        A comma separated list of Container IDs to query.  
-                          
-                        Please note! The method returns only Containers the user has at least 'view' permission to. So it is possible
-                        that in the response you do not get back all the Containers you requested if this rule is not fulfilled.
-          schema:
-            type: string
-        - $ref: '#/components/parameters/includeUserDetails'
+      - name: containerIds
+        in: query
+        required: false
+        description: >
+                      A comma separated list of Container IDs to query.  
+                        
+                      Please note! The method returns only Containers the user has at least 'view' permission to. So it is possible
+                      that in the response you do not get back all the Containers you requested if this rule is not fulfilled.
+        schema:
+          type: string
+      - $ref: '#/components/parameters/includeUserDetails'
         
       responses:
         '200':
@@ -556,13 +531,8 @@ paths:
       security:
       - basicAuth: []
       parameters:
-        - name: containerId
-          in: path
-          required: true
-          description: 'the ID of the Container'
-          schema:
-            type: string
-        - $ref: '#/components/parameters/includeUserDetails'
+      - $ref: '#/components/parameters/containerId'
+      - $ref: '#/components/parameters/includeUserDetails'
          
       responses:
         '200':
@@ -599,12 +569,7 @@ paths:
       security:
       - basicAuth: []
       parameters:
-        - name: containerId
-          in: path
-          required: true
-          description: 'the ID of the Container'
-          schema:
-            type: string
+      - $ref: '#/components/parameters/containerId'
       requestBody:
         description: Please note that the "isEnabled" attribute is only allowed for Keytiles Admins to change!
         content:
@@ -651,12 +616,7 @@ paths:
       security:
       - basicAuth: []
       parameters:
-        - name: containerId
-          in: path
-          required: true
-          description: 'the ID of the Container'
-          schema:
-            type: string
+      - $ref: '#/components/parameters/containerId'
         
       responses:
         '200':
@@ -722,6 +682,20 @@ components:
       description: 'Some triggered (RPC style) actions result in a Token generation - which is sent (in some form) to the mail address of the User. Then you can use this Token to authenticate for executing a query. Note: typically these Tokens can be used once and also within a strict expiry period.' 
 
   parameters:
+    containerId:
+      name: containerId
+      in: path
+      required: true
+      description: 'the ID of the Container'
+      schema:
+        type: string
+    userIdTerm:
+      name: userIdTerm
+      in: path
+      required: true
+      description: 'ID of the user to query - it can be both: the e-mail address or the id too'
+      schema:
+        type: string      
     includeUserDetails:
       name: includeUserDetails
       in: query
