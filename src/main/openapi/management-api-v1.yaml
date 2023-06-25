@@ -68,6 +68,7 @@ paths:
             'application/json':
               schema:
                 $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                
           headers:
             'X-UserId':
               schema:
@@ -88,25 +89,29 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                #$ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                $ref: '#/components/schemas/MachineReadableManagementEndpointMessageResponseClass'
         '401':
           description: "Authentication failed - you provided invalid credentials"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                #$ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                $ref: '#/components/schemas/MachineReadableManagementEndpointMessageResponseClass'
         '403':
           description: "You do not have permission to do this with the given (or not given at all) credentials"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'  
+                #$ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                $ref: '#/components/schemas/MachineReadableManagementEndpointMessageResponseClass'
         '409':
           description: "This User can not be created as some unique constraints are violated - e.g. e-mail address is already taken. You get more info in the response."
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                #$ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                $ref: '#/components/schemas/MachineReadableManagementEndpointMessageResponseClass'
 
   '/v1/management/users/rest/{userIdTerm}':
     get:
@@ -138,19 +143,22 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                #$ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                $ref: '#/components/schemas/MachineReadableManagementEndpointMessageResponseClass'
         '401':
           description: "Authentication failed - you provided invalid credentials or not provided credentials at all"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                #$ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                $ref: '#/components/schemas/MachineReadableManagementEndpointMessageResponseClass'
         '403':
           description: "You do not have permission to do this with the given credentials"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                #$ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                $ref: '#/components/schemas/MachineReadableManagementEndpointMessageResponseClass'
 
     put:
       summary: Update the user data
@@ -186,7 +194,7 @@ paths:
                 $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
         '202':
           description: >
-                        The User resouce is can be partially modified already but further action is needed to complete the requested changes.
+                        The User resouce is partially modified already but further action is needed to complete the requested changes.
                         
                         Typically this happens when you wanted to modify the e-mail address of the user which requires additional action.
           content:
@@ -198,26 +206,30 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                #$ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                $ref: '#/components/schemas/MachineReadableManagementEndpointMessageResponseClass'
 
         '404':
           description: "The given user does not exist"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                #$ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                $ref: '#/components/schemas/MachineReadableManagementEndpointMessageResponseClass'
         '401':
           description: "Authentication failed - you provided invalid credentials or not provided credentials at all"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                #$ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                $ref: '#/components/schemas/MachineReadableManagementEndpointMessageResponseClass'
         '403':
           description: "You do not have permission to do this with the given credentials"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                #$ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                $ref: '#/components/schemas/MachineReadableManagementEndpointMessageResponseClass'
 
     delete:
       summary: Remove the given User from the system
@@ -252,19 +264,22 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                #$ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                $ref: '#/components/schemas/MachineReadableManagementEndpointMessageResponseClass'
         '401':
           description: "Authentication failed - you provided invalid credentials or not provided credentials at all"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                #$ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                $ref: '#/components/schemas/MachineReadableManagementEndpointMessageResponseClass'
         '403':
           description: "You do not have permission to do this with the given credentials"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                #$ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                $ref: '#/components/schemas/MachineReadableManagementEndpointMessageResponseClass'
 
   '/v1/management/users/rest/{userIdTerm}/password':
     put:
@@ -307,19 +322,22 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                #$ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                $ref: '#/components/schemas/MachineReadableManagementEndpointMessageResponseClass'
         '401':
           description: "Authentication failed - you provided invalid credentials or token"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                #$ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                $ref: '#/components/schemas/MachineReadableManagementEndpointMessageResponseClass'
         '403':
           description: "You do not have permission to do this with the given credentials"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                #$ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                $ref: '#/components/schemas/MachineReadableManagementEndpointMessageResponseClass'
 
   '/v1/management/users/actions/{userIdTerm}/password/reset':
     get:
@@ -519,13 +537,15 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                #$ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                $ref: '#/components/schemas/MachineReadableManagementEndpointMessageResponseClass'
         '401':
           description: "Authentication failed - you provided invalid credentials or not provided credentials at all"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                #$ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
+                $ref: '#/components/schemas/MachineReadableManagementEndpointMessageResponseClass'
 
   '/v1/management/containers/rest/{containerId}':
     get:
@@ -598,7 +618,7 @@ paths:
           content:
             'application/json':
               schema:
-                $ref: '#/components/schemas/MachineReadableManagementEndpointMessageResponseClass'
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
         '400':
           description: "There are problems with the update request. Further information is available in the response."
           content:
@@ -644,7 +664,7 @@ paths:
           content:
             'application/json':
               schema:
-                $ref: '#/components/schemas/MachineReadableManagementEndpointMessageResponseClass'
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
         '404':
           description: "The given Container does not exist"
           content:
@@ -757,9 +777,9 @@ components:
       - protectedField_changed
       # When creating/updating (User, Container, etc) resources the incoming request does not contain required information to fulfill the request - a property or subresource is missing 
       - requiredField_missing
-      # The key to manage key-value is missing
+      # The key to manage key-value pair is missing
       - key_missing
-      # The key to manage key-value is not found or something is wrong with it
+      # The key to manage key-value pair is not found or something is wrong with it
       - key_invalid
       # The key-value request data is invalid
       - keyValueData_invalid
@@ -768,6 +788,7 @@ components:
     # Let's merge the "local" error codes with the "global" ones in this enum
     # Management API endpoints can return the union of them 
     ManagementEndpointErrorCodes:
+      description: NOTE! Error codes is an Enum. Unfortunately in OpenApi (so far) there is no possibility to provide description for Enum values. But we have detailed description of each error codes! Please check the OpenApi file in our Github repo - you find them as comments for each Enum values! 
       oneOf:
       - $ref: "#/components/schemas/ManagementEndpointLocalErrorCodes"
       - $ref: "common-types-v2.yaml#/components/schemas/CommonErrorCodes"
