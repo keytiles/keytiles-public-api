@@ -925,7 +925,7 @@ components:
           type: array
           items:
             type: string
-          example: ['eventCountTotal', 'eventCountNoSession', 'eventCountNewVisitor', 'eventCountBounceVisitor', 'eventCountBounceNewVisitor']
+          example: ['eventCountTotal', 'eventCountNoSession', 'eventCountNewVisitor', 'eventCountBounceVisitor', 'eventCountBounceNewVisitor', 'eventCountBounceUnknownNewVsRetVisitor']
           nullable: false
           description: >
                         This array tells you the names of counter columns - in an index maintained form.
