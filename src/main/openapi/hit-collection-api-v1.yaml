@@ -147,8 +147,6 @@ components:
                          
                         but you can send in even totally **custom strings as eventTypes**! Keytiles will track them correctly.  
                           
-                        **PLEASE NOTE:** Currently only 'pageview' is supported on our UIs but this will change soon :-)
-                        
           nullable: false
         action:
           type: string
