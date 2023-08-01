@@ -154,6 +154,22 @@ components:
                               
                             To understand better what this field is you should check [https://keytiles.com/developer-area/hit-attributes](https://keytiles.com/developer-area/hit-attributes#tileUrl-attribute)  
               nullable: true
+
+            tileLanguage:
+              type: string
+              description: >
+                            Optional. The ISO 639-1 language code of the tile the visitor was interacting with when the hit was generated.  
+              nullable: true
+
+            visitorType:
+              type: string
+              description: >
+                            Optional. If you want to distinguish let's say "free" visitors generated traffic from "paid" visitors then this is the
+                            place you can do this by providing visitor type. It's up to you how you want to call and how many different visitor
+                            types you want to distinguish.   
+              nullable: true
+
+
             uniqueWebClientId:
               type: string
               description: >
