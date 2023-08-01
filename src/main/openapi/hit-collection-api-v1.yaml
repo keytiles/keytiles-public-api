@@ -176,12 +176,6 @@ components:
                         types you want to distinguish.   
           nullable: true
 
-        tileLanguage:
-          type: string
-          description: >
-                        Optional. The ISO 639-1 language code of the tile the visitor was interacting with when the hit was generated.  
-          nullable: true
-              
         tileType:
           type: string
           description: >
