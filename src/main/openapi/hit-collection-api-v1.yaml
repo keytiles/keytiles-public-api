@@ -167,7 +167,21 @@ components:
                            Optional parameter. By default it is "false" as Keytiles by default measures incoming events belong to the same tileId just once
                            per VisitSession (forming up the term e.g. "unique pageview"). But if you set this to "true" then Keytiles will not make
                            the event "unique" in the VisitSession but if it occurs 5 times then will be measured 5 times.   
-                         
+
+        visitorType:
+          type: string
+          description: >
+                        Optional. If you want to distinguish let's say "free" visitors generated traffic from "paid" visitors then this is the
+                        place you can do this by providing visitor type. It's up to you how you want to call and how many different visitor
+                        types you want to distinguish.   
+          nullable: true
+
+        tileLanguage:
+          type: string
+          description: >
+                        Optional. The ISO 639-1 language code of the tile the visitor was interacting with when the hit was generated.  
+          nullable: true
+              
         tileType:
           type: string
           description: >
