@@ -14,7 +14,7 @@
 
 		<jackson.version>2.13.0</jackson.version>
 		
-		<keytiles.codegen.version>2.0.0-SNAPSHOT</keytiles.codegen.version>
+		<keytiles.codegen.version>2.0.0</keytiles.codegen.version>
 
 		<!-- Plugins -->
 		<maven.release.plugin>2.5.3</maven.release.plugin>
@@ -277,7 +277,7 @@
 							<goal>generate</goal>
 						</goals>
 						<configuration>
-							<inputSpec>${project.basedir}/src/main/openapi/query-api-v1.0.yaml</inputSpec>
+							<inputSpec>${project.basedir}/src/main/openapi/query-api-v1.yaml</inputSpec>
 							<output>${project.basedir}/target/generated-sources/swagger/</output>
 							<modelPackage>com.keytiles.api.model.stat.v1</modelPackage>
 							<language>com.keytiles.swagger.codegen.KeytilesJavaCodegen</language>

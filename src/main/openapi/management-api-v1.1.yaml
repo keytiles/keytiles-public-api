@@ -2,7 +2,7 @@ openapi: 3.0.1
 info:
   title: Keytiles Management API
   description: API to manage users, permissions, containers, etc.
-  version: 1.2.0
+  version: 1.1.0
   
 servers:
 - url: https://api.keytiles.com/api
@@ -725,8 +725,6 @@ components:
       - containerData_jsonDecodeFailed
       # Every Container must have at least one (normal) user as admin. Error is thrown when this is violated so if the operation would be completed there would not be admin 
       - containerData_admin_missing
-      # Every Container must have at least one (normal) user as finance guy. Error is thrown when this is violated so if the operation would be completed there would not be admin 
-      - containerData_finance_missing
       # 'userIdTerm' is either a user ID or the email of the user. The operation must know this to find the user but this information is missing
       - userIdTerm_missing
       # 'userIdTerm' is either a user ID or the email of the user. The operation received an information which does not seem to be valid - user could not be found
@@ -796,22 +794,6 @@ components:
           default: []
           description: 'List of errors/warnings'
         
-    UserContainerLink:
-      type: object
-      required:
-      - containerId
-      - roles
-      properties:
-        containerId:
-          type: string
-          description: The alpha-numeric unique id of the Container
-        # This field is deprecated! use 'roles' instead
-        role:
-          $ref: '#/components/schemas/UserContainerRoleClass'
-        roles:
-          type: array
-          items:
-            $ref: '#/components/schemas/UserContainerRoleClassV2'
   
     UserCreationClass:
       type: object
@@ -857,9 +839,6 @@ components:
                         it will require a confirmation of the new e-mail address - a Token will be generated and sent out to the new
                         e-mail address to complete the request. 
           example: john.smith@domain.com
-        password:
-          type: string
-          description: The password of the user used only for updating it but never shown.
         nickname:
           type: string
           minLength: 3
@@ -871,7 +850,6 @@ components:
           description: When did this user log in recently? UNIX timestamp in UTC (seconds since Epoch)
           example: 1543355608
           readOnly: true
-          nullable: true
         createdTimestamp:
           type: integer
           format: int32
@@ -892,70 +870,84 @@ components:
                         list comes empty as nobody else should see this information.
           type: array
           items:
-            $ref: '#/components/schemas/UserContainerLink'
+            type: object
+            properties:
+              containerId:
+                type: string
+                description: The alpha-numeric unique id of the Container
+              role:
+                $ref: '#/components/schemas/UserContainerRoleClass'
 
     UserContainerRoleClass:
-      deprecated: true
-      # as became deprecated it is possible that this will become null at some point
-      nullable: true
-      type: string
-      enum: [view, admin]
-      description: DEPRECATED! Older representation of the roles of this link affecting what the User can do with this Container - please use UserContainerRoleClassV2 instead
-
-    UserContainerRoleClassV2:
-      type: string
-      enum: [view, admin, finance]
-      description: Newer definition of the roles of this link affecting what the User can do with this Container
-
+          type: string
+          enum: [view, admin]
+          description: Defines the role of this link affecting what the User can do with this Container
             
-    ContainerOptionsClass:
-      nullable: false
+    UserContainerLinkClass:
       type: object
-      description: >
-                    Containers have settings - options is the object represents a collection of settings. For creating a container it is enough to start with the mandatory settings. They can be tweaked later via PUT.  
-                      
-                    The following options are available:
-                     * **trackedDomains** : Array - Mandatory setting. List of domain names the tracking in this Container will accept as hit origin.
-                     * **lookBackTimeWindowSeconds** : Integer - Optional setting. When the real time UI is started this is the default "look back" time period for queries for your users
-                     * **visitSessionTimeoutSeconds** : Integer - Optional setting. Controls the visitSession length for your tracking. If not set then the system default value is used which is 20 minutes.
-                     * **preservedQueryParams** : Array - Optional setting. Normally Keytiles is cleaning the URLs the hits are coming from and as a part of this procedure all query parameters are also removed. Except the ones you list here in this array... 
-                     * **trialEndsAt** : Integer - Optional setting. Gives the time in UNIX timestamp when the trial period of this container ends. If null that means the container is not in trial period. Note: this can not be modified directly!
-                     * **writeTrafficLimit** : Integer - Controlls the daily write traffic (number of inbound hits) limit. Note: this can not be modified directly!
-                     * **readTrafficLimit** : Integer - Controlls the daily read traffic limit. Note: this can not be modified directly!
-      additionalProperties:
-        type: object
-        example: '<the name>'
-        
-    ContainerUserLink:
-      type: object
-      required:
-      - userId
-      - roles
+      description: Represents a link between a User and a Container
       properties:
         userId:
           type: string
           description: The alpha-numeric unique id of the User
-        # This field is deprecated! use 'roles' instead
+        containerId:
+          type: string
+          description: The alpha-numeric unique id of the Container
         role:
           $ref: '#/components/schemas/UserContainerRoleClass'
-        roles:
-          type: array
-          items:
-            $ref: '#/components/schemas/UserContainerRoleClassV2'    
    
-    ContainerUserDetails:
+   
+    ContainerCreationOptionsClass:
       type: object
-      required:
-      - userId
+      description: Containers have settings - options is the object represents a collection of settings. For creating a container it is enough to start with the mandatory settings. They can be tweaked later via PUT.
       properties:
-        userId:
-          type: string
-          description: The ID of the User
-        nickname:
-          type: string
-        email:
-          type: string
-          description: The e-mail address of the user. BUT it is possible this field is masked out due to data protection rules and only returns 'secret' as value
+        trackedDomains:
+          description: Mandatory setting. List of domain names the tracking in this Container will accept as hit origin.                      
+          type: array
+          uniqueItems: true
+          minLength: 1
+          items:
+            type: string
+
+    ContainerOptionsClass:
+      allOf:
+      - $ref: '#/components/schemas/ContainerCreationOptionsClass'
+      type: object
+      description: Containers have settings - options is the object represents a collection of settings
+      properties:
+        lookBackTimeWindowSeconds:
+          description: Optional setting. When the real time UI is started this is the default "look back" time period for queries for your users
+          nullable: true
+          type: integer
+          format: int32
+          minimum: 60
+          maximum: 86400
+        visitSessionTimeoutSeconds:
+          description: Optional setting. Controls the visitSession length for your tracking. If not set then the system default value is used which is 20 minutes.
+          nullable: true
+          type: integer
+          format: int32
+          minimum: 0
+        preservedQueryParams:
+          description: Optional setting. Normally Keytiles is cleaning the URLs the hits are coming from and as a part of this procedure all query parameters are also removed. Except the ones you list here in this array...
+          nullable: true
+          type: array
+          uniqueItems: true
+          items:
+            type: string
+        customUserAgentTypes:
+          description: >
+                        Optional setting. If you have custom developed web clients like native iOS / Android Apps you can assign a short name to them here and then you can start sending in *userAgenType* of those apps via the Hit Collection API so traffic through those web clients can be tracked segregated.  
+                          
+                        The value can only contain standard alpha-numeric values plus a '-' or '_' or '.' characters. To put it into other words: must match for this regex char set: [a-zA-Z0-9_-.]
+          nullable: true
+          type: array
+          maximum: 16
+          uniqueItems: true
+          items:
+            type: string
+            maxLength: 32
+
    
     ContainerCreationClass:
       type: object
@@ -974,7 +966,7 @@ components:
           description: Name of the Keytiles business domain this Container belongs to
           example: "webhits_v1.0"
         options:
-          $ref: '#/components/schemas/ContainerOptionsClass'
+          $ref: '#/components/schemas/ContainerCreationOptionsClass'
     
     ContainerClass:
       allOf:
@@ -1015,8 +1007,13 @@ components:
                         list comes empty as nobody else should see this information.
           type: array
           items:
-            $ref: '#/components/schemas/ContainerUserLink'
-                  
+            type: object
+            properties:
+              userId:
+                type: string
+                description: The alpha-numeric unique id of the User
+              role:
+                $ref: '#/components/schemas/UserContainerRoleClass'
         userDetails:
           readOnly: true
           description: >
@@ -1030,7 +1027,16 @@ components:
                          exposes e-mail addresses of the Container Admins - others mail address is kept in secret
           type: array
           items:
-            $ref: '#/components/schemas/ContainerUserDetails'
+            type: object
+            properties:
+              userId:
+                type: string
+                description: The ID of the User
+              nickname:
+                type: string
+              eMail:
+                type: string
+                description: The e-mail address of the user. BUT it is possible this field is masked out due to data protection rules and only returns 'secret' as value
                     
     ReferrerClassifierConfigClass:
       type: object
