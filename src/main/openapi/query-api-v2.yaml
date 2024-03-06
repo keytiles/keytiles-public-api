@@ -770,7 +770,7 @@ components:
           type: string
           nullable: true
           description: >
-                        You can store some labels - key-value pairs - for Tiles. They are collected during hit collection (see: Hit Collection API - 'tileLabelsJSON' attribute).  
+                        You can store some labels - key-value pairs - for Tiles. They are collected during hit collection (see: Hit Collection API - [https://www.keytiles.com/developer-area/hit-attributes](https://www.keytiles.com/developer-area/hit-attributes#tileLabelsJSON)).  
                           
                         If you do so you get back the JSON string representation of these labels in this field - or you get NULL if there are no labels stored.
         firstSeen:
