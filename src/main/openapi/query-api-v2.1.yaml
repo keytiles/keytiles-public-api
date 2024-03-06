@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '2.2.0'
+  version: '2.1.0'
   title: Keytiles Statistics query API
   description: >
             
@@ -766,13 +766,6 @@ components:
                         Gives you the type of the tile. The integer is the ID of the tile type which you can get back from `/groupByMappings/tileType` part  
                           
                         note: this value is always present
-        labelsJSON:
-          type: string
-          nullable: true
-          description: >
-                        You can store some labels - key-value pairs - for Tiles. They are collected during hit collection (see: Hit Collection API - 'tileLabelsJSON' attribute).  
-                          
-                        If you do so you get back the JSON string representation of these labels in this field - or you get NULL if there are no labels stored.
         firstSeen:
           type: integer
           format: int32

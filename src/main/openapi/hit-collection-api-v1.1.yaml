@@ -11,7 +11,7 @@ info:
               Developer area and learn more!  
                 
               check [https://keytiles.com/developer-area/sending-in-traffic-from-ios-android-etc-apps](https://keytiles.com/developer-area/sending-in-traffic-from-ios-android-etc-apps)
-  version: 1.2.0
+  version: 1.1.0
   
 servers:
 - url: https://api.keytiles.com/api
@@ -120,16 +120,6 @@ components:
                         To understand better what this field is you should check [https://keytiles.com/developer-area/hit-attributes](https://keytiles.com/developer-area/hit-attributes#tileGroupPath-attribute)  
           example: "/mainTileGroup/subTileGroup"
           nullable: true
-        tileLabelsJSON:
-          type: string
-          nullable: true
-          description: >
-                        Optional field. You have the possibility to store a limited amount of labels - key-value pairs - with Tiles in Keytiles. You get them back via the query result if you do so.  
-                          
-                        The Value must be a valid JSON encoding an Object. Please note that the maximum size of this string is also limited! If you violate any of these then this attribute will
-                        be simply skipped and already persisted labels will remain unchanged.     
-                          
-                        For more information you should check [https://www.keytiles.com/developer-area/hit-attributes](https://www.keytiles.com/developer-area/hit-attributes#tileLabelsJSON) 
           
     WebhitClass:
       allOf:
