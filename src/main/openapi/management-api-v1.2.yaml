@@ -2,7 +2,7 @@ openapi: 3.0.1
 info:
   title: Keytiles Management API
   description: API to manage users, permissions, containers, etc.
-  version: 1.3.0
+  version: 1.2.0
   
 servers:
 - url: https://api.keytiles.com/api
@@ -31,8 +31,6 @@ tags:
                 to the e-mail address of the User.
 - name:  Container management REST API
   description: Manage tracking and setup by managing the Container objects
-- name:  Container reports API
-  description: Query reports belong to Containers
 - name: Configuration
   description: Query different Keytiles configurations
 
@@ -69,7 +67,7 @@ paths:
           content:
             'application/json':
               schema:
-                $ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
                 
           headers:
             'X-UserId':
@@ -85,34 +83,34 @@ paths:
           content:
             'application/json':
               schema:
-                $ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
         '400':
           description: "There are problems with the creation request. Further information is available in the response."
           content:
             application/json:
               schema:
-                #$ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
+                #$ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
                 $ref: '#/components/schemas/MachineReadableManagementEndpointMessageResponseClass'
         '401':
           description: "Authentication failed - you provided invalid credentials"
           content:
             application/json:
               schema:
-                #$ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
+                #$ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
                 $ref: '#/components/schemas/MachineReadableManagementEndpointMessageResponseClass'
         '403':
           description: "You do not have permission to do this with the given (or not given at all) credentials"
           content:
             application/json:
               schema:
-                #$ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
+                #$ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
                 $ref: '#/components/schemas/MachineReadableManagementEndpointMessageResponseClass'
         '409':
           description: "This User can not be created as some unique constraints are violated - e.g. e-mail address is already taken. You get more info in the response."
           content:
             application/json:
               schema:
-                #$ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
+                #$ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
                 $ref: '#/components/schemas/MachineReadableManagementEndpointMessageResponseClass'
 
   '/v1/management/users/rest/{userIdTerm}':
@@ -140,21 +138,21 @@ paths:
           content:
             application/json:
               schema:
-                #$ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
+                #$ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
                 $ref: '#/components/schemas/MachineReadableManagementEndpointMessageResponseClass'
         '401':
           description: "Authentication failed - you provided invalid credentials or not provided credentials at all"
           content:
             application/json:
               schema:
-                #$ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
+                #$ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
                 $ref: '#/components/schemas/MachineReadableManagementEndpointMessageResponseClass'
         '403':
           description: "You do not have permission to do this with the given credentials"
           content:
             application/json:
               schema:
-                #$ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
+                #$ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
                 $ref: '#/components/schemas/MachineReadableManagementEndpointMessageResponseClass'
 
     put:
@@ -183,7 +181,7 @@ paths:
           content:
             'application/json':
               schema:
-                $ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
         '202':
           description: >
                         The User resouce is partially modified already but further action is needed to complete the requested changes.
@@ -192,13 +190,13 @@ paths:
           content:
             'application/json':
               schema:
-                $ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
         '400':
           description: "There are problems with the update request. Further information is available in the response."
           content:
             application/json:
               schema:
-                #$ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
+                #$ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
                 $ref: '#/components/schemas/MachineReadableManagementEndpointMessageResponseClass'
 
         '404':
@@ -206,21 +204,21 @@ paths:
           content:
             application/json:
               schema:
-                #$ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
+                #$ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
                 $ref: '#/components/schemas/MachineReadableManagementEndpointMessageResponseClass'
         '401':
           description: "Authentication failed - you provided invalid credentials or not provided credentials at all"
           content:
             application/json:
               schema:
-                #$ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
+                #$ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
                 $ref: '#/components/schemas/MachineReadableManagementEndpointMessageResponseClass'
         '403':
           description: "You do not have permission to do this with the given credentials"
           content:
             application/json:
               schema:
-                #$ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
+                #$ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
                 $ref: '#/components/schemas/MachineReadableManagementEndpointMessageResponseClass'
 
     delete:
@@ -245,27 +243,27 @@ paths:
           content:
             'application/json':
               schema:
-                $ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
         '404':
           description: "The given user does not exist"
           content:
             application/json:
               schema:
-                #$ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
+                #$ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
                 $ref: '#/components/schemas/MachineReadableManagementEndpointMessageResponseClass'
         '401':
           description: "Authentication failed - you provided invalid credentials or not provided credentials at all"
           content:
             application/json:
               schema:
-                #$ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
+                #$ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
                 $ref: '#/components/schemas/MachineReadableManagementEndpointMessageResponseClass'
         '403':
           description: "You do not have permission to do this with the given credentials"
           content:
             application/json:
               schema:
-                #$ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
+                #$ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
                 $ref: '#/components/schemas/MachineReadableManagementEndpointMessageResponseClass'
 
   '/v1/management/users/rest/{userIdTerm}/password':
@@ -298,27 +296,27 @@ paths:
           content:
             'application/json':
               schema:
-                $ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
         '404':
           description: "The given user does not exist"
           content:
             application/json:
               schema:
-                #$ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
+                #$ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
                 $ref: '#/components/schemas/MachineReadableManagementEndpointMessageResponseClass'
         '401':
           description: "Authentication failed - you provided invalid credentials or token"
           content:
             application/json:
               schema:
-                #$ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
+                #$ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
                 $ref: '#/components/schemas/MachineReadableManagementEndpointMessageResponseClass'
         '403':
           description: "You do not have permission to do this with the given credentials"
           content:
             application/json:
               schema:
-                #$ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
+                #$ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
                 $ref: '#/components/schemas/MachineReadableManagementEndpointMessageResponseClass'
 
   '/v1/management/users/actions/{userIdTerm}/password/reset':
@@ -347,7 +345,7 @@ paths:
           content:
             'application/json':
               schema:
-                $ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
  
 
   '/v1/management/users/actions/{userIdTerm}/password/check':
@@ -373,13 +371,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
         '400':
           description: "The given user does not exist or password does not match - any how but we got a bad request"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
 
   '/v1/management/tokens/actions/{tokenId}/execute':
     get:
@@ -410,13 +408,13 @@ paths:
           content:
             'application/json':
               schema:
-                $ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
         '404':
           description: "The given Token does not exist (or was existing but not valid any longer)"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
 
   '/v1/management/containers/rest':
     get:
@@ -502,26 +500,26 @@ paths:
           content:
             'application/json':
               schema:
-                $ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
         '202':
           description: The Container resouce creation request is accepted without errors but additional action is needed to complete. Instructions are sent to the user's e-mail address
           content:
             'application/json':
               schema:
-                $ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
         '400':
           description: "There are problems with the creation request. Further information is available in the response."
           content:
             application/json:
               schema:
-                #$ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
+                #$ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
                 $ref: '#/components/schemas/MachineReadableManagementEndpointMessageResponseClass'
         '401':
           description: "Authentication failed - you provided invalid credentials or not provided credentials at all"
           content:
             application/json:
               schema:
-                #$ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
+                #$ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
                 $ref: '#/components/schemas/MachineReadableManagementEndpointMessageResponseClass'
 
   '/v1/management/containers/rest/{containerId}':
@@ -533,7 +531,7 @@ paths:
       security:
       - basicAuth: []
       parameters:
-      - $ref: 'common-types-v2.yaml#/components/parameters/containerId'
+      - $ref: '#/components/parameters/containerId'
       - $ref: '#/components/parameters/includeUserDetails'
          
       responses:
@@ -571,7 +569,7 @@ paths:
       security:
       - basicAuth: []
       parameters:
-      - $ref: 'common-types-v2.yaml#/components/parameters/containerId'
+      - $ref: '#/components/parameters/containerId'
       requestBody:
         description: Please note that the "isEnabled" attribute is only allowed for Keytiles Admins to change!
         content:
@@ -585,7 +583,7 @@ paths:
           content:
             'application/json':
               schema:
-                $ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
         '400':
           description: "There are problems with the update request. Further information is available in the response."
           content:
@@ -618,7 +616,7 @@ paths:
       security:
       - basicAuth: []
       parameters:
-      - $ref: 'common-types-v2.yaml#/components/parameters/containerId'
+      - $ref: '#/components/parameters/containerId'
         
       responses:
         '200':
@@ -626,77 +624,7 @@ paths:
           content:
             'application/json':
               schema:
-                $ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
-        '404':
-          description: "The given Container does not exist"
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MachineReadableManagementEndpointMessageResponseClass'
-        '401':
-          description: "Authentication failed - you provided invalid credentials or not provided credentials at all"
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MachineReadableManagementEndpointMessageResponseClass'
-        '403':
-          description: "You do not have permission to do this with the given credentials"
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MachineReadableManagementEndpointMessageResponseClass'
-
-  '/v1/management/containers/reports/{containerId}/hitfault':
-    get:
-      summary: Query Container hit collection faults
-      description: >
-                    You can query Faults Keytiles have seen during processing incoming Hits.  
-                      
-                    Please note:
-                     * Faults returned are not ordered by timestamp! They might come in random order so you might need to sort on Client side!
-                     * Only a user with effective "admin" or "developer" role (over the Container) can execute this request.
-      tags:
-      - Container reports API
-      security:
-      - basicAuth: []
-      parameters:
-      - $ref: 'common-types-v2.yaml#/components/parameters/containerId'
-      - $ref: 'common-types-v2.yaml#/components/parameters/fromTimestamp'
-      - $ref: 'common-types-v2.yaml#/components/parameters/toTimestamp'
-      - name: tileIdsOnly
-        in: query
-        required: false
-        schema:
-          type: string
-        description: You can provide a comma separated list of tileIds. If given then only those Faults are returned whos related Tile is matching to the list.
-        example: 'tile123,tile456,tile789'
-      - name: limit
-        in: query
-        required: false
-        schema:
-          type: integer
-        description: You can limit how many Faults are returned in the response maximum. Please note that since there is no time order guarantee in this request - so if you limit the number of items they might come in random order from the full time query range.
-      - name: faultUrlMatchingOnly
-        in: query
-        required: false
-        schema:
-          type: string
-        description: >
-                      Faults are associated with URLs where they happened. Here you can provide a list of comma separated URL matcher strings. If you do so then only those Faults are returned whos associated URL is matching any
-                      of the matchers.  
-                        
-                      For example:
-                       * '*/politics/*' will return only those Faults where "/politics/" as substring is found in the URL
-                       * '*/politics/*, */tags/*/visit*' will return Faults where either "/politics/" is in the URL or the URL is has the "/tags/<anything here>/visit" substring in it
-        example: 'tile123,tile456,tile789'
-
-      responses:
-        '200':
-          description: The Container resouce is returned
-          content:
-            'application/json':
-              schema:
-                $ref: '#/components/schemas/HitFaultReportResponse'
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
         '404':
           description: "The given Container does not exist"
           content:
@@ -754,6 +682,13 @@ components:
       description: 'Some triggered (RPC style) actions result in a Token generation - which is sent (in some form) to the mail address of the User. Then you can use this Token to authenticate for executing a query. Note: typically these Tokens can be used once and also within a strict expiry period.' 
 
   parameters:
+    containerId:
+      name: containerId
+      in: path
+      required: true
+      description: 'the ID of the Container'
+      schema:
+        type: string
     userIdTerm:
       name: userIdTerm
       in: path
@@ -824,9 +759,6 @@ components:
       - key_invalid
       # The key-value request data is invalid
       - keyValueData_invalid
-      - queryRange_corrected
-      - queryRange_from_corrected
-      - queryRange_to_corrected
       
 
     # Let's merge the "local" error codes with the "global" ones in this enum
@@ -853,7 +785,7 @@ components:
     # Let's extend the original response class with the above assembled machine readable Problems
     MachineReadableManagementEndpointMessageResponseClass:
       allOf:
-      - $ref: "common-types-v2.yaml#/components/schemas/MessageResponseClass"
+      - $ref: "common-types-v1.yaml#/components/schemas/MessageResponseClass"
       type: object
       properties:
         problems:
@@ -972,7 +904,7 @@ components:
 
     UserContainerRoleClassV2:
       type: string
-      enum: [view, admin, finance, developer]
+      enum: [view, admin, finance]
       description: Newer definition of the roles of this link affecting what the User can do with this Container
 
             
@@ -1117,48 +1049,5 @@ components:
         options:
           type: string
           description: Options are plugin dependent key:value pairs - encoded into a string format.  
+                    
 
-    HitFaultReportResponse:
-      allOf:
-        - $ref: 'common-types-v2.yaml#/components/schemas/ContainerQueryRangeResponseClass'    
-      type: object
-      properties:
-        faults:
-          type: array
-          items:
-            $ref: "#/components/schemas/HitFaultClass"
-
-    HitFaultClass:
-      type: object
-      properties:
-        faultTimestamp:
-          type: integer
-          description: Timestamp of the fault - UNIX timestamp in UTC (seconds since Epoch)
-        faultType:
-          $ref: "#/components/schemas/HitFaultType"
-        errorCode:
-          type: string
-          description: The textual error code describes the problem. This is a machine readable error.
-        tileId:
-          type: string
-          description: The ID of the associated Tile. This comes from the 'tileId' attribute of the inbound hit.
-          nullable: true
-        faultUrl:
-          type: string
-          description: The URL associated with this fault. This comes from the 'tileUrl' attribute of the inbound hit.
-          nullable: true
-        hitProducer:
-          type: string
-          description: The agent which sent this the hit in. This comes from the 'hitProducer' attribute of the inbound hit.
-          nullable: true
-        errorDescription:
-          type: string
-          description: The human readable error description.
-          nullable: true
-
-    HitFaultType:
-      type: string
-      enum:
-        - error
-        - warn
-        - unknown

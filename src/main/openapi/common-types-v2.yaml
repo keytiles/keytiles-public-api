@@ -105,6 +105,8 @@ components:
       - resourceVersion_mismatch
       # There are certain processes / flows which require confirmation via e-mail. In these cases sending out the confirm email successfully is crucial part of the process. If this fails then this error code is raised because Keytiles knows exactly the process can not be finished for sure.
       - mandatoryEmailSending_failed
+      # There are queries where user can limit how much records he wants - when that limit is exceeded this can be added as warning
+      - limit_reached
 
     ProblemPlaceEnum:
       type: string

@@ -64,7 +64,7 @@ components:
     # thats the reason why inheritance looks like this
     IntervalBasedResponseClass:
       allOf:
-        - $ref: '#/components/schemas/BaseResponseClass'    
+        - $ref: '#/components/schemas/BaseResponseClass'
       type: object
       properties:
         container:
