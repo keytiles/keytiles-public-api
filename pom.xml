@@ -225,7 +225,7 @@
 								<mavenExecutionId>hitcollection-api-v1</mavenExecutionId>
 								<addExplanationsToModel>false</addExplanationsToModel>
 								<!-- warning! order really matters here! see README! -->
-								<addSchemaModelsToImportMappingsFromMavenExecutions>common-types-v1, common-types-v2</addSchemaModelsToImportMappingsFromMavenExecutions>
+								<addSchemaModelsToImportMappingsFromMavenExecutions>common-types-v2</addSchemaModelsToImportMappingsFromMavenExecutions>
 								<!-- default: true -->
 								<!-- excludeImportMappingsFromGeneration>false</excludeImportMappingsFromGeneration> -->
 								

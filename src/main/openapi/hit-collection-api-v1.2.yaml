@@ -11,7 +11,7 @@ info:
               Developer area and learn more!  
                 
               check [https://keytiles.com/developer-area/sending-in-traffic-from-ios-android-etc-apps](https://keytiles.com/developer-area/sending-in-traffic-from-ios-android-etc-apps)
-  version: 1.3.0
+  version: 1.2.0
   
 servers:
 - url: https://api.keytiles.com/api
@@ -40,25 +40,13 @@ paths:
           content:
             'application/json':
               schema:
-                $ref: '#/components/schemas/WebhitsResponseClass'
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
        '400':
           description: "There are problems with the request. Further information is available in the response."
           content:
             'application/json':
               schema:
-                $ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
-       '404':
-          description: "This error is thrown if you want to send in hit for a Data Container which does not exist."
-          content:
-            'application/json':
-              schema:
-                $ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
-       '412':
-          description: "This error is thrown if you want to send in hit for a Data Container which although exists it is not functioning (e.g. it is disabled) - more details you find in the response."
-          content:
-            'application/json':
-              schema:
-                $ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
 
 components:
   schemas:
@@ -352,79 +340,5 @@ components:
                         any data in this field which is personal or sensitive data of your visitor  
           nullable: true
           
-    # This enum defines error codes belong to HitCollection endpoints specifically
-    # note: no support in OpenApi for now how to document values so we just add the description as comments for now.
-    #       see: https://github.com/OAI/OpenAPI-Specification/issues/348 
-    HitCollectionEndpointLocalErrorCodes:
-      type: string
-      enum:
-      # There was no incoming hit (event) data in the request
-      - eventData_missing
-      # The incoming hit (event) data was decoded but looks invlid - it does not fulfill the schema of the data
-      - eventData_invalid
-      # Keytiles failed to decode the incoming hit (event) data
-      - eventData_jsonDecodeFailed
-      # The ID of the Container is not valid - it either does not exist o disabled
-      - containerId_invalid
-      # We received hit.sourceTime which was pointing to the future - this was corrected to now()
-      - sourceTime_in_future
-      # Hit came without tileId and we could not enrich with that
-      - tileId_enrichment_failed
-
-
-    # Let's merge the "local" error codes with the "global" ones in this enum
-    # HitCollection API endpoints can return the union of them 
-    HitCollectionEndpointErrorCodes:
-      description: NOTE! Error codes is an Enum. Unfortunately in OpenApi (so far) there is no possibility to provide description for Enum values. But we have detailed description of each error codes! Please check the OpenApi file in our Github repo - you find them as comments for each Enum values! 
-      oneOf:
-      - $ref: "#/components/schemas/HitCollectionEndpointLocalErrorCodes"
-      - $ref: "common-types-v2.yaml#/components/schemas/CommonErrorCodes"
-
-    # Let's extend the global Problem class with our HitCollection API specific error codes
-    HitCollectionEndpointProblemClass:
-      allOf:
-      - $ref: 'common-types-v2.yaml#/components/schemas/ProblemBaseClass'
-      type: object
-      properties:
-        errorCodes:
-          type: array
-          items:
-            $ref: "#/components/schemas/HitCollectionEndpointErrorCodes"
-          nullable: true
-          default: []
-    
-    # Let's extend the original response class with the above assembled machine readable Problems
-    MachineReadableHitCollectionEndpointMessageResponseClass:
-      allOf:
-      - $ref: "common-types-v2.yaml#/components/schemas/MessageResponseClass"
-      type: object
-      properties:
-        problems:
-          type: array
-          items:
-            $ref: '#/components/schemas/HitCollectionEndpointProblemClass'
-          nullable: false
-          default: []
-          description: 'List of errors/warnings'
-
-
-    WebhitsResponseClass:
-      allOf:
-      - $ref: '#/components/schemas/MachineReadableHitCollectionEndpointMessageResponseClass'
-      type: object
-      required:
-      - container
-      properties:
-        tileId:
-          type: string
-          description: >
-                        Gives you the ID of the Tile which will be used for processing this hit.  
-                          
-                        If there was incoming 'hit.tileId' in the request then this will be simply that. But if there was not then this is the tileId Keytiles has generated from the hit attributes.
-        debugInfo:
-          type: object
-          properties:
-            tileIdGenerator:
-              type: string
-              nullable: true
-              description: If tileId was generated then tells which mechanism has generated it.
+          
+          
