@@ -11,7 +11,7 @@ info:
               Developer area and learn more!  
                 
               check [https://keytiles.com/developer-area/sending-in-traffic-from-ios-android-etc-apps](https://keytiles.com/developer-area/sending-in-traffic-from-ios-android-etc-apps)
-  version: 1.4.0
+  version: 1.3.0
   
 servers:
 - url: https://api.keytiles.com/api
@@ -298,31 +298,6 @@ components:
           nullable: true
         visitorEnvironment:
           $ref: '#/components/schemas/VisitorEnvironment'
-        campaignData:
-          $ref: '#/components/schemas/CampaignData'
-
-
-    CampaignData:
-      type: object
-      nullable: true
-      description: >
-                    If this hit was generated from a visit arrived from a Campaign this object contains the data of that Campaign.  
-                      
-                    Please note that this is designed around [UTM parameters](https://en.wikipedia.org/wiki/UTM_parameters) for now so parts of this data are definitely correlating.  
-                      
-                    Please also note that if you do not send this data but 'tileUrl' contains the above UTM parameters then Keytiles will detect those automatically and recognize the Campaign.
-      properties:
-        name:
-          type: string
-          description: Identifies a specific product promotion or strategic campaign.
-        medium:
-          type: string
-          nullable: true
-          description: Identifies what type of link was used, such as Pay-per-click or email.
-        content:
-          type: string
-          nullable: true
-          description: Identifies what specifically was clicked to bring the user to the site, such as a banner ad or a text link. It is often used for A/B testing and content-targeted ads.
 
     VisitorEnvironment:
       type: object
