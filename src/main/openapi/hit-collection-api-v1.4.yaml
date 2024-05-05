@@ -11,7 +11,7 @@ info:
               Developer area and learn more!  
                 
               check [https://keytiles.com/developer-area/sending-in-traffic-from-ios-android-etc-apps](https://keytiles.com/developer-area/sending-in-traffic-from-ios-android-etc-apps)
-  version: 1.5.0
+  version: 1.4.0
   
 servers:
 - url: https://api.keytiles.com/api
@@ -80,24 +80,17 @@ components:
         sourceTime:
           type: integer
           format: int32
-          deprecated: true
-          description: For backward compatibility only - please use 'sourceTimeMillis' instead!
-          example: 1543355710
-          nullable: true
-        sourceTimeMillis:
-          type: integer
-          format: int64
           description: >
-                        Current client time with millis precision as UNIX timestamp in UTC (millis since Epoch) when this hit was generated.  
+                        Current client time as UNIX timestamp in UTC (seconds since Epoch) when this hit was generated.  
                           
-                        This is not a mandatory field - if you leave it out (or leave on 'null') Keytiles will automatically use the
+                        This is not a mandatory field - if you leave it out (or leave on 'null') server will automatically use the
                         server side 'now()' timestamp.  
                           
                         However this is possible to send in hits with back dated timestamps which will retrospectively correct
                         data. (So replay of older, missed hits is possible!)  
                           
                         Value can not point into the future (due to server time!). If this happens then it is corrected on server side to 'now()'
-                        and raising a warning. Please note you can query the server time if you want to calculate local-remote clock diff - see QueryAPI!  
+                        and raising a warning.  
           example: 1543355710
           nullable: true
         hitProducer:
@@ -400,7 +393,7 @@ components:
       - eventData_jsonDecodeFailed
       # The ID of the Container is not valid - it either does not exist o disabled
       - containerId_invalid
-      # We received hit.sourceTime / hit.sourceTimeMillis which was pointing to the future - this was corrected to now()
+      # We received hit.sourceTime which was pointing to the future - this was corrected to now()
       - sourceTime_in_future
       # Hit came without tileId and we could not enrich with that
       - tileId_enrichment_failed
