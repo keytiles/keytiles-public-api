@@ -656,6 +656,17 @@ components:
                     This is a set of counters Keytiles collected for the tile.  
                       
                     **IMPORTANT!** Only those counters will be here who's value is not 0! So for example if "refSearch=0" would be true then you will not see *refSearch* under the counters!
+      x-keytiles-serialize-only-if-non-default-properties:
+      - pageview
+      - vsessStarted
+      - bounce
+      - newVisitor
+      - bounceNewVisitor
+      - refSearch
+      - refInternal
+      - refLink
+      - refSocial
+      - refDirect
       properties:
         pageview:
           type: integer
