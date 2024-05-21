@@ -81,23 +81,37 @@ components:
           type: integer
           format: int32
           deprecated: true
-          description: For backward compatibility only - please use 'sourceTimeMillis' instead!
+          description: For backward compatibility only - please use 'eventTimeMillis' instead!
           example: 1543355710
           nullable: true
-        sourceTimeMillis:
+        eventTimeMillis:
           type: integer
           format: int64
           description: >
-                        Current client time with millis precision as UNIX timestamp in UTC (millis since Epoch) when this hit was generated.  
+                        The time of the event with millis precision as UNIX timestamp in UTC (millis since Epoch).  
                           
                         This is not a mandatory field - if you leave it out (or leave on 'null') Keytiles will automatically use the
                         server side 'now()' timestamp.  
                           
-                        However this is possible to send in hits with back dated timestamps which will retrospectively correct
-                        data. (So replay of older, missed hits is possible!)  
+                        Although this is possible to send in events with back dated timestamps (sending in older / missed events - which would then retrospectively change
+                        data) we strongly recommend to leave this field out (or 'null') and let Keytiles servers use 'now()' timestamp if you are sending events real time!  
                           
                         Value can not point into the future (due to server time!). If this happens then it is corrected on server side to 'now()'
                         and raising a warning. Please note you can query the server time if you want to calculate local-remote clock diff - see QueryAPI!  
+          example: 1543355710
+          nullable: true
+        clientTimeMillis:
+          type: integer
+          format: int64
+          description: >
+                        The client clock (time) of the event with millis precision as UNIX timestamp in UTC (millis since Epoch).  
+                          
+                        If you are sending event real time just put in the client clock value! But if you are sending back dated events (see 'eventTimeMillis' field!) then make sure this timestamp is equal
+                        to the time of the event!  
+                          
+                        We recommend to send this timestamp as this helps Keytiles to recognize order of sent in events correctly - no matter how big the latency is between the client and Keytiles servers.  
+                          
+                        This field does not behave or substitute 'eventTimeMillis' field at all!
           example: 1543355710
           nullable: true
         hitProducer:
@@ -400,8 +414,8 @@ components:
       - eventData_jsonDecodeFailed
       # The ID of the Container is not valid - it either does not exist o disabled
       - containerId_invalid
-      # We received hit.sourceTime / hit.sourceTimeMillis which was pointing to the future - this was corrected to now()
-      - sourceTime_in_future
+      # We received hit.sourceTime / hit.eventTimeMillis which was pointing to the future - this was corrected to now()
+      - eventTime_in_future
       # Hit came without tileId and we could not enrich with that
       - tileId_enrichment_failed
 
