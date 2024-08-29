@@ -1,0 +1,62 @@
+openapi: 3.0.0
+
+info:
+  version: 'x.x.x'
+  title: Keytiles Statistics query API - future coming pieces
+            
+servers:
+
+tags:
+
+paths:
+
+components:
+
+  parameters:
+
+    visitSourceTypesOnly:
+      name: visitSourceTypesOnly
+      in: query
+      required: false
+      schema:
+        type: string
+      description: >
+                    Data filter option. Comma separated list of "link", "search", "social", "direct" or "internal" strings - indicating from which source
+                    the visitor who generated the traffic came. If you list more values here then they are interpreted with an OR operator so sending in e.g. "link, search" would return everything which
+                    came from "link" or "search".
+                      
+                    This is similar to `eventSourceTypesOnly` but here we instead of focusing the source of the event itself we focus on the source the Visitor arrived to your website from!
+
+                    If a Visitor arrives to your website from - let's say - external link "abc.com" then all events (s)he generates during this visit would belong to "link".
+
+                    **Please note!** The term "visit" we can just interpret where Keytiles was able to build a VisitSession. For more details see [How does Visit Session building work?](https://www.keytiles.com/docs/how-does-visitsession-building-work).
+                    You need to keep an eye on `eventCountNoSession` vs `eventCountTotal` ratio in general!
+
+                    
+      example: 'link,direct'
+
+    visitSourceNamesOnly:
+      name: visitSourceNamesOnly
+      in: query
+      required: false
+      schema:
+        type: string
+      description: >
+                    Data filter option. Comma separated list of external source names - indicating from which exact source
+                    the events came. If you list more values here then they are interpreted with an OR operator.  
+                      
+                    In the list you can either use:
+                     * The name of the external source, or
+                     * The numeric ID of the external source - returned by `/v2/stat/webhits/{containerId}/idmappings` endpoint - using the format `id:<numeric ID>`, e.g. **"id:123"**
+                      
+                    This is similar to `eventSourceNamesOnly` but here we instead of focusing the source of the event itself we focus on the source the Visitor arrived to your website from!
+
+                    If a Visitor arrives to your website from - let's say - external link "abc.com" then all events (s)he generates during this visit would belong to "abc.com" (and visitSourceType=link).
+
+                    **Please note!** The term "visit" we can just interpret where Keytiles was able to build a VisitSession. For more details see [How does Visit Session building work?](https://www.keytiles.com/docs/how-does-visitsession-building-work).
+                    You need to keep an eye on `eventCountNoSession` vs `eventCountTotal` ratio in general!
+
+      example: 'facebook,abc.com'
+  
+  schemas:
+  

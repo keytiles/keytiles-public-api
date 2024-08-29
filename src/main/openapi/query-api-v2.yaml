@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '2.2.0'
+  version: '2.3.0'
   title: Keytiles Statistics query API
   description: >
             
@@ -159,12 +159,20 @@ paths:
         - $ref: 'common-types-v2.yaml#/components/parameters/toTimestamp'
         - $ref: '#/components/parameters/eventTypesOnly'
         - $ref: '#/components/parameters/tileTypesOnly'
+        - $ref: '#/components/parameters/tileTypeIsNot'
         - $ref: '#/components/parameters/userAgentTypesOnly'
         - $ref: '#/components/parameters/tileGroupPathMatchingOnly'
         - $ref: '#/components/parameters/visitorTypesOnly'
         - $ref: '#/components/parameters/tileLanguagesOnly'
+        - $ref: '#/components/parameters/primaryTagsOnly'
+        - $ref: '#/components/parameters/secondaryTagsOnly'
+        - $ref: '#/components/parameters/eventSourceTypesOnly'
+        - $ref: '#/components/parameters/eventSourceNamesOnly'
         - $ref: '#/components/parameters/trafficSourceTypesOnly'
         - $ref: '#/components/parameters/trafficSourceNamesOnly'
+        - $ref: '#/components/parameters/campaignsOnly'
+        - $ref: '#/components/parameters/campaignMediumsOnly'
+        - $ref: '#/components/parameters/campaignContentsOnly'
         - $ref: '#/components/parameters/interest'
         - $ref: '#/components/parameters/groupBy'
 
@@ -225,12 +233,20 @@ paths:
         - $ref: '#/components/parameters/eventTypesOnly'
         - $ref: '#/components/parameters/tileIdsOnly'
         - $ref: '#/components/parameters/tileTypesOnly'
+        - $ref: '#/components/parameters/tileTypeIsNot'
         - $ref: '#/components/parameters/userAgentTypesOnly'
         - $ref: '#/components/parameters/tileGroupPathMatchingOnly'
         - $ref: '#/components/parameters/visitorTypesOnly'
         - $ref: '#/components/parameters/tileLanguagesOnly'
+        - $ref: '#/components/parameters/primaryTagsOnly'
+        - $ref: '#/components/parameters/secondaryTagsOnly'
+        - $ref: '#/components/parameters/eventSourceTypesOnly'
+        - $ref: '#/components/parameters/eventSourceNamesOnly'
         - $ref: '#/components/parameters/trafficSourceTypesOnly'
         - $ref: '#/components/parameters/trafficSourceNamesOnly'
+        - $ref: '#/components/parameters/campaignsOnly'
+        - $ref: '#/components/parameters/campaignMediumsOnly'
+        - $ref: '#/components/parameters/campaignContentsOnly'
         - $ref: '#/components/parameters/interest'
         - $ref: '#/components/parameters/includeTileDetails'
         - $ref: '#/components/parameters/groupBy'
@@ -326,7 +342,7 @@ components:
       schema:
         type: string
       description: >
-                    Data filter option. Comma separated list of event types you want to limit the query for.
+                    Data filter option. Comma separated list of event types you want to limit the query for. If you list more values here then they are interpreted with an OR operator.
                       
                     note: if you have comma in your event names (strange, but ok...) you can escape that with `\\` character!  
       example: 'view,contact-form-sent'
@@ -338,7 +354,8 @@ components:
       schema:
         type: string
       description: >
-                    Data filter option. Comma separated list of tileIds you want to limit the query for - of course in this case only the counters of these tiles are returned 
+                    Data filter option. Comma separated list of tileIds you want to limit the query for - of course in this case only the counters of these tiles are returned. 
+                    If you list more values here then they are interpreted with an OR operator. 
                       
                     note: if you have comma in your tileIds (strange, but ok...) you can escape that with `\\` character!  
       example: 'tile123,tile456,tile789'
@@ -350,9 +367,34 @@ components:
       schema:
         type: string
       description: >
-                    Data filter option. Comma separated list of tile types you want to limit the query for 
+                    Data filter option. Comma separated list of tile types you want to limit the query for. If you list more values here then they are interpreted with an OR operator.  
+                      
+                    IMPORTANT! You can not use this together with `tileTypeIsNot` parameter! You can only use this or that but not both.  
+                      
+                    In the list you can either use:
+                     * The name of the type ('frontpage', 'page', 'article', ...), or
+                     * The numeric ID of the tile type - returned by `/v2/stat/webhits/{containerId}/idmappings` endpoint - using the format `id:<numeric ID>`, e.g. **"id:123"**
+
       example: 'article,page'
-      
+
+    tileTypeIsNot:
+      name: tileTypeIsNot
+      in: query
+      required: false
+      schema:
+        type: string
+      description: >
+                    Data filter option. Comma separated list of tile types you want the query to be excluded from. If you list more values here then they are interpreted with an OR operator.  
+                      
+                    IMPORTANT! You can not use this together with `tileTypesOnly` parameter! You can only use this or that but not both.  
+                      
+                    In the list you can either use:
+                     * The name of the type ('frontpage', 'page', 'article', ...), or
+                     * The numeric ID of the tile type - returned by `/v2/stat/webhits/{containerId}/idmappings` endpoint - using the format `id:<numeric ID>`, e.g. **"id:123"**
+
+      example: 'article,page'
+
+
     tileGroupPathMatchingOnly:
       name: tileGroupPathMatchingOnly
       in: query
@@ -361,7 +403,7 @@ components:
         type: string
       description: >
                     Data filter option. Comma separated list of matchers (see below) which returns counters only for those Tiles who's tileGroupPath is matching to one of the listed matchers.
-                    (So they combined with an OR operator if you send in more)  
+                    So if you list more values here then they are interpreted with an OR operator.  
                       
                     note: if you have comma in your matcher (strange, but ok...) you can escape that with `\\` character!  
                       
@@ -401,7 +443,11 @@ components:
         type: string
       example: 'browser-desktop,NULL'
       description: >
-                    Data filter option. Comma separated list of *userAgentType*s you want to limit the query for.
+                    Data filter option. Comma separated list of *userAgentType*s you want to limit the query for. If you list more values here then they are interpreted with an OR operator.
+                      
+                    In the list you can either use:
+                     * The name of the UserAgent type (see below), or
+                     * The numeric ID of the UserAgent type - returned by `/v2/stat/webhits/{containerId}/idmappings` endpoint - using the format `id:<numeric ID>`, e.g. **"id:123"**
                       
                     note: if you have comma in your userAgent types (strange, but ok...) you can escape that with `\\` character!  
                       
@@ -421,7 +467,11 @@ components:
       schema:
         type: string
       description: >
-                    Data filter option. Comma separated list of *visitorType*s you want to limit the query for.
+                    Data filter option. Comma separated list of *visitorType*s you want to limit the query for. If you list more values here then they are interpreted with an OR operator.
+                      
+                    In the list you can either use:
+                     * The name of the visitor type, or
+                     * The numeric ID of the visitor type - returned by `/v2/stat/webhits/{containerId}/idmappings` endpoint - using the format `id:<numeric ID>`, e.g. **"id:123"**
                       
                     note: if you have comma in your visitor types (strange, but ok...) you can escape that with `\\` character!  
                       
@@ -438,34 +488,175 @@ components:
       schema:
         type: string
       description: >
-                    Data filter option. Comma separated list of languages codes. Only data captured on the given languages is returned if you
-                    apply this filter.  
+                    Data filter option. Comma separated list of ISO-639-2 languages codes (e.g. 'en', 'de', ...). Only data captured on the given languages is returned if you
+                    apply this filter. If you list more values here then they are interpreted with an OR operator.  
                       
                     **NULL** is a special value indicating cases where *tileLanguage* was not identified/captured.
       example: 'en,de'
 
-    trafficSourceTypesOnly:
-      name: trafficSourceTypesOnly
+    eventSourceTypesOnly:
+      name: eventSourceTypesOnly
       in: query
       required: false
       schema:
         type: string
       description: >
-                    Data filter option. Comma separated list of "link", "search", "social", "campaign" or "direct" strings - indicating from which source
-                    the visitor arrived to your website.
+                    Data filter option. Comma separated list of "link", "search", "social", "direct" or "internal" strings - indicating from which source
+                    the events came. If you list more values here then they are interpreted with an OR operator so sending in e.g. "link, search" would return everything which
+                    came from "link" or "search".
       example: 'link,direct'
+
+
+    tagValuesOnly:
+      name: tagValuesOnly
+      in: query
+      required: false
+      schema:
+        type: string
+      description: >
+                    Data filter option. Comma separated list of "link", "search", "social", "direct" or "internal" strings - indicating from which source
+                    the events came. If you list more values here then they are interpreted with an OR operator so sending in e.g. "link, search" would return everything which
+                    came from "link" or "search".
+      example: 'link,direct'
+
+
+    eventSourceNamesOnly:
+      name: eventSourceNamesOnly
+      in: query
+      required: false
+      schema:
+        type: string
+      description: >
+                    Data filter option. Comma separated list of external source names - indicating from which exact source
+                    the events came. If you list more values here then they are interpreted with an OR operator.  
+                      
+                    In the list you can either use:
+                     * The name of the external source, or
+                     * The numeric ID of the external source - returned by `/v2/stat/webhits/{containerId}/idmappings` endpoint - using the format `id:<numeric ID>`, e.g. **"id:123"**
+                      
+                    Note: the names you specify here are definitely correlating with source type (we mentioned in 'eventSourceTypesOnly' description) "link", "search", "social", "direct" or "internal"!
+
+                    The correlation looks like this:
+                     * "link": then the name is basically the hostname of the website which sent the visitor to your website. Like "abc.com".
+                     * "social": then the name is the name how Keytiles classified it for Social sources - here please take a look at [How does referrer grouping work?](https://www.keytiles.com/docs/how-does-referrer-grouping-work#The-referrer-classifying-configuration)
+                     * "search": then the name is the name how Keytiles classified it for Search sources - here please take a look at [How does referrer grouping work?](https://www.keytiles.com/docs/how-does-referrer-grouping-work#The-referrer-classifying-configuration)
+                     * "direct" or "internal": they do not have a name, name is always NULL for these
+
+                    So be careful when you are using this filter how you set up `eventSourceTypesOnly` if you use it!
+
+                    For example:
+                     * If you are curious about events came from "Facebook" then you can send `eventSourceNamesOnly=Facebook`. (note: this belongs to source type "social" - see 'eventSourceTypesOnly')
+                     * If you are curious about events came from another website "abc.com" which is an external link then you can send `eventSourceNamesOnly=abc.com`. (note: this belongs to source type "link" - see 'eventSourceTypesOnly')
+                     * If you send `eventSourceNamesOnly=Facebook,abc.com` that would give you all events came from "Facebook" OR "abc.com". (note: and then this would belong to source types "link" and "social" - see 'eventSourceTypesOnly')
+                     * If you would send `eventSourceNamesOnly=abc.com & eventSourceTypesOnly=direct` you would receive 0 as a result - because for sure nothing comes in from "abc.com" which events came from a "direct" visit ...
+                      
+      example: 'facebook,abc.com'
 
     trafficSourceNamesOnly:
       name: trafficSourceNamesOnly
       in: query
       required: false
+      deprecated: true
       schema:
         type: string
       description: >
-                    Data filter option. Comma separated list of external source names - indicating from which source
-                    the visitor arrived to your website.
+                    This is **deprecated!** Please use `eventSourceNamesOnly` or `visitSourceNamesOnly` instead to specify your interest precisely!
+
+                    If you do use this option then to maintain backward compatibility this is an alias for `eventSourceNamesOnly`.
       example: 'facebook,google.de'
-      
+
+
+    trafficSourceTypesOnly:
+      name: trafficSourceTypesOnly
+      in: query
+      deprecated: true
+      required: false
+      schema:
+        type: string
+      description: >
+                    This is **deprecated!** Please use `eventSourceTypesOnly` or `visitSourceTypesOnly` instead to specify your interest precisely!
+
+                    If you do use this option then to maintain backward compatibility this is an alias for `eventSourceTypesOnly`.
+      example: 'link,direct'
+
+
+
+    campaignsOnly:
+      name: campaignsOnly
+      in: query
+      required: false
+      schema:
+        type: string
+      description: >
+                    Data filter option.  
+                      
+                    Either
+                     * Comma separated list of campaigns - indicating from which campaigns the visitor arrived to your website. If you list more values here then they are interpreted with an OR operator.  
+                     * A simple `*` value which tells Keytiles to return counters belong to *any* Campaign regardless which one it is.  
+                      
+                    In the comma separated list you can either use:
+                     * The name of the Campaign, or
+                     * The numeric ID of the Campaign - returned by `/v2/stat/webhits/{containerId}/idmappings` endpoint - using the format `id:<numeric ID>`, e.g. **"id:123"**
+                      
+                    Campaign tracking in Keytiles works based on Urchin Tracking Module (UTM) parameters specification. For more info visit: [Wikipedia - UTM parameters](https://en.wikipedia.org/wiki/UTM_parameters)  
+    campaignMediumsOnly:
+      name: campaignMediumsOnly
+      in: query
+      required: false
+      schema:
+        type: string
+      description: >
+                    Data filter option. Comma separated list of campaign mediums - indicating from which campaign mediums
+                    the visitor arrived to your website.  
+                      
+                    In the list you can either use:
+                     * The name of the Campaign Medium, or
+                     * The numeric ID of the Campaign Medium - returned by `/v2/stat/webhits/{containerId}/idmappings` endpoint - using the format `id:<numeric ID>`, e.g. **"id:123"**
+                      
+                    Campaign tracking in Keytiles works based on Urchin Tracking Module (UTM) parameters specification. For more info visit: [Wikipedia - UTM parameters](https://en.wikipedia.org/wiki/UTM_parameters)
+
+    campaignContentsOnly:
+      name: campaignContentsOnly
+      in: query
+      required: false
+      schema:
+        type: string
+      description: >
+                    Data filter option. Comma separated list of campaign contents - indicating from which campaign contents
+                    the visitor arrived to your website.  
+                      
+                    In the list you can either use:
+                     * The name of the Campaign Content, or
+                     * The numeric ID of the Campaign Content - returned by `/v2/stat/webhits/{containerId}/idmappings` endpoint - using the format `id:<numeric ID>`, e.g. **"id:123"**
+                      
+                    Campaign tracking in Keytiles works based on Urchin Tracking Module (UTM) parameters specification. For more info visit: [Wikipedia - UTM parameters](https://en.wikipedia.org/wiki/UTM_parameters)
+
+    primaryTagsOnly:
+      name: primaryTagsOnly
+      in: query
+      required: false
+      schema:
+        type: string
+      description: >
+                    Data filter option. Comma separated list of matching primary custom tags.  
+                      
+                    This is the pair of `primaryTags` in our [Hit Collection API](https://www.keytiles.com/developer-area/keytiles-apis#hit-collection-api).
+                    If you use them to segment your traffic your custom way then now you can filter for them with this prameter.  
+                      
+                    To understand it better what these "tags" are doing and how you can use it for your own goals please check our article:
+                    [Custom segmentation of traffic](https://keytiles.com/developer-area/custom-segmentation)!  
+
+    secondaryTagsOnly:
+      name: secondaryTagsOnly
+      in: query
+      required: false
+      schema:
+        type: string
+      description: >
+                    Data filter option. Comma separated list of matching secondary custom tags.  
+
+                    It works the same way as `primaryTagsOnly` - please read info there!
+
     interest:
       name: interest
       in: query
@@ -518,25 +709,7 @@ components:
                     up the query you can tell Keytiles to save this effort.   
                     
       example: 'false'
-
-    groupByTime:
-      name: groupByTime
-      in: query
-      required: false
-      schema:
-        type: string
-      description: >
-                    **Default value:** the entire query range - you just get one datapoint
-                      
-                    It is possible to request the counters not fully aggregated but with a break down within the queried interval.
-                    By adding this parameter you are requesting this option. You can specify the value in different units.
-                     * `h` = hours
-                     * `d` = days
-                     
-                    So `2h` = 2 hours, `1d` = 1 day
-      example: 'eventType,time:1h'
-
-  
+ 
     groupBy:
       name: groupBy
       in: query
@@ -557,21 +730,55 @@ components:
                     And if you want to get this data in an - let's say - hourly resolution then you can go further and send in `groupBy=eventType,time:1h`
                     in this parameter.  
                       
-                    There are more criteria not just `eventType` or `time` and you can combine them. But of course more criteria you request makes the response
-                    bigger and bigger as the returned counters are broke down into more and more groups so you have to keep an eye on what you really need!  
+                    There are more criteria not just `eventType` or `time` and you can combine them.  
+                      
+                    **But BE AWARE!** More criteria you request makes the response bigger and bigger as the returned counters are broke down into more and more groups so you have to keep an eye on what you really need!  
                        
                     The possible values are the following:
                      * **time:x<m|h|d|w>** - you can specify a time window like `2h` which means 2 hours groups (`m`=minutes, `h`=hours, `d`=days, `w`=weeks) with this - you get the counters aggregated per time window in the response
-                     * **eventType** - you get the counters aggregated per event types in the response
-                     * **userAgentType** - you get the counters aggregated per userAgent types in the response
-                     * **visitorType** - you get the counters aggregated per visitor types in the response
-                     * **tileType** - you get the counters aggregated per tileTypes in the response
-                     * **tileGroupPath** - you get the counters aggregated per tileGroupPaths in the response
-                     * **tileLanguage** - you get the counters aggregated per languages in the response
-                     * **trafficSourceType** - you get the counters aggregated per traffic source types in the response like `search`, `social`, etc
-                     * **trafficSourceName[:max]** - you get the counters aggregated per traffic sources in the response like `Facebook`, etc
+                     * **eventType** - you get the counters aggregated per event types in the response  
+                     See also: `eventTypesOnly` filter option!
+                     * **userAgentType** - you get the counters aggregated per userAgent types in the response  
+                     See also: `userAgentTypesOnly` filter option!
+                     * **visitorType** - you get the counters aggregated per visitor types in the response  
+                     See also: `visitorTypesOnly` filter option!
+                     * **tileType** - you get the counters aggregated per tileTypes in the response  
+                     See also: `tileTypesOnly` filter option!
+                     * **tileGroupPath** - you get the counters aggregated per tileGroupPaths in the response  
+                     See also: `tileGroupPathsOnly` filter option!
+                     * **tileLanguage** - you get the counters aggregated per languages in the response  
+                     See also: `tileLanguagesOnly` filter option!
+                     * **primaryTags** - you get the counters aggregated per primary (custom) tags in the response  
+                     See also: `primaryTagsOnly` filter option for more details!
+                     * **secondaryTags** - you get the counters aggregated per secondary (custom) tags in the response  
+                     See also: `secondaryTagsOnly` filter option for more details!
+                     * **eventSourceType** - you get the counters aggregated per event source types in the response like `search`, `social`, etc.  
+                     See also: `eventSourceTypesOnly` filter option!
+                     * **eventSourceName[:max]** - you get the counters aggregated per event sources in the response like `Facebook`, etc
                                                      but since there could be a lot you can optionally specify "max top 10" in which case you get your
-                                                     top 10 plus all `other` as one group
+                                                     top 10 plus all `other` as one group  
+                     See also: `eventSourceNamesOnly` filter option!
+                     * **visitSourceType** - you get the counters aggregated per types of source of the visit in the response like `search`, `social`, etc.  
+                     See also: `visitSourceTypesOnly` filter option!
+                     * **visitSourceName[:max]** - you get the counters aggregated per names of source of the visit in the response like `Facebook`, etc
+                                                     but since there could be a lot you can optionally specify "max top 10" in which case you get your
+                                                     top 10 plus all `other` as one group  
+                     See also: `visitSourceNamesOnly` filter option!
+                     * **campaign[:max]** - you get the counters aggregated per campaigns in the response  
+                                            but since there could be a lot you can optionally specify "max top 10" in which case you get your
+                                            top 10 plus all `other` as one group  
+                     See also: `campaignsOnly` filter option!
+                     * **campaignMedium[:max]** - you get the counters aggregated per campaign mediums in the response  
+                                            but since there could be a lot you can optionally specify "max top 10" in which case you get your
+                                            top 10 plus all `other` as one group  
+                     See also: `campaignMediumsOnly` filter option!
+                     * **campaignContent[:max]** - you get the counters aggregated per campaign contents in the response  
+                                            but since there could be a lot you can optionally specify "max top 10" in which case you get your
+                                            top 10 plus all `other` as one group  
+                     See also: `campaignContentsOnly` filter option!
+                     * **trafficSourceType** - **deprecated!** Please use `eventSourceType` or `visitSourceType` instead!
+                     * **trafficSourceName[:max]** - **deprecated!** Please use `eventSourceName` or `visitSourceName` instead!
+
       example: 'eventType,time:1h'
   
     limit:
@@ -622,11 +829,13 @@ components:
                      * `eventCountTotal[:eventType1,eventType2,...,eventTypeN]`  
                        If you use `eventCountTotal` then you also have the possibility to provide a comma separated list of event types. If you do then                     
                        only the SUM of those event types are used to form up the `eventCountTotal` and participate in the sorting.  
+                         
                        Some notes to consider:
                          * This possibility can be only used together with using `?groupBy=eventType` - otherwise your query will fail
                          * If you also use `?eventTypesOnly` filter then you can only use those event types which are part of the filter too - otherwise your
-                       query will fail.
-                      
+                         query will fail.
+                         * In the event type list instead of name of the event type you can also use its numeric ID - returned by `/v2/stat/webhits/{containerId}/idmappings`
+                         endpoint - using the format `id:<numeric ID>`, e.g. **"id:123"**. So alltogether you send in something looks like this: `eventCountTotal:id:123,id:456`
                       
     mappingTypes:
       name: mappingTypes
@@ -640,9 +849,11 @@ components:
                      * userAgentType
                      * visitorType
                      * tileType
-                     * tileLanguage
                      * tileGroupPath
                      * referrerName
+                     * campaign
+                     * campaignMedium
+                     * campaignContent
                     
     includeFirstLastSeenTs:
       name: includeFirstLastSeenTs
@@ -761,7 +972,7 @@ components:
           type: integer
           format: int32
           description: > 
-                        Gives you the type of the tile. The integer is the ID of the tile type which you can get back from `/groupByMappings/tileType` part  
+                        Gives you the type of the tile. The integer is the ID of the tile type which you can get back from `/keyColumnsMappings/tileType` part  
                           
                         note: this value is always present
         labelsJSON:
@@ -793,7 +1004,7 @@ components:
           type: object
           nullable: true
           description: >
-                        Contains information about under which tileGroupPaths this Tile showed up in the query range. This is a map. Keys are IDs assigned to tileGroupPath - you can resolve them  
+                        Contains information about under which tileGroupPaths this Tile showed up in the query range. This is a map. Keys are IDs assigned to tileGroupPath - you can resolve them with entried in `/keyColumnsMappings/tileGroupPath` 
                           
                         note: this info you just get if you have NOT executed the request with `?includeTileDetails=false`!
           additionalProperties:
@@ -876,6 +1087,10 @@ components:
       - tileLanguage
       - tileType
       - tileGroupPath
+      - eventSourceType
+      - eventSourceName
+      - visitSourceType
+      - visitSourceName
       - trafficSourceType
       - trafficSourceName
       properties:
@@ -891,9 +1106,23 @@ components:
           $ref: '#/components/schemas/IntIdToStrMappingClass'
         tileGroupPath:
           $ref: '#/components/schemas/IntIdToStrMappingClass'
+        eventSourceType:
+          $ref: '#/components/schemas/IntIdToStrMappingClass'
+        eventSourceName:
+          $ref: '#/components/schemas/IntIdToStrMappingClass'
+        visitSourceType:
+          $ref: '#/components/schemas/IntIdToStrMappingClass'
+        visitSourceName:
+          $ref: '#/components/schemas/IntIdToStrMappingClass'
         trafficSourceType:
           $ref: '#/components/schemas/IntIdToStrMappingClass'
         trafficSourceName:
+          $ref: '#/components/schemas/IntIdToStrMappingClass'
+        campaign:
+          $ref: '#/components/schemas/IntIdToStrMappingClass'
+        campaignMedium:
+          $ref: '#/components/schemas/IntIdToStrMappingClass'
+        campaignContent:
           $ref: '#/components/schemas/IntIdToStrMappingClass'
 
 
@@ -924,8 +1153,12 @@ components:
                          * tileType
                          * tileGroupPath
                          * tileLanguage
-                         * trafficSourceType
-                         * trafficSourceName
+                         * trafficSourceType (deprecated, `eventSourceType` and `visitSourceType` took over)
+                         * trafficSourceName (deprecated, `eventSourceName` and `visitSourceName` took over)
+                         * eventSourceType
+                         * eventSourceName
+                         * visitSourceType
+                         * visitSourceName
         counterColumns:
           type: array
           items:
@@ -969,6 +1202,9 @@ components:
       - tileTypes
       - tileGroupPaths
       - trafficSourceNames
+      - campaigns
+      - campaignMediums
+      - campaignContents
       properties:
         eventTypes:
           type: array
@@ -1005,6 +1241,23 @@ components:
           nullable: true
           items:
             $ref: '#/components/schemas/MappingRecordClass'
+        campaigns:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/MappingRecordClass'
+        campaignMediums:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/MappingRecordClass'
+        campaignContents:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/MappingRecordClass'
+
+
 
     SystemClockResponseClass:
       type: object
