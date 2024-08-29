@@ -190,6 +190,8 @@ components:
                          
                         but you can send in even totally **custom strings as eventTypes**! Keytiles will track them correctly.  
                           
+                        If you do not send in eventType then it's a problem... In this case an error level Hit Fault is generated and the hit is skipped.  
+                        note: Check our article about [Hit faults](https://www.keytiles.com/developer-area/checking-and-troubleshooting/hit-faults) to get a better understanding!
           nullable: false
         action:
           type: string
@@ -220,9 +222,9 @@ components:
         tileType:
           type: string
           description: >
-                        Optional field. If not given then 'article' will be used.  
+                        Mandatory field. The type of the content (Tile).  
                           
-                        There are a few pre-defined types which you might consider to use if they fit to your use case however **you can also define your own types** too.
+                        There are several pre-defined types which you might consider to use if they fit to your use case however **you can also define your own types** too.
                         By convention you should not put spaces or weird characters into this string (however technically it is not causing any issues)  
                           
                         The predefined types are:
@@ -231,13 +233,18 @@ components:
                          * article
                          * file
                          * form
+                         * questionnaire
                          * post
                          * comment
                          * profile
                          * photo
                          * video
+                         * gallery
                           
                         To understand better what this field is you should check [https://keytiles.com/developer-area/hit-attributes](https://keytiles.com/developer-area/hit-attributes#tileType-attribute)  
+                          
+                        In case you do not send in any values here then it is automatically defaulted to 'article' type and a warning level Hit Fault is generated.  
+                        note: Check our article about [Hit faults](https://www.keytiles.com/developer-area/checking-and-troubleshooting/hit-faults) to get a better understanding!
           nullable: true
         tileLanguage:
           type: string
@@ -288,19 +295,48 @@ components:
           nullable: true
         userAgentType:
           type: string
-          enum: [browser-desktop, browser-mobile, other, yourCustomValue1, yourCustomValue2, yourCustomValue3, ...]
+          enum: [browser-desktop, browser-mobile, yourCustomValue1, yourCustomValue2, yourCustomValue3, ...]
           description: >
                         Mandatory field. Tells Keytiles the type of the web client the visitor is using.  
                           
-                        This is an important information as counters are segregated by this value. There are a few "built in" values
-                        as the enumeration shows. But you can also define and send in custom values (in case you have custom web clients like
-                        a native iOS / Android readers or Apps and you want to track the traffic generated through them) too with the limitation
-                        you need to pre-define them in your Container setup!  
+                        This is an important information as traffic is segregated by this value. There are a few "built in" values
+                        - as the enumeration shows. But you can also define and send in custom values (in case you have custom web clients like
+                        a native iOS / Android readers or Apps and you want to track the traffic generated through them) too!  
                           
-                        To keep Keytiles backend storage efficient we must limit the values here in both: length and also number of different
-                        custom values. This is the reason why you need to pre-define them in your Container settings if you wish to use custom
-                        values too... 
+                        In this case you just simple give them meaningful names you will recognize on your own side. E.g. "Android App" or similar.  
+                          
+                        If you do not send in any values here then Keytiles automatically maps "unknown" as value and a warning level Hit Fault is created.  
+                        note: Check our article about [Hit faults](https://www.keytiles.com/developer-area/checking-and-troubleshooting/hit-faults) to get a better understanding!
           nullable: false
+        primaryTags:
+          type: string
+          nullable: true
+          description: >
+                        Optional field. A comma separated list of custom tags you would like to tag the Event with - carried by this hit.  
+                          
+                        The tags are simple strings - name them as you want/need.  
+                          
+                        Once you tag the Event with these tags then you have the possibility in query time of course to query only the appropriate segment of your traffic matching the tags you want to see.  
+                          
+                        To understand it better what these "tags" are doing and how you can use it for your own goals please check our article: [Custom segmentation of traffic](https://keytiles.com/developer-area/custom-segmentation)!  
+                          
+                        Please note the following:
+                         * You can use maximum 3 different tags (comma separated) here in the list. This is an intentional limitation on our end for now.  
+                           This means you can send in something like "blue,green" that's OK but you can not send in "green,blue,red,yellow" - it is exceeding the simultaneous limit.
+                           If you violate this then the overflowing tags will be simple omitted and a warning level Hit Fault is generated.  
+                           note: Check our article about [Hit faults](https://www.keytiles.com/developer-area/checking-and-troubleshooting/hit-faults) to get a better understanding!
+                         * The length of one tag can be maximum 24 characters.  
+                           So "green" fits as a tag easily. But "my-long-color-name-description" (30 long) does not! If you violate this then the tag will be simple omitted and a warning level Hit Fault is generated.  
+                           note: Check our article about [Hit faults](https://www.keytiles.com/developer-area/checking-and-troubleshooting/hit-faults) to get a better understanding!
+        secondaryTags:
+          type: string
+          nullable: true
+          description: >
+                        Optional field. A comma separated list of custom tags you would like to tag the Event with - carried by this hit.  
+                          
+                        Technically it works the same way as `primaryTags` - please check that! - but this "secondary" tags can represent something else as categorization compared to the primary tags.
+                          
+                        To understand it better what these "tags" are doing and how you can use it for your own goals please check our article: [Custom segmentation of traffic](https://keytiles.com/developer-area/custom-segmentation)!  
         referrerUrl:
           type: string
           description: >
@@ -334,6 +370,7 @@ components:
                     Please note that this is designed around [UTM parameters](https://en.wikipedia.org/wiki/UTM_parameters) for now so parts of this data are definitely correlating.  
                       
                     Please also note that if you do not send this data but 'tileUrl' contains the above UTM parameters then Keytiles will detect those automatically and recognize the Campaign.
+                    You can read more about this in our [How does Campaign tracking work](https://www.keytiles.com/docs/how-does-campaign-tracking-work) article.
       properties:
         name:
           type: string
