@@ -318,7 +318,7 @@ components:
                           
                         Once you tag the Event with these tags then you have the possibility in query time of course to query only the appropriate segment of your traffic matching the tags you want to see.  
                           
-                        To understand it better what these "tags" are doing and how you can use it for your own goals please check our article: [Custom segmentation of traffic](https://keytiles.com/developer-area/custom-segmentation)!  
+                        To understand it better what these "tags" are doing and how you can use it for your own goals please check our article: [Custom segmentation of traffic](https://keytiles.com/developer-area/custom-segmentation-of-traffic)!  
                           
                         Please note the following:
                          * You can use maximum 3 different tags (comma separated) here in the list. This is an intentional limitation on our end for now.  
@@ -336,7 +336,7 @@ components:
                           
                         Technically it works the same way as `primaryTags` - please check that! - but this "secondary" tags can represent something else as categorization compared to the primary tags.
                           
-                        To understand it better what these "tags" are doing and how you can use it for your own goals please check our article: [Custom segmentation of traffic](https://keytiles.com/developer-area/custom-segmentation)!  
+                        To understand it better what these "tags" are doing and how you can use it for your own goals please check our article: [Custom segmentation of traffic](https://keytiles.com/developer-area/custom-segmentation-of-traffic)!  
         referrerUrl:
           type: string
           description: >

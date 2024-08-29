@@ -644,7 +644,7 @@ components:
                     If you use them to segment your traffic your custom way then now you can filter for them with this prameter.  
                       
                     To understand it better what these "tags" are doing and how you can use it for your own goals please check our article:
-                    [Custom segmentation of traffic](https://keytiles.com/developer-area/custom-segmentation)!  
+                    [Custom segmentation of traffic](https://keytiles.com/developer-area/custom-segmentation-of-traffic)!  
 
     secondaryTagsOnly:
       name: secondaryTagsOnly
