@@ -101,6 +101,10 @@ components:
       - requestParameter_not_supported
       # One of the request parameters/arguments is pointless to be used in this context - would be ignored and we want the user to know this
       - requestParameter_pointless
+      # There are req params in the query which are contradicting with each other
+      - requestParameter_contradicting
+      # There are req params in the query which are in conflict with each other. There should be only one of them.
+      - requestParameter_conflict
       # In REST style endpoints Keytiles is using resource versioning to detect and avoid issues might be caused by race conditions. When this situation is detected the endpoint is raising this error so the caller knows he should start over the whole thing because someone else has modified the same resource just in parallel.
       - resourceVersion_mismatch
       # There are certain processes / flows which require confirmation via e-mail. In these cases sending out the confirm email successfully is crucial part of the process. If this fails then this error code is raised because Keytiles knows exactly the process can not be finished for sure.
