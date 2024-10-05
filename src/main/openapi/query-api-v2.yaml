@@ -748,9 +748,11 @@ components:
                      See also: `tileGroupPathsOnly` filter option!
                      * **tileLanguage** - you get the counters aggregated per languages in the response  
                      See also: `tileLanguagesOnly` filter option!
-                     * **primaryTags** - you get the counters aggregated per primary (custom) tags in the response  
+                     * **primaryTags[:max]** - you get the counters aggregated per primary (custom) tags in the response  
+                     but since there could be a lot you can optionally specify let's say "max top 10" in which case you get your top 10 plus all `other` as one group.  
                      See also: `primaryTagsOnly` filter option for more details!
-                     * **secondaryTags** - you get the counters aggregated per secondary (custom) tags in the response  
+                     * **secondaryTags[:max]** - you get the counters aggregated per secondary (custom) tags in the response  
+                     but since there could be a lot you can optionally specify let's say "max top 10" in which case you get your top 10 plus all `other` as one group.  
                      See also: `secondaryTagsOnly` filter option for more details!
                      * **eventSourceType** - you get the counters aggregated per event source types in the response like `search`, `social`, etc.  
                      See also: `eventSourceTypesOnly` filter option!
@@ -949,6 +951,7 @@ components:
             type: array
             items:
               type: integer
+              format: int64
   
     TileEventCountersResponseClass:
       allOf:
@@ -1015,7 +1018,7 @@ components:
             type: array
             items:
               type: integer
-
+              format: int64
           
     TileGroupPathClass:
       type: object
@@ -1093,6 +1096,11 @@ components:
       - visitSourceName
       - trafficSourceType
       - trafficSourceName
+      - campaign
+      - campaignMedium
+      - campaignContent
+      - primaryTags
+      - secondaryTags
       properties:
         eventType:
           $ref: '#/components/schemas/IntIdToStrMappingClass'
@@ -1123,6 +1131,10 @@ components:
         campaignMedium:
           $ref: '#/components/schemas/IntIdToStrMappingClass'
         campaignContent:
+          $ref: '#/components/schemas/IntIdToStrMappingClass'
+        primaryTags:
+          $ref: '#/components/schemas/IntIdToStrMappingClass'
+        secondaryTags:
           $ref: '#/components/schemas/IntIdToStrMappingClass'
 
 
