@@ -157,6 +157,8 @@ paths:
         - $ref: 'common-types-v2.yaml#/components/parameters/containerId'
         - $ref: 'common-types-v2.yaml#/components/parameters/fromTimestamp'
         - $ref: 'common-types-v2.yaml#/components/parameters/toTimestamp'
+        - $ref: '#/components/parameters/interest'
+        - $ref: '#/components/parameters/groupBy'
         - $ref: '#/components/parameters/eventTypesOnly'
         - $ref: '#/components/parameters/tileTypesOnly'
         - $ref: '#/components/parameters/tileTypeIsNot'
@@ -173,8 +175,6 @@ paths:
         - $ref: '#/components/parameters/campaignsOnly'
         - $ref: '#/components/parameters/campaignMediumsOnly'
         - $ref: '#/components/parameters/campaignContentsOnly'
-        - $ref: '#/components/parameters/interest'
-        - $ref: '#/components/parameters/groupBy'
 
       security:
       - basicAuth: []
@@ -230,6 +230,12 @@ paths:
         - $ref: 'common-types-v2.yaml#/components/parameters/containerId'
         - $ref: 'common-types-v2.yaml#/components/parameters/fromTimestamp'
         - $ref: 'common-types-v2.yaml#/components/parameters/toTimestamp'
+        - $ref: '#/components/parameters/interest'
+        - $ref: '#/components/parameters/groupBy'
+        - $ref: '#/components/parameters/includeTileDetails'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/threshold'
+        - $ref: '#/components/parameters/sortBy'
         - $ref: '#/components/parameters/eventTypesOnly'
         - $ref: '#/components/parameters/tileIdsOnly'
         - $ref: '#/components/parameters/tileTypesOnly'
@@ -247,12 +253,6 @@ paths:
         - $ref: '#/components/parameters/campaignsOnly'
         - $ref: '#/components/parameters/campaignMediumsOnly'
         - $ref: '#/components/parameters/campaignContentsOnly'
-        - $ref: '#/components/parameters/interest'
-        - $ref: '#/components/parameters/includeTileDetails'
-        - $ref: '#/components/parameters/groupBy'
-        - $ref: '#/components/parameters/limit'
-        - $ref: '#/components/parameters/threshold'
-        - $ref: '#/components/parameters/sortBy'
 
       security:
       - basicAuth: []
@@ -645,7 +645,9 @@ components:
                       
                     To understand it better what these "tags" are doing and how you can use it for your own goals please check our article:
                     [Custom segmentation of traffic](https://keytiles.com/developer-area/custom-segmentation-of-traffic)!  
-
+                      
+                    **Good to know!** If you are curious about traffic where there was no primary cutom tag at all you have a special option here! You can encode the "no tags at all" by adding "id:0"
+                    to this param so `primaryTagsOnly=id:0` encodes exactly this.
     secondaryTagsOnly:
       name: secondaryTagsOnly
       in: query
