@@ -858,6 +858,8 @@ components:
                      * campaign
                      * campaignMedium
                      * campaignContent
+                     * primaryTag
+                     * secondaryTag
                     
     includeFirstLastSeenTs:
       name: includeFirstLastSeenTs
@@ -1219,6 +1221,8 @@ components:
       - campaigns
       - campaignMediums
       - campaignContents
+      - primaryTags
+      - secondaryTags
       properties:
         eventTypes:
           type: array
@@ -1266,6 +1270,16 @@ components:
           items:
             $ref: '#/components/schemas/MappingRecordClass'
         campaignContents:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/MappingRecordClass'
+        primaryTags:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/MappingRecordClass'
+        secondaryTags:
           type: array
           nullable: true
           items:
