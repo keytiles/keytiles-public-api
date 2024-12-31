@@ -91,4 +91,19 @@ components:
           default: []
           description: 'List of errors/warnings'
 
+    ReportClass:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The unique ID of this report setup - UUID style
+        schedules:
+          type: array
+          description: We schedule the report. That's an important point. Here you can assign actually multiple schedules. If you do so they are interpreted with "OR" operator.
+          items:
+            oneOf:
+              - $ref: 'common-schedule-v1.yaml#/components/schemas/HourlyScheduleSetup'
+              - $ref: 'common-schedule-v1.yaml#/components/schemas/DailyScheduleSetup'
+              - $ref: 'common-schedule-v1.yaml#/components/schemas/WeeklyScheduleSetup'
+              - $ref: 'common-schedule-v1.yaml#/components/schemas/MonthlyScheduleSetup'
 
