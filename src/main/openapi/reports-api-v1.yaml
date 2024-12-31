@@ -1,0 +1,94 @@
+openapi: 3.0.0
+
+info:
+  version: '1.0'
+  title: Keytiles Reporting API
+  description: >
+              API endpoints to manage / query / use Keytiles Reporting.
+
+servers:
+- url: https://api.keytiles.com/api
+  description: PROD server
+- url: https://api-test.keytiles.com/api
+  description: TEST server
+   
+tags:
+- name: Manage reports
+  description: Endpoints to create / modify / delete / change existing reports.
+
+paths:
+
+  '/v1/reports/containers/rest/{containerId}':
+  
+    get:
+      summary: "To query existing reports belong to the Container"
+      tags:
+      - Manage reports
+      description: >
+                With this endpoint you have the possibility to query all reports currently set 
+      parameters:
+        - $ref: 'common-types-v2.yaml#/components/parameters/containerId'
+
+      security:
+      - basicAuth: []
+
+      responses:
+        '200':
+          description: "OK response"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetContainerReportsResponseClass'
+
+components:
+  schemas:
+
+    # This enum defines error codes belong to management endpoints specifically
+    # note: no support in OpenApi for now how to document values so we just add the description as comments for now.
+    #       see: https://github.com/OAI/OpenAPI-Specification/issues/348 
+    ReportsEndpointLocalErrorCodes:
+      type: string
+      enum:
+      # The ID of the container was not provided - it is missing
+      - containerId_missing
+      # The ID of the Container is not valid - there is no Container with this ID
+      - containerId_invalid
+      
+
+    # Let's merge the "local" error codes with the "global" ones in this enum
+    # Reports API endpoints can return the union of them
+    ReportsEndpointErrorCodes:
+      description: NOTE! Error codes is an Enum. Unfortunately in OpenApi (so far) there is no possibility to provide description for Enum values. But we have detailed description of each error codes! Please check the OpenApi file in our Github repo - you find them as comments for each Enum values! 
+      oneOf:
+      - $ref: "#/components/schemas/ReportsEndpointLocalErrorCodes"
+      - $ref: "common-types-v2.yaml#/components/schemas/CommonErrorCodes"
+
+
+    # Let's extend the global Problem class with our Reports API specific error codes
+    ReportsEndpointProblemClass:
+      allOf:
+      - $ref: 'common-types-v2.yaml#/components/schemas/ProblemBaseClass'
+      type: object
+      properties:
+        errorCodes:
+          type: array
+          items:
+            $ref: "#/components/schemas/ReportsEndpointErrorCodes"
+          nullable: true
+          default: []
+
+
+    GetContainerReportsResponseClass:
+      allOf:
+      - $ref: "common-types-v2.yaml#/components/schemas/MessageResponseClass"
+      type: object
+      properties:
+        problems:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReportsEndpointProblemClass'
+          nullable: false
+          default: []
+          description: 'List of errors/warnings'
+
+
