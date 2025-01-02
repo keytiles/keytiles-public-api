@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '2.3.0'
+  version: '2.4'
   title: Keytiles Statistics query API
   description: >
             
@@ -76,6 +76,8 @@ tags:
   description: Query measured event statistics in Containers which are collecting website analytics
 - name: Referrer counters
   description: Queries for referrer statistics
+- name: Tiles
+  description: Queries related to Tiles
 - name: Other queries
   description: Queries help you to know more about your visitors
 
@@ -114,6 +116,64 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GetIdMappingsResponseClass'
+        '404':
+          description: "The given containerId does not exist"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v2.yaml#/components/schemas/BaseResponseClass'
+        '401':
+          description: "Authentication failed - you provided invalid credentials or not provided credentials at all"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v2.yaml#/components/schemas/BaseResponseClass'
+        '403':
+          description: "You have no permission to read statistics of the given Container"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v2.yaml#/components/schemas/BaseResponseClass'
+        '400':
+          description: "Something was wrong with the request"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v2.yaml#/components/schemas/BaseResponseClass'
+
+
+  '/v2/stat/webhits/{containerId}/tiles':
+  
+    get:
+      summary: "To query data Keytiles stores about content - Tiles."
+      description: >
+                    If you use this "mass query" endpoint then you have to tell explicitly which Tiles data you are
+                    curious about - it will not return all Tile data ever (of course, could be millions!)
+      tags:
+      - Tiles
+      parameters:
+        - $ref: 'common-types-v2.yaml#/components/parameters/containerId'
+        - name: tileIdsOnly
+          in: query
+          required: true
+          schema:
+            type: string
+          description: >
+                        Comma separated list of tileIds you want to limit the query for.  
+                          
+                        note: if you have comma in your tileIds (strange, but ok...) you can escape that with `\\` character!  
+          example: 'tile123,tile456,tile789'
+
+      security:
+      - basicAuth: []
+
+      responses:
+        '200':
+          description: "OK response"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetTilesResponseClass'
         '404':
           description: "The given containerId does not exist"
           content:
@@ -920,53 +980,115 @@ components:
     StatApiEndpointProblemClass:
       allOf:
       - $ref: 'common-types-v2.yaml#/components/schemas/ProblemBaseClass'
-      type: object
-      properties:
-        errorCodes:
-          type: array
-          items:
-            $ref: "#/components/schemas/StatApiEndpointErrorCodes"
-          nullable: true
-          default: []  
+      - type: object
+        properties:
+          errorCodes:
+            type: array
+            items:
+              $ref: "#/components/schemas/StatApiEndpointErrorCodes"
+            nullable: true
+            default: []  
   
     EventCountersResponseClass:
       allOf:
         - $ref: 'common-types-v2.yaml#/components/schemas/ContainerQueryRangeResponseClass'    
-      type: object
-      properties:
-        problems:
-          type: array
-          items:
-            $ref: '#/components/schemas/StatApiEndpointProblemClass'
-          nullable: true
-          default: []
-          description: 'List of errors/warnings'
-        keyColumnsMappings:
-          $ref: '#/components/schemas/KeyColumnsIntIdMappingsClass'
-        resultColumns:
-            $ref: '#/components/schemas/EventCountersHeaderClass'
-        aggregatedCounterRows:
-          type: array
-          description: >
-                        These are the rows of the data - each row represented by an array of Integer values.  
-                          
-                        In rows the number of columns and the index of each colum is identical to the description you find in `/resultColumns` entry!
-          items:
-            type: array
-            items:
-              type: integer
-              format: int64
+        - type: object
+          properties:
+            problems:
+              type: array
+              items:
+                $ref: '#/components/schemas/StatApiEndpointProblemClass'
+              nullable: true
+              default: []
+              description: 'List of errors/warnings'
+            keyColumnsMappings:
+              $ref: '#/components/schemas/KeyColumnsIntIdMappingsClass'
+            resultColumns:
+                $ref: '#/components/schemas/EventCountersHeaderClass'
+            aggregatedCounterRows:
+              type: array
+              description: >
+                            These are the rows of the data - each row represented by an array of Integer values.  
+                              
+                            In rows the number of columns and the index of each colum is identical to the description you find in `/resultColumns` entry!
+              items:
+                type: array
+                items:
+                  type: integer
+                  format: int64
   
     TileEventCountersResponseClass:
       allOf:
         - $ref: '#/components/schemas/EventCountersResponseClass'    
+        - type: object
+          properties:
+            tiles:
+              type: object
+              description: Containes Tile counters and Tile details. This is a map. Keys are tileIds.
+              additionalProperties:
+                $ref: '#/components/schemas/TileClass'
+
+
+    GetTilesResponseClass:
+      allOf:
+        - $ref: 'common-types-v2.yaml#/components/schemas/ContainerResponseClass'    
+        - type: object
+          properties:
+            problems:
+              type: array
+              items:
+                $ref: '#/components/schemas/StatApiEndpointProblemClass'
+              nullable: true
+              default: []
+              description: 'List of errors/warnings'
+            tiles:
+              type: object
+              description: Containes Tile details. This is a map. Keys are tileIds.
+              additionalProperties:
+                $ref: '#/components/schemas/TileDataClass'
+
+
+    TileDataClass:
       type: object
       properties:
-        tiles:
+        typeName:
+          type: string
+          description: > 
+                        Gives you the type of the tile.
+        labelsJSON:
+          type: string
+          nullable: true
+          description: >
+                        You can store some labels - key-value pairs - for Tiles. They are collected during hit collection (see: Hit Collection API - [https://www.keytiles.com/developer-area/hit-attributes](https://www.keytiles.com/developer-area/hit-attributes#tileLabelsJSON)).  
+                          
+                        If you do so you get back the JSON string representation of these labels in this field - or you get NULL if there are no labels stored.
+        firstSeen:
+          type: integer
+          format: int32
+          nullable: true
+          description: >
+                        When did we register the first event for this tile? Basically: publish time of this tile. UNIX timestamp (seconds since Epoch) in UTC.  
+                          
+                        note: this info you just get if you have NOT executed the request with `?includeTileDetails=false`!
+          example: 1543355708
+        lastSeen:
+          type: integer
+          format: int32
+          nullable: true
+          description: >
+                        When did we register the last event for this tile? UNIX timestamp (seconds since Epoch) in UTC.  
+                          
+                        note: this info you just get if you have NOT executed the request with `?includeTileDetails=false`!
+          example: 1543355708
+        tileGroupPaths:
           type: object
-          description: Containes Tile counters and Tile details. This is a map. Keys are tileIds.
+          nullable: true
+          description: >
+                        Contains information about under which tileGroupPaths this Tile showed up in the query range. This is a map. Keys are IDs assigned to tileGroupPath - you can resolve them with entried in `/keyColumnsMappings/tileGroupPath` 
+                          
+                        note: this info you just get if you have NOT executed the request with `?includeTileDetails=false`!
           additionalProperties:
-            $ref: '#/components/schemas/TileClass'
+            $ref: '#/components/schemas/TileGroupPathClass'
 
 
     TileClass:
@@ -982,6 +1104,10 @@ components:
                         Gives you the type of the tile. The integer is the ID of the tile type which you can get back from `/keyColumnsMappings/tileType` part  
                           
                         note: this value is always present
+        # typeName:
+        #   type: string
+        #   description: > 
+        #                 Gives you the type of the tile as a string. The resolved 'type' ID basically.
         labelsJSON:
           type: string
           nullable: true
@@ -1081,66 +1207,65 @@ components:
 
 
     KeyColumnsIntIdMappingsClass:
-      allOf:
-      - $ref: '#/components/schemas/TimeColumnIntIdToIntervalMappingClass'    
-      type: object
-      nullable: true
       description: >
                     This object gives you concrete values for "groupBy" criteria if you requested data groups using the `groupBy` parameter. 
-      x-keytiles-serialize-only-if-non-default-properties:
-      - eventType
-      - visitorType
-      - userAgentType
-      - tileLanguage
-      - tileType
-      - tileGroupPath
-      - eventSourceType
-      - eventSourceName
-      - visitSourceType
-      - visitSourceName
-      - trafficSourceType
-      - trafficSourceName
-      - campaign
-      - campaignMedium
-      - campaignContent
-      - primaryTags
-      - secondaryTags
-      properties:
-        eventType:
-          $ref: '#/components/schemas/IntIdToStrMappingClass'
-        visitorType:
-          $ref: '#/components/schemas/IntIdToStrMappingClass'
-        userAgentType:
-          $ref: '#/components/schemas/IntIdToStrMappingClass'
-        tileLanguage:
-          $ref: '#/components/schemas/IntIdToStrMappingClass'
-        tileType:
-          $ref: '#/components/schemas/IntIdToStrMappingClass'
-        tileGroupPath:
-          $ref: '#/components/schemas/IntIdToStrMappingClass'
-        eventSourceType:
-          $ref: '#/components/schemas/IntIdToStrMappingClass'
-        eventSourceName:
-          $ref: '#/components/schemas/IntIdToStrMappingClass'
-        visitSourceType:
-          $ref: '#/components/schemas/IntIdToStrMappingClass'
-        visitSourceName:
-          $ref: '#/components/schemas/IntIdToStrMappingClass'
-        trafficSourceType:
-          $ref: '#/components/schemas/IntIdToStrMappingClass'
-        trafficSourceName:
-          $ref: '#/components/schemas/IntIdToStrMappingClass'
-        campaign:
-          $ref: '#/components/schemas/IntIdToStrMappingClass'
-        campaignMedium:
-          $ref: '#/components/schemas/IntIdToStrMappingClass'
-        campaignContent:
-          $ref: '#/components/schemas/IntIdToStrMappingClass'
-        primaryTags:
-          $ref: '#/components/schemas/IntIdToStrMappingClass'
-        secondaryTags:
-          $ref: '#/components/schemas/IntIdToStrMappingClass'
-
+      nullable: true
+      allOf:
+      - $ref: '#/components/schemas/TimeColumnIntIdToIntervalMappingClass'    
+      - type: object
+        x-keytiles-serialize-only-if-non-default-properties:
+        - eventType
+        - visitorType
+        - userAgentType
+        - tileLanguage
+        - tileType
+        - tileGroupPath
+        - eventSourceType
+        - eventSourceName
+        - visitSourceType
+        - visitSourceName
+        - trafficSourceType
+        - trafficSourceName
+        - campaign
+        - campaignMedium
+        - campaignContent
+        - primaryTags
+        - secondaryTags
+        properties:
+          eventType:
+            $ref: '#/components/schemas/IntIdToStrMappingClass'
+          visitorType:
+            $ref: '#/components/schemas/IntIdToStrMappingClass'
+          userAgentType:
+            $ref: '#/components/schemas/IntIdToStrMappingClass'
+          tileLanguage:
+            $ref: '#/components/schemas/IntIdToStrMappingClass'
+          tileType:
+            $ref: '#/components/schemas/IntIdToStrMappingClass'
+          tileGroupPath:
+            $ref: '#/components/schemas/IntIdToStrMappingClass'
+          eventSourceType:
+            $ref: '#/components/schemas/IntIdToStrMappingClass'
+          eventSourceName:
+            $ref: '#/components/schemas/IntIdToStrMappingClass'
+          visitSourceType:
+            $ref: '#/components/schemas/IntIdToStrMappingClass'
+          visitSourceName:
+            $ref: '#/components/schemas/IntIdToStrMappingClass'
+          trafficSourceType:
+            $ref: '#/components/schemas/IntIdToStrMappingClass'
+          trafficSourceName:
+            $ref: '#/components/schemas/IntIdToStrMappingClass'
+          campaign:
+            $ref: '#/components/schemas/IntIdToStrMappingClass'
+          campaignMedium:
+            $ref: '#/components/schemas/IntIdToStrMappingClass'
+          campaignContent:
+            $ref: '#/components/schemas/IntIdToStrMappingClass'
+          primaryTags:
+            $ref: '#/components/schemas/IntIdToStrMappingClass'
+          secondaryTags:
+            $ref: '#/components/schemas/IntIdToStrMappingClass'
 
     EventCountersHeaderClass:
       type: object
@@ -1209,81 +1334,81 @@ components:
     GetIdMappingsResponseClass:
       allOf:
         - $ref: 'common-types-v2.yaml#/components/schemas/ContainerQueryRangeResponseClass'    
-      type: object
-      x-keytiles-serialize-only-if-non-default-properties:
-      - eventTypes
-      - visitorTypes
-      - userAgentTypes
-      - tileLanguages
-      - tileTypes
-      - tileGroupPaths
-      - trafficSourceNames
-      - campaigns
-      - campaignMediums
-      - campaignContents
-      - primaryTags
-      - secondaryTags
-      properties:
-        eventTypes:
-          type: array
-          nullable: true
-          items:
-            $ref: '#/components/schemas/MappingRecordClass'
-        visitorTypes:
-          type: array
-          nullable: true
-          items:
-            $ref: '#/components/schemas/MappingRecordClass'
-        userAgentTypes:
-          type: array
-          nullable: true
-          items:
-            $ref: '#/components/schemas/MappingRecordClass'
-        tileLanguages:
-          type: array
-          nullable: true
-          items:
-            $ref: '#/components/schemas/MappingRecordClass'
-        tileTypes:
-          type: array
-          nullable: true
-          items:
-            $ref: '#/components/schemas/MappingRecordClass'
-        tileGroupPaths:
-          type: array
-          nullable: true
-          items:
-            $ref: '#/components/schemas/MappingRecordClass'
-        trafficSourceNames:
-          type: array
-          nullable: true
-          items:
-            $ref: '#/components/schemas/MappingRecordClass'
-        campaigns:
-          type: array
-          nullable: true
-          items:
-            $ref: '#/components/schemas/MappingRecordClass'
-        campaignMediums:
-          type: array
-          nullable: true
-          items:
-            $ref: '#/components/schemas/MappingRecordClass'
-        campaignContents:
-          type: array
-          nullable: true
-          items:
-            $ref: '#/components/schemas/MappingRecordClass'
-        primaryTags:
-          type: array
-          nullable: true
-          items:
-            $ref: '#/components/schemas/MappingRecordClass'
-        secondaryTags:
-          type: array
-          nullable: true
-          items:
-            $ref: '#/components/schemas/MappingRecordClass'
+        - type: object
+          x-keytiles-serialize-only-if-non-default-properties:
+          - eventTypes
+          - visitorTypes
+          - userAgentTypes
+          - tileLanguages
+          - tileTypes
+          - tileGroupPaths
+          - trafficSourceNames
+          - campaigns
+          - campaignMediums
+          - campaignContents
+          - primaryTags
+          - secondaryTags
+          properties:
+            eventTypes:
+              type: array
+              nullable: true
+              items:
+                $ref: '#/components/schemas/MappingRecordClass'
+            visitorTypes:
+              type: array
+              nullable: true
+              items:
+                $ref: '#/components/schemas/MappingRecordClass'
+            userAgentTypes:
+              type: array
+              nullable: true
+              items:
+                $ref: '#/components/schemas/MappingRecordClass'
+            tileLanguages:
+              type: array
+              nullable: true
+              items:
+                $ref: '#/components/schemas/MappingRecordClass'
+            tileTypes:
+              type: array
+              nullable: true
+              items:
+                $ref: '#/components/schemas/MappingRecordClass'
+            tileGroupPaths:
+              type: array
+              nullable: true
+              items:
+                $ref: '#/components/schemas/MappingRecordClass'
+            trafficSourceNames:
+              type: array
+              nullable: true
+              items:
+                $ref: '#/components/schemas/MappingRecordClass'
+            campaigns:
+              type: array
+              nullable: true
+              items:
+                $ref: '#/components/schemas/MappingRecordClass'
+            campaignMediums:
+              type: array
+              nullable: true
+              items:
+                $ref: '#/components/schemas/MappingRecordClass'
+            campaignContents:
+              type: array
+              nullable: true
+              items:
+                $ref: '#/components/schemas/MappingRecordClass'
+            primaryTags:
+              type: array
+              nullable: true
+              items:
+                $ref: '#/components/schemas/MappingRecordClass'
+            secondaryTags:
+              type: array
+              nullable: true
+              items:
+                $ref: '#/components/schemas/MappingRecordClass'
 
 
 

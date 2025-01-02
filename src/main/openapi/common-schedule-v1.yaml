@@ -25,92 +25,92 @@ components:
           enum: ['hourly', 'daily', 'weekly', 'monthly']
 
     HourlyScheduleSetup:
+      description: Encodes scheduling tailored for hourly execution.
       allOf:
         - $ref: '#/components/schemas/Schedule'
-      type: object
-      description: Encodes scheduling tailored for hourly execution.
-      required:
-        - firstTime
-      properties:
-        firstTime:
-          type: string
-          nullable: false
-          description: >
-                      Mandatory element. This is an "HH:MM" formatted time descriptor. Means: within a day what time should we trigger the execution first? From this time the action is shcheduled every hour.  
-                        
-                      For example if you set it to "09:15" then first execution happens at 09:15, the next one at 10:15 then 11:15 and so on.
-          example: '09:15'
-        untilTime:
-          type: string
-          description: >
-                      Optional setting. This is an "HH:MM" formatted time descriptor. Means: within a day triggering will happen only if the current time is <= than this time.  
-                        
-                      For example, if `firstTime="09:15"` then actually the last execution of the action will happen at "17:15".  
-                        
-                      In case not given then scheduling will happen within the day every hour starting from `firstTime`.
-          example: '18:00'
-        dayNames:
-          type: array
-          description: Optional setting. If given then scheduling will happen only on these days. This is a day mask basically.
-          items:
-            $ref: '#/components/schemas/ScheduleDayNames'
+        - type: object
+          required:
+            - firstTime
+          properties:
+            firstTime:
+              type: string
+              nullable: false
+              description: >
+                          Mandatory element. This is an "HH:MM" formatted time descriptor. Means: within a day what time should we trigger the execution first? From this time the action is shcheduled every hour.  
+                            
+                          For example if you set it to "09:15" then first execution happens at 09:15, the next one at 10:15 then 11:15 and so on.
+              example: '09:15'
+            untilTime:
+              type: string
+              description: >
+                          Optional setting. This is an "HH:MM" formatted time descriptor. Means: within a day triggering will happen only if the current time is <= than this time.  
+                            
+                          For example, if `firstTime="09:15"` then actually the last execution of the action will happen at "17:15".  
+                            
+                          In case not given then scheduling will happen within the day every hour starting from `firstTime`.
+              example: '18:00'
+            dayNames:
+              type: array
+              description: Optional setting. If given then scheduling will happen only on these days. This is a day mask basically.
+              items:
+                $ref: '#/components/schemas/ScheduleDayNames'
 
     DailyScheduleSetup:
+      description: Encodes scheduling tailored for daily execution.
       allOf:
         - $ref: '#/components/schemas/Schedule'
-      type: object
-      description: Encodes scheduling tailored for daily execution.
-      required:
-        - triggerTime
-      properties:
-        triggerTime:
-          type: string
-          nullable: false
-          description: >
-                      Mandatory element. This is an "HH:MM" formatted time descriptor. Means: within a day what time should we trigger the execution?
-          example: '09:00'
-        dayNames:
-          type: array
-          description: Optional setting. If given then scheduling will happen only on these days. This is a day mask basically.
-          items:
-            $ref: '#/components/schemas/ScheduleDayNames'
+        - type: object
+          required:
+            - triggerTime
+          properties:
+            triggerTime:
+              type: string
+              nullable: false
+              description: >
+                          Mandatory element. This is an "HH:MM" formatted time descriptor. Means: within a day what time should we trigger the execution?
+              example: '09:00'
+            dayNames:
+              type: array
+              description: Optional setting. If given then scheduling will happen only on these days. This is a day mask basically.
+              items:
+                $ref: '#/components/schemas/ScheduleDayNames'
 
     WeeklyScheduleSetup:
+      description: Encodes scheduling tailored for weekly execution.
       allOf:
         - $ref: '#/components/schemas/Schedule'
-      type: object
-      description: Encodes scheduling tailored for weekly execution.
-      required:
-        - triggerTime
-      properties:
-        triggerTime:
-          type: string
-          nullable: false
-          description: >
-                      Mandatory element. This is an "HH:MM" formatted time descriptor. Means: within a day what time should we trigger the execution?
-          example: '09:00'
-        dayName:
-          default: 'Mon'
-          $ref: '#/components/schemas/ScheduleDayNames'
+        - type: object
+          required:
+            - triggerTime
+          properties:
+            triggerTime:
+              type: string
+              nullable: false
+              description: >
+                          Mandatory element. This is an "HH:MM" formatted time descriptor. Means: within a day what time should we trigger the execution?
+              example: '09:00'
+            dayName:
+              default: 'Mon'
+              $ref: '#/components/schemas/ScheduleDayNames'
 
     MonthlyScheduleSetup:
+      description: Encodes scheduling tailored for monthly execution.
       allOf:
         - $ref: '#/components/schemas/Schedule'
-      type: object
-      description: Encodes scheduling tailored for monthly execution.
-      required:
-        - triggerTime
-      properties:
-        triggerTime:
-          type: string
-          nullable: false
-          description: >
-                      Mandatory element. This is an "HH:MM" formatted time descriptor. Means: within a day what time should we trigger the execution?
-          example: '09:00'
-        dayName:
-          description: Optional element. To pick up the day when the report is triggered you have a few options. If not given then simply it will be 'firstDay'.
-          oneOf:
-            - $ref: '#/components/schemas/ScheduleDayNames'
-            - type: string
-              enum: ['firstDay', 'lastDay']
-          default: 'firstDay'
+        - type: object
+          required:
+            - triggerTime
+          properties:
+            triggerTime:
+              type: string
+              nullable: false
+              description: >
+                          Mandatory element. This is an "HH:MM" formatted time descriptor. Means: within a day what time should we trigger the execution?
+              example: '09:00'
+            dayName:
+              description: Optional element. To pick up the day when the report is triggered you have a few options. If not given then simply it will be 'firstDay'.
+              oneOf:
+                - $ref: '#/components/schemas/ScheduleDayNames'
+                - type: string
+                  enum: ['firstDay', 'lastDay']
+              default: 'firstDay'

@@ -191,11 +191,11 @@ components:
     MessageResponseClass:
       allOf:
       - $ref: '#/components/schemas/BaseResponseClass'
-      type: object
-      properties:
-        message:
-          type: string
-          description: "The human readable message"
+      - type: object
+        properties:
+          message:
+            type: string
+            description: "The human readable message"
 
     ResponseContainerInfoClass:
       type: object
@@ -215,12 +215,12 @@ components:
     ContainerResponseClass:
       allOf:
       - $ref: '#/components/schemas/BaseResponseClass'
-      type: object
-      required:
-      - container
-      properties:
-        container:
-          $ref: '#/components/schemas/ResponseContainerInfoClass'
+      - type: object
+        required:
+        - container
+        properties:
+          container:
+            $ref: '#/components/schemas/ResponseContainerInfoClass'
 
       
     # note: model generation made mistake here: own added properties were missing
@@ -228,36 +228,31 @@ components:
     # thats the reason why inheritance looks like this
     ContainerQueryRangeResponseClass:
       allOf:
-      - $ref: '#/components/schemas/ContainerResponseClass'    
-      type: object
-      required:
-      - requestedFromTimestamp
-      - requestedToTimestamp
-      - dataFromTimestamp
-      - dataToTimestamp
-      properties:
-        requestedFromTimestamp:
-          type: integer
-          format: int32
-          description: 'In the request you requested data starting by this UNIX timestamp in UTC (seconds since Epoch)'
-          example: 1543355608
-        requestedToTimestamp:
-          type: integer
-          format: int32
-          description: "In the request you requested data until this UNIX timestamp in UTC (seconds since Epoch)"
-          example: 1543355708
-        dataFromTimestamp:
-          type: integer
-          format: int32
-          description: 'This response contains data starting by this UNIX timestamp in UTC (seconds since Epoch) - will be always rounded to at least minutes or even more (see section "Interval of your interest" above!)'
-          example: 1543355608
-        dataToTimestamp:
-          type: integer
-          format: int32
-          description: "This response contains data until this UNIX timestamp in UTC (seconds since Epoch)"
-          example: 1543355708
-
-
-
-          
-      
+      - $ref: '#/components/schemas/ContainerResponseClass'
+      - type: object
+        required:
+        - requestedFromTimestamp
+        - requestedToTimestamp
+        - dataFromTimestamp
+        - dataToTimestamp
+        properties:
+          requestedFromTimestamp:
+            type: integer
+            format: int32
+            description: 'In the request you requested data starting by this UNIX timestamp in UTC (seconds since Epoch)'
+            example: 1543355608
+          requestedToTimestamp:
+            type: integer
+            format: int32
+            description: "In the request you requested data until this UNIX timestamp in UTC (seconds since Epoch)"
+            example: 1543355708
+          dataFromTimestamp:
+            type: integer
+            format: int32
+            description: 'This response contains data starting by this UNIX timestamp in UTC (seconds since Epoch) - will be always rounded to at least minutes or even more (see section "Interval of your interest" above!)'
+            example: 1543355608
+          dataToTimestamp:
+            type: integer
+            format: int32
+            description: "This response contains data until this UNIX timestamp in UTC (seconds since Epoch)"
+            example: 1543355708

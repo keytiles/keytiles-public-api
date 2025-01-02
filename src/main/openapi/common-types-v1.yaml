@@ -65,30 +65,30 @@ components:
     IntervalBasedResponseClass:
       allOf:
         - $ref: '#/components/schemas/BaseResponseClass'
-      type: object
-      properties:
-        container:
-          $ref: '#/components/schemas/ResponseContainerInfoClass'
-        requestedFromTimestamp:
-          type: integer
-          format: int32
-          description: 'In the request you requested data starting by this UNIX timestamp in UTC (seconds since Epoch)'
-          example: 1543355608
-        requestedToTimestamp:
-          type: integer
-          format: int32
-          description: "In the request you requested data until this UNIX timestamp in UTC (seconds since Epoch)"
-          example: 1543355708
-        dataFromTimestamp:
-          type: integer
-          format: int32
-          description: 'This response contains data starting by this UNIX timestamp in UTC (seconds since Epoch) - will be always rounded to at least minutes or even more (see section "Interval of your interest" above!)'
-          example: 1543355608
-        dataToTimestamp:
-          type: integer
-          format: int32
-          description: "This response contains data until this UNIX timestamp in UTC (seconds since Epoch)"
-          example: 1543355708
+        - type: object
+          properties:
+            container:
+              $ref: '#/components/schemas/ResponseContainerInfoClass'
+            requestedFromTimestamp:
+              type: integer
+              format: int32
+              description: 'In the request you requested data starting by this UNIX timestamp in UTC (seconds since Epoch)'
+              example: 1543355608
+            requestedToTimestamp:
+              type: integer
+              format: int32
+              description: "In the request you requested data until this UNIX timestamp in UTC (seconds since Epoch)"
+              example: 1543355708
+            dataFromTimestamp:
+              type: integer
+              format: int32
+              description: 'This response contains data starting by this UNIX timestamp in UTC (seconds since Epoch) - will be always rounded to at least minutes or even more (see section "Interval of your interest" above!)'
+              example: 1543355608
+            dataToTimestamp:
+              type: integer
+              format: int32
+              description: "This response contains data until this UNIX timestamp in UTC (seconds since Epoch)"
+              example: 1543355708
       
     IntervalClass:
       type: object
@@ -113,12 +113,12 @@ components:
     IntervalBasedResponseWithResolutionClass:
       allOf:
       - $ref: '#/components/schemas/IntervalBasedResponseClass'    
-      type: object
-      properties:
-        resolutionIntervals:
-          type: array
-          description: 'The data returned has a break down into these intervals. Please read generic "Requesting a break down of stats within the interval" section above to understand it better!'
-          items:
-            $ref: '#/components/schemas/IntervalClass'
+      - type: object
+        properties:
+          resolutionIntervals:
+            type: array
+            description: 'The data returned has a break down into these intervals. Please read generic "Requesting a break down of stats within the interval" section above to understand it better!'
+            items:
+              $ref: '#/components/schemas/IntervalClass'
           
       

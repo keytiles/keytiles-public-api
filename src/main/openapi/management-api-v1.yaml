@@ -841,28 +841,28 @@ components:
     ManagementEndpointProblemClass:
       allOf:
       - $ref: 'common-types-v2.yaml#/components/schemas/ProblemBaseClass'
-      type: object
-      properties:
-        errorCodes:
-          type: array
-          items:
-            $ref: "#/components/schemas/ManagementEndpointErrorCodes"
-          nullable: true
-          default: []
+      - type: object
+        properties:
+          errorCodes:
+            type: array
+            items:
+              $ref: "#/components/schemas/ManagementEndpointErrorCodes"
+            nullable: true
+            default: []
     
     # Let's extend the original response class with the above assembled machine readable Problems
     MachineReadableManagementEndpointMessageResponseClass:
       allOf:
       - $ref: "common-types-v2.yaml#/components/schemas/MessageResponseClass"
-      type: object
-      properties:
-        problems:
-          type: array
-          items:
-            $ref: '#/components/schemas/ManagementEndpointProblemClass'
-          nullable: false
-          default: []
-          description: 'List of errors/warnings'
+      - type: object
+        properties:
+          problems:
+            type: array
+            items:
+              $ref: '#/components/schemas/ManagementEndpointProblemClass'
+            nullable: false
+            default: []
+            description: 'List of errors/warnings'
         
     UserContainerLink:
       type: object
@@ -1055,9 +1055,6 @@ components:
           $ref: '#/components/schemas/ContainerOptionsClass'
     
     ContainerClass:
-      allOf:
-      - $ref: '#/components/schemas/ContainerCreationClass'
-      type: object
       description: >
                     Container is the basic object for data collection (a.k.a. tracking).
                       
@@ -1065,50 +1062,53 @@ components:
                     data.
                       
                     Any registered User of Keytiles has the possibility to create a Container and establish tracking.
-      properties:
-        options:
-          $ref: '#/components/schemas/ContainerOptionsClass'
-        id:
-          type: string
-          readOnly: true
-          description: Randomly generated alpha-numeric unique id of the Container
-          example: 5fc03-1262304000
-        version:
-          type: integer
-          description: This is the resource version (which is automatically incremented by every change). When you do an update (PUT) you need to send it back! The server will check if it is matching with the resource version he has. If not then that means someone else already did an update in the meantime therefore your request can not be accepted - otherwise you may overwrite the changes someone did.
-        createdTimestamp:
-          type: integer
-          format: int32
-          description: When was this Container created? UNIX timestamp in UTC (seconds since Epoch)
-          example: 1543355608
-          readOnly: true
-        isEnabled:
-          type: boolean
-          description: If FALSE then tracking is disabled. Requires Keytiles Admin privilige to be able to modify this - read only otherwise
-        users:
-          description: >
-                        List of user IDs has access over this Container.  
-                          
-                        This list is only visible if the resource is queried by a Container Admin or a Keytiles Admin. For all others this
-                        list comes empty as nobody else should see this information.
-          type: array
-          items:
-            $ref: '#/components/schemas/ContainerUserLink'
-                  
-        userDetails:
-          readOnly: true
-          description: >
-                        Provides more details about Users who has access over this Container - but there are some restrictions.  
-                          
-                        First of all - by default this list comes empty - you need to request this using the *includeUserDetails=true* query argument.  
-                          
-                        Furthermore
-                         * If the resource is queried by a Container Admin or a Keytiles Admin then it contains full info about every users so no restrictions
-                         * But if the resource is queried by a normal member of the Container then limited the way it only
-                         exposes e-mail addresses of the Container Admins - others mail address is kept in secret
-          type: array
-          items:
-            $ref: '#/components/schemas/ContainerUserDetails'
+      allOf:
+      - $ref: '#/components/schemas/ContainerCreationClass'
+      - type: object
+        properties:
+          options:
+            $ref: '#/components/schemas/ContainerOptionsClass'
+          id:
+            type: string
+            readOnly: true
+            description: Randomly generated alpha-numeric unique id of the Container
+            example: 5fc03-1262304000
+          version:
+            type: integer
+            description: This is the resource version (which is automatically incremented by every change). When you do an update (PUT) you need to send it back! The server will check if it is matching with the resource version he has. If not then that means someone else already did an update in the meantime therefore your request can not be accepted - otherwise you may overwrite the changes someone did.
+          createdTimestamp:
+            type: integer
+            format: int32
+            description: When was this Container created? UNIX timestamp in UTC (seconds since Epoch)
+            example: 1543355608
+            readOnly: true
+          isEnabled:
+            type: boolean
+            description: If FALSE then tracking is disabled. Requires Keytiles Admin privilige to be able to modify this - read only otherwise
+          users:
+            description: >
+                          List of user IDs has access over this Container.  
+                            
+                          This list is only visible if the resource is queried by a Container Admin or a Keytiles Admin. For all others this
+                          list comes empty as nobody else should see this information.
+            type: array
+            items:
+              $ref: '#/components/schemas/ContainerUserLink'
+                    
+          userDetails:
+            readOnly: true
+            description: >
+                          Provides more details about Users who has access over this Container - but there are some restrictions.  
+                            
+                          First of all - by default this list comes empty - you need to request this using the *includeUserDetails=true* query argument.  
+                            
+                          Furthermore
+                          * If the resource is queried by a Container Admin or a Keytiles Admin then it contains full info about every users so no restrictions
+                          * But if the resource is queried by a normal member of the Container then limited the way it only
+                          exposes e-mail addresses of the Container Admins - others mail address is kept in secret
+            type: array
+            items:
+              $ref: '#/components/schemas/ContainerUserDetails'
                     
     ReferrerClassifierConfigClass:
       type: object
@@ -1131,12 +1131,12 @@ components:
     HitFaultReportResponse:
       allOf:
         - $ref: 'common-types-v2.yaml#/components/schemas/ContainerQueryRangeResponseClass'    
-      type: object
-      properties:
-        faults:
-          type: array
-          items:
-            $ref: "#/components/schemas/HitFaultClass"
+        - type: object
+          properties:
+            faults:
+              type: array
+              items:
+                $ref: "#/components/schemas/HitFaultClass"
 
     HitFaultClass:
       type: object
