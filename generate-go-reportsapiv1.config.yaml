@@ -1,0 +1,11 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/oapi-codegen/oapi-codegen/HEAD/configuration-schema.json
+package: kt_pubapi_reports
+output: gopkg/model/reports/reports_v1.go
+generate:
+  models: true
+output-options:
+  # to make sure that all types are generated
+  skip-prune: true
+import-mapping:
+  common-types-v2.yaml: 'github.com/keytiles/keytiles-public-api/gopkg/model/common'
+  common-schedule-v1.yaml: 'github.com/keytiles/keytiles-public-api/gopkg/model/common'

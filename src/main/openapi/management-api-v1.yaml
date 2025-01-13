@@ -156,6 +156,13 @@ paths:
               schema:
                 #$ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
                 $ref: '#/components/schemas/MachineReadableManagementEndpointMessageResponseClass'
+        '409':
+          description: "Update failed as some constraints are violated - e.g. server has a newer version already due to concurrent update. You get more info in the response."
+          content:
+            application/json:
+              schema:
+                #$ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
+                $ref: '#/components/schemas/MachineReadableManagementEndpointMessageResponseClass'
 
     put:
       summary: Update the user data
@@ -603,6 +610,13 @@ paths:
           content:
             application/json:
               schema:
+                $ref: '#/components/schemas/MachineReadableManagementEndpointMessageResponseClass'
+        '409':
+          description: "Update failed as some constraints are violated - e.g. server has a newer version already due to concurrent update. You get more info in the response."
+          content:
+            application/json:
+              schema:
+                #$ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
                 $ref: '#/components/schemas/MachineReadableManagementEndpointMessageResponseClass'
                 
     delete:
