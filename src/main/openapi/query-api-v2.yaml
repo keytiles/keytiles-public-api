@@ -372,6 +372,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/SystemClockResponseClass'
 
+
   '/v1/stat/counters/{containerId}/external-referrers':
   
     get:
@@ -384,7 +385,11 @@ paths:
                 *note:* This endpoint is actually still coming from API v1 as you can see - we added it here for better visbility only.  
                   
                 **IMPORTANT!** You find details in our [query-api v1.0](/swagger-ui/?url=https%3A%2F%2Fraw.githubusercontent.com%2Fkeytiles%2Fkeytiles-public-api%2Fmain%2Fsrc%2Fmain%2Fopenapi%2Fquery-api-v1.yaml#/Referrer%20counters/get_v1_stat_counters__containerId__external_referrers) contract!
+      parameters:
+        - $ref: 'common-types-v2.yaml#/components/parameters/containerId'
+      responses: {}
 
+        
 components:
 
   securitySchemes:
@@ -1213,6 +1218,7 @@ components:
       allOf:
       - $ref: '#/components/schemas/TimeColumnIntIdToIntervalMappingClass'    
       - type: object
+        nullable: true
         x-keytiles-serialize-only-if-non-default-properties:
         - eventType
         - visitorType

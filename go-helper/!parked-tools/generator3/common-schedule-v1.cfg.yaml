@@ -1,0 +1,5 @@
+packageName: kt_pubapi_gen3_common
+withGoMod: false
+#useDefaultValuesForRequiredVars: true
+#generateInterfaces: true
+#isGoSubmodule: true
