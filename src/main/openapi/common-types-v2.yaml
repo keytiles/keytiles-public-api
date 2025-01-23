@@ -105,6 +105,20 @@ components:
       - requestParameter_contradicting
       # There are req params in the query which are in conflict with each other. There should be only one of them.
       - requestParameter_conflict
+      # One of the Resource (RESTful) data were sent in a format which is not the expected one. For example we were expected a Boolean value like "true" but we received maybe "abc" - which can not be converted into a boolean
+      - resourceData_wrongFormat
+      # One of the mandatory Resource (RESTful) data was missing
+      - resourceData_missing
+      # One of the Resource (RESTful) data is supposed to be either one of some predefined values (typically an Enum or similar), or something which requires a specific format for example and email address or similar - but something else has arrived which is therefore not supported / understood by the endpoint
+      - resourceData_invalid
+      # One of the Resource (RESTful) data is not supported by this endpoint
+      - resourceData_not_supported
+      # One of the Resource (RESTful) data is pointless to be used in this context - would be ignored and we want the user to know this
+      - resourceData_pointless
+      # There are Resource (RESTful) data in the request which are contradicting with each other
+      - resourceData_contradicting
+      # There are Resource (RESTful) data in the request which are in conflict with each other. There should be only one of them.
+      - resourceData_conflict
       # In REST style endpoints Keytiles is using resource versioning to detect and avoid issues might be caused by race conditions. When this situation is detected the endpoint is raising this error so the caller knows he should start over the whole thing because someone else has modified the same resource just in parallel.
       - resourceVersion_mismatch
       # There are certain processes / flows which require confirmation via e-mail. In these cases sending out the confirm email successfully is crucial part of the process. If this fails then this error code is raised because Keytiles knows exactly the process can not be finished for sure.

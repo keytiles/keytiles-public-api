@@ -3,8 +3,10 @@
 .classpath
 .idea
 
-*/target/
-target/
+target/*
+# except the generated Java models
+!target/generated-sources
+
 build/
 bin/
 out/

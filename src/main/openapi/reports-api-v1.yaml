@@ -100,9 +100,6 @@ components:
         id:
           type: string
           description: The unique ID of this report setup - UUID style
-        schedules:
-          type: array
-          description: We schedule the report. That's an important point. Here you can assign actually multiple schedules. If you do so they are interpreted with "OR" operator.
-          items:
-            $ref: 'common-schedule-v1.yaml#/components/schemas/Schedule'
+        schedule:
+          $ref: 'common-schedule-v1.yaml#/components/schemas/Schedule'            
 

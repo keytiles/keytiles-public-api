@@ -17,14 +17,18 @@ components:
       description: Name of the days we use in day masks.
 
     Schedule:
+      description: 'Describes a Schedule of something. As of now you have basically 4 types: hourly, daily, weekly and Monthly schedules.'
       type: object
       required:
         - type
         - setup
+        - majorVersion
       properties:
         type:
           description: Describes which type of schedule is this?
           type: string
+          # we voted against it - let's keep the Nil possibility...
+          # x-go-type-skip-optional-pointer: true
           enum: ['hourly', 'daily', 'weekly', 'monthly']
         setup:
           oneOf:
@@ -32,6 +36,11 @@ components:
           - $ref: '#/components/schemas/DailyScheduleSetup'
           - $ref: '#/components/schemas/WeeklyScheduleSetup'
           - $ref: '#/components/schemas/MonthlyScheduleSetup'
+        majorVersion:
+          type: integer
+          # we voted against it - let's keep the Nil possibility...
+          # x-go-type-skip-optional-pointer: true
+          description: The major version of the Schedule schema which was used when this object was created. This helps to evolve Schedules over time.
 
     HourlyScheduleSetup:
       description: Encodes scheduling tailored for hourly execution.
@@ -41,6 +50,8 @@ components:
       properties:
         firstTime:
           type: string
+          # we voted against it - let's keep the Nil possibility...
+          # x-go-type-skip-optional-pointer: true
           nullable: false
           description: >
                       Mandatory element. This is an "HH:MM" formatted time descriptor. Means: within a day what time should we trigger the execution first? From this time the action is shcheduled every hour.  
@@ -49,6 +60,8 @@ components:
           example: '09:15'
         untilTime:
           type: string
+          # we voted against it - let's keep the Nil possibility...
+          # x-go-type-skip-optional-pointer: true
           description: >
                       Optional setting. This is an "HH:MM" formatted time descriptor. Means: within a day triggering will happen only if the current time is <= than this time.  
                         
@@ -58,6 +71,8 @@ components:
           example: '18:00'
         dayNames:
           type: array
+          # we voted against it - let's keep the Nil possibility...
+          # x-go-type-skip-optional-pointer: true
           description: Optional setting. If given then scheduling will happen only on these days. This is a day mask basically.
           items:
             $ref: '#/components/schemas/ScheduleDayName'
@@ -70,12 +85,16 @@ components:
       properties:
         triggerTime:
           type: string
+          # we voted against it - let's keep the Nil possibility...
+          # x-go-type-skip-optional-pointer: true
           nullable: false
           description: >
                       Mandatory element. This is an "HH:MM" formatted time descriptor. Means: within a day what time should we trigger the execution?
           example: '09:00'
         dayNames:
           type: array
+          # we voted against it - let's keep the Nil possibility...
+          # x-go-type-skip-optional-pointer: true
           description: Optional setting. If given then scheduling will happen only on these days. This is a day mask basically.
           items:
             $ref: '#/components/schemas/ScheduleDayName'
@@ -88,11 +107,15 @@ components:
       properties:
         triggerTime:
           type: string
+          # we voted against it - let's keep the Nil possibility...
+          # x-go-type-skip-optional-pointer: true
           nullable: false
           description: >
                       Mandatory element. This is an "HH:MM" formatted time descriptor. Means: within a day what time should we trigger the execution?
           example: '09:00'
         dayName:
+          # we voted against it - let's keep the Nil possibility...
+          # x-go-type-skip-optional-pointer: true
           default: 'Mon'
           $ref: '#/components/schemas/ScheduleDayName'
 
@@ -104,12 +127,16 @@ components:
       properties:
         triggerTime:
           type: string
+          # we voted against it - let's keep the Nil possibility...
+          # x-go-type-skip-optional-pointer: true
           nullable: false
           description: >
                       Mandatory element. This is an "HH:MM" formatted time descriptor. Means: within a day what time should we trigger the execution?
           example: '09:00'
         dayName:
           description: Optional element. To pick up the day when the report is triggered you have a few options. If not given then simply it will be 'firstDay'.
+          # we voted against it - let's keep the Nil possibility...
+          # x-go-type-skip-optional-pointer: true
           oneOf:
             - $ref: '#/components/schemas/ScheduleDayName'
             - type: string

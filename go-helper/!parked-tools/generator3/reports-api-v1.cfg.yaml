@@ -1,0 +1,10 @@
+packageName: kt_pubapi_gen3_reports
+withGoMod: false
+#useDefaultValuesForRequiredVars: true
+#generateInterfaces: true
+#isGoSubmodule: true
+typeMappings:
+  Schedule: kt_pubapi_gen3_common.Schedule
+importMappings:
+  Schedule: 'kt_pubapi_gen3_common "github.com/keytiles/keytiles-public-api/gopkg/model/generated3/common-schedule-v1"'
+  kt_pubapi_gen3_common.Schedule: 'github.com/keytiles/keytiles-public-api/gopkg/model/generated3/common-schedule-v1q'

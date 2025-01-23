@@ -1,8 +1,0 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/oapi-codegen/oapi-codegen/HEAD/configuration-schema.json
-package: kt_pubapi_common
-output: gopkg/model/common/types_v2.go
-generate:
-  models: true
-output-options:
-  # to make sure that all types are generated
-  skip-prune: true

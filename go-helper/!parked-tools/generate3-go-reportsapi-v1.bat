@@ -1,0 +1,4 @@
+REM this is using https://github.com/OpenAPITools/openapi-generator
+
+REM docker run --rm -v D:\workspace\keytiles\public-repos\keytiles-public-api:/local openapitools/openapi-generator-cli generate -i /local/src/main/openapi/reports-api-v1.yaml -g go -o /local/gopkg/model/generated3/reports-api-v1 -c /local/go-helper/generator3/reports-api-v1.cfg.yaml --type-mappings Schedule=kt_pubapi_gen3_common.Schedule --import-mappings kt_pubapi_gen3_common.Schedule=github.com/keytiles/keytiles-public-api/gopkg/model/generated3/commonq
+docker run --rm -v D:\workspace\keytiles\public-repos\keytiles-public-api:/local openapitools/openapi-generator-cli generate -i /local/src/main/openapi/reports-api-v1.yaml -g go -o /local/gopkg/model/generated3/reports-api-v1 -c /local/go-helper/generator3/reports-api-v1.cfg.yaml --global-property models
