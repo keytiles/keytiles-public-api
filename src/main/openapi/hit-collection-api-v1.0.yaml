@@ -42,13 +42,13 @@ paths:
           content:
             'application/json':
               schema:
-                $ref: 'versions/common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
        '400':
           description: "There are problems with the request. Further information is available in the response."
           content:
             'application/json':
               schema:
-                $ref: 'versions/common-types-v1.0.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'common-types-v1.yaml#/components/schemas/MessageResponseClass'
 
 components:
   schemas:

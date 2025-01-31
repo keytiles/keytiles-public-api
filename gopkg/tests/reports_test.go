@@ -29,9 +29,9 @@ func TestReportJSONSerializationAndDeserialization(t *testing.T) {
 		Setup:        hourlySchedule,
 		MajorVersion: 1,
 	}
-	reportObj := kt_pubapi_gen_reports.ReportClass{
+	reportObj := kt_pubapi_gen_reports.ReportSetup{
 		Id:       "report-id",
-		Schedule: &schedule,
+		Schedule: schedule,
 	}
 
 	jsonBytes, _ := json.Marshal(reportObj)
@@ -40,7 +40,7 @@ func TestReportJSONSerializationAndDeserialization(t *testing.T) {
 
 	// -------------- deserialization
 
-	deserializedReport := kt_pubapi_gen_reports.ReportClass{}
+	deserializedReport := kt_pubapi_gen_reports.ReportSetup{}
 	err := json.Unmarshal(jsonBytes, &deserializedReport)
 	assert.Nil(t, err)
 

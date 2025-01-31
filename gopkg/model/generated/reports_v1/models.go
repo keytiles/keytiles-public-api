@@ -6,30 +6,113 @@ package kt_pubapi_gen_reportsv1
 import (
 	"encoding/json"
 
-	externalRef0 "github.com/keytiles/keytiles-public-api/gopkg/model/generated/common/schedule_v1"
-	externalRef1 "github.com/keytiles/keytiles-public-api/gopkg/model/generated/common/types_v2"
+	externalRef0 "github.com/keytiles/keytiles-public-api/gopkg/model/generated/common/metadata_v1"
+	externalRef1 "github.com/keytiles/keytiles-public-api/gopkg/model/generated/common/schedule_v1"
+	externalRef2 "github.com/keytiles/keytiles-public-api/gopkg/model/generated/common/types_v2"
 )
 
 const (
 	BasicAuthScopes = "basicAuth.Scopes"
 )
 
-// Defines values for ReportsEndpointLocalErrorCodes.
+// Defines values for ReportQueryPlugin.
 const (
-	ContainerIdInvalid ReportsEndpointLocalErrorCodes = "containerId_invalid"
-	ContainerIdMissing ReportsEndpointLocalErrorCodes = "containerId_missing"
+	SimpleEventCountPlugin ReportQueryPlugin = "simpleEventCountPlugin"
 )
 
-// GetContainerReportsResponseClass defines model for GetContainerReportsResponseClass.
-type GetContainerReportsResponseClass = externalRef1.MessageResponseClass
+// Defines values for ReportRecipientsRoles.
+const (
+	Admin     ReportRecipientsRoles = "admin"
+	Developer ReportRecipientsRoles = "developer"
+	View      ReportRecipientsRoles = "view"
+)
 
-// ReportClass defines model for ReportClass.
-type ReportClass struct {
+// Defines values for ReportsEndpointLocalErrorCodes.
+const (
+	ContainerIdInvalid   ReportsEndpointLocalErrorCodes = "containerId_invalid"
+	ContainerIdMissing   ReportsEndpointLocalErrorCodes = "containerId_missing"
+	ReportSetupIdInvalid ReportsEndpointLocalErrorCodes = "reportSetupId_invalid"
+)
+
+// Defines values for ReportsEndpointProblemClassSeverity.
+const (
+	Error   ReportsEndpointProblemClassSeverity = "error"
+	Warning ReportsEndpointProblemClassSeverity = "warning"
+)
+
+// GetContainerReportSetupsResponseClass defines model for GetContainerReportSetupsResponseClass.
+type GetContainerReportSetupsResponseClass = externalRef2.ContainerResponseClass
+
+// MachineReadableReportsEndpointMessageResponseClass defines model for MachineReadableReportsEndpointMessageResponseClass.
+type MachineReadableReportsEndpointMessageResponseClass struct {
+	// Message The human readable message
+	Message *string `json:"message,omitempty"`
+
+	// Problems List of errors/warnings
+	Problems *[]ReportsEndpointProblemClass `json:"problems,omitempty"`
+
+	// ProcessingTookMillis Number of milliseconds the processing took on server side
+	ProcessingTookMillis *int32 `json:"processingTookMillis"`
+
+	// RequestReceivedAt The server time in UNIX timestamp in UTC (seconds since Epoch) when this response was received and processing was started
+	RequestReceivedAt int32 `json:"requestReceivedAt"`
+}
+
+// ReportQuery A report can contain multiple queries. This object describes one query of those.
+type ReportQuery struct {
+	// Id The unique ID (within the report) of this query - UUID style. In concrete report instances this helps to identify the result of this query within the whole report.
+	Id       *string               `json:"id,omitempty"`
+	MetaData externalRef0.MetaData `json:"metaData"`
+
+	// Parameters The parameters a query plugin needs depends on the plugin. These key-value pairs provide the setup how the query plugin will generate this part of the report.
+	Parameters *map[string]interface{} `json:"parameters,omitempty"`
+	Plugin     ReportQueryPlugin       `json:"plugin"`
+}
+
+// ReportQueryPlugin defines model for ReportQueryPlugin.
+type ReportQueryPlugin string
+
+// ReportRecipients This is an optional setup - controlls who will receive these reports.
+//
+// If not given at all then ALL Data Container users will get the report. Otherwise if given then Keytiles users who are matching to ANY of the given criteria will receive the report.
+type ReportRecipients struct {
+	// Roles Optional entry. All Data Container users who has ANY of the listed roles will receive this report.
+	Roles *[]ReportRecipientsRoles `json:"roles,omitempty"`
+
+	// Users Optional entry. List of specific Keytiles users (email or ID) to send the reports to. The users who are listed here will get the reports for sure if
+	//  * they are not disabled in Keytiles (can not log in)
+	//  * they are not associated with the Data Container anyhow
+	Users *[]string `json:"users,omitempty"`
+}
+
+// ReportRecipientsRoles defines model for ReportRecipientsRoles.
+type ReportRecipientsRoles string
+
+// ReportSetup defines model for ReportSetup.
+type ReportSetup struct {
+	// ContainerId The Data Container ID this report setup belongs to.
+	ContainerId string `json:"containerId"`
+
 	// Id The unique ID of this report setup - UUID style
 	Id string `json:"id"`
 
+	// IsEnabled You can temporarily disable this report setup. If a report is disabled then it is not scheduled until re-enabled again.
+	IsEnabled bool                  `json:"isEnabled"`
+	MetaData  externalRef0.MetaData `json:"metaData"`
+
+	// Queries Queries of this report.
+	Queries []ReportQuery `json:"queries"`
+
+	// Recipients This is an optional setup - controlls who will receive these reports.
+	//
+	// If not given at all then ALL Data Container users will get the report. Otherwise if given then Keytiles users who are matching to ANY of the given criteria will receive the report.
+	Recipients *ReportRecipients `json:"recipients"`
+
+	// ResourceVersion This is the resource version (which is automatically incremented by every change). When you do an update (PUT) you need to send it back! The server will check if it is matching with the resource version he has. If not then that means someone else already did an update in the meantime therefore your request can not be accepted - otherwise you may overwrite the changes someone did.
+	ResourceVersion int `json:"resourceVersion"`
+
 	// Schedule Describes a Schedule of something. As of now you have basically 4 types: hourly, daily, weekly and Monthly schedules.
-	Schedule *externalRef0.Schedule `json:"schedule,omitempty"`
+	Schedule externalRef1.Schedule `json:"schedule"`
 }
 
 // ReportsEndpointErrorCodes NOTE! Error codes is an Enum. Unfortunately in OpenApi (so far) there is no possibility to provide description for Enum values. But we have detailed description of each error codes! Please check the OpenApi file in our Github repo - you find them as comments for each Enum values!
@@ -41,7 +124,31 @@ type ReportsEndpointErrorCodes struct {
 type ReportsEndpointLocalErrorCodes string
 
 // ReportsEndpointProblemClass defines model for ReportsEndpointProblemClass.
-type ReportsEndpointProblemClass = externalRef1.ProblemBaseClass
+type ReportsEndpointProblemClass struct {
+	ErrorCodes *[]ReportsEndpointErrorCodes `json:"errorCodes"`
+
+	// Message The problem in human readable form
+	Message string `json:"message"`
+
+	// Place This info piece is most useful for 400 - "Bad Request" problems but can be meaningful of course in other scenarios too. It marks the place which has the problem.
+	Place *externalRef2.ProblemPlaceEnum `json:"place"`
+
+	// PlaceName If it makes sense it tells you which place was problematic. E.g. if a request parameter should be an Integer but you send in something wrong then "placeName" will tell you exactly which request parameter was wrong.
+	PlaceName *string                             `json:"placeName"`
+	Severity  ReportsEndpointProblemClassSeverity `json:"severity"`
+}
+
+// ReportsEndpointProblemClassSeverity defines model for ReportsEndpointProblemClass.Severity.
+type ReportsEndpointProblemClassSeverity string
+
+// ReportSetupId defines model for reportSetupId.
+type ReportSetupId = string
+
+// PostV1ReportsContainersSetupRestContainerIdJSONRequestBody defines body for PostV1ReportsContainersSetupRestContainerId for application/json ContentType.
+type PostV1ReportsContainersSetupRestContainerIdJSONRequestBody = ReportSetup
+
+// PutV1ReportsContainersSetupRestContainerIdReportSetupIdJSONRequestBody defines body for PutV1ReportsContainersSetupRestContainerIdReportSetupId for application/json ContentType.
+type PutV1ReportsContainersSetupRestContainerIdReportSetupIdJSONRequestBody = ReportSetup
 
 // AsReportsEndpointLocalErrorCodes returns the union data inside the ReportsEndpointErrorCodes as a ReportsEndpointLocalErrorCodes
 func (t ReportsEndpointErrorCodes) AsReportsEndpointLocalErrorCodes() (ReportsEndpointLocalErrorCodes, error) {
@@ -57,15 +164,15 @@ func (t *ReportsEndpointErrorCodes) FromReportsEndpointLocalErrorCodes(v Reports
 	return err
 }
 
-// AsExternalRef1CommonErrorCodes returns the union data inside the ReportsEndpointErrorCodes as a externalRef1.CommonErrorCodes
-func (t ReportsEndpointErrorCodes) AsExternalRef1CommonErrorCodes() (externalRef1.CommonErrorCodes, error) {
-	var body externalRef1.CommonErrorCodes
+// AsExternalRef2CommonErrorCodes returns the union data inside the ReportsEndpointErrorCodes as a externalRef2.CommonErrorCodes
+func (t ReportsEndpointErrorCodes) AsExternalRef2CommonErrorCodes() (externalRef2.CommonErrorCodes, error) {
+	var body externalRef2.CommonErrorCodes
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromExternalRef1CommonErrorCodes overwrites any union data inside the ReportsEndpointErrorCodes as the provided externalRef1.CommonErrorCodes
-func (t *ReportsEndpointErrorCodes) FromExternalRef1CommonErrorCodes(v externalRef1.CommonErrorCodes) error {
+// FromExternalRef2CommonErrorCodes overwrites any union data inside the ReportsEndpointErrorCodes as the provided externalRef2.CommonErrorCodes
+func (t *ReportsEndpointErrorCodes) FromExternalRef2CommonErrorCodes(v externalRef2.CommonErrorCodes) error {
 	b, err := json.Marshal(v)
 	t.union = b
 	return err

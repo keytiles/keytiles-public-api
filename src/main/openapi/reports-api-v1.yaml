@@ -13,19 +13,19 @@ servers:
   description: TEST server
    
 tags:
-- name: Manage reports
-  description: Endpoints to create / modify / delete / change existing reports.
+- name: Manage report setups
+  description: Endpoints to create / modify / delete / change report setups.
 
 paths:
 
-  '/v1/reports/containers/rest/{containerId}':
+  '/v1/reports/containers/setup/rest/{containerId}':
   
     get:
-      summary: "To query existing reports belong to the Container"
+      summary: "To query existing report setups belong to the Container"
       tags:
-      - Manage reports
+      - Manage report setups
       description: >
-                With this endpoint you have the possibility to query all reports currently set 
+                With this endpoint you have the possibility to query all report setups of a Data Container.
       parameters:
         - $ref: 'common-types-v2.yaml#/components/parameters/containerId'
 
@@ -34,13 +34,248 @@ paths:
 
       responses:
         '200':
-          description: "OK response"
+          description: "You receive the list of all setups."
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GetContainerReportsResponseClass'
+                $ref: '#/components/schemas/GetContainerReportSetupsResponseClass'
+        '401':
+          description: "Authentication failed - you provided invalid credentials or not at all"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+        '403':
+          description: "You do not have permission to do this with the given credentials"
+          content:
+            application/json:
+              schema:
+                #$ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
+                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+        '404':
+          description: "The container does not exist (or disabled)"
+          content:
+            application/json:
+              schema:
+                #$ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
+                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+
+    post:
+      summary: "To create a new report setup belongs to the Container"
+      description: >
+                You can assign an ID for this setup on client side as well but if you don't then a new ID will be generated (and returned in response header).  
+                  
+                For now only Admins of Data Containers can create a report setup.
+      tags:
+      - Manage report setups
+      parameters:
+        - $ref: 'common-types-v2.yaml#/components/parameters/containerId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReportSetup'
+
+      security:
+      - basicAuth: []
+
+      responses:
+        '201':
+          description: The report setup resouce is created. The ID of this new report setup is returned in response header.
+          headers:
+             'X-ReportSetupId':
+              schema:
+                type: string
+              description: The ID of the new report setup
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+        '400':
+          description: "There were problems with the request or the resource you sent on this request - more details you get in the response."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+        '401':
+          description: "Authentication failed - you provided invalid credentials or not at all"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+        '403':
+          description: "You do not have permission to do this with the given credentials"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+        '404':
+          description: "The container does not exist (or disabled)"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+        '409':
+          description: "Some preconditions are not OK. For example, you assigned an ID on client side but that ID is already taken. More details you find in the response."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+    
+
+  '/v1/reports/containers/setup/rest/{containerId}/{reportSetupId}':
+  
+    get:
+      summary: "To query a specific report setup of the Container"
+      tags:
+      - Manage report setups
+      parameters:
+        - $ref: 'common-types-v2.yaml#/components/parameters/containerId'
+        - $ref: '#/components/parameters/reportSetupId'
+
+      security:
+      - basicAuth: []
+
+      responses:
+        '200':
+          description: "The report setup was found and returned to you."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportSetup'
+        '401':
+          description: "Authentication failed - you provided invalid credentials"
+          content:
+            application/json:
+              schema:
+                #$ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
+                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+        '403':
+          description: "You do not have permission to do this with the given credentials"
+          content:
+            application/json:
+              schema:
+                #$ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
+                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+        '404':
+          description: "The container does not exist (or disabled) or the requested report setup does not exist - more details in the response!"
+          content:
+            application/json:
+              schema:
+                #$ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
+                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+
+    put:
+      summary: "To modify an existing report setup."
+      description: >
+                The 'resourceVersion' field is very important here - it must match with the version the server currently has otherwise you will get a 409 error. This mechanism helps to detect possible race conditions.  
+                  
+                For now only Admins of Data Containers can modify a report setup.
+      tags:
+      - Manage report setups
+      parameters:
+        - $ref: 'common-types-v2.yaml#/components/parameters/containerId'
+        - $ref: '#/components/parameters/reportSetupId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReportSetup'
+
+      security:
+      - basicAuth: []
+
+      responses:
+        '200':
+          description: The report setup was modified successfully. This means that the 'resourceVersion' was incremented by one on server side (also update in your local copy!).
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+        '400':
+          description: "There were problems with the request or the resource you sent on this request - more details you get in the response."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+        '401':
+          description: "Authentication failed - you provided invalid credentials or not at all"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+        '403':
+          description: "You do not have permission to do this with the given credentials"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+        '404':
+          description: "The container does not exist (or disabled) or the requested report setup does not exist - more details in the response!"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+        '409':
+          description: "Some preconditions are not OK. Most likely the 'resourceVersion' did not match because there was a race condition. More details you find in the response."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+
+    delete:
+      summary: "To delete a specific report setup of the Container as well as all previously generated report instances."
+      description: >
+                In case you do not want to lose all previous instances consider simply just 'disable' the report instead of deleting it!  
+                  
+                For now only Admins of Data Containers can delete a report setup.
+      tags:
+      - Manage report setups
+      parameters:
+        - $ref: 'common-types-v2.yaml#/components/parameters/containerId'
+        - $ref: '#/components/parameters/reportSetupId'
+
+      security:
+      - basicAuth: []
+
+      responses:
+        '200':
+          description: "The report setup and all report instances were deleted successfully."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportSetup'
+        '401':
+          description: "Authentication failed - you provided invalid credentials"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+        '403':
+          description: "You do not have permission to do this with the given credentials"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+        '404':
+          description: "The container does not exist (or disabled) or the requested report setup does not exist - more details in the response!"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
 
 components:
+
+  parameters:
+    reportSetupId:
+      name: reportSetupId
+      in: path
+      required: true
+      description: 'ID of the report setup belongs to a Data Container'
+      schema:
+        type: string
+    
+
   schemas:
 
     # This enum defines error codes belong to management endpoints specifically
@@ -53,6 +288,8 @@ components:
       - containerId_missing
       # The ID of the Container is not valid - there is no Container with this ID
       - containerId_invalid
+      # The ID of the ReportSetup is not valid - there is no setup with this ID
+      - reportSetupId_invalid
       
 
     # Let's merge the "local" error codes with the "global" ones in this enum
@@ -68,38 +305,135 @@ components:
     ReportsEndpointProblemClass:
       allOf:
       - $ref: 'common-types-v2.yaml#/components/schemas/ProblemBaseClass'
-      type: object
-      properties:
-        errorCodes:
-          type: array
-          items:
-            $ref: "#/components/schemas/ReportsEndpointErrorCodes"
-          nullable: true
-          default: []
+      - type: object
+        properties:
+          errorCodes:
+            type: array
+            items:
+              $ref: "#/components/schemas/ReportsEndpointErrorCodes"
+            nullable: true
+            default: []
 
-
-    GetContainerReportsResponseClass:
+    # Let's extend the original response class with the above assembled machine readable Problems
+    MachineReadableReportsEndpointMessageResponseClass:
       allOf:
       - $ref: "common-types-v2.yaml#/components/schemas/MessageResponseClass"
+      - type: object
+        properties:
+          problems:
+            type: array
+            items:
+              $ref: '#/components/schemas/ReportsEndpointProblemClass'
+            nullable: false
+            default: []
+            description: 'List of errors/warnings'
+
+
+    GetContainerReportSetupsResponseClass:
+      allOf:
+      - $ref: "common-types-v2.yaml#/components/schemas/ContainerResponseClass"
       type: object
       properties:
-        problems:
+        reportSetups:
           type: array
           items:
-            $ref: '#/components/schemas/ReportsEndpointProblemClass'
+            $ref: '#/components/schemas/ReportSetup'
           nullable: false
-          default: []
-          description: 'List of errors/warnings'
+          description: 'All avaiable report setup.'
 
-    ReportClass:
+
+    ReportRecipientsRoles:
+      type: string
+      enum: [view, admin, developer]
+
+
+    ReportRecipients:
+      description: >
+                  This is an optional setup - controlls who will receive these reports.  
+                    
+                  If not given at all then ALL Data Container users will get the report. Otherwise if given then Keytiles users who are matching to ANY of the given criteria will receive the report.  
+      type: object
+      nullable: true
+      properties:
+        users:
+          description: > 
+                      Optional entry. List of specific Keytiles users (email or ID) to send the reports to. The users who are listed here will get the reports for sure if
+                       * they are not disabled in Keytiles (can not log in)
+                       * they are not associated with the Data Container anyhow
+          type: array
+          items:
+            type: string
+        roles:
+          description: Optional entry. All Data Container users who has ANY of the listed roles will receive this report.
+          type: array
+          items:
+            $ref: '#/components/schemas/ReportRecipientsRoles'
+
+
+    ReportQueryPlugin:
+      type: string
+      enum: 
+      - simpleEventCountPlugin
+
+
+    ReportQuery:
+      description: A report can contain multiple queries. This object describes one query of those.
+      type: object
+      required:
+        - metaData
+        - plugin
+      properties:
+        id:
+          type: string
+          description: The unique ID (within the report) of this query - UUID style. In concrete report instances this helps to identify the result of this query within the whole report.
+        metaData:
+          description: Title, description - of this query of the report.
+          $ref: 'common-metadata-v1.yaml#/components/schemas/MetaData'
+        plugin:
+          description: Which query plugin to use for this query? Each plugin provides different possibilities.
+          $ref: "#/components/schemas/ReportQueryPlugin"
+        parameters:
+          description: The parameters a query plugin needs depends on the plugin. These key-value pairs provide the setup how the query plugin will generate this part of the report.
+          type: object
+          additionalProperties: true
+
+
+    ReportSetup:
       type: object
       required:
         - id
-        - schedules
+        - containerId
+        - isEnabled
+        - schedule
+        - metaData
+        - queries
+        - resourceVersion
       properties:
         id:
           type: string
           description: The unique ID of this report setup - UUID style
+        containerId:
+          type: string
+          description: The Data Container ID this report setup belongs to.
+        isEnabled:
+          type: boolean
+          description: You can temporarily disable this report setup. If a report is disabled then it is not scheduled until re-enabled again.
         schedule:
-          $ref: 'common-schedule-v1.yaml#/components/schemas/Schedule'            
+          description: Mandatory. Controlls when will the report run.
+          $ref: 'common-schedule-v1.yaml#/components/schemas/Schedule'
+        metaData:
+          description: Title, description and changelog - of this report.
+          $ref: 'common-metadata-v1.yaml#/components/schemas/MetaData'
+        resourceVersion:
+          type: integer
+          description: This is the resource version (which is automatically incremented by every change). When you do an update (PUT) you need to send it back! The server will check if it is matching with the resource version he has. If not then that means someone else already did an update in the meantime therefore your request can not be accepted - otherwise you may overwrite the changes someone did.
+        recipients:
+          description: Optionally you can fine grain which Data Container users will receive this report.
+          $ref: '#/components/schemas/ReportRecipients'
+        queries:
+          description: Queries of this report.
+          type: array
+          items:
+            $ref: '#/components/schemas/ReportQuery'
+
 

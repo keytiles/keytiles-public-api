@@ -21,3 +21,5 @@ oapi-codegen -config go-helper/generator1/generate-go-commons-typesv2.config.yam
 mkdir -p gopkg/model/generated/common/schedule_v1
 oapi-codegen -config go-helper/generator1/generate-go-commons-schedulev1.config.yaml src/main/openapi/common-schedule-v1.yaml
 
+mkdir -p gopkg/model/generated/common/metadata_v1
+oapi-codegen -config go-helper/generator1/generate-go-commons-metadatav1.config.yaml src/main/openapi/common-metadata-v1.yaml

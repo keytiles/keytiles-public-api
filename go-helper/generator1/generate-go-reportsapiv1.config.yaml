@@ -12,6 +12,7 @@ output-options:
 import-mapping:
   common-types-v2.yaml: 'github.com/keytiles/keytiles-public-api/gopkg/model/generated/common/types_v2'
   common-schedule-v1.yaml: 'github.com/keytiles/keytiles-public-api/gopkg/model/generated/common/schedule_v1'
+  common-metadata-v1.yaml: 'github.com/keytiles/keytiles-public-api/gopkg/model/generated/common/metadata_v1'
 # additional-imports:
 #  - package: 'github.com/keytiles/keytiles-public-api/gopkg/model/generated/common/types_v2'
 #    alias: kt_pubapi_gen_common_typesv2

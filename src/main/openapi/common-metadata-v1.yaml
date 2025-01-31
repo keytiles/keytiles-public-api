@@ -1,0 +1,50 @@
+openapi: 3.0.1
+
+info:
+  version: '1.0'
+  title: Common object definitions - regarding Meta data of something bigger.
+
+paths: {}
+
+components:
+
+  schemas:
+
+    ChangelogEntry:
+      description: Defines a change - who changed what, when?
+      type: object
+      required:
+        - time
+        - who
+      properties:
+        time:
+          type: integer
+          format: int32
+          description: The time of the change as UNIX timestamp in UTC (seconds since Epoch).
+        who:
+          type: string
+          description: This is the nickname of the Keytiles user who made the change. So no hard user link here - just take it easy...
+        comment:
+          type: string
+          description: Some description added to this change. Can be generated and/or amended with user input too.
+
+    MetaData:
+      type: object
+      required:
+        - title
+        - majorVersion
+      properties:
+        title:
+          description: Mandatory field. The title of the entity.
+          type: string
+        description:
+          description: Optional field. This is a longer description of what this entity is about.
+          type: string
+        changelog:
+          type: array
+          description: Changes which were made. Append only log - in time ascending order.
+          items:
+            $ref: '#/components/schemas/ChangelogEntry'
+        majorVersion:
+          type: integer
+          description: The major version of the MetaData schema which was used when this object was created. This helps to evolve MetaData over time.
