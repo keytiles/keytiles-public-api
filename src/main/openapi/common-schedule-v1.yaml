@@ -23,6 +23,7 @@ components:
         - type
         - setup
         - majorVersion
+        - tzOffset
       properties:
         type:
           description: Describes which type of schedule is this?
@@ -36,6 +37,9 @@ components:
           - $ref: '#/components/schemas/DailyScheduleSetup'
           - $ref: '#/components/schemas/WeeklyScheduleSetup'
           - $ref: '#/components/schemas/MonthlyScheduleSetup'
+        tzOffset:
+          type: integer
+          description: Encodes the time zone offset from UTC - all things like time and even the days(!) are given using this offset
         majorVersion:
           type: integer
           # we voted against it - let's keep the Nil possibility...

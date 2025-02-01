@@ -226,7 +226,7 @@ paths:
     delete:
       summary: "To delete a specific report setup of the Container as well as all previously generated report instances."
       description: >
-                In case you do not want to lose all previous instances consider simply just 'disable' the report instead of deleting it!  
+                In case you do not want to lose all previous instances consider simply just remove the 'schedule' of the report instead of deleting it! If you do so then the report will not run automatically anymore.  
                   
                 For now only Admins of Data Containers can delete a report setup.
       tags:
@@ -373,7 +373,11 @@ components:
     ReportQueryPlugin:
       type: string
       enum: 
-      - simpleEventCountPlugin
+      - eventCountPlugin
+      - campaignPerformancePlugin
+      - socialPerformancePlugin
+      - linksPerformancePlugin
+      - tagsPerformancePlugin
 
 
     ReportQuery:
@@ -395,6 +399,100 @@ components:
         parameters:
           description: The parameters a query plugin needs depends on the plugin. These key-value pairs provide the setup how the query plugin will generate this part of the report.
           type: object
+          properties:
+            groupByTime:
+              description: >
+                          If set to TRUE then you get a break-down in time interval. The interval is driven by your schedule.  
+                           * Hourly schedule: you get 15 minutes break-down
+                           * Daily schedule: you get an hourly breakdown
+                           * Weekly schedule: you get a daily breakdown
+                           * Monthly schedule: you get a weekly breakdown
+              type: boolean
+            # later!
+            # groupByTimePeriod:
+            #   description: >
+            #               You can override the default period (driven by your schedule) using this option.  
+            #                 
+            #               It must make sense in terms of your schedule! What does it mean? For example if you have an Hourly schedule then you can not set up "2h" period. Does not makes any sense right?
+            #   type: string
+
+            eventsIncluded:
+              description: >
+                          Which event counts to include into the report? E.g. "pageview", or custom events e.g. "30 seconds passed". These will be the columns in your report. You can also construct formulas using the pure eventNames.
+              type: array
+              items:
+                type: string
+
+            groupByTiles:
+              description: >
+                          If set to TRUE then you get a break-down on Tile level - otherwise just sum of the traffic of all Tiles.
+              type: boolean
+              default: false
+            tileCountLimit:
+              description: >
+                          How many tiles you want to display maximum? Only makes sense if 'groupByTiles=true'. Using the 'performanceDescendingOrder' basically you can see the top performing ones, or the worst performing ones - up to you.
+              type: integer
+              default: 50
+            performanceDescendingOrder:
+              type: boolean
+              default: true
+            groupByTileGroupPaths:
+              description: >
+                          If set to TRUE then you get a break-down based on content structure (=tileGroupPath). Can not be used together with 'groupByTiles'!
+              type: boolean
+              default: false
+            groupByTileGroupPathMaxDepth:
+              description: >
+                          You can limit how deep you want the report to go down in the content structure. E.g. if you set it to 1 that means you get a break down only for first level.
+              type: integer
+
+            tileTypesOnly:
+              type: string
+              description: >
+                            Data filter option. Comma separated list of tile types you want to limit the query for. If you list more values here then they are interpreted with an OR operator.  
+                              
+                            IMPORTANT! You can not use this together with `tileTypeIsNot` parameter! You can only use this or that but not both.  
+                              
+                            In the list you can either use:
+                            * The name of the type ('frontpage', 'page', 'article', ...), or
+                            * The numeric ID of the tile type - returned by `/v2/stat/webhits/{containerId}/idmappings` endpoint - using the format `id:<numeric ID>`, e.g. **"id:123"**
+
+            tileGroupPathMatchingOnly:
+              type: string
+              description: >
+                            Data filter option. Comma separated list of matchers (see below) which returns counters only for those Tiles who's tileGroupPath is matching to one of the listed matchers.
+                            So if you list more values here then they are interpreted with an OR operator.  
+                              
+                            note: if you have comma in your matcher (strange, but ok...) you can escape that with `\\` character!  
+                              
+                            You can use the **'\*'** character to match any substring. But where and how you put this Asterisk character matters! Let us show
+                            you how through an example!
+                            
+                            Let's assume you have articles and pages (Tiles) in the following content areas:  
+                              
+                            * /auto
+                            * /tech
+                            * /tech/mobile-rumours
+                            * /tech/mobile
+                            * /tech/mobile/android
+                            * /tech/mobile/ios
+                            * /politics
+                              
+                            And now you execute queries with two different **tileGroupPathMatchingOnly** settings:
+                            1. **"/tech/mobile\*"** and
+                            1. **"/tech/mobile/\*"**
+                            
+                            In the first query **"/tech/mobile\*"** would match for everything begins with "/tech/mobile" string. So this would include *"/tech/mobile/android"*, *"/tech/mobile/ios"* Tiles but
+                            also would include *"/tech/mobile-rumours"* Tiles. Which are clearly two different areas right?  
+                              
+                            But what if you want to really limit for Tiles under the *"/tech/mobile"* area?  
+                              
+                            Well then you can use the second query value: **"/tech/mobile/\*"**. This would include *"/tech/mobile/android"*, *"/tech/mobile/ios"* but
+                            would NOT include *"/tech/mobile-rumours"* anymore - as that is not a match anymore. But we are not done yet! Please note: this
+                            would also include Tiles under *"/tech/mobile/"* group itself. Because **"/\*"** means "everything which is under this group"
+                            
+              example: '/tech/mobile/*, */errors/*'
+
           additionalProperties: true
 
 
@@ -402,9 +500,6 @@ components:
       type: object
       required:
         - id
-        - containerId
-        - isEnabled
-        - schedule
         - metaData
         - queries
         - resourceVersion
@@ -412,28 +507,20 @@ components:
         id:
           type: string
           description: The unique ID of this report setup - UUID style
-        containerId:
-          type: string
-          description: The Data Container ID this report setup belongs to.
-        isEnabled:
-          type: boolean
-          description: You can temporarily disable this report setup. If a report is disabled then it is not scheduled until re-enabled again.
-        schedule:
-          description: Mandatory. Controlls when will the report run.
-          $ref: 'common-schedule-v1.yaml#/components/schemas/Schedule'
         metaData:
           description: Title, description and changelog - of this report.
           $ref: 'common-metadata-v1.yaml#/components/schemas/MetaData'
-        resourceVersion:
-          type: integer
-          description: This is the resource version (which is automatically incremented by every change). When you do an update (PUT) you need to send it back! The server will check if it is matching with the resource version he has. If not then that means someone else already did an update in the meantime therefore your request can not be accepted - otherwise you may overwrite the changes someone did.
+        schedule:
+          description: Controlls when will the report run automatically. If you do not schedule the report then the report is only generated when you manually trigger it.
+          $ref: 'common-schedule-v1.yaml#/components/schemas/Schedule'
         recipients:
-          description: Optionally you can fine grain which Data Container users will receive this report.
+          description: Optionally you can fine grain which Data Container users will receive this report when generated.
           $ref: '#/components/schemas/ReportRecipients'
         queries:
           description: Queries of this report.
           type: array
           items:
             $ref: '#/components/schemas/ReportQuery'
-
-
+        resourceVersion:
+          type: integer
+          description: This is the resource version (which is automatically incremented by every change). When you do an update (PUT) you need to send it back! The server will check if it is matching with the resource version he has. If not then that means someone else already did an update in the meantime therefore your request can not be accepted - otherwise you may overwrite the changes someone did.

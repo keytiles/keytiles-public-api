@@ -4,6 +4,8 @@ output: gopkg/model/generated/reports_v1/models.go
 generate:
   models: true
 output-options:
+  # also add YAML tags to the models not just json (on 2025-02-01 this is just available in "main" branch - you have to compile and install 'oapi-codegen' yourself!)
+  yaml-tags: true
   # to make sure that all types are generated
   skip-prune: true
   user-templates:

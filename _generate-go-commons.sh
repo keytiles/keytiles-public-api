@@ -15,6 +15,9 @@ then
 fi
 
 
+mkdir -p gopkg/model/generated/common/types_v1
+oapi-codegen -config go-helper/generator1/generate-go-commons-typesv1.config.yaml src/main/openapi/common-types-v1.yaml
+
 mkdir -p gopkg/model/generated/common/types_v2
 oapi-codegen -config go-helper/generator1/generate-go-commons-typesv2.config.yaml src/main/openapi/common-types-v2.yaml
 

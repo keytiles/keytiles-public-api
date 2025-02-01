@@ -31,7 +31,7 @@ func TestReportJSONSerializationAndDeserialization(t *testing.T) {
 	}
 	reportObj := kt_pubapi_gen_reports.ReportSetup{
 		Id:       "report-id",
-		Schedule: schedule,
+		Schedule: &schedule,
 	}
 
 	jsonBytes, _ := json.Marshal(reportObj)
