@@ -876,7 +876,7 @@ components:
                        hits got by the tile which received the most hits during the query range                      
 
     sortBy:
-      name: sortyBy
+      name: sortBy
       in: query
       required: false
       schema:
