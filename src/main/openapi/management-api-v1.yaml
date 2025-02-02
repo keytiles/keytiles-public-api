@@ -897,6 +897,10 @@ components:
   
     UserCreationClass:
       type: object
+      required:
+      - email
+      - nickname
+      - password
       properties:
         email:
           type: string
@@ -918,6 +922,14 @@ components:
       type: object
       x-keytiles-serialize-only-if-non-default-properties:
       - data
+      required:
+        - id
+        - version
+        - email
+        - nickname
+        - createdTimestamp
+        - isEnabled
+        - isKeytilesAdmin
       properties:
         id:
           type: string
@@ -983,7 +995,7 @@ components:
           description: Extra data of the user - key-value pairs. For internal use only so far - only visible to and manageable by Keytiles Admins.
           additionalProperties:
             type: string
-            example: '<the name>'
+            example: '<the str value>'
 
 
     UserContainerRoleClass:
@@ -1014,9 +1026,7 @@ components:
                      * **trialEndsAt** : Integer - Optional setting. Gives the time in UNIX timestamp when the trial period of this container ends. If null that means the container is not in trial period. Note: this can not be modified directly!
                      * **writeTrafficLimit** : Integer - Controlls the daily write traffic (number of inbound hits) limit. Note: this can not be modified directly!
                      * **readTrafficLimit** : Integer - Controlls the daily read traffic limit. Note: this can not be modified directly!
-      additionalProperties:
-        type: object
-        example: '<the name>'
+      additionalProperties: true
         
     ContainerUserLink:
       type: object
@@ -1055,6 +1065,10 @@ components:
                     Partial class of the ContainerClass - can be used in the REST POST endpoint during creating a container.  
                       
                     Any registered User of Keytiles has the possibility to create a Container and establish tracking.
+      required:
+      - name
+      - businessDomain
+      - options
       properties:
         name:
           type: string
@@ -1079,9 +1093,14 @@ components:
       allOf:
       - $ref: '#/components/schemas/ContainerCreationClass'
       - type: object
+        required:
+          - id
+          - version
+          - createdTimestamp
+          - isEnabled
         properties:
-          options:
-            $ref: '#/components/schemas/ContainerOptionsClass'
+          # options:
+          #   $ref: '#/components/schemas/ContainerOptionsClass'
           id:
             type: string
             readOnly: true
@@ -1154,6 +1173,10 @@ components:
 
     HitFaultClass:
       type: object
+      required:
+        - faultTimestamp
+        - faultType
+        - errorCode
       properties:
         faultTimestamp:
           type: integer

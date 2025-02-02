@@ -38,9 +38,9 @@ public class ContainerCreationClass implements Serializable{
 
 
   
-  // @Generator: arg 'name': non-nullable and does not have default value - we must enforce a non-null initial value 
-  // @Generator: arg 'businessDomain': non-nullable and does not have default value - we must enforce a non-null initial value 
-  // @Generator: arg 'options': non-nullable and does not have default value - we must enforce a non-null initial value 
+  // @Generator: arg 'name': mandatory field 
+  // @Generator: arg 'businessDomain': mandatory field 
+  // @Generator: arg 'options': mandatory field 
   @JsonCreator
   public ContainerCreationClass(@JsonProperty("name") String name, @JsonProperty("businessDomain") String businessDomain, @JsonProperty("options") ContainerOptionsClass options) {
     super();

@@ -36,9 +36,9 @@ public class UserCreationClass implements Serializable{
 
 
   
-  // @Generator: arg 'email': non-nullable and does not have default value - we must enforce a non-null initial value 
-  // @Generator: arg 'nickname': non-nullable and does not have default value - we must enforce a non-null initial value 
-  // @Generator: arg 'password': non-nullable and does not have default value - we must enforce a non-null initial value 
+  // @Generator: arg 'email': mandatory field 
+  // @Generator: arg 'nickname': mandatory field 
+  // @Generator: arg 'password': mandatory field 
   @JsonCreator
   public UserCreationClass(@JsonProperty("email") String email, @JsonProperty("nickname") String nickname, @JsonProperty("password") String password) {
     super();

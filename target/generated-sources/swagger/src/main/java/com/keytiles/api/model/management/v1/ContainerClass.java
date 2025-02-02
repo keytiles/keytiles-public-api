@@ -38,11 +38,6 @@ public class ContainerClass extends ContainerCreationClass implements Serializab
   // @Generator: becomes private final - as readonly 
   private final List<ContainerUserDetails> userDetails;
 
-  // @Generator: overriding 'ContainerCreationClass.options' 
-  // @Generator: field refers to 'ContainerOptionsClass' which is 'nullable=false' so this is inherited into this field 
-  // @Generator: becomes private - as non-nullable so we need to protect it with setter and null-check 
-  private ContainerOptionsClass options = null;
-
   // @Generator: becomes private - as non-nullable so we need to protect it with setter and null-check 
   private Integer version = null;
 
@@ -55,19 +50,14 @@ public class ContainerClass extends ContainerCreationClass implements Serializab
 
 
   
-  // @Generator: arg 'containerClassOptions': non-nullable and does not have default value - we must enforce a non-null initial value 
   // @Generator: arg 'id': private final field because it is readonly (also non-null check as not nullable) 
-  // @Generator: arg 'version': non-nullable and does not have default value - we must enforce a non-null initial value 
+  // @Generator: arg 'version': mandatory field 
   // @Generator: arg 'createdTimestamp': private final field because it is readonly (also non-null check as not nullable) 
-  // @Generator: arg 'isEnabled': non-nullable and does not have default value - we must enforce a non-null initial value 
+  // @Generator: arg 'isEnabled': mandatory field 
   // @Generator: arg 'userDetails': private final field because it is readonly (also non-null check as not nullable) 
-  // @Generator: arg 'containerClassOptions' is passed to super() call for superclass ctor argument 'options' as value is compatible and schema name is the same 
   @JsonCreator
-  public ContainerClass(@JsonProperty("name") String name, @JsonProperty("businessDomain") String businessDomain, @JsonProperty("id") String id, @JsonProperty("createdTimestamp") Integer createdTimestamp, @JsonProperty("userDetails") List<ContainerUserDetails> userDetails, @JsonProperty("options") ContainerOptionsClass options, @JsonProperty("version") Integer version, @JsonProperty("isEnabled") Boolean isEnabled) {
+  public ContainerClass(@JsonProperty("name") String name, @JsonProperty("businessDomain") String businessDomain, @JsonProperty("options") ContainerOptionsClass options, @JsonProperty("id") String id, @JsonProperty("createdTimestamp") Integer createdTimestamp, @JsonProperty("userDetails") List<ContainerUserDetails> userDetails, @JsonProperty("version") Integer version, @JsonProperty("isEnabled") Boolean isEnabled) {
     super(name, businessDomain, options);
-    if(options == null) {
-      throw new IllegalArgumentException("'options' value can not be NULL");
-    }
     if(id == null) {
       throw new IllegalArgumentException("'id' value can not be NULL");
     }
@@ -86,7 +76,6 @@ public class ContainerClass extends ContainerCreationClass implements Serializab
     this.id = id;
     this.createdTimestamp = createdTimestamp;
     this.userDetails = userDetails;
-    this.options = options;
     this.version = version;
     this.isEnabled = isEnabled;
   }
@@ -105,20 +94,6 @@ public class ContainerClass extends ContainerCreationClass implements Serializab
     return userDetails;
   }
  
-  @JsonProperty("options")
-  public ContainerOptionsClass getOptions() {
-    return options;
-  }  
-
-  // @Generator: added to protect field 'options' against null-value assignment 
-  @JsonProperty("options")
-  public void setOptions(ContainerOptionsClass options) {
-    if(options == null) {
-      throw new IllegalArgumentException("'options' value can not be NULL");
-    }
-    this.options = options;
-  }
-
   @JsonProperty("version")
   public Integer getVersion() {
     return version;
@@ -189,8 +164,7 @@ public class ContainerClass extends ContainerCreationClass implements Serializab
       return false;
     }
     ContainerClass containerClass = (ContainerClass) o;
-    return Objects.equals(this.options, containerClass.options) &&
-        Objects.equals(this.id, containerClass.id) &&
+    return Objects.equals(this.id, containerClass.id) &&
         Objects.equals(this.version, containerClass.version) &&
         Objects.equals(this.createdTimestamp, containerClass.createdTimestamp) &&
         Objects.equals(this.isEnabled, containerClass.isEnabled) &&
@@ -201,7 +175,7 @@ public class ContainerClass extends ContainerCreationClass implements Serializab
 
   @Override
   public int hashCode() {
-    return Objects.hash(options, id, version, createdTimestamp, isEnabled, users, userDetails, super.hashCode());
+    return Objects.hash(id, version, createdTimestamp, isEnabled, users, userDetails, super.hashCode());
   }
 
 
@@ -210,7 +184,6 @@ public class ContainerClass extends ContainerCreationClass implements Serializab
     StringBuilder sb = new StringBuilder();
     sb.append("class ContainerClass {\n");
     sb.append("    ").append(toIndentedString(super.toString())).append("\n");
-    sb.append("    options: ").append(toIndentedString(options)).append("\n");
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    version: ").append(toIndentedString(version)).append("\n");
     sb.append("    createdTimestamp: ").append(toIndentedString(createdTimestamp)).append("\n");

@@ -53,9 +53,9 @@ public class HitFaultClass implements Serializable{
   public String errorDescription = null;
 
   
-  // @Generator: arg 'faultTimestamp': non-nullable and does not have default value - we must enforce a non-null initial value 
-  // @Generator: arg 'faultType': non-nullable and does not have default value - we must enforce a non-null initial value 
-  // @Generator: arg 'errorCode': non-nullable and does not have default value - we must enforce a non-null initial value 
+  // @Generator: arg 'faultTimestamp': mandatory field 
+  // @Generator: arg 'faultType': mandatory field 
+  // @Generator: arg 'errorCode': mandatory field 
   @JsonCreator
   public HitFaultClass(@JsonProperty("faultTimestamp") Integer faultTimestamp, @JsonProperty("faultType") HitFaultType faultType, @JsonProperty("errorCode") String errorCode) {
     super();

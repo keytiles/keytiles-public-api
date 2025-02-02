@@ -74,7 +74,7 @@ const (
 // ContainerClass defines model for ContainerClass.
 type ContainerClass struct {
 	// BusinessDomain Name of the Keytiles business domain this Container belongs to
-	BusinessDomain *string `json:"businessDomain,omitempty" yaml:"businessDomain,omitempty"`
+	BusinessDomain string `json:"businessDomain" yaml:"businessDomain"`
 
 	// CreatedTimestamp When was this Container created? UNIX timestamp in UTC (seconds since Epoch)
 	CreatedTimestamp *int32 `json:"createdTimestamp,omitempty" yaml:"createdTimestamp,omitempty"`
@@ -83,10 +83,10 @@ type ContainerClass struct {
 	Id *string `json:"id,omitempty" yaml:"id,omitempty"`
 
 	// IsEnabled If FALSE then tracking is disabled. Requires Keytiles Admin privilige to be able to modify this - read only otherwise
-	IsEnabled *bool `json:"isEnabled,omitempty" yaml:"isEnabled,omitempty"`
+	IsEnabled bool `json:"isEnabled" yaml:"isEnabled"`
 
 	// Name An informative name of your Container. Single line plain string so any linefeed or tab or other characters will lead to request failure.
-	Name *string `json:"name,omitempty" yaml:"name,omitempty"`
+	Name string `json:"name" yaml:"name"`
 
 	// Options Containers have settings - options is the object represents a collection of settings. For creating a container it is enough to start with the mandatory settings. They can be tweaked later via PUT.
 	//
@@ -98,7 +98,7 @@ type ContainerClass struct {
 	//  * **trialEndsAt** : Integer - Optional setting. Gives the time in UNIX timestamp when the trial period of this container ends. If null that means the container is not in trial period. Note: this can not be modified directly!
 	//  * **writeTrafficLimit** : Integer - Controlls the daily write traffic (number of inbound hits) limit. Note: this can not be modified directly!
 	//  * **readTrafficLimit** : Integer - Controlls the daily read traffic limit. Note: this can not be modified directly!
-	Options *ContainerOptionsClass `json:"options,omitempty" yaml:"options,omitempty"`
+	Options ContainerOptionsClass `json:"options" yaml:"options"`
 
 	// UserDetails Provides more details about Users who has access over this Container - but there are some restrictions.
 	//
@@ -113,7 +113,7 @@ type ContainerClass struct {
 	Users *[]ContainerUserLink `json:"users,omitempty" yaml:"users,omitempty"`
 
 	// Version This is the resource version (which is automatically incremented by every change). When you do an update (PUT) you need to send it back! The server will check if it is matching with the resource version he has. If not then that means someone else already did an update in the meantime therefore your request can not be accepted - otherwise you may overwrite the changes someone did.
-	Version *int `json:"version,omitempty" yaml:"version,omitempty"`
+	Version int `json:"version" yaml:"version"`
 }
 
 // ContainerCreationClass Partial class of the ContainerClass - can be used in the REST POST endpoint during creating a container.
@@ -121,10 +121,10 @@ type ContainerClass struct {
 // Any registered User of Keytiles has the possibility to create a Container and establish tracking.
 type ContainerCreationClass struct {
 	// BusinessDomain Name of the Keytiles business domain this Container belongs to
-	BusinessDomain *string `json:"businessDomain,omitempty" yaml:"businessDomain,omitempty"`
+	BusinessDomain string `json:"businessDomain" yaml:"businessDomain"`
 
 	// Name An informative name of your Container. Single line plain string so any linefeed or tab or other characters will lead to request failure.
-	Name *string `json:"name,omitempty" yaml:"name,omitempty"`
+	Name string `json:"name" yaml:"name"`
 
 	// Options Containers have settings - options is the object represents a collection of settings. For creating a container it is enough to start with the mandatory settings. They can be tweaked later via PUT.
 	//
@@ -136,7 +136,7 @@ type ContainerCreationClass struct {
 	//  * **trialEndsAt** : Integer - Optional setting. Gives the time in UNIX timestamp when the trial period of this container ends. If null that means the container is not in trial period. Note: this can not be modified directly!
 	//  * **writeTrafficLimit** : Integer - Controlls the daily write traffic (number of inbound hits) limit. Note: this can not be modified directly!
 	//  * **readTrafficLimit** : Integer - Controlls the daily read traffic limit. Note: this can not be modified directly!
-	Options *ContainerOptionsClass `json:"options,omitempty" yaml:"options,omitempty"`
+	Options ContainerOptionsClass `json:"options" yaml:"options"`
 }
 
 // ContainerOptionsClass Containers have settings - options is the object represents a collection of settings. For creating a container it is enough to start with the mandatory settings. They can be tweaked later via PUT.
@@ -149,7 +149,7 @@ type ContainerCreationClass struct {
 //   - **trialEndsAt** : Integer - Optional setting. Gives the time in UNIX timestamp when the trial period of this container ends. If null that means the container is not in trial period. Note: this can not be modified directly!
 //   - **writeTrafficLimit** : Integer - Controlls the daily write traffic (number of inbound hits) limit. Note: this can not be modified directly!
 //   - **readTrafficLimit** : Integer - Controlls the daily read traffic limit. Note: this can not be modified directly!
-type ContainerOptionsClass map[string]map[string]interface{}
+type ContainerOptionsClass map[string]interface{}
 
 // ContainerUserDetails defines model for ContainerUserDetails.
 type ContainerUserDetails struct {
@@ -175,14 +175,14 @@ type ContainerUserLink struct {
 // HitFaultClass defines model for HitFaultClass.
 type HitFaultClass struct {
 	// ErrorCode The textual error code describes the problem. This is a machine readable error.
-	ErrorCode *string `json:"errorCode,omitempty" yaml:"errorCode,omitempty"`
+	ErrorCode string `json:"errorCode" yaml:"errorCode"`
 
 	// ErrorDescription The human readable error description.
 	ErrorDescription *string `json:"errorDescription" yaml:"errorDescription"`
 
 	// FaultTimestamp Timestamp of the fault - UNIX timestamp in UTC (seconds since Epoch)
-	FaultTimestamp *int          `json:"faultTimestamp,omitempty" yaml:"faultTimestamp,omitempty"`
-	FaultType      *HitFaultType `json:"faultType,omitempty" yaml:"faultType,omitempty"`
+	FaultTimestamp int          `json:"faultTimestamp" yaml:"faultTimestamp"`
+	FaultType      HitFaultType `json:"faultType" yaml:"faultType"`
 
 	// FaultUrl The URL associated with this fault. This comes from the 'tileUrl' attribute of the inbound hit.
 	FaultUrl *string `json:"faultUrl" yaml:"faultUrl"`
@@ -299,28 +299,28 @@ type UserClass struct {
 	// Please note that it is possible this attribute is not returned but returns 'secret' as value for confidentiality reasons! This may depend on the credentials and/or the request parameters you use to query this resource!
 	//
 	// It is possible to change the e-mail address via a PUT request (so the login name basically) but depending on who is executing the request it may behave differently. If the user himself is initating the e-mail change then it will require a confirmation of the new e-mail address - a Token will be generated and sent out to the new e-mail address to complete the request.
-	Email *string `json:"email,omitempty" yaml:"email,omitempty"`
+	Email string `json:"email" yaml:"email"`
 
 	// Id Randomly generated alpha-numeric unique id of the user
 	Id *string `json:"id,omitempty" yaml:"id,omitempty"`
 
 	// IsEnabled If FALSE then user account is disabled. Requires Keytiles Admin privilige to be able to modify this - read only otherwise
-	IsEnabled *bool `json:"isEnabled,omitempty" yaml:"isEnabled,omitempty"`
+	IsEnabled bool `json:"isEnabled" yaml:"isEnabled"`
 
 	// IsKeytilesAdmin Tells if the user is a Keytiles Admin or not. Requires Keytiles Admin privilige to be able to modify this - read only otherwise
-	IsKeytilesAdmin *bool `json:"isKeytilesAdmin,omitempty" yaml:"isKeytilesAdmin,omitempty"`
+	IsKeytilesAdmin bool `json:"isKeytilesAdmin" yaml:"isKeytilesAdmin"`
 
 	// LastLoginTimestamp When did this user log in recently? UNIX timestamp in UTC (seconds since Epoch)
 	LastLoginTimestamp *int32 `json:"lastLoginTimestamp" yaml:"lastLoginTimestamp"`
 
 	// Nickname The nickname of the user. This will appear for other users and also the system will use this in notifications. But of course you do not need to use your real name...
-	Nickname *string `json:"nickname,omitempty" yaml:"nickname,omitempty"`
+	Nickname string `json:"nickname" yaml:"nickname"`
 
 	// Password The password of the user used only for updating it but never shown.
 	Password *string `json:"password,omitempty" yaml:"password,omitempty"`
 
 	// Version This is the resource version (which is automatically incremented by every change). When you do an update (PUT) you need to send it back! The server will check if it is matching with the resource version he has. If not then that means someone else already did an update in the meantime therefore your request can not be accepted - otherwise you may overwrite the changes someone did.
-	Version *int `json:"version,omitempty" yaml:"version,omitempty"`
+	Version int `json:"version" yaml:"version"`
 }
 
 // UserContainerLink defines model for UserContainerLink.
@@ -343,13 +343,13 @@ type UserContainerRoleClassV2 string
 // UserCreationClass defines model for UserCreationClass.
 type UserCreationClass struct {
 	// Email The desired e-mail address of the user (also this will be the username used during login later)
-	Email *string `json:"email,omitempty" yaml:"email,omitempty"`
+	Email string `json:"email" yaml:"email"`
 
 	// Nickname The nickname of the user. This will appear for other users and also the system will use this in notifications. But of course you do not need to use your real name... Single line plain string so any linefeed or tab or other characters will lead to request failure.
-	Nickname *string `json:"nickname,omitempty" yaml:"nickname,omitempty"`
+	Nickname string `json:"nickname" yaml:"nickname"`
 
 	// Password The password to set after successful e-mail validation flow. Single line plain string so any linefeed or tab or other characters will lead to request failure.
-	Password *string `json:"password,omitempty" yaml:"password,omitempty"`
+	Password string `json:"password" yaml:"password"`
 }
 
 // IncludeUserDetails defines model for includeUserDetails.
