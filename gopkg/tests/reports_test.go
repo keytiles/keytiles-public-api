@@ -9,9 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func StringPtr(s string) *string {
-	return &s
-}
+func ptr[T any](t T) *T { return &t }
 
 func TestReportJSONSerializationAndDeserialization(t *testing.T) {
 
@@ -21,7 +19,7 @@ func TestReportJSONSerializationAndDeserialization(t *testing.T) {
 	hourlySchedule.FromHourlyScheduleSetup(kt_pubapi_gen_common_schedulev1.HourlyScheduleSetup{
 		FirstTime: "09:00",
 		DayNames:  &[]kt_pubapi_gen_common_schedulev1.ScheduleDayName{kt_pubapi_gen_common_schedulev1.Mon, kt_pubapi_gen_common_schedulev1.Thu},
-		UntilTime: StringPtr("18:00"),
+		UntilTime: ptr[string]("18:00"),
 	})
 
 	schedule := kt_pubapi_gen_common_schedulev1.Schedule{
