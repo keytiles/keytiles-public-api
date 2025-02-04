@@ -15,6 +15,8 @@ package com.keytiles.api.model.management.v1;
 import java.util.Objects;
 import java.util.Arrays;
 
+import com.keytiles.api.model.common.v2.CommonErrorCodes;
+import com.keytiles.api.model.management.v1.ManagementEndpointLocalErrorCodes;
 
 import java.io.Serializable;
 import com.fasterxml.jackson.annotation.JsonCreator;

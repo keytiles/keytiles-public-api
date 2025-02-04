@@ -15,6 +15,8 @@ package com.keytiles.api.model.stat.v2;
 import java.util.Objects;
 import java.util.Arrays;
 
+import com.keytiles.api.model.common.v2.CommonErrorCodes;
+import com.keytiles.api.model.stat.v2.StatApiEndpointLocalErrorCodes;
 
 import java.io.Serializable;
 import com.fasterxml.jackson.annotation.JsonCreator;

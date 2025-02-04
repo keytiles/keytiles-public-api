@@ -4,8 +4,6 @@
 package kt_pubapi_gen_managementv1
 
 import (
-	"encoding/json"
-
 	externalRef0 "github.com/keytiles/keytiles-public-api/gopkg/model/generated/common/types_v2"
 )
 
@@ -21,34 +19,94 @@ const (
 	HitFaultTypeWarn    HitFaultType = "warn"
 )
 
+// Defines values for ManagementEndpointErrorCodes.
+const (
+	ManagementEndpointErrorCodesActionTokenInternalError         ManagementEndpointErrorCodes = "actionToken_internalError"
+	ManagementEndpointErrorCodesActionTokenInvalid               ManagementEndpointErrorCodes = "actionToken_invalid"
+	ManagementEndpointErrorCodesActionTokenMissing               ManagementEndpointErrorCodes = "actionToken_missing"
+	ManagementEndpointErrorCodesActionTokenUnknownType           ManagementEndpointErrorCodes = "actionToken_unknownType"
+	ManagementEndpointErrorCodesAuthenticationBase64DecodeFailed ManagementEndpointErrorCodes = "authentication_base64DecodeFailed"
+	ManagementEndpointErrorCodesAuthenticationInternalError      ManagementEndpointErrorCodes = "authentication_internalError"
+	ManagementEndpointErrorCodesAuthenticationInvalidCredentials ManagementEndpointErrorCodes = "authentication_invalid_credentials"
+	ManagementEndpointErrorCodesAuthenticationMethodNotSupported ManagementEndpointErrorCodes = "authentication_methodNotSupported"
+	ManagementEndpointErrorCodesAuthenticationMissing            ManagementEndpointErrorCodes = "authentication_missing"
+	ManagementEndpointErrorCodesAuthenticationUserDisabled       ManagementEndpointErrorCodes = "authentication_userDisabled"
+	ManagementEndpointErrorCodesContainerDataAdminMissing        ManagementEndpointErrorCodes = "containerData_admin_missing"
+	ManagementEndpointErrorCodesContainerDataFinanceMissing      ManagementEndpointErrorCodes = "containerData_finance_missing"
+	ManagementEndpointErrorCodesContainerDataInvalid             ManagementEndpointErrorCodes = "containerData_invalid"
+	ManagementEndpointErrorCodesContainerDataJsonDecodeFailed    ManagementEndpointErrorCodes = "containerData_jsonDecodeFailed"
+	ManagementEndpointErrorCodesContainerDataMissing             ManagementEndpointErrorCodes = "containerData_missing"
+	ManagementEndpointErrorCodesContainerIdInvalid               ManagementEndpointErrorCodes = "containerId_invalid"
+	ManagementEndpointErrorCodesContainerIdMissing               ManagementEndpointErrorCodes = "containerId_missing"
+	ManagementEndpointErrorCodesDataContradictingRequest         ManagementEndpointErrorCodes = "data_contradictingRequest"
+	ManagementEndpointErrorCodesFieldDeprecated                  ManagementEndpointErrorCodes = "field_deprecated"
+	ManagementEndpointErrorCodesKeyInvalid                       ManagementEndpointErrorCodes = "key_invalid"
+	ManagementEndpointErrorCodesKeyMissing                       ManagementEndpointErrorCodes = "key_missing"
+	ManagementEndpointErrorCodesKeyValueDataInvalid              ManagementEndpointErrorCodes = "keyValueData_invalid"
+	ManagementEndpointErrorCodesMandatoryEmailSendingFailed      ManagementEndpointErrorCodes = "mandatoryEmailSending_failed"
+	ManagementEndpointErrorCodesPasswordDataInvalid              ManagementEndpointErrorCodes = "passwordData_invalid"
+	ManagementEndpointErrorCodesPasswordDataMissing              ManagementEndpointErrorCodes = "passwordData_missing"
+	ManagementEndpointErrorCodesProtectedFieldChanged            ManagementEndpointErrorCodes = "protectedField_changed"
+	ManagementEndpointErrorCodesQueryLimitReached                ManagementEndpointErrorCodes = "query_limit_reached"
+	ManagementEndpointErrorCodesQueryRangeCorrected              ManagementEndpointErrorCodes = "queryRange_corrected"
+	ManagementEndpointErrorCodesQueryRangeFromCorrected          ManagementEndpointErrorCodes = "queryRange_from_corrected"
+	ManagementEndpointErrorCodesQueryRangeToCorrected            ManagementEndpointErrorCodes = "queryRange_to_corrected"
+	ManagementEndpointErrorCodesReadonlyFieldChanged             ManagementEndpointErrorCodes = "readonlyField_changed"
+	ManagementEndpointErrorCodesRequestParameterConflict         ManagementEndpointErrorCodes = "requestParameter_conflict"
+	ManagementEndpointErrorCodesRequestParameterContradicting    ManagementEndpointErrorCodes = "requestParameter_contradicting"
+	ManagementEndpointErrorCodesRequestParameterInvalid          ManagementEndpointErrorCodes = "requestParameter_invalid"
+	ManagementEndpointErrorCodesRequestParameterMissing          ManagementEndpointErrorCodes = "requestParameter_missing"
+	ManagementEndpointErrorCodesRequestParameterNotSupported     ManagementEndpointErrorCodes = "requestParameter_not_supported"
+	ManagementEndpointErrorCodesRequestParameterPointless        ManagementEndpointErrorCodes = "requestParameter_pointless"
+	ManagementEndpointErrorCodesRequestParameterWrongFormat      ManagementEndpointErrorCodes = "requestParameter_wrongFormat"
+	ManagementEndpointErrorCodesRequiredFieldMissing             ManagementEndpointErrorCodes = "requiredField_missing"
+	ManagementEndpointErrorCodesResourceDataConflict             ManagementEndpointErrorCodes = "resourceData_conflict"
+	ManagementEndpointErrorCodesResourceDataContradicting        ManagementEndpointErrorCodes = "resourceData_contradicting"
+	ManagementEndpointErrorCodesResourceDataInvalid              ManagementEndpointErrorCodes = "resourceData_invalid"
+	ManagementEndpointErrorCodesResourceDataMissing              ManagementEndpointErrorCodes = "resourceData_missing"
+	ManagementEndpointErrorCodesResourceDataNotSupported         ManagementEndpointErrorCodes = "resourceData_not_supported"
+	ManagementEndpointErrorCodesResourceDataPointless            ManagementEndpointErrorCodes = "resourceData_pointless"
+	ManagementEndpointErrorCodesResourceDataWrongFormat          ManagementEndpointErrorCodes = "resourceData_wrongFormat"
+	ManagementEndpointErrorCodesResourceVersionMismatch          ManagementEndpointErrorCodes = "resourceVersion_mismatch"
+	ManagementEndpointErrorCodesUrlInvalid                       ManagementEndpointErrorCodes = "url_invalid"
+	ManagementEndpointErrorCodesUserDataEmailAlreadyTaken        ManagementEndpointErrorCodes = "userData_email_alreadyTaken"
+	ManagementEndpointErrorCodesUserDataEmailInvalid             ManagementEndpointErrorCodes = "userData_email_invalid"
+	ManagementEndpointErrorCodesUserDataInvalid                  ManagementEndpointErrorCodes = "userData_invalid"
+	ManagementEndpointErrorCodesUserDataJsonDecodeFailed         ManagementEndpointErrorCodes = "userData_jsonDecodeFailed"
+	ManagementEndpointErrorCodesUserDataMissing                  ManagementEndpointErrorCodes = "userData_missing"
+	ManagementEndpointErrorCodesUserDataNicknameInvalid          ManagementEndpointErrorCodes = "userData_nickname_invalid"
+	ManagementEndpointErrorCodesUserIdTermInvalid                ManagementEndpointErrorCodes = "userIdTerm_invalid"
+	ManagementEndpointErrorCodesUserIdTermMissing                ManagementEndpointErrorCodes = "userIdTerm_missing"
+)
+
 // Defines values for ManagementEndpointLocalErrorCodes.
 const (
-	ContainerDataAdminMissing     ManagementEndpointLocalErrorCodes = "containerData_admin_missing"
-	ContainerDataFinanceMissing   ManagementEndpointLocalErrorCodes = "containerData_finance_missing"
-	ContainerDataInvalid          ManagementEndpointLocalErrorCodes = "containerData_invalid"
-	ContainerDataJsonDecodeFailed ManagementEndpointLocalErrorCodes = "containerData_jsonDecodeFailed"
-	ContainerDataMissing          ManagementEndpointLocalErrorCodes = "containerData_missing"
-	ContainerIdInvalid            ManagementEndpointLocalErrorCodes = "containerId_invalid"
-	ContainerIdMissing            ManagementEndpointLocalErrorCodes = "containerId_missing"
-	KeyInvalid                    ManagementEndpointLocalErrorCodes = "key_invalid"
-	KeyMissing                    ManagementEndpointLocalErrorCodes = "key_missing"
-	KeyValueDataInvalid           ManagementEndpointLocalErrorCodes = "keyValueData_invalid"
-	PasswordDataInvalid           ManagementEndpointLocalErrorCodes = "passwordData_invalid"
-	PasswordDataMissing           ManagementEndpointLocalErrorCodes = "passwordData_missing"
-	ProtectedFieldChanged         ManagementEndpointLocalErrorCodes = "protectedField_changed"
-	QueryRangeCorrected           ManagementEndpointLocalErrorCodes = "queryRange_corrected"
-	QueryRangeFromCorrected       ManagementEndpointLocalErrorCodes = "queryRange_from_corrected"
-	QueryRangeToCorrected         ManagementEndpointLocalErrorCodes = "queryRange_to_corrected"
-	ReadonlyFieldChanged          ManagementEndpointLocalErrorCodes = "readonlyField_changed"
-	RequiredFieldMissing          ManagementEndpointLocalErrorCodes = "requiredField_missing"
-	UserDataEmailAlreadyTaken     ManagementEndpointLocalErrorCodes = "userData_email_alreadyTaken"
-	UserDataEmailInvalid          ManagementEndpointLocalErrorCodes = "userData_email_invalid"
-	UserDataInvalid               ManagementEndpointLocalErrorCodes = "userData_invalid"
-	UserDataJsonDecodeFailed      ManagementEndpointLocalErrorCodes = "userData_jsonDecodeFailed"
-	UserDataMissing               ManagementEndpointLocalErrorCodes = "userData_missing"
-	UserDataNicknameInvalid       ManagementEndpointLocalErrorCodes = "userData_nickname_invalid"
-	UserIdTermInvalid             ManagementEndpointLocalErrorCodes = "userIdTerm_invalid"
-	UserIdTermMissing             ManagementEndpointLocalErrorCodes = "userIdTerm_missing"
+	ManagementEndpointLocalErrorCodesContainerDataAdminMissing     ManagementEndpointLocalErrorCodes = "containerData_admin_missing"
+	ManagementEndpointLocalErrorCodesContainerDataFinanceMissing   ManagementEndpointLocalErrorCodes = "containerData_finance_missing"
+	ManagementEndpointLocalErrorCodesContainerDataInvalid          ManagementEndpointLocalErrorCodes = "containerData_invalid"
+	ManagementEndpointLocalErrorCodesContainerDataJsonDecodeFailed ManagementEndpointLocalErrorCodes = "containerData_jsonDecodeFailed"
+	ManagementEndpointLocalErrorCodesContainerDataMissing          ManagementEndpointLocalErrorCodes = "containerData_missing"
+	ManagementEndpointLocalErrorCodesContainerIdInvalid            ManagementEndpointLocalErrorCodes = "containerId_invalid"
+	ManagementEndpointLocalErrorCodesContainerIdMissing            ManagementEndpointLocalErrorCodes = "containerId_missing"
+	ManagementEndpointLocalErrorCodesKeyInvalid                    ManagementEndpointLocalErrorCodes = "key_invalid"
+	ManagementEndpointLocalErrorCodesKeyMissing                    ManagementEndpointLocalErrorCodes = "key_missing"
+	ManagementEndpointLocalErrorCodesKeyValueDataInvalid           ManagementEndpointLocalErrorCodes = "keyValueData_invalid"
+	ManagementEndpointLocalErrorCodesPasswordDataInvalid           ManagementEndpointLocalErrorCodes = "passwordData_invalid"
+	ManagementEndpointLocalErrorCodesPasswordDataMissing           ManagementEndpointLocalErrorCodes = "passwordData_missing"
+	ManagementEndpointLocalErrorCodesProtectedFieldChanged         ManagementEndpointLocalErrorCodes = "protectedField_changed"
+	ManagementEndpointLocalErrorCodesQueryRangeCorrected           ManagementEndpointLocalErrorCodes = "queryRange_corrected"
+	ManagementEndpointLocalErrorCodesQueryRangeFromCorrected       ManagementEndpointLocalErrorCodes = "queryRange_from_corrected"
+	ManagementEndpointLocalErrorCodesQueryRangeToCorrected         ManagementEndpointLocalErrorCodes = "queryRange_to_corrected"
+	ManagementEndpointLocalErrorCodesReadonlyFieldChanged          ManagementEndpointLocalErrorCodes = "readonlyField_changed"
+	ManagementEndpointLocalErrorCodesRequiredFieldMissing          ManagementEndpointLocalErrorCodes = "requiredField_missing"
+	ManagementEndpointLocalErrorCodesUserDataEmailAlreadyTaken     ManagementEndpointLocalErrorCodes = "userData_email_alreadyTaken"
+	ManagementEndpointLocalErrorCodesUserDataEmailInvalid          ManagementEndpointLocalErrorCodes = "userData_email_invalid"
+	ManagementEndpointLocalErrorCodesUserDataInvalid               ManagementEndpointLocalErrorCodes = "userData_invalid"
+	ManagementEndpointLocalErrorCodesUserDataJsonDecodeFailed      ManagementEndpointLocalErrorCodes = "userData_jsonDecodeFailed"
+	ManagementEndpointLocalErrorCodesUserDataMissing               ManagementEndpointLocalErrorCodes = "userData_missing"
+	ManagementEndpointLocalErrorCodesUserDataNicknameInvalid       ManagementEndpointLocalErrorCodes = "userData_nickname_invalid"
+	ManagementEndpointLocalErrorCodesUserIdTermInvalid             ManagementEndpointLocalErrorCodes = "userIdTerm_invalid"
+	ManagementEndpointLocalErrorCodesUserIdTermMissing             ManagementEndpointLocalErrorCodes = "userIdTerm_missing"
 )
 
 // Defines values for ManagementEndpointProblemClassSeverity.
@@ -239,10 +297,8 @@ type MachineReadableManagementEndpointMessageResponseClass struct {
 	RequestReceivedAt int32 `json:"requestReceivedAt" yaml:"requestReceivedAt"`
 }
 
-// ManagementEndpointErrorCodes NOTE! Error codes is an Enum. Unfortunately in OpenApi (so far) there is no possibility to provide description for Enum values. But we have detailed description of each error codes! Please check the OpenApi file in our Github repo - you find them as comments for each Enum values!
-type ManagementEndpointErrorCodes struct {
-	union json.RawMessage
-}
+// ManagementEndpointErrorCodes defines model for ManagementEndpointErrorCodes.
+type ManagementEndpointErrorCodes string
 
 // ManagementEndpointLocalErrorCodes defines model for ManagementEndpointLocalErrorCodes.
 type ManagementEndpointLocalErrorCodes string
@@ -440,41 +496,3 @@ type PutV1ManagementUsersRestUserIdTermJSONRequestBody = UserClass
 
 // PutV1ManagementUsersRestUserIdTermPasswordTextRequestBody defines body for PutV1ManagementUsersRestUserIdTermPassword for text/plain ContentType.
 type PutV1ManagementUsersRestUserIdTermPasswordTextRequestBody = PutV1ManagementUsersRestUserIdTermPasswordTextBody
-
-// AsManagementEndpointLocalErrorCodes returns the union data inside the ManagementEndpointErrorCodes as a ManagementEndpointLocalErrorCodes
-func (t ManagementEndpointErrorCodes) AsManagementEndpointLocalErrorCodes() (ManagementEndpointLocalErrorCodes, error) {
-	var body ManagementEndpointLocalErrorCodes
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromManagementEndpointLocalErrorCodes overwrites any union data inside the ManagementEndpointErrorCodes as the provided ManagementEndpointLocalErrorCodes
-func (t *ManagementEndpointErrorCodes) FromManagementEndpointLocalErrorCodes(v ManagementEndpointLocalErrorCodes) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// AsExternalRef0CommonErrorCodes returns the union data inside the ManagementEndpointErrorCodes as a externalRef0.CommonErrorCodes
-func (t ManagementEndpointErrorCodes) AsExternalRef0CommonErrorCodes() (externalRef0.CommonErrorCodes, error) {
-	var body externalRef0.CommonErrorCodes
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromExternalRef0CommonErrorCodes overwrites any union data inside the ManagementEndpointErrorCodes as the provided externalRef0.CommonErrorCodes
-func (t *ManagementEndpointErrorCodes) FromExternalRef0CommonErrorCodes(v externalRef0.CommonErrorCodes) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-func (t ManagementEndpointErrorCodes) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *ManagementEndpointErrorCodes) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}

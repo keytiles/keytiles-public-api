@@ -847,7 +847,7 @@ components:
     # Management API endpoints can return the union of them 
     ManagementEndpointErrorCodes:
       description: NOTE! Error codes is an Enum. Unfortunately in OpenApi (so far) there is no possibility to provide description for Enum values. But we have detailed description of each error codes! Please check the OpenApi file in our Github repo - you find them as comments for each Enum values! 
-      oneOf:
+      allOf:
       - $ref: "#/components/schemas/ManagementEndpointLocalErrorCodes"
       - $ref: "common-types-v2.yaml#/components/schemas/CommonErrorCodes"
 

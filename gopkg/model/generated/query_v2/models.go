@@ -4,8 +4,6 @@
 package kt_pubapi_gen_queryv2
 
 import (
-	"encoding/json"
-
 	externalRef0 "github.com/keytiles/keytiles-public-api/gopkg/model/generated/common/types_v2"
 )
 
@@ -13,20 +11,66 @@ const (
 	BasicAuthScopes = "basicAuth.Scopes"
 )
 
+// Defines values for StatApiEndpointErrorCodes.
+const (
+	StatApiEndpointErrorCodesActionTokenInternalError         StatApiEndpointErrorCodes = "actionToken_internalError"
+	StatApiEndpointErrorCodesActionTokenInvalid               StatApiEndpointErrorCodes = "actionToken_invalid"
+	StatApiEndpointErrorCodesActionTokenMissing               StatApiEndpointErrorCodes = "actionToken_missing"
+	StatApiEndpointErrorCodesActionTokenUnknownType           StatApiEndpointErrorCodes = "actionToken_unknownType"
+	StatApiEndpointErrorCodesAuthenticationBase64DecodeFailed StatApiEndpointErrorCodes = "authentication_base64DecodeFailed"
+	StatApiEndpointErrorCodesAuthenticationInternalError      StatApiEndpointErrorCodes = "authentication_internalError"
+	StatApiEndpointErrorCodesAuthenticationInvalidCredentials StatApiEndpointErrorCodes = "authentication_invalid_credentials"
+	StatApiEndpointErrorCodesAuthenticationMethodNotSupported StatApiEndpointErrorCodes = "authentication_methodNotSupported"
+	StatApiEndpointErrorCodesAuthenticationMissing            StatApiEndpointErrorCodes = "authentication_missing"
+	StatApiEndpointErrorCodesAuthenticationUserDisabled       StatApiEndpointErrorCodes = "authentication_userDisabled"
+	StatApiEndpointErrorCodesContainerIdInvalid               StatApiEndpointErrorCodes = "containerId_invalid"
+	StatApiEndpointErrorCodesContainerIdMissing               StatApiEndpointErrorCodes = "containerId_missing"
+	StatApiEndpointErrorCodesContainerSetupInvalid            StatApiEndpointErrorCodes = "containerSetup_invalid"
+	StatApiEndpointErrorCodesDataContradictingRequest         StatApiEndpointErrorCodes = "data_contradictingRequest"
+	StatApiEndpointErrorCodesFieldDeprecated                  StatApiEndpointErrorCodes = "field_deprecated"
+	StatApiEndpointErrorCodesFilterNotSupported               StatApiEndpointErrorCodes = "filter_not_supported"
+	StatApiEndpointErrorCodesGroupByEventTypeNotSet           StatApiEndpointErrorCodes = "groupBy_eventType_not_set"
+	StatApiEndpointErrorCodesMandatoryEmailSendingFailed      StatApiEndpointErrorCodes = "mandatoryEmailSending_failed"
+	StatApiEndpointErrorCodesQueryLimitReached                StatApiEndpointErrorCodes = "query_limit_reached"
+	StatApiEndpointErrorCodesQueryRangeCorrected              StatApiEndpointErrorCodes = "queryRange_corrected"
+	StatApiEndpointErrorCodesQueryRangeExtended               StatApiEndpointErrorCodes = "queryRange_extended"
+	StatApiEndpointErrorCodesQueryRangeFromCorrected          StatApiEndpointErrorCodes = "queryRange_from_corrected"
+	StatApiEndpointErrorCodesQueryRangeFromExtended           StatApiEndpointErrorCodes = "queryRange_from_extended"
+	StatApiEndpointErrorCodesQueryRangeToCorrected            StatApiEndpointErrorCodes = "queryRange_to_corrected"
+	StatApiEndpointErrorCodesQueryRangeToExtended             StatApiEndpointErrorCodes = "queryRange_to_extended"
+	StatApiEndpointErrorCodesRequestParameterConflict         StatApiEndpointErrorCodes = "requestParameter_conflict"
+	StatApiEndpointErrorCodesRequestParameterContradicting    StatApiEndpointErrorCodes = "requestParameter_contradicting"
+	StatApiEndpointErrorCodesRequestParameterInvalid          StatApiEndpointErrorCodes = "requestParameter_invalid"
+	StatApiEndpointErrorCodesRequestParameterMissing          StatApiEndpointErrorCodes = "requestParameter_missing"
+	StatApiEndpointErrorCodesRequestParameterNotSupported     StatApiEndpointErrorCodes = "requestParameter_not_supported"
+	StatApiEndpointErrorCodesRequestParameterPointless        StatApiEndpointErrorCodes = "requestParameter_pointless"
+	StatApiEndpointErrorCodesRequestParameterWrongFormat      StatApiEndpointErrorCodes = "requestParameter_wrongFormat"
+	StatApiEndpointErrorCodesResourceDataConflict             StatApiEndpointErrorCodes = "resourceData_conflict"
+	StatApiEndpointErrorCodesResourceDataContradicting        StatApiEndpointErrorCodes = "resourceData_contradicting"
+	StatApiEndpointErrorCodesResourceDataInvalid              StatApiEndpointErrorCodes = "resourceData_invalid"
+	StatApiEndpointErrorCodesResourceDataMissing              StatApiEndpointErrorCodes = "resourceData_missing"
+	StatApiEndpointErrorCodesResourceDataNotSupported         StatApiEndpointErrorCodes = "resourceData_not_supported"
+	StatApiEndpointErrorCodesResourceDataPointless            StatApiEndpointErrorCodes = "resourceData_pointless"
+	StatApiEndpointErrorCodesResourceDataWrongFormat          StatApiEndpointErrorCodes = "resourceData_wrongFormat"
+	StatApiEndpointErrorCodesResourceVersionMismatch          StatApiEndpointErrorCodes = "resourceVersion_mismatch"
+	StatApiEndpointErrorCodesSortingColumnNotInInterest       StatApiEndpointErrorCodes = "sorting_column_not_in_interest"
+	StatApiEndpointErrorCodesUrlInvalid                       StatApiEndpointErrorCodes = "url_invalid"
+)
+
 // Defines values for StatApiEndpointLocalErrorCodes.
 const (
-	ContainerIdInvalid         StatApiEndpointLocalErrorCodes = "containerId_invalid"
-	ContainerIdMissing         StatApiEndpointLocalErrorCodes = "containerId_missing"
-	ContainerSetupInvalid      StatApiEndpointLocalErrorCodes = "containerSetup_invalid"
-	FilterNotSupported         StatApiEndpointLocalErrorCodes = "filter_not_supported"
-	GroupByEventTypeNotSet     StatApiEndpointLocalErrorCodes = "groupBy_eventType_not_set"
-	QueryRangeCorrected        StatApiEndpointLocalErrorCodes = "queryRange_corrected"
-	QueryRangeExtended         StatApiEndpointLocalErrorCodes = "queryRange_extended"
-	QueryRangeFromCorrected    StatApiEndpointLocalErrorCodes = "queryRange_from_corrected"
-	QueryRangeFromExtended     StatApiEndpointLocalErrorCodes = "queryRange_from_extended"
-	QueryRangeToCorrected      StatApiEndpointLocalErrorCodes = "queryRange_to_corrected"
-	QueryRangeToExtended       StatApiEndpointLocalErrorCodes = "queryRange_to_extended"
-	SortingColumnNotInInterest StatApiEndpointLocalErrorCodes = "sorting_column_not_in_interest"
+	StatApiEndpointLocalErrorCodesContainerIdInvalid         StatApiEndpointLocalErrorCodes = "containerId_invalid"
+	StatApiEndpointLocalErrorCodesContainerIdMissing         StatApiEndpointLocalErrorCodes = "containerId_missing"
+	StatApiEndpointLocalErrorCodesContainerSetupInvalid      StatApiEndpointLocalErrorCodes = "containerSetup_invalid"
+	StatApiEndpointLocalErrorCodesFilterNotSupported         StatApiEndpointLocalErrorCodes = "filter_not_supported"
+	StatApiEndpointLocalErrorCodesGroupByEventTypeNotSet     StatApiEndpointLocalErrorCodes = "groupBy_eventType_not_set"
+	StatApiEndpointLocalErrorCodesQueryRangeCorrected        StatApiEndpointLocalErrorCodes = "queryRange_corrected"
+	StatApiEndpointLocalErrorCodesQueryRangeExtended         StatApiEndpointLocalErrorCodes = "queryRange_extended"
+	StatApiEndpointLocalErrorCodesQueryRangeFromCorrected    StatApiEndpointLocalErrorCodes = "queryRange_from_corrected"
+	StatApiEndpointLocalErrorCodesQueryRangeFromExtended     StatApiEndpointLocalErrorCodes = "queryRange_from_extended"
+	StatApiEndpointLocalErrorCodesQueryRangeToCorrected      StatApiEndpointLocalErrorCodes = "queryRange_to_corrected"
+	StatApiEndpointLocalErrorCodesQueryRangeToExtended       StatApiEndpointLocalErrorCodes = "queryRange_to_extended"
+	StatApiEndpointLocalErrorCodesSortingColumnNotInInterest StatApiEndpointLocalErrorCodes = "sorting_column_not_in_interest"
 )
 
 // Defines values for StatApiEndpointProblemClassSeverity.
@@ -228,10 +272,8 @@ type MappingRecordClass struct {
 	StrId       *string `json:"strId,omitempty" yaml:"strId,omitempty"`
 }
 
-// StatApiEndpointErrorCodes NOTE! Error codes is an Enum. Unfortunately in OpenApi (so far) there is no possibility to provide description for Enum values. But we have detailed description of each error codes! Please check the OpenApi file in our Github repo - you find them as comments for each Enum values!
-type StatApiEndpointErrorCodes struct {
-	union json.RawMessage
-}
+// StatApiEndpointErrorCodes defines model for StatApiEndpointErrorCodes.
+type StatApiEndpointErrorCodes string
 
 // StatApiEndpointLocalErrorCodes defines model for StatApiEndpointLocalErrorCodes.
 type StatApiEndpointLocalErrorCodes string
@@ -1117,42 +1159,4 @@ type GetV2StatWebhitsContainerIdTilesParams struct {
 	//
 	// note: if you have comma in your tileIds (strange, but ok...) you can escape that with `\\` character!
 	TileIdsOnly string `form:"tileIdsOnly" json:"tileIdsOnly" yaml:"tileIdsOnly"`
-}
-
-// AsStatApiEndpointLocalErrorCodes returns the union data inside the StatApiEndpointErrorCodes as a StatApiEndpointLocalErrorCodes
-func (t StatApiEndpointErrorCodes) AsStatApiEndpointLocalErrorCodes() (StatApiEndpointLocalErrorCodes, error) {
-	var body StatApiEndpointLocalErrorCodes
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromStatApiEndpointLocalErrorCodes overwrites any union data inside the StatApiEndpointErrorCodes as the provided StatApiEndpointLocalErrorCodes
-func (t *StatApiEndpointErrorCodes) FromStatApiEndpointLocalErrorCodes(v StatApiEndpointLocalErrorCodes) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// AsExternalRef0CommonErrorCodes returns the union data inside the StatApiEndpointErrorCodes as a externalRef0.CommonErrorCodes
-func (t StatApiEndpointErrorCodes) AsExternalRef0CommonErrorCodes() (externalRef0.CommonErrorCodes, error) {
-	var body externalRef0.CommonErrorCodes
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromExternalRef0CommonErrorCodes overwrites any union data inside the StatApiEndpointErrorCodes as the provided externalRef0.CommonErrorCodes
-func (t *StatApiEndpointErrorCodes) FromExternalRef0CommonErrorCodes(v externalRef0.CommonErrorCodes) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-func (t StatApiEndpointErrorCodes) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *StatApiEndpointErrorCodes) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
 }

@@ -32,11 +32,48 @@ const (
 	View      ReportRecipientsRoles = "view"
 )
 
+// Defines values for ReportsEndpointErrorCodes.
+const (
+	ReportsEndpointErrorCodesActionTokenInternalError         ReportsEndpointErrorCodes = "actionToken_internalError"
+	ReportsEndpointErrorCodesActionTokenInvalid               ReportsEndpointErrorCodes = "actionToken_invalid"
+	ReportsEndpointErrorCodesActionTokenMissing               ReportsEndpointErrorCodes = "actionToken_missing"
+	ReportsEndpointErrorCodesActionTokenUnknownType           ReportsEndpointErrorCodes = "actionToken_unknownType"
+	ReportsEndpointErrorCodesAuthenticationBase64DecodeFailed ReportsEndpointErrorCodes = "authentication_base64DecodeFailed"
+	ReportsEndpointErrorCodesAuthenticationInternalError      ReportsEndpointErrorCodes = "authentication_internalError"
+	ReportsEndpointErrorCodesAuthenticationInvalidCredentials ReportsEndpointErrorCodes = "authentication_invalid_credentials"
+	ReportsEndpointErrorCodesAuthenticationMethodNotSupported ReportsEndpointErrorCodes = "authentication_methodNotSupported"
+	ReportsEndpointErrorCodesAuthenticationMissing            ReportsEndpointErrorCodes = "authentication_missing"
+	ReportsEndpointErrorCodesAuthenticationUserDisabled       ReportsEndpointErrorCodes = "authentication_userDisabled"
+	ReportsEndpointErrorCodesContainerIdInvalid               ReportsEndpointErrorCodes = "containerId_invalid"
+	ReportsEndpointErrorCodesContainerIdMissing               ReportsEndpointErrorCodes = "containerId_missing"
+	ReportsEndpointErrorCodesDataContradictingRequest         ReportsEndpointErrorCodes = "data_contradictingRequest"
+	ReportsEndpointErrorCodesFieldDeprecated                  ReportsEndpointErrorCodes = "field_deprecated"
+	ReportsEndpointErrorCodesMandatoryEmailSendingFailed      ReportsEndpointErrorCodes = "mandatoryEmailSending_failed"
+	ReportsEndpointErrorCodesQueryLimitReached                ReportsEndpointErrorCodes = "query_limit_reached"
+	ReportsEndpointErrorCodesReportSetupIdInvalid             ReportsEndpointErrorCodes = "reportSetupId_invalid"
+	ReportsEndpointErrorCodesRequestParameterConflict         ReportsEndpointErrorCodes = "requestParameter_conflict"
+	ReportsEndpointErrorCodesRequestParameterContradicting    ReportsEndpointErrorCodes = "requestParameter_contradicting"
+	ReportsEndpointErrorCodesRequestParameterInvalid          ReportsEndpointErrorCodes = "requestParameter_invalid"
+	ReportsEndpointErrorCodesRequestParameterMissing          ReportsEndpointErrorCodes = "requestParameter_missing"
+	ReportsEndpointErrorCodesRequestParameterNotSupported     ReportsEndpointErrorCodes = "requestParameter_not_supported"
+	ReportsEndpointErrorCodesRequestParameterPointless        ReportsEndpointErrorCodes = "requestParameter_pointless"
+	ReportsEndpointErrorCodesRequestParameterWrongFormat      ReportsEndpointErrorCodes = "requestParameter_wrongFormat"
+	ReportsEndpointErrorCodesResourceDataConflict             ReportsEndpointErrorCodes = "resourceData_conflict"
+	ReportsEndpointErrorCodesResourceDataContradicting        ReportsEndpointErrorCodes = "resourceData_contradicting"
+	ReportsEndpointErrorCodesResourceDataInvalid              ReportsEndpointErrorCodes = "resourceData_invalid"
+	ReportsEndpointErrorCodesResourceDataMissing              ReportsEndpointErrorCodes = "resourceData_missing"
+	ReportsEndpointErrorCodesResourceDataNotSupported         ReportsEndpointErrorCodes = "resourceData_not_supported"
+	ReportsEndpointErrorCodesResourceDataPointless            ReportsEndpointErrorCodes = "resourceData_pointless"
+	ReportsEndpointErrorCodesResourceDataWrongFormat          ReportsEndpointErrorCodes = "resourceData_wrongFormat"
+	ReportsEndpointErrorCodesResourceVersionMismatch          ReportsEndpointErrorCodes = "resourceVersion_mismatch"
+	ReportsEndpointErrorCodesUrlInvalid                       ReportsEndpointErrorCodes = "url_invalid"
+)
+
 // Defines values for ReportsEndpointLocalErrorCodes.
 const (
-	ContainerIdInvalid   ReportsEndpointLocalErrorCodes = "containerId_invalid"
-	ContainerIdMissing   ReportsEndpointLocalErrorCodes = "containerId_missing"
-	ReportSetupIdInvalid ReportsEndpointLocalErrorCodes = "reportSetupId_invalid"
+	ReportsEndpointLocalErrorCodesContainerIdInvalid   ReportsEndpointLocalErrorCodes = "containerId_invalid"
+	ReportsEndpointLocalErrorCodesContainerIdMissing   ReportsEndpointLocalErrorCodes = "containerId_missing"
+	ReportsEndpointLocalErrorCodesReportSetupIdInvalid ReportsEndpointLocalErrorCodes = "reportSetupId_invalid"
 )
 
 // Defines values for ReportsEndpointProblemClassSeverity.
@@ -165,10 +202,8 @@ type ReportSetup struct {
 	Schedule *externalRef1.Schedule `json:"schedule,omitempty" yaml:"schedule,omitempty"`
 }
 
-// ReportsEndpointErrorCodes NOTE! Error codes is an Enum. Unfortunately in OpenApi (so far) there is no possibility to provide description for Enum values. But we have detailed description of each error codes! Please check the OpenApi file in our Github repo - you find them as comments for each Enum values!
-type ReportsEndpointErrorCodes struct {
-	union json.RawMessage
-}
+// ReportsEndpointErrorCodes defines model for ReportsEndpointErrorCodes.
+type ReportsEndpointErrorCodes string
 
 // ReportsEndpointLocalErrorCodes defines model for ReportsEndpointLocalErrorCodes.
 type ReportsEndpointLocalErrorCodes string
@@ -386,42 +421,4 @@ func (a ReportQuery_Parameters) MarshalJSON() ([]byte, error) {
 		}
 	}
 	return json.Marshal(object)
-}
-
-// AsReportsEndpointLocalErrorCodes returns the union data inside the ReportsEndpointErrorCodes as a ReportsEndpointLocalErrorCodes
-func (t ReportsEndpointErrorCodes) AsReportsEndpointLocalErrorCodes() (ReportsEndpointLocalErrorCodes, error) {
-	var body ReportsEndpointLocalErrorCodes
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromReportsEndpointLocalErrorCodes overwrites any union data inside the ReportsEndpointErrorCodes as the provided ReportsEndpointLocalErrorCodes
-func (t *ReportsEndpointErrorCodes) FromReportsEndpointLocalErrorCodes(v ReportsEndpointLocalErrorCodes) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// AsExternalRef2CommonErrorCodes returns the union data inside the ReportsEndpointErrorCodes as a externalRef2.CommonErrorCodes
-func (t ReportsEndpointErrorCodes) AsExternalRef2CommonErrorCodes() (externalRef2.CommonErrorCodes, error) {
-	var body externalRef2.CommonErrorCodes
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromExternalRef2CommonErrorCodes overwrites any union data inside the ReportsEndpointErrorCodes as the provided externalRef2.CommonErrorCodes
-func (t *ReportsEndpointErrorCodes) FromExternalRef2CommonErrorCodes(v externalRef2.CommonErrorCodes) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-func (t ReportsEndpointErrorCodes) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *ReportsEndpointErrorCodes) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
 }

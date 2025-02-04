@@ -9,8 +9,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func ptr[T any](t T) *T { return &t }
-
 func TestReportJSONSerializationAndDeserialization(t *testing.T) {
 
 	//dayNames := []kt_pubapi_gen_common.ScheduleDayName{kt_pubapi_gen_common.Mon, kt_pubapi_gen_common.Thu}

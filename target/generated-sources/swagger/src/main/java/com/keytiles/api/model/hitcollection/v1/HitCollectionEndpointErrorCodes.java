@@ -15,6 +15,8 @@ package com.keytiles.api.model.hitcollection.v1;
 import java.util.Objects;
 import java.util.Arrays;
 
+import com.keytiles.api.model.common.v2.CommonErrorCodes;
+import com.keytiles.api.model.hitcollection.v1.HitCollectionEndpointLocalErrorCodes;
 
 import java.io.Serializable;
 import com.fasterxml.jackson.annotation.JsonCreator;
