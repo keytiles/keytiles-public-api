@@ -34,6 +34,7 @@ const (
 	ResourceDataPointless            CommonErrorCodes = "resourceData_pointless"
 	ResourceDataWrongFormat          CommonErrorCodes = "resourceData_wrongFormat"
 	ResourceVersionMismatch          CommonErrorCodes = "resourceVersion_mismatch"
+	UnderlyingResourceUnavailable    CommonErrorCodes = "underlying_resource_unavailable"
 	UrlInvalid                       CommonErrorCodes = "url_invalid"
 )
 

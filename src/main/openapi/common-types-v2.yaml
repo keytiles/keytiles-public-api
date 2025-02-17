@@ -1,7 +1,7 @@
 openapi: 3.0.1
 
 info:
-  version: '1.0'
+  version: '1.1'
   title: Common object definitions
   description: "These object definitions are shared among multiple contracts"
 
@@ -129,6 +129,8 @@ components:
       - field_deprecated
       # In some situations server might realize we got contradicting data
       - data_contradictingRequest
+      # To fulfill the API call it depends on another service/resource (e.g. another API or persistence) - which it seems currently not available. In general client should retry the request later.
+      - underlying_resource_unavailable
 
     ProblemPlaceEnum:
       type: string

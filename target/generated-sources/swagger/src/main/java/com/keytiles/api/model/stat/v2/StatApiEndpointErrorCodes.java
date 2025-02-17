@@ -69,7 +69,8 @@ public enum StatApiEndpointErrorCodes {
   MANDATORYEMAILSENDING_FAILED("mandatoryEmailSending_failed"),
   QUERY_LIMIT_REACHED("query_limit_reached"),
   FIELD_DEPRECATED("field_deprecated"),
-  DATA_CONTRADICTINGREQUEST("data_contradictingRequest");
+  DATA_CONTRADICTINGREQUEST("data_contradictingRequest"),
+  UNDERLYING_RESOURCE_UNAVAILABLE("underlying_resource_unavailable");
 
   private String value;
 
