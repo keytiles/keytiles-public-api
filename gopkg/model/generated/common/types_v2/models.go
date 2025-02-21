@@ -15,10 +15,15 @@ const (
 	AuthenticationMethodNotSupported CommonErrorCodes = "authentication_methodNotSupported"
 	AuthenticationMissing            CommonErrorCodes = "authentication_missing"
 	AuthenticationUserDisabled       CommonErrorCodes = "authentication_userDisabled"
-	DataContradictingRequest         CommonErrorCodes = "data_contradictingRequest"
+	AuthorizationNoPermission        CommonErrorCodes = "authorization_noPermission"
 	FieldDeprecated                  CommonErrorCodes = "field_deprecated"
 	MandatoryEmailSendingFailed      CommonErrorCodes = "mandatoryEmailSending_failed"
 	QueryLimitReached                CommonErrorCodes = "query_limit_reached"
+	RequestDataContradicting         CommonErrorCodes = "requestData_contradicting"
+	RequestDataInvalid               CommonErrorCodes = "requestData_invalid"
+	RequestDataMissing               CommonErrorCodes = "requestData_missing"
+	RequestDataNotSupported          CommonErrorCodes = "requestData_not_supported"
+	RequestDataWrongFormat           CommonErrorCodes = "requestData_wrongFormat"
 	RequestParameterConflict         CommonErrorCodes = "requestParameter_conflict"
 	RequestParameterContradicting    CommonErrorCodes = "requestParameter_contradicting"
 	RequestParameterInvalid          CommonErrorCodes = "requestParameter_invalid"
@@ -70,6 +75,9 @@ type BaseResponseClass struct {
 
 	// RequestReceivedAt The server time in UNIX timestamp in UTC (seconds since Epoch) when this response was received and processing was started
 	RequestReceivedAt int32 `json:"requestReceivedAt" yaml:"requestReceivedAt"`
+
+	// Vars Extra data (variables) the endpoint wants to return for programmatic processing.
+	Vars *map[string]interface{} `json:"vars" yaml:"vars"`
 }
 
 // CommonErrorCodes defines model for CommonErrorCodes.
@@ -99,6 +107,9 @@ type ContainerQueryRangeResponseClass struct {
 
 	// RequestedToTimestamp In the request you requested data until this UNIX timestamp in UTC (seconds since Epoch)
 	RequestedToTimestamp int32 `json:"requestedToTimestamp" yaml:"requestedToTimestamp"`
+
+	// Vars Extra data (variables) the endpoint wants to return for programmatic processing.
+	Vars *map[string]interface{} `json:"vars" yaml:"vars"`
 }
 
 // ContainerResponseClass defines model for ContainerResponseClass.
@@ -113,6 +124,9 @@ type ContainerResponseClass struct {
 
 	// RequestReceivedAt The server time in UNIX timestamp in UTC (seconds since Epoch) when this response was received and processing was started
 	RequestReceivedAt int32 `json:"requestReceivedAt" yaml:"requestReceivedAt"`
+
+	// Vars Extra data (variables) the endpoint wants to return for programmatic processing.
+	Vars *map[string]interface{} `json:"vars" yaml:"vars"`
 }
 
 // MessageResponseClass defines model for MessageResponseClass.
@@ -128,6 +142,9 @@ type MessageResponseClass struct {
 
 	// RequestReceivedAt The server time in UNIX timestamp in UTC (seconds since Epoch) when this response was received and processing was started
 	RequestReceivedAt int32 `json:"requestReceivedAt" yaml:"requestReceivedAt"`
+
+	// Vars Extra data (variables) the endpoint wants to return for programmatic processing.
+	Vars *map[string]interface{} `json:"vars" yaml:"vars"`
 }
 
 // ProblemBaseClass defines model for ProblemBaseClass.

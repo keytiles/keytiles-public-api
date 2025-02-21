@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.keytiles</groupId>
 	<artifactId>keytiles-public-api</artifactId>
-	<version>1.1.0</version>
+	<version>1.2.0</version>
 	<packaging>jar</packaging>
 
 	<properties>
@@ -21,7 +21,6 @@
 		<maven.os.plugin>1.6.0</maven.os.plugin>
 		<maven.buildhelper.plugin>3.3.0</maven.buildhelper.plugin>
 		<maven.swagger-codegen.plugin>3.0.34</maven.swagger-codegen.plugin>
-
 	</properties>
 
     <pluginRepositories>

@@ -1,7 +1,7 @@
 openapi: 3.0.1
 
 info:
-  version: '1.1'
+  version: '1.2'
   title: Common object definitions
   description: "These object definitions are shared among multiple contracts"
 
@@ -79,18 +79,20 @@ components:
       - actionToken_invalid
       # Every ActionToken "knows" what he is doing / was created for. And it looks the system ran into a token which it does not recognize what to do with it. This is most likely a bug if you see this - please report to support@
       - actionToken_unknownType
-      # A propetected endpoint was invoked which requires a valid user to execute the operation on behalf - but the authentication information was simpply missing from the request 
+      # A protected endpoint was invoked which requires a valid user to execute the operation on behalf - but the authentication information was simpply missing from the request 
       - authentication_missing
-      # A propetected endpoint was invoked which requires a valid user to execute the operation on behalf. The auth information was found on the request but system - for some reason - has failed to validate the info 
+      # A protected endpoint was invoked which requires a valid user to execute the operation on behalf. The auth information was found on the request but system - for some reason - has failed to validate the info 
       - authentication_internalError
-      # A propetected endpoint was invoked which requires a valid user to execute the operation on behalf. The auth info was found in the request but either the user does not exist, or the provided password was not matching - anyhow, something was wrong with the given credentials
+      # A protected endpoint was invoked which requires a valid user to execute the operation on behalf. The auth info was found in the request but either the user does not exist, or the provided password was not matching - anyhow, something was wrong with the given credentials
       - authentication_invalid_credentials
-      # A propetected endpoint was invoked which requires a valid user to execute the operation on behalf. Everything was fine (user found, ppassword ok, etc) but this user account is disabled so not allowed to execute any opration. Contact support@ to resolve this issue
+      # A protected endpoint was invoked which requires a valid user to execute the operation on behalf. Everything was fine (user found, ppassword ok, etc) but this user account is disabled so not allowed to execute any opration. Contact support@ to resolve this issue
       - authentication_userDisabled
-      # A propetected endpoint was invoked which requires a valid user to execute the operation on behalf. The auth info was there but the auth method is involving Base64 decode operation which decode has actually failed... So something is wrong with the data. This e.g. happens with BasicAuth method (username+password)
+      # A protected endpoint was invoked which requires a valid user to execute the operation on behalf. The auth info was there but the auth method is involving Base64 decode operation which decode has actually failed... So something is wrong with the data. This e.g. happens with BasicAuth method (username+password)
       - authentication_base64DecodeFailed
-      # A propetected endpoint was invoked which requires a valid user to execute the operation on behalf. Auth info was found on the request but the system does not support this type of authentication
+      # A protected endpoint was invoked which requires a valid user to execute the operation on behalf. Auth info was found on the request but the system does not support this type of authentication
       - authentication_methodNotSupported
+      # A the user can not execute the operation on the protected resource. This error code is not telling anything about the specific resource, it's just generic.
+      - authorization_noPermission
       # One of the request parameters/arguments were sent in a format which is not the expected one. For example we were expected a Boolean value like "true" but we received maybe "abc" - which can not be converted into a boolean
       - requestParameter_wrongFormat
       # One of the mandatory request parameters/arguments was missing
@@ -123,12 +125,20 @@ components:
       - resourceVersion_mismatch
       # There are certain processes / flows which require confirmation via e-mail. In these cases sending out the confirm email successfully is crucial part of the process. If this fails then this error code is raised because Keytiles knows exactly the process can not be finished for sure.
       - mandatoryEmailSending_failed
+      # For RPC style endpoints where request comes as body. We received wrong format like YAML however expecting JSON.
+      - requestData_wrongFormat
+      # For RPC style endpoints where request comes as body. One of the mandatory req data was missing.
+      - requestData_missing
+      # For RPC style endpoints where request comes as body. Data is supposed to be either one of some predefined values (typically an Enum or similar), or something which requires a specific format for example and email address or similar - but something else has arrived which is therefore not supported / understood by the endpoint
+      - requestData_invalid
+      # For RPC style endpoints where request comes as body. One of the req data is not supported by this endpoint
+      - requestData_not_supported
+      # For RPC style endpoints where request comes as body. There is data in the request which are contradicting with each other
+      - requestData_contradicting
       # There are queries where user can limit how much records he wants - when that limit is exceeded this can be added as warning
       - query_limit_reached
       # This might come if in the request client is using a field which is already deprecated
       - field_deprecated
-      # In some situations server might realize we got contradicting data
-      - data_contradictingRequest
       # To fulfill the API call it depends on another service/resource (e.g. another API or persistence) - which it seems currently not available. In general client should retry the request later.
       - underlying_resource_unavailable
 
@@ -202,6 +212,11 @@ components:
           nullable: true
           default: []
           description: 'List of errors/warnings'
+        vars:
+          nullable: true
+          type: object
+          description: Extra data (variables) the endpoint wants to return for programmatic processing.
+          additionalProperties: true
 
 
     MessageResponseClass:

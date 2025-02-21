@@ -51,6 +51,7 @@ public enum StatApiEndpointErrorCodes {
   AUTHENTICATION_USERDISABLED("authentication_userDisabled"),
   AUTHENTICATION_BASE64DECODEFAILED("authentication_base64DecodeFailed"),
   AUTHENTICATION_METHODNOTSUPPORTED("authentication_methodNotSupported"),
+  AUTHORIZATION_NOPERMISSION("authorization_noPermission"),
   REQUESTPARAMETER_WRONGFORMAT("requestParameter_wrongFormat"),
   REQUESTPARAMETER_MISSING("requestParameter_missing"),
   REQUESTPARAMETER_INVALID("requestParameter_invalid"),
@@ -67,9 +68,13 @@ public enum StatApiEndpointErrorCodes {
   RESOURCEDATA_CONFLICT("resourceData_conflict"),
   RESOURCEVERSION_MISMATCH("resourceVersion_mismatch"),
   MANDATORYEMAILSENDING_FAILED("mandatoryEmailSending_failed"),
+  REQUESTDATA_WRONGFORMAT("requestData_wrongFormat"),
+  REQUESTDATA_MISSING("requestData_missing"),
+  REQUESTDATA_INVALID("requestData_invalid"),
+  REQUESTDATA_NOT_SUPPORTED("requestData_not_supported"),
+  REQUESTDATA_CONTRADICTING("requestData_contradicting"),
   QUERY_LIMIT_REACHED("query_limit_reached"),
   FIELD_DEPRECATED("field_deprecated"),
-  DATA_CONTRADICTINGREQUEST("data_contradictingRequest"),
   UNDERLYING_RESOURCE_UNAVAILABLE("underlying_resource_unavailable");
 
   private String value;

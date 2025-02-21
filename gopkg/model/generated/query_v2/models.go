@@ -23,10 +23,10 @@ const (
 	StatApiEndpointErrorCodesAuthenticationMethodNotSupported StatApiEndpointErrorCodes = "authentication_methodNotSupported"
 	StatApiEndpointErrorCodesAuthenticationMissing            StatApiEndpointErrorCodes = "authentication_missing"
 	StatApiEndpointErrorCodesAuthenticationUserDisabled       StatApiEndpointErrorCodes = "authentication_userDisabled"
+	StatApiEndpointErrorCodesAuthorizationNoPermission        StatApiEndpointErrorCodes = "authorization_noPermission"
 	StatApiEndpointErrorCodesContainerIdInvalid               StatApiEndpointErrorCodes = "containerId_invalid"
 	StatApiEndpointErrorCodesContainerIdMissing               StatApiEndpointErrorCodes = "containerId_missing"
 	StatApiEndpointErrorCodesContainerSetupInvalid            StatApiEndpointErrorCodes = "containerSetup_invalid"
-	StatApiEndpointErrorCodesDataContradictingRequest         StatApiEndpointErrorCodes = "data_contradictingRequest"
 	StatApiEndpointErrorCodesFieldDeprecated                  StatApiEndpointErrorCodes = "field_deprecated"
 	StatApiEndpointErrorCodesFilterNotSupported               StatApiEndpointErrorCodes = "filter_not_supported"
 	StatApiEndpointErrorCodesGroupByEventTypeNotSet           StatApiEndpointErrorCodes = "groupBy_eventType_not_set"
@@ -38,6 +38,11 @@ const (
 	StatApiEndpointErrorCodesQueryRangeFromExtended           StatApiEndpointErrorCodes = "queryRange_from_extended"
 	StatApiEndpointErrorCodesQueryRangeToCorrected            StatApiEndpointErrorCodes = "queryRange_to_corrected"
 	StatApiEndpointErrorCodesQueryRangeToExtended             StatApiEndpointErrorCodes = "queryRange_to_extended"
+	StatApiEndpointErrorCodesRequestDataContradicting         StatApiEndpointErrorCodes = "requestData_contradicting"
+	StatApiEndpointErrorCodesRequestDataInvalid               StatApiEndpointErrorCodes = "requestData_invalid"
+	StatApiEndpointErrorCodesRequestDataMissing               StatApiEndpointErrorCodes = "requestData_missing"
+	StatApiEndpointErrorCodesRequestDataNotSupported          StatApiEndpointErrorCodes = "requestData_not_supported"
+	StatApiEndpointErrorCodesRequestDataWrongFormat           StatApiEndpointErrorCodes = "requestData_wrongFormat"
 	StatApiEndpointErrorCodesRequestParameterConflict         StatApiEndpointErrorCodes = "requestParameter_conflict"
 	StatApiEndpointErrorCodesRequestParameterContradicting    StatApiEndpointErrorCodes = "requestParameter_contradicting"
 	StatApiEndpointErrorCodesRequestParameterInvalid          StatApiEndpointErrorCodes = "requestParameter_invalid"
@@ -54,6 +59,7 @@ const (
 	StatApiEndpointErrorCodesResourceDataWrongFormat          StatApiEndpointErrorCodes = "resourceData_wrongFormat"
 	StatApiEndpointErrorCodesResourceVersionMismatch          StatApiEndpointErrorCodes = "resourceVersion_mismatch"
 	StatApiEndpointErrorCodesSortingColumnNotInInterest       StatApiEndpointErrorCodes = "sorting_column_not_in_interest"
+	StatApiEndpointErrorCodesUnderlyingResourceUnavailable    StatApiEndpointErrorCodes = "underlying_resource_unavailable"
 	StatApiEndpointErrorCodesUrlInvalid                       StatApiEndpointErrorCodes = "url_invalid"
 )
 
@@ -147,6 +153,9 @@ type EventCountersResponseClass struct {
 	//
 	// Possible counter columns are the following:
 	ResultColumns *EventCountersHeaderClass `json:"resultColumns,omitempty" yaml:"resultColumns,omitempty"`
+
+	// Vars Extra data (variables) the endpoint wants to return for programmatic processing.
+	Vars *map[string]interface{} `json:"vars" yaml:"vars"`
 }
 
 // GetIdMappingsResponseClass defines model for GetIdMappingsResponseClass.
@@ -184,7 +193,10 @@ type GetIdMappingsResponseClass struct {
 	TileTypes            *[]MappingRecordClass `json:"tileTypes" yaml:"tileTypes"`
 	TrafficSourceNames   *[]MappingRecordClass `json:"trafficSourceNames" yaml:"trafficSourceNames"`
 	UserAgentTypes       *[]MappingRecordClass `json:"userAgentTypes" yaml:"userAgentTypes"`
-	VisitorTypes         *[]MappingRecordClass `json:"visitorTypes" yaml:"visitorTypes"`
+
+	// Vars Extra data (variables) the endpoint wants to return for programmatic processing.
+	Vars         *map[string]interface{} `json:"vars" yaml:"vars"`
+	VisitorTypes *[]MappingRecordClass   `json:"visitorTypes" yaml:"visitorTypes"`
 }
 
 // GetTilesResponseClass defines model for GetTilesResponseClass.
@@ -202,6 +214,9 @@ type GetTilesResponseClass struct {
 
 	// Tiles Containes Tile details. This is a map. Keys are tileIds.
 	Tiles *map[string]TileDataClass `json:"tiles,omitempty" yaml:"tiles,omitempty"`
+
+	// Vars Extra data (variables) the endpoint wants to return for programmatic processing.
+	Vars *map[string]interface{} `json:"vars" yaml:"vars"`
 }
 
 // IntIdToStrMappingClass To save lots of space Keytiles maps Strings to unique Integers (acting as IDs) - this way can return counter rows  as just Integer arrays. Of course to make it readable again you need the reverse mapping: which Integer encodes which Strings? This is this mapping.
@@ -399,6 +414,9 @@ type TileEventCountersResponseClass struct {
 
 	// Tiles Containes Tile counters and Tile details. This is a map. Keys are tileIds.
 	Tiles *map[string]TileClass `json:"tiles,omitempty" yaml:"tiles,omitempty"`
+
+	// Vars Extra data (variables) the endpoint wants to return for programmatic processing.
+	Vars *map[string]interface{} `json:"vars" yaml:"vars"`
 }
 
 // TileGroupPathClass defines model for TileGroupPathClass.

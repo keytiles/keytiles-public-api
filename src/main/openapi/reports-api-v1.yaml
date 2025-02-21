@@ -334,12 +334,12 @@ components:
       - $ref: "common-types-v2.yaml#/components/schemas/ContainerResponseClass"
       type: object
       properties:
-        reportSetups:
+        reportSetupIds:
           type: array
           items:
-            $ref: '#/components/schemas/ReportSetup'
+            type: string
           nullable: false
-          description: 'All avaiable report setup.'
+          description: 'All avaiable report setup IDs.'
 
 
     ReportRecipientsRoles:

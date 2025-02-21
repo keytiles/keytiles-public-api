@@ -31,6 +31,7 @@ const (
 	ManagementEndpointErrorCodesAuthenticationMethodNotSupported ManagementEndpointErrorCodes = "authentication_methodNotSupported"
 	ManagementEndpointErrorCodesAuthenticationMissing            ManagementEndpointErrorCodes = "authentication_missing"
 	ManagementEndpointErrorCodesAuthenticationUserDisabled       ManagementEndpointErrorCodes = "authentication_userDisabled"
+	ManagementEndpointErrorCodesAuthorizationNoPermission        ManagementEndpointErrorCodes = "authorization_noPermission"
 	ManagementEndpointErrorCodesContainerDataAdminMissing        ManagementEndpointErrorCodes = "containerData_admin_missing"
 	ManagementEndpointErrorCodesContainerDataFinanceMissing      ManagementEndpointErrorCodes = "containerData_finance_missing"
 	ManagementEndpointErrorCodesContainerDataInvalid             ManagementEndpointErrorCodes = "containerData_invalid"
@@ -38,7 +39,6 @@ const (
 	ManagementEndpointErrorCodesContainerDataMissing             ManagementEndpointErrorCodes = "containerData_missing"
 	ManagementEndpointErrorCodesContainerIdInvalid               ManagementEndpointErrorCodes = "containerId_invalid"
 	ManagementEndpointErrorCodesContainerIdMissing               ManagementEndpointErrorCodes = "containerId_missing"
-	ManagementEndpointErrorCodesDataContradictingRequest         ManagementEndpointErrorCodes = "data_contradictingRequest"
 	ManagementEndpointErrorCodesFieldDeprecated                  ManagementEndpointErrorCodes = "field_deprecated"
 	ManagementEndpointErrorCodesKeyInvalid                       ManagementEndpointErrorCodes = "key_invalid"
 	ManagementEndpointErrorCodesKeyMissing                       ManagementEndpointErrorCodes = "key_missing"
@@ -52,6 +52,11 @@ const (
 	ManagementEndpointErrorCodesQueryRangeFromCorrected          ManagementEndpointErrorCodes = "queryRange_from_corrected"
 	ManagementEndpointErrorCodesQueryRangeToCorrected            ManagementEndpointErrorCodes = "queryRange_to_corrected"
 	ManagementEndpointErrorCodesReadonlyFieldChanged             ManagementEndpointErrorCodes = "readonlyField_changed"
+	ManagementEndpointErrorCodesRequestDataContradicting         ManagementEndpointErrorCodes = "requestData_contradicting"
+	ManagementEndpointErrorCodesRequestDataInvalid               ManagementEndpointErrorCodes = "requestData_invalid"
+	ManagementEndpointErrorCodesRequestDataMissing               ManagementEndpointErrorCodes = "requestData_missing"
+	ManagementEndpointErrorCodesRequestDataNotSupported          ManagementEndpointErrorCodes = "requestData_not_supported"
+	ManagementEndpointErrorCodesRequestDataWrongFormat           ManagementEndpointErrorCodes = "requestData_wrongFormat"
 	ManagementEndpointErrorCodesRequestParameterConflict         ManagementEndpointErrorCodes = "requestParameter_conflict"
 	ManagementEndpointErrorCodesRequestParameterContradicting    ManagementEndpointErrorCodes = "requestParameter_contradicting"
 	ManagementEndpointErrorCodesRequestParameterInvalid          ManagementEndpointErrorCodes = "requestParameter_invalid"
@@ -68,6 +73,7 @@ const (
 	ManagementEndpointErrorCodesResourceDataPointless            ManagementEndpointErrorCodes = "resourceData_pointless"
 	ManagementEndpointErrorCodesResourceDataWrongFormat          ManagementEndpointErrorCodes = "resourceData_wrongFormat"
 	ManagementEndpointErrorCodesResourceVersionMismatch          ManagementEndpointErrorCodes = "resourceVersion_mismatch"
+	ManagementEndpointErrorCodesUnderlyingResourceUnavailable    ManagementEndpointErrorCodes = "underlying_resource_unavailable"
 	ManagementEndpointErrorCodesUrlInvalid                       ManagementEndpointErrorCodes = "url_invalid"
 	ManagementEndpointErrorCodesUserDataEmailAlreadyTaken        ManagementEndpointErrorCodes = "userData_email_alreadyTaken"
 	ManagementEndpointErrorCodesUserDataEmailInvalid             ManagementEndpointErrorCodes = "userData_email_invalid"
@@ -277,6 +283,9 @@ type HitFaultReportResponse struct {
 
 	// RequestedToTimestamp In the request you requested data until this UNIX timestamp in UTC (seconds since Epoch)
 	RequestedToTimestamp int32 `json:"requestedToTimestamp" yaml:"requestedToTimestamp"`
+
+	// Vars Extra data (variables) the endpoint wants to return for programmatic processing.
+	Vars *map[string]interface{} `json:"vars" yaml:"vars"`
 }
 
 // HitFaultType defines model for HitFaultType.
@@ -295,6 +304,9 @@ type MachineReadableManagementEndpointMessageResponseClass struct {
 
 	// RequestReceivedAt The server time in UNIX timestamp in UTC (seconds since Epoch) when this response was received and processing was started
 	RequestReceivedAt int32 `json:"requestReceivedAt" yaml:"requestReceivedAt"`
+
+	// Vars Extra data (variables) the endpoint wants to return for programmatic processing.
+	Vars *map[string]interface{} `json:"vars" yaml:"vars"`
 }
 
 // ManagementEndpointErrorCodes defines model for ManagementEndpointErrorCodes.

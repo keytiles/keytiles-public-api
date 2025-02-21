@@ -44,13 +44,18 @@ const (
 	ReportsEndpointErrorCodesAuthenticationMethodNotSupported ReportsEndpointErrorCodes = "authentication_methodNotSupported"
 	ReportsEndpointErrorCodesAuthenticationMissing            ReportsEndpointErrorCodes = "authentication_missing"
 	ReportsEndpointErrorCodesAuthenticationUserDisabled       ReportsEndpointErrorCodes = "authentication_userDisabled"
+	ReportsEndpointErrorCodesAuthorizationNoPermission        ReportsEndpointErrorCodes = "authorization_noPermission"
 	ReportsEndpointErrorCodesContainerIdInvalid               ReportsEndpointErrorCodes = "containerId_invalid"
 	ReportsEndpointErrorCodesContainerIdMissing               ReportsEndpointErrorCodes = "containerId_missing"
-	ReportsEndpointErrorCodesDataContradictingRequest         ReportsEndpointErrorCodes = "data_contradictingRequest"
 	ReportsEndpointErrorCodesFieldDeprecated                  ReportsEndpointErrorCodes = "field_deprecated"
 	ReportsEndpointErrorCodesMandatoryEmailSendingFailed      ReportsEndpointErrorCodes = "mandatoryEmailSending_failed"
 	ReportsEndpointErrorCodesQueryLimitReached                ReportsEndpointErrorCodes = "query_limit_reached"
 	ReportsEndpointErrorCodesReportSetupIdInvalid             ReportsEndpointErrorCodes = "reportSetupId_invalid"
+	ReportsEndpointErrorCodesRequestDataContradicting         ReportsEndpointErrorCodes = "requestData_contradicting"
+	ReportsEndpointErrorCodesRequestDataInvalid               ReportsEndpointErrorCodes = "requestData_invalid"
+	ReportsEndpointErrorCodesRequestDataMissing               ReportsEndpointErrorCodes = "requestData_missing"
+	ReportsEndpointErrorCodesRequestDataNotSupported          ReportsEndpointErrorCodes = "requestData_not_supported"
+	ReportsEndpointErrorCodesRequestDataWrongFormat           ReportsEndpointErrorCodes = "requestData_wrongFormat"
 	ReportsEndpointErrorCodesRequestParameterConflict         ReportsEndpointErrorCodes = "requestParameter_conflict"
 	ReportsEndpointErrorCodesRequestParameterContradicting    ReportsEndpointErrorCodes = "requestParameter_contradicting"
 	ReportsEndpointErrorCodesRequestParameterInvalid          ReportsEndpointErrorCodes = "requestParameter_invalid"
@@ -66,6 +71,7 @@ const (
 	ReportsEndpointErrorCodesResourceDataPointless            ReportsEndpointErrorCodes = "resourceData_pointless"
 	ReportsEndpointErrorCodesResourceDataWrongFormat          ReportsEndpointErrorCodes = "resourceData_wrongFormat"
 	ReportsEndpointErrorCodesResourceVersionMismatch          ReportsEndpointErrorCodes = "resourceVersion_mismatch"
+	ReportsEndpointErrorCodesUnderlyingResourceUnavailable    ReportsEndpointErrorCodes = "underlying_resource_unavailable"
 	ReportsEndpointErrorCodesUrlInvalid                       ReportsEndpointErrorCodes = "url_invalid"
 )
 
@@ -98,6 +104,9 @@ type MachineReadableReportsEndpointMessageResponseClass struct {
 
 	// RequestReceivedAt The server time in UNIX timestamp in UTC (seconds since Epoch) when this response was received and processing was started
 	RequestReceivedAt int32 `json:"requestReceivedAt" yaml:"requestReceivedAt"`
+
+	// Vars Extra data (variables) the endpoint wants to return for programmatic processing.
+	Vars *map[string]interface{} `json:"vars" yaml:"vars"`
 }
 
 // ReportQuery A report can contain multiple queries. This object describes one query of those.
