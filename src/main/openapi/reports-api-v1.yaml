@@ -15,6 +15,8 @@ servers:
 tags:
 - name: Manage report setups
   description: Endpoints to create / modify / delete / change report setups.
+- name: Generate and Query reports
+  description: Endpoints to generate / query / manage concrete reports - instances of a report setup.
 
 paths:
 
@@ -38,7 +40,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GetContainerReportSetupsResponseClass'
+                $ref: '#/components/schemas/ListContainerReportSetupsResponseClass'
         '401':
           description: "Authentication failed - you provided invalid credentials or not at all"
           content:
@@ -264,6 +266,156 @@ paths:
               schema:
                 $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
 
+
+  '/v1/reports/containers/setup/rest/{containerId}/{reportSetupId}/instances':
+  
+    get:
+      summary: "To query (list) all availale report instance IDs of a given ReportSetup - available in the Data Container"
+      tags:
+      - Generate and Query reports
+      parameters:
+        - $ref: 'common-types-v2.yaml#/components/parameters/containerId'
+        - $ref: '#/components/parameters/reportSetupId'
+
+      security:
+      - basicAuth: []
+
+      responses:
+        '200':
+          description: "You receive the list of all report instance IDs."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListContainerReportInstancesResponseClass'
+        '401':
+          description: "Authentication failed - you provided invalid credentials"
+          content:
+            application/json:
+              schema:
+                #$ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
+                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+        '403':
+          description: "You do not have permission to do this with the given credentials"
+          content:
+            application/json:
+              schema:
+                #$ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
+                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+        '404':
+          description: "The container does not exist (or disabled) or the requested report setup does not exist - more details in the response!"
+          content:
+            application/json:
+              schema:
+                #$ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
+                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+
+    post:
+      summary: "To generate (create) a new report instance of this report setup."
+      description: >
+                When triggered manually then the report generation starts immediately. You can fine tune the report generation (mostly for testing purposes) - see request body!
+
+                Please note that a report generation might take time. 
+      tags:
+      - Generate and Query reports
+      parameters:
+        - $ref: 'common-types-v2.yaml#/components/parameters/containerId'
+        - $ref: '#/components/parameters/reportSetupId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenerateReportRequestClass'
+
+      security:
+      - basicAuth: []
+
+      responses:
+        '202':
+          description: > 
+                      The report generation is accepted and will take place soon. This might take for a while...
+                      
+                      An ID is immediately generated for this report instance. And **please note:** returned in response header!
+                      
+                      By knowing the ID you can query this report instance later.
+          headers:
+             'X-ReportInstanceId':
+              schema:
+                type: string
+              description: The ID of this new report instance
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+        '400':
+          description: "There were problems with the request or the resource you sent on this request - more details you get in the response."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+        '401':
+          description: "Authentication failed - you provided invalid credentials or not at all"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+        '403':
+          description: "You do not have permission to do this with the given credentials"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+        '404':
+          description: "The container does not exist (or disabled) or the requested report setup does not exist - more details in the response!"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+
+
+  '/v1/reports/containers/instance/rest/{containerId}/{reportInstanceId}':
+  
+    get:
+      summary: "To query a specific report instance with the given ID of the Data Container"
+      tags:
+      - Generate and Query reports
+      parameters:
+        - $ref: 'common-types-v2.yaml#/components/parameters/containerId'
+        - $ref: '#/components/parameters/reportInstanceId'
+
+      security:
+      - basicAuth: []
+
+      responses:
+        '200':
+          description: "Returns the generated report instance."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetContainerReportInstanceResponseClass'
+        '401':
+          description: "Authentication failed - you provided invalid credentials"
+          content:
+            application/json:
+              schema:
+                #$ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
+                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+        '403':
+          description: "You do not have permission to do this with the given credentials"
+          content:
+            application/json:
+              schema:
+                #$ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
+                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+        '404':
+          description: "The container does not exist (or disabled) or the requested report instance does not exist - more details in the response!"
+          content:
+            application/json:
+              schema:
+                #$ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
+                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+
+
+
 components:
 
   parameters:
@@ -271,7 +423,14 @@ components:
       name: reportSetupId
       in: path
       required: true
-      description: 'ID of the report setup belongs to a Data Container'
+      description: 'ID of the report setup belongs to the Data Container'
+      schema:
+        type: string
+    reportInstanceId:
+      name: reportInstanceId
+      in: path
+      required: true
+      description: 'ID of a specific (generated) report instance belongs to the Data Container'
       schema:
         type: string
     
@@ -329,7 +488,7 @@ components:
             description: 'List of errors/warnings'
 
 
-    GetContainerReportSetupsResponseClass:
+    ListContainerReportSetupsResponseClass:
       allOf:
       - $ref: "common-types-v2.yaml#/components/schemas/ContainerResponseClass"
       type: object
@@ -339,7 +498,16 @@ components:
           items:
             type: string
           nullable: false
+          example: ["reportSetupId"]
           description: 'All avaiable report setup IDs.'
+
+    GetContainerReportSetupResponseClass:
+      allOf:
+      - $ref: "common-types-v2.yaml#/components/schemas/ContainerResponseClass"
+      type: object
+      properties:
+        reportSetup:
+          $ref: '#/components/schemas/ReportSetup'
 
 
     ReportRecipientsRoles:
@@ -378,6 +546,7 @@ components:
       - socialPerformancePlugin
       - linksPerformancePlugin
       - tagsPerformancePlugin
+      - visitorBehaviorPlugin
 
 
     ReportQuery:
@@ -393,6 +562,9 @@ components:
         metaData:
           description: Title, description - of this query of the report.
           $ref: 'common-metadata-v1.yaml#/components/schemas/MetaData'
+        isDisabled:
+          type: boolean
+          description: It is possible to temporarily disable a query. This way you do not lose its setup, so you can re-enable it later again.
         plugin:
           description: Which query plugin to use for this query? Each plugin provides different possibilities.
           $ref: "#/components/schemas/ReportQueryPlugin"
@@ -428,14 +600,6 @@ components:
                           If set to TRUE then you get a break-down on Tile level - otherwise just sum of the traffic of all Tiles.
               type: boolean
               default: false
-            tileCountLimit:
-              description: >
-                          How many tiles you want to display maximum? Only makes sense if 'groupByTiles=true'. Using the 'performanceDescendingOrder' basically you can see the top performing ones, or the worst performing ones - up to you.
-              type: integer
-              default: 50
-            performanceDescendingOrder:
-              type: boolean
-              default: true
             groupByTileGroupPaths:
               description: >
                           If set to TRUE then you get a break-down based on content structure (=tileGroupPath). Can not be used together with 'groupByTiles'!
@@ -445,6 +609,21 @@ components:
               description: >
                           You can limit how deep you want the report to go down in the content structure. E.g. if you set it to 1 that means you get a break down only for first level.
               type: integer
+
+            limit:
+              description: >
+                          Optional param. How many rows you want to display maximum? Only makes sense if 'groupByTiles=true' or 'groupByTileGroupPaths=true'. Using the 'performanceDescendingOrder' basically you can see the top performing ones, or the worst performing ones - up to you.
+              type: integer
+            sortBy:
+              description: >
+                          Sort the list based on these "eventsIncluded"
+              type: array
+              items:
+                type: string
+            performanceDescendingOrder:
+              type: boolean
+              default: true
+
 
             tileTypesOnly:
               type: string
@@ -524,3 +703,162 @@ components:
         resourceVersion:
           type: integer
           description: This is the resource version (which is automatically incremented by every change). When you do an update (PUT) you need to send it back! The server will check if it is matching with the resource version he has. If not then that means someone else already did an update in the meantime therefore your request can not be accepted - otherwise you may overwrite the changes someone did.
+
+
+
+    DataTableDataColumn:
+      type: object
+      properties:
+        label:
+          type: string
+        collapseFunction:
+          type: string
+
+    DataTableAxisColumn:
+      type: object
+      properties:
+        label:
+          type: string
+
+    DataTableCell:
+      oneOf:
+      - type: string
+      - type: number
+
+    DataTableRow:
+      type: array
+      items:
+        $ref: '#/components/schemas/DataTableCell'
+
+    DataTable:
+      type: object
+      description: DataTable is the output of queries - a self contained table of data with Axis columns (optional) and >1 Data columns. Plus of course the data rows.
+      properties:
+        axisColumns:
+          type: array
+          items:
+            $ref: '#/components/schemas/DataTableAxisColumn'
+        dataColumns:
+          type: array
+          items:
+            $ref: '#/components/schemas/DataTableDataColumn'
+        rows:
+          type: array
+          $ref: '#/components/schemas/DataTableRow'
+
+
+    ReportInstanceSection:
+      type: object
+      properties:
+        title:
+          description: The title of this section - copied from the ReportSetup appropriate Query part which produced this section when this instance was generated.
+          type: string
+        description:
+          description: This is a longer description of this section - copied from the ReportSetup appropriate Query part which produced this section when this instance was generated.
+          type: string
+        dataTables:
+          type: array
+          items:
+            $ref: '#/components/schemas/DataTable'
+
+    ReportInstance:
+      type: object
+      description: >
+                  This is a specific instance of a ReportSetup which was generated at a certain point in time. Keytiles stores these reports for a while.
+
+                  A report instance consists of sections - each section is generated by a query.
+      properties:
+        id:
+          type: string
+          description: The unique ID of this report setup - UUID style
+        parentReportSetupId:
+          type: string
+          description: The ID of the ReportSetup this instance belongs to.
+        createdAt:
+          type: integer
+          format: int32
+          description: "The server time in UNIX timestamp in UTC (seconds since Epoch) when this instance was created"
+          example: 1543355710
+        isTestOnly:
+          type: boolean
+          description: Tells if this report instance is a result of a test generation only or not.
+        generatorUserId:
+          type: string
+          description: In case the report generation was triggered manually by someone then this field contains the ID of the user triggered the generation.
+          nullable: true
+        generatorUserNickname:
+          type: string
+          description: In case the report generation was triggered manually by someone then this field contains the Nickname of the user triggered the generation.
+          nullable: true
+        title:
+          description: The title of the report - copied from the ReportSetup metaData when this instance was generated.
+          type: string
+        description:
+          description: This is a longer description of the report - copied from the ReportSetup metaData when this instance was generated.
+          type: string
+        sections:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReportInstanceSection'
+
+    AvailableReportInstance:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "reportInstanceId"
+        createdAt:
+          type: integer
+          format: int32
+          description: "The server time in UNIX timestamp in UTC (seconds since Epoch) when this instance was created"
+          example: 1543355710
+        
+    ListContainerReportInstancesResponseClass:
+      allOf:
+      - $ref: "common-types-v2.yaml#/components/schemas/ContainerResponseClass"
+      type: object
+      properties:
+        ofReportSetupId:
+          type: string
+          description: Report instances belong to this report setup.
+        availableInstances:
+          type: array
+          items:
+            $ref: '#/components/schemas/AvailableReportInstance'
+          nullable: false
+          description: 'All available report instances - ordered by creation timestamp descending'
+
+    GetContainerReportInstanceResponseClass:
+      allOf:
+      - $ref: "common-types-v2.yaml#/components/schemas/ContainerResponseClass"
+      type: object
+      properties:
+        reportInstance:
+          $ref: '#/components/schemas/ReportInstance'
+
+    GenerateReportRequestClass:
+      type: object
+      properties:
+        isTestOnly:
+          type: boolean
+          description: >
+                      Set it to TRUE if you just want to test the report generation.
+                      
+                      In this case the recipients (if set in report setup) will not be notified about this report at all. And only the user who generated it will receive a notification when
+                      report is ready to view. But apart from this the full report will be generated.
+        executeQueryIdsOnly:
+          type: array
+          items:
+            type: string
+          description: >
+                      A report might contain multiple ReportQuery parts, all of them has its unique ID within the report.
+                      
+                      It is possible to generate only specific queries instead of the full report - by providing a list of those ReportQuery IDs here.
+
+                      **BUT** if you do this, then this also sets 'isTestOnly' to TRUE! So the generated ReportInstance considered to be a test only.
+        skipNotifications:
+          type: boolean
+          description: > 
+                      If this is set to TRUE then recipients will not receive any notification from Keytiles when this Report Instance is created.
+
+                      **IMPORTANT!** Use this with caution! This option was introduced mostly because of internal reasons under certain circumstances.
