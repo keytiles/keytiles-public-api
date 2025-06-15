@@ -414,6 +414,46 @@ paths:
                 #$ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
                 $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
 
+    delete:
+      summary: "To permanently delete a specific report instance - after this this report is not available anymore."
+      tags:
+      - Generate and Query reports
+      parameters:
+        - $ref: 'common-types-v2.yaml#/components/parameters/containerId'
+        - $ref: '#/components/parameters/reportInstanceId'
+
+      security:
+      - basicAuth: []
+
+      responses:
+        '200':
+          description: "The report instance was deleted successfully"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+        '401':
+          description: "Authentication failed - you provided invalid credentials"
+          content:
+            application/json:
+              schema:
+                #$ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
+                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+        '403':
+          description: "You do not have permission to do this with the given credentials"
+          content:
+            application/json:
+              schema:
+                #$ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
+                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+        '404':
+          description: "The container does not exist (or disabled) or the requested report instance does not exist - more details in the response!"
+          content:
+            application/json:
+              schema:
+                #$ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
+                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'                
+
 
 
 components:
@@ -812,6 +852,9 @@ components:
           format: int32
           description: "The server time in UNIX timestamp in UTC (seconds since Epoch) when this instance was created"
           example: 1543355710
+        isTestOnly:
+          type: boolean
+          description: "Tells if this report instance is marked as 'test only' or not."
         
     ListContainerReportInstancesResponseClass:
       allOf:
