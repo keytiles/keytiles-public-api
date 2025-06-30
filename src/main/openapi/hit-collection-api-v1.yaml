@@ -11,7 +11,7 @@ info:
               Developer area and learn more!  
                 
               check [https://keytiles.com/developer-area/sending-in-traffic-from-ios-android-etc-apps](https://keytiles.com/developer-area/sending-in-traffic-from-ios-android-etc-apps)
-  version: 1.5.0
+  version: 1.6.0
   
 servers:
 - url: https://api.keytiles.com/api
@@ -492,7 +492,7 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/HitCollectionEndpointProblemClass'
-            nullable: false
+            nullable: true
             default: []
             description: 'List of errors/warnings'
 

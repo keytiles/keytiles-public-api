@@ -19,6 +19,7 @@ components:
     Schedule:
       description: 'Describes a Schedule of something. As of now you have basically 4 types: hourly, daily, weekly and Monthly schedules.'
       type: object
+      nullable: true
       required:
         - type
         - setup

@@ -297,7 +297,7 @@ type MachineReadableManagementEndpointMessageResponseClass struct {
 	Message *string `json:"message,omitempty" yaml:"message,omitempty"`
 
 	// Problems List of errors/warnings
-	Problems *[]ManagementEndpointProblemClass `json:"problems,omitempty" yaml:"problems,omitempty"`
+	Problems *[]ManagementEndpointProblemClass `json:"problems" yaml:"problems"`
 
 	// ProcessingTookMillis Number of milliseconds the processing took on server side
 	ProcessingTookMillis *int32 `json:"processingTookMillis" yaml:"processingTookMillis"`

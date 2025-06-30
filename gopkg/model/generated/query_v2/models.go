@@ -120,7 +120,7 @@ type EventCountersResponseClass struct {
 	// AggregatedCounterRows These are the rows of the data - each row represented by an array of Integer values.
 	//
 	// In rows the number of columns and the index of each colum is identical to the description you find in `/resultColumns` entry!
-	AggregatedCounterRows *[][]int64                  `json:"aggregatedCounterRows,omitempty" yaml:"aggregatedCounterRows,omitempty"`
+	AggregatedCounterRows *[][]int64                               `json:"aggregatedCounterRows,omitempty" yaml:"aggregatedCounterRows,omitempty"`
 	Container             *externalRef0.ResponseContainerInfoClass `json:"container" yaml:"container"`
 
 	// DataFromTimestamp This response contains data starting by this UNIX timestamp in UTC (seconds since Epoch) - will be always rounded to at least minutes or even more (see section "Interval of your interest" above!)
@@ -160,9 +160,9 @@ type EventCountersResponseClass struct {
 
 // GetIdMappingsResponseClass defines model for GetIdMappingsResponseClass.
 type GetIdMappingsResponseClass struct {
-	CampaignContents *[]MappingRecordClass       `json:"campaignContents" yaml:"campaignContents"`
-	CampaignMediums  *[]MappingRecordClass       `json:"campaignMediums" yaml:"campaignMediums"`
-	Campaigns        *[]MappingRecordClass       `json:"campaigns" yaml:"campaigns"`
+	CampaignContents *[]MappingRecordClass                    `json:"campaignContents" yaml:"campaignContents"`
+	CampaignMediums  *[]MappingRecordClass                    `json:"campaignMediums" yaml:"campaignMediums"`
+	Campaigns        *[]MappingRecordClass                    `json:"campaigns" yaml:"campaigns"`
 	Container        *externalRef0.ResponseContainerInfoClass `json:"container" yaml:"container"`
 
 	// DataFromTimestamp This response contains data starting by this UNIX timestamp in UTC (seconds since Epoch) - will be always rounded to at least minutes or even more (see section "Interval of your interest" above!)
@@ -378,7 +378,7 @@ type TileEventCountersResponseClass struct {
 	// AggregatedCounterRows These are the rows of the data - each row represented by an array of Integer values.
 	//
 	// In rows the number of columns and the index of each colum is identical to the description you find in `/resultColumns` entry!
-	AggregatedCounterRows *[][]int64                  `json:"aggregatedCounterRows,omitempty" yaml:"aggregatedCounterRows,omitempty"`
+	AggregatedCounterRows *[][]int64                               `json:"aggregatedCounterRows,omitempty" yaml:"aggregatedCounterRows,omitempty"`
 	Container             *externalRef0.ResponseContainerInfoClass `json:"container" yaml:"container"`
 
 	// DataFromTimestamp This response contains data starting by this UNIX timestamp in UTC (seconds since Epoch) - will be always rounded to at least minutes or even more (see section "Interval of your interest" above!)

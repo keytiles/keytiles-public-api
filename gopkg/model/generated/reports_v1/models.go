@@ -23,6 +23,7 @@ const (
 	LinksPerformancePlugin    ReportQueryPlugin = "linksPerformancePlugin"
 	SocialPerformancePlugin   ReportQueryPlugin = "socialPerformancePlugin"
 	TagsPerformancePlugin     ReportQueryPlugin = "tagsPerformancePlugin"
+	VisitorBehaviorPlugin     ReportQueryPlugin = "visitorBehaviorPlugin"
 )
 
 // Defines values for ReportRecipientsRoles.
@@ -88,8 +89,80 @@ const (
 	Warning ReportsEndpointProblemClassSeverity = "warning"
 )
 
-// GetContainerReportSetupsResponseClass defines model for GetContainerReportSetupsResponseClass.
-type GetContainerReportSetupsResponseClass = externalRef2.ContainerResponseClass
+// AvailableReportInstance defines model for AvailableReportInstance.
+type AvailableReportInstance struct {
+	// CreatedAt The server time in UNIX timestamp in UTC (seconds since Epoch) when this instance was created
+	CreatedAt *int32  `json:"createdAt,omitempty" yaml:"createdAt,omitempty"`
+	Id        *string `json:"id,omitempty" yaml:"id,omitempty"`
+
+	// IsTestOnly Tells if this report instance is marked as 'test only' or not.
+	IsTestOnly *bool `json:"isTestOnly,omitempty" yaml:"isTestOnly,omitempty"`
+}
+
+// DataTable DataTable is the output of queries - a self contained table of data with Axis columns (optional) and >1 Data columns. Plus of course the data rows.
+type DataTable struct {
+	// Columns List of "Axis" columns. Order in array is important as the index of the entry tells the position.
+	Columns []DataTableColumn `json:"columns" yaml:"columns"`
+	Rows    *[]DataTableRow   `json:"rows,omitempty" yaml:"rows,omitempty"`
+}
+
+// DataTableAxisColumn defines model for DataTableAxisColumn.
+type DataTableAxisColumn struct {
+	Label *string `json:"label,omitempty" yaml:"label,omitempty"`
+}
+
+// DataTableCell defines model for DataTableCell.
+type DataTableCell struct {
+	union json.RawMessage
+}
+
+// DataTableCell0 defines model for .
+type DataTableCell0 = string
+
+// DataTableCell1 defines model for .
+type DataTableCell1 = float32
+
+// DataTableColumn defines model for DataTableColumn.
+type DataTableColumn struct {
+	union json.RawMessage
+}
+
+// DataTableDataColumn defines model for DataTableDataColumn.
+type DataTableDataColumn struct {
+	CollapseFunction *string `json:"collapseFunction,omitempty" yaml:"collapseFunction,omitempty"`
+	Label            *string `json:"label,omitempty" yaml:"label,omitempty"`
+}
+
+// DataTableRow defines model for DataTableRow.
+type DataTableRow = []DataTableCell
+
+// GenerateReportRequestClass defines model for GenerateReportRequestClass.
+type GenerateReportRequestClass struct {
+	// ExecuteQueryIdsOnly A report might contain multiple ReportQuery parts, all of them has its unique ID within the report.
+	// It is possible to generate only specific queries instead of the full report - by providing a list of those ReportQuery IDs here.
+	// **BUT** if you do this, then this also sets 'isTestOnly' to TRUE! So the generated ReportInstance considered to be a test only.
+	ExecuteQueryIdsOnly *[]string `json:"executeQueryIdsOnly,omitempty" yaml:"executeQueryIdsOnly,omitempty"`
+
+	// IsTestOnly Set it to TRUE if you just want to test the report generation.
+	// In this case the recipients (if set in report setup) will not be notified about this report at all. And only the user who generated it will receive a notification when report is ready to view. But apart from this the full report will be generated.
+	IsTestOnly *bool `json:"isTestOnly,omitempty" yaml:"isTestOnly,omitempty"`
+
+	// SkipNotifications If this is set to TRUE then recipients will not receive any notification from Keytiles when this Report Instance is created.
+	// **IMPORTANT!** Use this with caution! This option was introduced mostly because of internal reasons under certain circumstances.
+	SkipNotifications *bool `json:"skipNotifications,omitempty" yaml:"skipNotifications,omitempty"`
+}
+
+// GetContainerReportInstanceResponseClass defines model for GetContainerReportInstanceResponseClass.
+type GetContainerReportInstanceResponseClass = externalRef2.ContainerResponseClass
+
+// GetContainerReportSetupResponseClass defines model for GetContainerReportSetupResponseClass.
+type GetContainerReportSetupResponseClass = externalRef2.ContainerResponseClass
+
+// ListContainerReportInstancesResponseClass defines model for ListContainerReportInstancesResponseClass.
+type ListContainerReportInstancesResponseClass = externalRef2.ContainerResponseClass
+
+// ListContainerReportSetupsResponseClass defines model for ListContainerReportSetupsResponseClass.
+type ListContainerReportSetupsResponseClass = externalRef2.ContainerResponseClass
 
 // MachineReadableReportsEndpointMessageResponseClass defines model for MachineReadableReportsEndpointMessageResponseClass.
 type MachineReadableReportsEndpointMessageResponseClass struct {
@@ -97,7 +170,7 @@ type MachineReadableReportsEndpointMessageResponseClass struct {
 	Message *string `json:"message,omitempty" yaml:"message,omitempty"`
 
 	// Problems List of errors/warnings
-	Problems *[]ReportsEndpointProblemClass `json:"problems,omitempty" yaml:"problems,omitempty"`
+	Problems *[]ReportsEndpointProblemClass `json:"problems" yaml:"problems"`
 
 	// ProcessingTookMillis Number of milliseconds the processing took on server side
 	ProcessingTookMillis *int32 `json:"processingTookMillis" yaml:"processingTookMillis"`
@@ -109,11 +182,54 @@ type MachineReadableReportsEndpointMessageResponseClass struct {
 	Vars *map[string]interface{} `json:"vars" yaml:"vars"`
 }
 
+// ReportInstance This is a specific instance of a ReportSetup which was generated at a certain point in time. Keytiles stores these reports for a while.
+// A report instance consists of sections - each section is generated by a query.
+type ReportInstance struct {
+	// CreatedAt The server time in UNIX timestamp in UTC (seconds since Epoch) when this instance was created
+	CreatedAt *int32 `json:"createdAt,omitempty" yaml:"createdAt,omitempty"`
+
+	// Description This is a longer description of the report - copied from the ReportSetup metaData when this instance was generated.
+	Description *string `json:"description" yaml:"description"`
+
+	// GeneratorUserId In case the report generation was triggered manually by someone then this field contains the ID of the user triggered the generation.
+	GeneratorUserId *string `json:"generatorUserId" yaml:"generatorUserId"`
+
+	// GeneratorUserNickname In case the report generation was triggered manually by someone then this field contains the Nickname of the user triggered the generation.
+	GeneratorUserNickname *string `json:"generatorUserNickname" yaml:"generatorUserNickname"`
+
+	// Id The unique ID of this report setup - UUID style
+	Id *string `json:"id,omitempty" yaml:"id,omitempty"`
+
+	// IsTestOnly Tells if this report instance is a result of a test generation only or not.
+	IsTestOnly *bool `json:"isTestOnly,omitempty" yaml:"isTestOnly,omitempty"`
+
+	// ParentReportSetupId The ID of the ReportSetup this instance belongs to.
+	ParentReportSetupId *string                  `json:"parentReportSetupId,omitempty" yaml:"parentReportSetupId,omitempty"`
+	Sections            *[]ReportInstanceSection `json:"sections,omitempty" yaml:"sections,omitempty"`
+
+	// Title The title of the report - copied from the ReportSetup metaData when this instance was generated.
+	Title *string `json:"title,omitempty" yaml:"title,omitempty"`
+}
+
+// ReportInstanceSection defines model for ReportInstanceSection.
+type ReportInstanceSection struct {
+	DataTables *[]DataTable `json:"dataTables,omitempty" yaml:"dataTables,omitempty"`
+
+	// Description This is a longer description of this section - copied from the ReportSetup appropriate Query part which produced this section when this instance was generated.
+	Description *string `json:"description,omitempty" yaml:"description,omitempty"`
+
+	// Title The title of this section - copied from the ReportSetup appropriate Query part which produced this section when this instance was generated.
+	Title *string `json:"title,omitempty" yaml:"title,omitempty"`
+}
+
 // ReportQuery A report can contain multiple queries. This object describes one query of those.
 type ReportQuery struct {
 	// Id The unique ID (within the report) of this query - UUID style. In concrete report instances this helps to identify the result of this query within the whole report.
-	Id       *string               `json:"id,omitempty" yaml:"id,omitempty"`
-	MetaData externalRef0.MetaData `json:"metaData" yaml:"metaData"`
+	Id *string `json:"id,omitempty" yaml:"id,omitempty"`
+
+	// IsDisabled It is possible to temporarily disable a query. This way you do not lose its setup, so you can re-enable it later again.
+	IsDisabled *bool                 `json:"isDisabled,omitempty" yaml:"isDisabled,omitempty"`
+	MetaData   externalRef0.MetaData `json:"metaData" yaml:"metaData"`
 
 	// Parameters The parameters a query plugin needs depends on the plugin. These key-value pairs provide the setup how the query plugin will generate this part of the report.
 	Parameters *ReportQuery_Parameters `json:"parameters,omitempty" yaml:"parameters,omitempty"`
@@ -139,11 +255,14 @@ type ReportQuery_Parameters struct {
 	//  * Daily schedule: you get an hourly breakdown
 	//  * Weekly schedule: you get a daily breakdown
 	//  * Monthly schedule: you get a weekly breakdown
-	GroupByTime                *bool `json:"groupByTime,omitempty" yaml:"groupByTime,omitempty"`
+	GroupByTime *bool `json:"groupByTime,omitempty" yaml:"groupByTime,omitempty"`
+
+	// Limit Optional param. How many rows you want to display maximum? Only makes sense if 'groupByTiles=true' or 'groupByTileGroupPaths=true'. Using the 'performanceDescendingOrder' basically you can see the top performing ones, or the worst performing ones - up to you.
+	Limit                      *int  `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PerformanceDescendingOrder *bool `json:"performanceDescendingOrder,omitempty" yaml:"performanceDescendingOrder,omitempty"`
 
-	// TileCountLimit How many tiles you want to display maximum? Only makes sense if 'groupByTiles=true'. Using the 'performanceDescendingOrder' basically you can see the top performing ones, or the worst performing ones - up to you.
-	TileCountLimit *int `json:"tileCountLimit,omitempty" yaml:"tileCountLimit,omitempty"`
+	// SortBy Sort the list based on these "eventsIncluded"
+	SortBy *[]string `json:"sortBy,omitempty" yaml:"sortBy,omitempty"`
 
 	// TileGroupPathMatchingOnly Data filter option. Comma separated list of matchers (see below) which returns counters only for those Tiles who's tileGroupPath is matching to one of the listed matchers. So if you list more values here then they are interpreted with an OR operator.
 	//
@@ -197,7 +316,7 @@ type ReportSetup struct {
 	MetaData externalRef0.MetaData `json:"metaData" yaml:"metaData"`
 
 	// Queries Queries of this report.
-	Queries []ReportQuery `json:"queries" yaml:"queries"`
+	Queries *[]ReportQuery `json:"queries" yaml:"queries"`
 
 	// Recipients This is an optional setup - controlls who will receive these reports.
 	//
@@ -208,7 +327,7 @@ type ReportSetup struct {
 	ResourceVersion int `json:"resourceVersion" yaml:"resourceVersion"`
 
 	// Schedule Describes a Schedule of something. As of now you have basically 4 types: hourly, daily, weekly and Monthly schedules.
-	Schedule *externalRef1.Schedule `json:"schedule,omitempty" yaml:"schedule,omitempty"`
+	Schedule *externalRef1.Schedule `json:"schedule" yaml:"schedule"`
 }
 
 // ReportsEndpointErrorCodes defines model for ReportsEndpointErrorCodes.
@@ -235,6 +354,9 @@ type ReportsEndpointProblemClass struct {
 // ReportsEndpointProblemClassSeverity defines model for ReportsEndpointProblemClass.Severity.
 type ReportsEndpointProblemClassSeverity string
 
+// ReportInstanceId defines model for reportInstanceId.
+type ReportInstanceId = string
+
 // ReportSetupId defines model for reportSetupId.
 type ReportSetupId = string
 
@@ -243,6 +365,9 @@ type PostV1ReportsContainersSetupRestContainerIdJSONRequestBody = ReportSetup
 
 // PutV1ReportsContainersSetupRestContainerIdReportSetupIdJSONRequestBody defines body for PutV1ReportsContainersSetupRestContainerIdReportSetupId for application/json ContentType.
 type PutV1ReportsContainersSetupRestContainerIdReportSetupIdJSONRequestBody = ReportSetup
+
+// PostV1ReportsContainersSetupRestContainerIdReportSetupIdInstancesJSONRequestBody defines body for PostV1ReportsContainersSetupRestContainerIdReportSetupIdInstances for application/json ContentType.
+type PostV1ReportsContainersSetupRestContainerIdReportSetupIdInstancesJSONRequestBody = GenerateReportRequestClass
 
 // Getter for additional properties for ReportQuery_Parameters. Returns the specified
 // element and whether it was found
@@ -309,6 +434,14 @@ func (a *ReportQuery_Parameters) UnmarshalJSON(b []byte) error {
 		delete(object, "groupByTime")
 	}
 
+	if raw, found := object["limit"]; found {
+		err = json.Unmarshal(raw, &a.Limit)
+		if err != nil {
+			return fmt.Errorf("error reading 'limit': %w", err)
+		}
+		delete(object, "limit")
+	}
+
 	if raw, found := object["performanceDescendingOrder"]; found {
 		err = json.Unmarshal(raw, &a.PerformanceDescendingOrder)
 		if err != nil {
@@ -317,12 +450,12 @@ func (a *ReportQuery_Parameters) UnmarshalJSON(b []byte) error {
 		delete(object, "performanceDescendingOrder")
 	}
 
-	if raw, found := object["tileCountLimit"]; found {
-		err = json.Unmarshal(raw, &a.TileCountLimit)
+	if raw, found := object["sortBy"]; found {
+		err = json.Unmarshal(raw, &a.SortBy)
 		if err != nil {
-			return fmt.Errorf("error reading 'tileCountLimit': %w", err)
+			return fmt.Errorf("error reading 'sortBy': %w", err)
 		}
-		delete(object, "tileCountLimit")
+		delete(object, "sortBy")
 	}
 
 	if raw, found := object["tileGroupPathMatchingOnly"]; found {
@@ -395,6 +528,13 @@ func (a ReportQuery_Parameters) MarshalJSON() ([]byte, error) {
 		}
 	}
 
+	if a.Limit != nil {
+		object["limit"], err = json.Marshal(a.Limit)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'limit': %w", err)
+		}
+	}
+
 	if a.PerformanceDescendingOrder != nil {
 		object["performanceDescendingOrder"], err = json.Marshal(a.PerformanceDescendingOrder)
 		if err != nil {
@@ -402,10 +542,10 @@ func (a ReportQuery_Parameters) MarshalJSON() ([]byte, error) {
 		}
 	}
 
-	if a.TileCountLimit != nil {
-		object["tileCountLimit"], err = json.Marshal(a.TileCountLimit)
+	if a.SortBy != nil {
+		object["sortBy"], err = json.Marshal(a.SortBy)
 		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'tileCountLimit': %w", err)
+			return nil, fmt.Errorf("error marshaling 'sortBy': %w", err)
 		}
 	}
 
@@ -430,4 +570,80 @@ func (a ReportQuery_Parameters) MarshalJSON() ([]byte, error) {
 		}
 	}
 	return json.Marshal(object)
+}
+
+// AsDataTableCell0 returns the union data inside the DataTableCell as a DataTableCell0
+func (t DataTableCell) AsDataTableCell0() (DataTableCell0, error) {
+	var body DataTableCell0
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromDataTableCell0 overwrites any union data inside the DataTableCell as the provided DataTableCell0
+func (t *DataTableCell) FromDataTableCell0(v DataTableCell0) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// AsDataTableCell1 returns the union data inside the DataTableCell as a DataTableCell1
+func (t DataTableCell) AsDataTableCell1() (DataTableCell1, error) {
+	var body DataTableCell1
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromDataTableCell1 overwrites any union data inside the DataTableCell as the provided DataTableCell1
+func (t *DataTableCell) FromDataTableCell1(v DataTableCell1) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+func (t DataTableCell) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *DataTableCell) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsDataTableAxisColumn returns the union data inside the DataTableColumn as a DataTableAxisColumn
+func (t DataTableColumn) AsDataTableAxisColumn() (DataTableAxisColumn, error) {
+	var body DataTableAxisColumn
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromDataTableAxisColumn overwrites any union data inside the DataTableColumn as the provided DataTableAxisColumn
+func (t *DataTableColumn) FromDataTableAxisColumn(v DataTableAxisColumn) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// AsDataTableDataColumn returns the union data inside the DataTableColumn as a DataTableDataColumn
+func (t DataTableColumn) AsDataTableDataColumn() (DataTableDataColumn, error) {
+	var body DataTableDataColumn
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromDataTableDataColumn overwrites any union data inside the DataTableColumn as the provided DataTableDataColumn
+func (t *DataTableColumn) FromDataTableDataColumn(v DataTableDataColumn) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+func (t DataTableColumn) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *DataTableColumn) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
 }

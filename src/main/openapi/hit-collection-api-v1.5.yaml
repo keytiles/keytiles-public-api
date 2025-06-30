@@ -1,0 +1,519 @@
+openapi: 3.0.1
+info:
+  title: Keytiles Hit Collection API
+  description: >
+              API to collect hits received by the tracked website
+                
+              This endpoint can be used as an integration point if you want to send in hits generated
+              by your native iOS/Android/etc applications.  
+                
+              If you are planning to integrate your app traffic please visit the Keytiles website
+              Developer area and learn more!  
+                
+              check [https://keytiles.com/developer-area/sending-in-traffic-from-ios-android-etc-apps](https://keytiles.com/developer-area/sending-in-traffic-from-ios-android-etc-apps)
+  version: 1.5.0
+  
+servers:
+- url: https://api.keytiles.com/api
+  description: PROD server
+- url: https://api-test.keytiles.com/api
+  description: TEST server
+
+paths:
+  '/v1/webhits':
+    post:
+      summary: Send in a website hit
+      requestBody:
+        description: 'A filled JSON object representing the hit data/details'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebhitClass'
+      responses:
+       '202':
+          description: >
+                        Keytiles system accepted the Hit data and this is enqued now for processing. There were no obvious problems (e.g. invalid
+                        JSON data) with your request.  
+                          
+                        Of course it is still possible that eventually the Hit will be dropped (due to error) or processed but
+                        will raise warnings. If this happens you will find the issue in the error reports later.  
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/WebhitsResponseClass'
+       '400':
+          description: "There are problems with the request. Further information is available in the response."
+          content:
+            'application/json':
+              schema:
+                $ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
+       '404':
+          description: "This error is thrown if you want to send in hit for a Data Container which does not exist."
+          content:
+            'application/json':
+              schema:
+                $ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
+       '412':
+          description: "This error is thrown if you want to send in hit for a Data Container which although exists it is not functioning (e.g. it is disabled) - more details you find in the response."
+          content:
+            'application/json':
+              schema:
+                $ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
+
+components:
+  schemas:
+  
+    HitClass:
+      type: object
+      required:
+      - containerId
+      - method
+      - value
+      - tileId
+      - tileTitle
+      properties:
+        containerId:
+          type: string
+          description: >
+                        Mandatory field. This identifies the Container of the tracking data where this hit belongs to.
+          nullable: false
+        sourceTime:
+          type: integer
+          format: int32
+          deprecated: true
+          description: For backward compatibility only - please use 'eventTimeMillis' instead!
+          example: 1543355710
+          nullable: true
+        eventTimeMillis:
+          type: integer
+          format: int64
+          description: >
+                        The time of the event with millis precision as UNIX timestamp in UTC (millis since Epoch).  
+                          
+                        This is not a mandatory field - if you leave it out (or leave on 'null') Keytiles will automatically use the
+                        server side 'now()' timestamp.  
+                          
+                        Although this is possible to send in events with back dated timestamps (sending in older / missed events - which would then retrospectively change
+                        data) we strongly recommend to leave this field out (or 'null') and let Keytiles servers use 'now()' timestamp if you are sending events real time!  
+                          
+                        Value can not point into the future (due to server time!). If this happens then it is corrected on server side to 'now()'
+                        and raising a warning. Please note you can query the server time if you want to calculate local-remote clock diff - see QueryAPI!  
+          example: 1543355710
+          nullable: true
+        clientTimeMillis:
+          type: integer
+          format: int64
+          description: >
+                        The client clock (time) of the event with millis precision as UNIX timestamp in UTC (millis since Epoch).  
+                          
+                        If you are sending event real time just put in the client clock value! But if you are sending back dated events (see 'eventTimeMillis' field!) then make sure this timestamp is equal
+                        to the time of the event!  
+                          
+                        We recommend to send this timestamp as this helps Keytiles to recognize order of sent in events correctly - no matter how big the latency is between the client and Keytiles servers.  
+                          
+                        This field does not behave or substitute 'eventTimeMillis' field at all!
+          example: 1543355710
+          nullable: true
+        hitProducer:
+          type: string
+          description: >
+                        Optional field. Identifies the hit sender agent.  
+                          
+                        For example in the webhits business domain if the hit was generated by our tracking JavaScript then it is "ktTrackingJs"
+          nullable: true
+        method:
+          type: string
+          enum: [incremental, absolute]
+          description: Describes how the value is used. **incremental:** means the value is added to the stored values. **absolute:** means the value is overriding the current stored value.
+          nullable: false
+        value:
+          type: integer
+          example: 1
+          nullable: false
+        tileId:
+          type: string
+          description: >
+                        Mandatory field. The unique identifier of the Tile which is getting the hit.
+                          
+                        To understand better what this field is you should check [https://keytiles.com/developer-area/hit-attributes](https://keytiles.com/developer-area/hit-attributes#tileId-attribute)  
+          nullable: false
+        tileTitle:
+          type: string
+          description: >
+                        Mandatory field. This title will be displayed on the Tile in the Keytiles UI.  
+                          
+                        To understand better what this field is you should check [https://keytiles.com/developer-area/hit-attributes](https://keytiles.com/developer-area/hit-attributes#tileTitle-attribute)  
+          nullable: false
+        tileGroupPath:
+          type: string
+          description: >
+                        Optional field but it is strongly recommended to send this... Similar to folder paths - describes the content
+                        structure the Tile belongs to.  
+                          
+                        To understand better what this field is you should check [https://keytiles.com/developer-area/hit-attributes](https://keytiles.com/developer-area/hit-attributes#tileGroupPath-attribute)  
+          example: "/mainTileGroup/subTileGroup"
+          nullable: true
+        tileLabelsJSON:
+          type: string
+          nullable: true
+          description: >
+                        Optional field. You have the possibility to store a limited amount of labels - key-value pairs - with Tiles in Keytiles. You get them back via the query result if you do so.  
+                          
+                        The Value must be a valid JSON encoding an Object. Please note that the maximum size of this string is also limited! If you violate any of these then this attribute will
+                        be simply skipped and already persisted labels will remain unchanged.     
+                          
+                        For more information you should check [https://www.keytiles.com/developer-area/hit-attributes](https://www.keytiles.com/developer-area/hit-attributes#tileLabelsJSON) 
+          
+    WebhitClass:
+      allOf:
+        - $ref: '#/components/schemas/HitClass'
+        - type: object
+          required:
+          - eventType
+          - userAgentType
+          properties:
+            eventType:
+              type: string
+              description: >
+                            Mandatory field. Defines what has happened (so eventually which counter to increase)  
+                              
+                            There are several pre-defined eventTypes, namely
+                            * pageview (default, by our tracking script)
+                            * view
+                            * download
+                            * upload
+                            * login
+                            * logout
+                            * submitted (e.g. a form)
+                            * ping
+                            * scrolledTo
+                            
+                            but you can send in even totally **custom strings as eventTypes**! Keytiles will track them correctly.  
+                              
+                            If you do not send in eventType then it's a problem... In this case an error level Hit Fault is generated and the hit is skipped.  
+                            note: Check our article about [Hit faults](https://www.keytiles.com/developer-area/checking-and-troubleshooting/hit-faults) to get a better understanding!
+              nullable: false
+            action:
+              type: string
+              deprecated: true
+              description: >
+                            Same as 'eventType' - earlier versions took that info in this parameter but this is deprecated by now - DO NOT USE IT!
+            eventParams:
+              type: string
+              nullable: true
+              description: >
+                            This is a string representation of a JSON object which carries parameters related to how the 'eventType' is processed. 
+                            Due to its nature the content of this key-value pairs might be specific to the 'eventType'. But it also has generic entries.  
+                              
+                            Generic entries:
+                            * **skipUniqueFilter** - boolean
+                              Optional parameter. By default it is "false" as Keytiles by default measures incoming events belong to the same tileId just once
+                              per VisitSession (forming up the term e.g. "unique pageview"). But if you set this to "true" then Keytiles will not make
+                              the event "unique" in the VisitSession but if it occurs 5 times then will be measured 5 times.   
+
+            visitorType:
+              type: string
+              description: >
+                            Optional. If you want to distinguish let's say "free" visitors generated traffic from "paid" visitors then this is the
+                            place you can do this by providing visitor type. It's up to you how you want to call and how many different visitor
+                            types you want to distinguish.   
+              nullable: true
+
+            tileType:
+              type: string
+              description: >
+                            Mandatory field. The type of the content (Tile).  
+                              
+                            There are several pre-defined types which you might consider to use if they fit to your use case however **you can also define your own types** too.
+                            By convention you should not put spaces or weird characters into this string (however technically it is not causing any issues)  
+                              
+                            The predefined types are:
+                            * frontpage
+                            * page
+                            * article
+                            * file
+                            * form
+                            * questionnaire
+                            * post
+                            * comment
+                            * profile
+                            * photo
+                            * video
+                            * gallery
+                              
+                            To understand better what this field is you should check [https://keytiles.com/developer-area/hit-attributes](https://keytiles.com/developer-area/hit-attributes#tileType-attribute)  
+                              
+                            In case you do not send in any values here then it is automatically defaulted to 'article' type and a warning level Hit Fault is generated.  
+                            note: Check our article about [Hit faults](https://www.keytiles.com/developer-area/checking-and-troubleshooting/hit-faults) to get a better understanding!
+              nullable: true
+            tileLanguage:
+              type: string
+              nullable: true
+              description: >
+                            Optional field. You can send in an ISO-639-1 two letters language code e.g. 'en'.  
+                              
+                            This would let Keytiles know in which language your visitor has viewed the tile.
+            tileUrl:
+              type: string
+              description: >
+                            URLs are just meta-data for your Tiles. (As we do know well that even the very same article can appear under many
+                            different concrete URLs) A Tile can have multiple URLs however try to reduce it if possible...
+                              
+                            To understand better what this field is you should check [https://keytiles.com/developer-area/hit-attributes](https://keytiles.com/developer-area/hit-attributes#tileUrl-attribute)  
+              nullable: true
+            uniqueWebClientId:
+              type: string
+              description: >
+                            Optional field however using this is strongly recommended - if possible! This is a unique identifier of the visitor's user agent:
+                            meaning his web browser or mobile device.  
+                              
+                            This value is the soul of the so called "visit session" term and might heavily affect the "bouncer" values.
+                              
+                            **IMPORTANT NOTE:** This is a sensitive field! Keytiles will store this value so never use any data in this field
+                            which is personal or sensitive data of your visitor - even if you know it
+                            and using that would be the easiest solution for you!  
+                              
+                            Just to give you a quick idea: when the hit is collected by our tracking JavaScript then this ID is just a UUID style
+                            randomly generated thing - stored in Cookie under the user's web browser for future actions. And yes, even if the visitor
+                            person is the same if he is using multiple devices this ID should and must be unique / device (aka Web Client App)  
+                              
+                            In case you can not provide this value for whatever reason please see also *pseudoUniqueWebClientId* field!
+              nullable: true
+            pseudoUniqueWebClientId:
+              type: string
+              description: >
+                            Optional field. Similar to *uniqueWebClientId* with one difference: with this field you basically say that
+                            you have an ID which is "very likely" unique but you can not guarantee this (for whatever reason).  
+                              
+                            This might come into the picture if e.g. the user has disabled cookies in his/her web browser so we can not generate
+                            a "for sure" *uniqueWebClientId*. Rather than that we still might be able to generate kind of a "fingerprint" of his/her
+                            browser by taking into account some - very likely unique - values of his device.  
+                              
+                            **IMPORTANT NOTE:** This is a sensitive field! Keytiles might store this value so never use any data in this field
+                            which is personal or sensitive data of your visitor - even if you know it
+                            and using that would be the easiest solution for you!
+              nullable: true
+            userAgentType:
+              type: string
+              #enum: [browser-desktop, browser-mobile, yourCustomValue1, yourCustomValue2, yourCustomValue3, ...]
+              description: >
+                            Mandatory field. Tells Keytiles the type of the web client the visitor is using.  
+                              
+                            This is an important information as traffic is segregated by this value. There are a few "built in" values:
+                             * **browser-desktop** - means this is a web browser, desktop computer version
+                             * **browser-mobile** - means this is a web browser, mobile device version like smart phone or tablet
+                              
+                            But you can also define and send in custom values (in case you have custom web clients like
+                            a native iOS / Android readers or Apps and you want to track the traffic generated through them) too!  
+                              
+                            In this case you just simple give them meaningful names you will recognize on your own side. E.g. "Android App" or similar.  
+                              
+                            If you do not send in any values here then Keytiles automatically maps "unknown" as value and a warning level Hit Fault is created.  
+                                
+                            note: Check our article about [Hit faults](https://www.keytiles.com/developer-area/checking-and-troubleshooting/hit-faults) to get a better understanding!
+              nullable: false
+            primaryTags:
+              type: string
+              nullable: true
+              description: >
+                            Optional field. A comma separated list of custom tags you would like to tag the Event with - carried by this hit.  
+                              
+                            The tags are simple strings - name them as you want/need.  
+                              
+                            Once you tag the Event with these tags then you have the possibility in query time of course to query only the appropriate segment of your traffic matching the tags you want to see.  
+                              
+                            To understand it better what these "tags" are doing and how you can use it for your own goals please check our article: [Custom segmentation of traffic](https://keytiles.com/developer-area/custom-segmentation-of-traffic)!  
+                              
+                            Please note the following:
+                            * You can use maximum 3 different tags (comma separated) here in the list. This is an intentional limitation on our end for now.  
+                              This means you can send in something like "blue,green" that's OK but you can not send in "green,blue,red,yellow" - it is exceeding the simultaneous limit.
+                              If you violate this then the overflowing tags will be simple omitted and a warning level Hit Fault is generated.  
+                              note: Check our article about [Hit faults](https://www.keytiles.com/developer-area/checking-and-troubleshooting/hit-faults) to get a better understanding!
+                            * The length of one tag can be maximum 24 characters.  
+                              So "green" fits as a tag easily. But "my-long-color-name-description" (30 long) does not! If you violate this then the tag will be simple omitted and a warning level Hit Fault is generated.  
+                              note: Check our article about [Hit faults](https://www.keytiles.com/developer-area/checking-and-troubleshooting/hit-faults) to get a better understanding!
+            secondaryTags:
+              type: string
+              nullable: true
+              description: >
+                            Optional field. A comma separated list of custom tags you would like to tag the Event with - carried by this hit.  
+                              
+                            Technically it works the same way as `primaryTags` - please check that! - but this "secondary" tags can represent something else as categorization compared to the primary tags.
+                              
+                            To understand it better what these "tags" are doing and how you can use it for your own goals please check our article: [Custom segmentation of traffic](https://keytiles.com/developer-area/custom-segmentation-of-traffic)!  
+            referrerUrl:
+              type: string
+              description: >
+                            Optional field. The value tells Keytiles from where the visitor - which URL - came from.  
+                              
+                            This is playing role in being able to track external/internal referrers and visitor flow so if you have this
+                            information you should send it.
+              nullable: true
+            referrerTileId:
+              type: string
+              description: >
+                            Optional field. The value tells Keytiles from which Tile the visitor came from.  
+                              
+                            This makes sense only if the referrer is internal of course. And this one is really playing a role in building up
+                            the visitor flow internally on the tracked website.  
+                              
+                            If this value is provided then it takes precedence over the value in the *referrerUrl* field very likely.
+              nullable: true
+            visitorEnvironment:
+              $ref: '#/components/schemas/VisitorEnvironment'
+            campaignData:
+              $ref: '#/components/schemas/CampaignData'
+
+
+    CampaignData:
+      type: object
+      nullable: true
+      description: >
+                    If this hit was generated from a visit arrived from a Campaign this object contains the data of that Campaign.  
+                      
+                    Please note that this is designed around [UTM parameters](https://en.wikipedia.org/wiki/UTM_parameters) for now so parts of this data are definitely correlating.  
+                      
+                    Please also note that if you do not send this data but 'tileUrl' contains the above UTM parameters then Keytiles will detect those automatically and recognize the Campaign.
+                    You can read more about this in our [How does Campaign tracking work](https://www.keytiles.com/docs/how-does-campaign-tracking-work) article.
+      properties:
+        name:
+          type: string
+          description: Identifies a specific product promotion or strategic campaign.
+        medium:
+          type: string
+          nullable: true
+          description: Identifies what type of link was used, such as Pay-per-click or email.
+        content:
+          type: string
+          nullable: true
+          description: Identifies what specifically was clicked to bring the user to the site, such as a banner ad or a text link. It is often used for A/B testing and content-targeted ads.
+
+    VisitorEnvironment:
+      type: object
+      nullable: true
+      description: Contains information about the client machine. Everything is optional here - even this object itself.
+      properties:
+        resolution:
+          type: string
+          description: Screen resolution of the client in format "<width> x <height>" - in pixels
+          example: 1920x1080
+          nullable: true
+        windowSize:
+          type: string
+          description: Size of the web client window in format "<width> x <height>" - in pixels
+          example: 846x712
+          nullable: true
+        windowId:
+          type: string
+          description: >
+                        Unique ID of the content window. (E.g. in WebBrowser world these are browser tabs/windows). A randomly
+                        generated short ID is perfectly enough for this.  
+                          
+                        Keytiles can track visitor activity / content window correctly and separated - if this identifier is porvided.
+                        This takes part e.g. in building the "fromTile -> toTile" visitor flow better and in some other cases.  
+                          
+                        If you can produce this value easily then we recommend to send this data. But if not, and you still want
+                        to have correct "fromTile -> toTile" flow tracking then please consider sending *referrerTileId* (preferably)
+                        or *referrerUrl*!
+          nullable: true
+        locale:
+          type: string
+          description: The localce data of the visitor's device or user agent.
+          example: "en-US"
+          nullable: true
+        opSystem:
+          type: string
+          description: >
+                        The name (and version) of the Operating System the visitor's web client is running on  
+                          
+                        **IMPORTANT NOTE:** This is a sensitive field! Keytiles might store this value so make sure you never use accidentaly
+                        any data in this field which is personal or sensitive data of your visitor
+          nullable: true
+        webClient:
+          type: string
+          description: >
+                        The name (and version) of the web client the visitor is using to visit the page.  
+                          
+                        If *userAgentType* value is "browser-desktop" or "browser-mobile" then the navigator.userAgent string - provided by
+                        the Web Browser - might come in here  
+                          
+                        **IMPORTANT NOTE:** This is a sensitive field! Keytiles might store this value so make sure you never use accidentaly
+                        any data in this field which is personal or sensitive data of your visitor  
+          nullable: true
+          
+    # This enum defines error codes belong to HitCollection endpoints specifically
+    # note: no support in OpenApi for now how to document values so we just add the description as comments for now.
+    #       see: https://github.com/OAI/OpenAPI-Specification/issues/348 
+    HitCollectionEndpointLocalErrorCodes:
+      type: string
+      enum:
+      # There was no incoming hit (event) data in the request
+      - eventData_missing
+      # The incoming hit (event) data was decoded but looks invlid - it does not fulfill the schema of the data
+      - eventData_invalid
+      # Keytiles failed to decode the incoming hit (event) data
+      - eventData_jsonDecodeFailed
+      # The ID of the Container is not valid - it either does not exist o disabled
+      - containerId_invalid
+      # We received hit.sourceTime / hit.eventTimeMillis which was pointing to the future - this was corrected to now()
+      - eventTime_in_future
+      # Hit came without tileId and we could not enrich with that
+      - tileId_enrichment_failed
+
+
+    # Let's merge the "local" error codes with the "global" ones in this enum
+    # HitCollection API endpoints can return the union of them 
+    HitCollectionEndpointErrorCodes:
+      description: NOTE! Error codes is an Enum. Unfortunately in OpenApi (so far) there is no possibility to provide description for Enum values. But we have detailed description of each error codes! Please check the OpenApi file in our Github repo - you find them as comments for each Enum values! 
+      allOf:
+      - $ref: "#/components/schemas/HitCollectionEndpointLocalErrorCodes"
+      - $ref: "common-types-v2.yaml#/components/schemas/CommonErrorCodes"
+
+    # Let's extend the global Problem class with our HitCollection API specific error codes
+    HitCollectionEndpointProblemClass:
+      allOf:
+      - $ref: 'common-types-v2.yaml#/components/schemas/ProblemBaseClass'
+      - type: object
+        properties:
+          errorCodes:
+            type: array
+            items:
+              $ref: "#/components/schemas/HitCollectionEndpointErrorCodes"
+            nullable: true
+            default: []
+    
+    # Let's extend the original response class with the above assembled machine readable Problems
+    MachineReadableHitCollectionEndpointMessageResponseClass:
+      allOf:
+      - $ref: "common-types-v2.yaml#/components/schemas/MessageResponseClass"
+      - type: object
+        properties:
+          problems:
+            type: array
+            items:
+              $ref: '#/components/schemas/HitCollectionEndpointProblemClass'
+            nullable: false
+            default: []
+            description: 'List of errors/warnings'
+
+
+    WebhitsResponseClass:
+      allOf:
+      - $ref: '#/components/schemas/MachineReadableHitCollectionEndpointMessageResponseClass'
+      - type: object
+        required:
+        - container
+        properties:
+          tileId:
+            type: string
+            description: >
+                          Gives you the ID of the Tile which will be used for processing this hit.  
+                            
+                          If there was incoming 'hit.tileId' in the request then this will be simply that. But if there was not then this is the tileId Keytiles has generated from the hit attributes.
+          debugInfo:
+            type: object
+            properties:
+              tileIdGenerator:
+                type: string
+                nullable: true
+                description: If tileId was generated then tells which mechanism has generated it.

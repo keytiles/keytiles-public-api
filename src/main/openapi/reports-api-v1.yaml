@@ -523,7 +523,7 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/ReportsEndpointProblemClass'
-            nullable: false
+            nullable: true
             default: []
             description: 'List of errors/warnings'
 
@@ -720,7 +720,6 @@ components:
       required:
         - id
         - metaData
-        - queries
         - resourceVersion
       properties:
         id:
@@ -732,6 +731,7 @@ components:
         schedule:
           description: Controlls when will the report run automatically. If you do not schedule the report then the report is only generated when you manually trigger it.
           $ref: 'common-schedule-v1.yaml#/components/schemas/Schedule'
+          nullable: true
         recipients:
           description: Optionally you can fine grain which Data Container users will receive this report when generated.
           $ref: '#/components/schemas/ReportRecipients'
@@ -740,11 +740,12 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ReportQuery'
+          nullable: true
+          default: []
         resourceVersion:
           type: integer
           description: This is the resource version (which is automatically incremented by every change). When you do an update (PUT) you need to send it back! The server will check if it is matching with the resource version he has. If not then that means someone else already did an update in the meantime therefore your request can not be accepted - otherwise you may overwrite the changes someone did.
-
-
+          nullable: false
 
     DataTableDataColumn:
       type: object
@@ -760,6 +761,11 @@ components:
         label:
           type: string
 
+    DataTableColumn:
+      oneOf:
+      - $ref: '#/components/schemas/DataTableAxisColumn'
+      - $ref: '#/components/schemas/DataTableDataColumn'
+
     DataTableCell:
       oneOf:
       - type: string
@@ -773,18 +779,33 @@ components:
     DataTable:
       type: object
       description: DataTable is the output of queries - a self contained table of data with Axis columns (optional) and >1 Data columns. Plus of course the data rows.
+      required:
+        - columns
       properties:
-        axisColumns:
+        columns:
           type: array
+          description: List of "Axis" columns. Order in array is important as the index of the entry tells the position.
           items:
-            $ref: '#/components/schemas/DataTableAxisColumn'
-        dataColumns:
-          type: array
-          items:
-            $ref: '#/components/schemas/DataTableDataColumn'
+            $ref: '#/components/schemas/DataTableColumn'
+          nullable: false
+
+        # axisColumns:
+        #   type: array
+        #   description: List of "Axis" columns - the index of the entry tells 
+        #   items:
+        #     $ref: '#/components/schemas/DataTableAxisColumn'
+        #   nullable: false
+        # dataColumns:
+        #   type: array
+        #   items:
+        #     $ref: '#/components/schemas/DataTableDataColumn'
+        #   nullable: false
         rows:
           type: array
-          $ref: '#/components/schemas/DataTableRow'
+          items:
+            $ref: '#/components/schemas/DataTableRow'
+          nullable: false
+          default: []
 
 
     ReportInstanceSection:
@@ -800,6 +821,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/DataTable'
+          default: []
+          nullable: false
 
     ReportInstance:
       type: object
@@ -836,10 +859,13 @@ components:
         description:
           description: This is a longer description of the report - copied from the ReportSetup metaData when this instance was generated.
           type: string
+          nullable: true
         sections:
           type: array
           items:
             $ref: '#/components/schemas/ReportInstanceSection'
+          default: []
+          nullable: false
 
     AvailableReportInstance:
       type: object
