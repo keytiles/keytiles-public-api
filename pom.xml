@@ -14,7 +14,7 @@
 
 		<jackson.version>2.13.0</jackson.version>
 		
-		<keytiles.codegen.version>2.1.0</keytiles.codegen.version>
+		<keytiles.codegen.version>2.1.1</keytiles.codegen.version>
 
 		<!-- Plugins -->
 		<maven.release.plugin>2.5.3</maven.release.plugin>
@@ -200,7 +200,7 @@
 					</execution>
 
 					<execution>
-						<id>common-types-v2</id>
+						<id>common-metadata-v1</id>
 						<phase>generate-sources</phase>
 						<goals>
 							<goal>generate</goal>
@@ -229,7 +229,7 @@
 					</execution>
 
 					<execution>
-						<id>common-types-v2</id>
+						<id>common-schedule-v1</id>
 						<phase>generate-sources</phase>
 						<goals>
 							<goal>generate</goal>

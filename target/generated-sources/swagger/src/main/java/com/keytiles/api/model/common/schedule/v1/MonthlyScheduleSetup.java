@@ -1,6 +1,6 @@
 /*
- * Keytiles Reporting API
- * API endpoints to manage / query / use Keytiles Reporting. 
+ * Common object definitions - regarding scheduled actions.
+ * These object definitions are shared among multiple contracts. Suitable to describe anything which runs on a scheduled basis - in a very intuitive, human-friendly way. (Unlike chrontab format... :-P)
  *
  * OpenAPI spec version: 1.0
  * 
@@ -10,7 +10,7 @@
  * Do not edit the class manually.
  */
 
-package com.keytiles.api.model.reports.v1;
+package com.keytiles.api.model.common.schedule.v1;
 
 import java.util.Objects;
 import java.util.Arrays;
@@ -18,33 +18,34 @@ import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import com.keytiles.api.model.reports.v1.ScheduleDayName;
-import java.util.ArrayList;
-import java.util.List;
 
 import java.io.Serializable;
 
-public class DailyScheduleSetup implements Serializable, OneOfScheduleSetup {
+public class MonthlyScheduleSetup implements Serializable, OneOfOneOfScheduleSetups {
   private static final long serialVersionUID = 1L;
 
 
   // @Generator: becomes private - as non-nullable so we need to protect it with setter and null-check 
   private String triggerTime = null;
 
-  // @Generator: non-nullable property so Codegen applied a default empty array to it automatically because it is possible with this type 
   // @Generator: becomes private - as non-nullable so we need to protect it with setter and null-check 
-  private List<ScheduleDayName> dayNames = new ArrayList<>();
+  private OneOfMonthlyScheduleSetupDayName dayName = null;
 
 
   
   // @Generator: arg 'triggerTime': mandatory field 
+  // @Generator: arg 'dayName': non-nullable and does not have default value - we must enforce a non-null initial value 
   @JsonCreator
-  public DailyScheduleSetup(@JsonProperty("triggerTime") String triggerTime) {
+  public MonthlyScheduleSetup(@JsonProperty("triggerTime") String triggerTime, @JsonProperty("dayName") OneOfMonthlyScheduleSetupDayName dayName) {
     super();
     if(triggerTime == null) {
       throw new IllegalArgumentException("'triggerTime' value can not be NULL");
     }
+    if(dayName == null) {
+      throw new IllegalArgumentException("'dayName' value can not be NULL");
+    }
     this.triggerTime = triggerTime;
+    this.dayName = dayName;
   }
   
   
@@ -63,38 +64,21 @@ public class DailyScheduleSetup implements Serializable, OneOfScheduleSetup {
     this.triggerTime = triggerTime;
   }
 
-  @JsonProperty("dayNames")
-  public List<ScheduleDayName> getDayNames() {
-    return dayNames;
+  @JsonProperty("dayName")
+  public OneOfMonthlyScheduleSetupDayName getDayName() {
+    return dayName;
   }  
 
-  // @Generator: added to protect field 'dayNames' against null-value assignment 
-  @JsonProperty("dayNames")
-  public void setDayNames(List<ScheduleDayName> dayNames) {
-    if(dayNames == null) {
-      throw new IllegalArgumentException("'dayNames' value can not be NULL");
+  // @Generator: added to protect field 'dayName' against null-value assignment 
+  @JsonProperty("dayName")
+  public void setDayName(OneOfMonthlyScheduleSetupDayName dayName) {
+    if(dayName == null) {
+      throw new IllegalArgumentException("'dayName' value can not be NULL");
     }
-    this.dayNames = dayNames;
+    this.dayName = dayName;
   }
 
 
-
-  // @Generator: builder style helper method to add values to not-readonly array field
-  public DailyScheduleSetup addDayNamesItem(ScheduleDayName dayNamesItem) {
-    if (this.dayNames == null) {
- 		this.dayNames = new ArrayList<>();
-    }
-    this.dayNames.add(dayNamesItem);
-    return this;
-  }
-
-  // @Generator: builder style helper method to remove values from not-readonly array field
-  public DailyScheduleSetup removeDayNamesItem(ScheduleDayName dayNamesItem) {
-    if (this.dayNames != null) {
-    	this.dayNames.remove(dayNamesItem);
-    }
-    return this;
-  }
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -104,24 +88,24 @@ public class DailyScheduleSetup implements Serializable, OneOfScheduleSetup {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    DailyScheduleSetup dailyScheduleSetup = (DailyScheduleSetup) o;
-    return Objects.equals(this.triggerTime, dailyScheduleSetup.triggerTime) &&
-        Objects.equals(this.dayNames, dailyScheduleSetup.dayNames);
+    MonthlyScheduleSetup monthlyScheduleSetup = (MonthlyScheduleSetup) o;
+    return Objects.equals(this.triggerTime, monthlyScheduleSetup.triggerTime) &&
+        Objects.equals(this.dayName, monthlyScheduleSetup.dayName);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(triggerTime, dayNames);
+    return Objects.hash(triggerTime, dayName);
   }
 
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class DailyScheduleSetup {\n");
+    sb.append("class MonthlyScheduleSetup {\n");
     
     sb.append("    triggerTime: ").append(toIndentedString(triggerTime)).append("\n");
-    sb.append("    dayNames: ").append(toIndentedString(dayNames)).append("\n");
+    sb.append("    dayName: ").append(toIndentedString(dayName)).append("\n");
     sb.append("}");
     return sb.toString();
   }

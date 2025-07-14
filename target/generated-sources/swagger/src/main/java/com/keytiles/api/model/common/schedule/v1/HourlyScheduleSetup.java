@@ -1,6 +1,6 @@
 /*
- * Keytiles Reporting API
- * API endpoints to manage / query / use Keytiles Reporting. 
+ * Common object definitions - regarding scheduled actions.
+ * These object definitions are shared among multiple contracts. Suitable to describe anything which runs on a scheduled basis - in a very intuitive, human-friendly way. (Unlike chrontab format... :-P)
  *
  * OpenAPI spec version: 1.0
  * 
@@ -10,7 +10,7 @@
  * Do not edit the class manually.
  */
 
-package com.keytiles.api.model.reports.v1;
+package com.keytiles.api.model.common.schedule.v1;
 
 import java.util.Objects;
 import java.util.Arrays;
@@ -18,13 +18,13 @@ import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import com.keytiles.api.model.reports.v1.ScheduleDayName;
+import com.keytiles.api.model.common.schedule.v1.ScheduleDayName;
 import java.util.ArrayList;
 import java.util.List;
 
 import java.io.Serializable;
 
-public class HourlyScheduleSetup implements Serializable, OneOfScheduleSetup {
+public class HourlyScheduleSetup implements Serializable, OneOfOneOfScheduleSetups {
   private static final long serialVersionUID = 1L;
 
 

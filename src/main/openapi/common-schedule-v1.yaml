@@ -33,11 +33,7 @@ components:
           # x-go-type-skip-optional-pointer: true
           enum: ['hourly', 'daily', 'weekly', 'monthly']
         setup:
-          oneOf:
-          - $ref: '#/components/schemas/HourlyScheduleSetup'
-          - $ref: '#/components/schemas/DailyScheduleSetup'
-          - $ref: '#/components/schemas/WeeklyScheduleSetup'
-          - $ref: '#/components/schemas/MonthlyScheduleSetup'
+          $ref: '#/components/schemas/OneOfScheduleSetups'
         tzOffset:
           type: integer
           description: Encodes the time zone offset from UTC - all things like time and even the days(!) are given using this offset
@@ -46,6 +42,14 @@ components:
           # we voted against it - let's keep the Nil possibility...
           # x-go-type-skip-optional-pointer: true
           description: The major version of the Schedule schema which was used when this object was created. This helps to evolve Schedules over time.
+
+    OneOfScheduleSetups:
+      type: object
+      oneOf:
+      - $ref: '#/components/schemas/HourlyScheduleSetup'
+      - $ref: '#/components/schemas/DailyScheduleSetup'
+      - $ref: '#/components/schemas/WeeklyScheduleSetup'
+      - $ref: '#/components/schemas/MonthlyScheduleSetup'
 
     HourlyScheduleSetup:
       description: Encodes scheduling tailored for hourly execution.

@@ -1,6 +1,6 @@
 /*
- * Keytiles Reporting API
- * API endpoints to manage / query / use Keytiles Reporting. 
+ * Common object definitions - regarding scheduled actions.
+ * These object definitions are shared among multiple contracts. Suitable to describe anything which runs on a scheduled basis - in a very intuitive, human-friendly way. (Unlike chrontab format... :-P)
  *
  * OpenAPI spec version: 1.0
  * 
@@ -10,7 +10,7 @@
  * Do not edit the class manually.
  */
 
-package com.keytiles.api.model.reports.v1;
+package com.keytiles.api.model.common.schedule.v1;
 
 import java.util.Objects;
 import java.util.Arrays;
@@ -18,6 +18,7 @@ import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import com.keytiles.api.model.common.schedule.v1.OneOfScheduleSetups;
 
 import java.io.Serializable;
 
@@ -63,7 +64,7 @@ public class Schedule implements Serializable{
   }  private TypeEnum type = null;
 
   // @Generator: becomes private - as non-nullable so we need to protect it with setter and null-check 
-  private OneOfScheduleSetup setup = null;
+  private OneOfScheduleSetups setup = null;
 
   // @Generator: becomes private - as non-nullable so we need to protect it with setter and null-check 
   private Integer tzOffset = null;
@@ -78,7 +79,7 @@ public class Schedule implements Serializable{
   // @Generator: arg 'tzOffset': mandatory field 
   // @Generator: arg 'majorVersion': mandatory field 
   @JsonCreator
-  public Schedule(@JsonProperty("type") TypeEnum type, @JsonProperty("setup") OneOfScheduleSetup setup, @JsonProperty("tzOffset") Integer tzOffset, @JsonProperty("majorVersion") Integer majorVersion) {
+  public Schedule(@JsonProperty("type") TypeEnum type, @JsonProperty("setup") OneOfScheduleSetups setup, @JsonProperty("tzOffset") Integer tzOffset, @JsonProperty("majorVersion") Integer majorVersion) {
     super();
     if(type == null) {
       throw new IllegalArgumentException("'type' value can not be NULL");
@@ -115,13 +116,13 @@ public class Schedule implements Serializable{
   }
 
   @JsonProperty("setup")
-  public OneOfScheduleSetup getSetup() {
+  public OneOfScheduleSetups getSetup() {
     return setup;
   }  
 
   // @Generator: added to protect field 'setup' against null-value assignment 
   @JsonProperty("setup")
-  public void setSetup(OneOfScheduleSetup setup) {
+  public void setSetup(OneOfScheduleSetups setup) {
     if(setup == null) {
       throw new IllegalArgumentException("'setup' value can not be NULL");
     }

@@ -1,6 +1,6 @@
 /*
- * Keytiles Reporting API
- * API endpoints to manage / query / use Keytiles Reporting. 
+ * Common object definitions - regarding scheduled actions.
+ * These object definitions are shared among multiple contracts. Suitable to describe anything which runs on a scheduled basis - in a very intuitive, human-friendly way. (Unlike chrontab format... :-P)
  *
  * OpenAPI spec version: 1.0
  * 
@@ -10,12 +10,12 @@
  * Do not edit the class manually.
  */
 
-package com.keytiles.api.model.reports.v1;
+package com.keytiles.api.model.common.schedule.v1;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 /**
-* OneOfScheduleSetup
+* OneOfOneOfScheduleSetups
 */
 @JsonTypeInfo(
   use = JsonTypeInfo.Id.NAME,
@@ -27,6 +27,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
   @JsonSubTypes.Type(value = WeeklyScheduleSetup.class, name = "WeeklyScheduleSetup"),
   @JsonSubTypes.Type(value = MonthlyScheduleSetup.class, name = "MonthlyScheduleSetup")
 })
-public interface OneOfScheduleSetup {
+public interface OneOfOneOfScheduleSetups {
 
 }
