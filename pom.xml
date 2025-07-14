@@ -197,7 +197,65 @@
 								<dateLibrary>java8</dateLibrary>
 							</configOptions>
 						</configuration>
-					</execution>				
+					</execution>
+
+					<execution>
+						<id>common-types-v2</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<inputSpec>${project.basedir}/src/main/openapi/common-metadata-v1.yaml</inputSpec>
+							<output>${project.basedir}/target/generated-sources/swagger/</output>
+							<modelPackage>com.keytiles.api.model.common.metadata.v1</modelPackage>
+							<language>com.keytiles.swagger.codegen.KeytilesJavaCodegen</language>
+							<!-- <library>resttemplate</library> -->
+							<generateApis>false</generateApis>
+							<generateModels>true</generateModels>
+							<generateApiTests>false</generateApiTests>
+							<generateApiDocumentation>false</generateApiDocumentation>
+							<generateModelTests>false</generateModelTests>
+							<generateModelDocumentation>false</generateModelDocumentation>
+							<generateSupportingFiles>false</generateSupportingFiles>
+							<configOptions>
+								<mavenExecutionId>common-metadata-v1</mavenExecutionId>
+								<addExplanationsToModel>true</addExplanationsToModel>
+								
+								<interfaceOnly>true</interfaceOnly>
+								<dateLibrary>java8</dateLibrary>
+							</configOptions>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>common-types-v2</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<inputSpec>${project.basedir}/src/main/openapi/common-schedule-v1.yaml</inputSpec>
+							<output>${project.basedir}/target/generated-sources/swagger/</output>
+							<modelPackage>com.keytiles.api.model.common.schedule.v1</modelPackage>
+							<language>com.keytiles.swagger.codegen.KeytilesJavaCodegen</language>
+							<!-- <library>resttemplate</library> -->
+							<generateApis>false</generateApis>
+							<generateModels>true</generateModels>
+							<generateApiTests>false</generateApiTests>
+							<generateApiDocumentation>false</generateApiDocumentation>
+							<generateModelTests>false</generateModelTests>
+							<generateModelDocumentation>false</generateModelDocumentation>
+							<generateSupportingFiles>false</generateSupportingFiles>
+							<configOptions>
+								<mavenExecutionId>common-schedule-v1</mavenExecutionId>
+								<addExplanationsToModel>true</addExplanationsToModel>
+								
+								<interfaceOnly>true</interfaceOnly>
+								<dateLibrary>java8</dateLibrary>
+							</configOptions>
+						</configuration>
+					</execution>	
 
 					<execution>
 						<id>hitcollection-api-v1</id>
@@ -224,7 +282,7 @@
 								<mavenExecutionId>hitcollection-api-v1</mavenExecutionId>
 								<addExplanationsToModel>false</addExplanationsToModel>
 								<!-- warning! order really matters here! see README! -->
-								<addSchemaModelsToImportMappingsFromMavenExecutions>common-types-v2</addSchemaModelsToImportMappingsFromMavenExecutions>
+								<addSchemaModelsToImportMappingsFromMavenExecutions>common-types-v2,common-schedule-v1,common-metadata-v1</addSchemaModelsToImportMappingsFromMavenExecutions>
 								<!-- default: true -->
 								<!-- excludeImportMappingsFromGeneration>false</excludeImportMappingsFromGeneration> -->
 								
@@ -259,7 +317,7 @@
 								<mavenExecutionId>management-api-v1</mavenExecutionId>
 								<addExplanationsToModel>true</addExplanationsToModel>
 								<!-- warning! order really matters here! see README! -->
-								<addSchemaModelsToImportMappingsFromMavenExecutions>common-types-v2</addSchemaModelsToImportMappingsFromMavenExecutions>
+								<addSchemaModelsToImportMappingsFromMavenExecutions>common-types-v2,common-schedule-v1,common-metadata-v1</addSchemaModelsToImportMappingsFromMavenExecutions>
 								<!-- default: true -->
 								<!-- <excludeImportMappingsFromGeneration>false</excludeImportMappingsFromGeneration> -->
 								
@@ -294,7 +352,7 @@
 								<mavenExecutionId>query-api-v1</mavenExecutionId>
 								<addExplanationsToModel>true</addExplanationsToModel>
 								<!-- warning! order really matters here! see README! -->
-								<addSchemaModelsToImportMappingsFromMavenExecutions>common-types-v1</addSchemaModelsToImportMappingsFromMavenExecutions>
+								<addSchemaModelsToImportMappingsFromMavenExecutions>common-types-v1,common-schedule-v1,common-metadata-v1</addSchemaModelsToImportMappingsFromMavenExecutions>
 								<!-- default: true -->
 								<!-- excludeImportMappingsFromGeneration>false</excludeImportMappingsFromGeneration> -->
 								
@@ -329,7 +387,7 @@
 								<mavenExecutionId>query-api-v2</mavenExecutionId>
 								<addExplanationsToModel>true</addExplanationsToModel>
 								<!-- warning! order really matters here! see README! -->
-								<addSchemaModelsToImportMappingsFromMavenExecutions>common-types-v2</addSchemaModelsToImportMappingsFromMavenExecutions>
+								<addSchemaModelsToImportMappingsFromMavenExecutions>common-types-v2,common-schedule-v1,common-metadata-v1</addSchemaModelsToImportMappingsFromMavenExecutions>
 								<!-- default: true -->
 								<!-- excludeImportMappingsFromGeneration>false</excludeImportMappingsFromGeneration> -->
 								
@@ -364,7 +422,7 @@
 								<mavenExecutionId>reports-api-v1</mavenExecutionId>
 								<addExplanationsToModel>true</addExplanationsToModel>
 								<!-- warning! order really matters here! see README! -->
-								<addSchemaModelsToImportMappingsFromMavenExecutions>common-types-v2</addSchemaModelsToImportMappingsFromMavenExecutions>
+								<addSchemaModelsToImportMappingsFromMavenExecutions>common-types-v2,common-schedule-v1,common-metadata-v1</addSchemaModelsToImportMappingsFromMavenExecutions>
 								<!-- default: true -->
 								<!-- excludeImportMappingsFromGeneration>false</excludeImportMappingsFromGeneration> -->
 								

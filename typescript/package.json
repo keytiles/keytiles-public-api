@@ -1,0 +1,30 @@
+{
+  "name": "com.keytiles.keytiles-public-api",
+  "version": "2.0.0",
+  "description": "desc",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/keytiles/keytiles-public-api.git"
+  },
+  "keywords": [
+    "Keytiles",
+    "Public",
+    "API"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/keytiles/keytiles-public-api/issues"
+  },
+  "homepage": "https://keytiles.com",
+  "devDependencies": {
+    "@hey-api/openapi-ts": "^0.77.0",
+    "@openapitools/openapi-generator-cli": "^2.21.0",
+    "openapi-typescript": "^7.8.0",
+    "typescript": "^5.8.3"
+  }
+}
