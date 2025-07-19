@@ -24,7 +24,7 @@ import java.util.List;
 
 import java.io.Serializable;
 
-public class HourlyScheduleSetup implements Serializable, OneOfOneOfScheduleSetups {
+public class HourlyScheduleSetup implements Serializable, OneOfScheduleSetup {
   private static final long serialVersionUID = 1L;
 
 

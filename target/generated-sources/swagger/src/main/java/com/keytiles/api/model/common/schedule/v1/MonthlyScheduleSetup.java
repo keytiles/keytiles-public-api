@@ -21,7 +21,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 import java.io.Serializable;
 
-public class MonthlyScheduleSetup implements Serializable, OneOfOneOfScheduleSetups {
+public class MonthlyScheduleSetup implements Serializable, OneOfScheduleSetup {
   private static final long serialVersionUID = 1L;
 
 

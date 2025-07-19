@@ -762,11 +762,13 @@ components:
           type: string
 
     DataTableColumn:
+      type: object
       oneOf:
       - $ref: '#/components/schemas/DataTableAxisColumn'
       - $ref: '#/components/schemas/DataTableDataColumn'
 
     DataTableCell:
+      type: object
       oneOf:
       - type: string
       - type: number

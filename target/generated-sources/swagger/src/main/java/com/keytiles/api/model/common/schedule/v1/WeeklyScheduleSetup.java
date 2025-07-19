@@ -22,7 +22,7 @@ import com.keytiles.api.model.common.schedule.v1.ScheduleDayName;
 
 import java.io.Serializable;
 
-public class WeeklyScheduleSetup implements Serializable, OneOfOneOfScheduleSetups {
+public class WeeklyScheduleSetup implements Serializable, OneOfScheduleSetup {
   private static final long serialVersionUID = 1L;
 
 

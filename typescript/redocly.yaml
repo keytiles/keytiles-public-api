@@ -1,9 +1,0 @@
-apis:
-  common-types@v2:
-    root: ../src/main/openapi/common-types-v2.yaml
-    x-openapi-ts:
-      output: ./src/common-types-v2.ts
-  reports@v1:
-    root: ../src/main/openapi/reports-api-v1.yaml
-    x-openapi-ts:
-      output: ./src/reports-api.ts      

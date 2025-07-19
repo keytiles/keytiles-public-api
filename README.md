@@ -6,7 +6,7 @@ Also contains generated models for Java and Golang - so basically it is possible
 
 # Generating Java code
 
-We started to use the Swagger Java Codegen originally but it did not meet several requirements. To solve this we came up with our own modified codegen which is also open source and you can find it here: https://github.com/keytiles/keytiles-swagger-codegen 
+We started to use the Swagger Java Codegen originally but it did not meet several requirements. To solve this we came up with our own modified codegen which is also open source and you can find it here: https://github.com/keytiles/keytiles-swagger-codegen
 
 The generated Java classes are in folder "/target/generated-sources" (FYI) but if you wish to use them please note that there is a "pom.xml" in the root. Making
 this project a Java project. Just simply pull in the stuff as a Mavem dependency and that's it.
@@ -17,6 +17,14 @@ It came later than Java. And we used this blog post as a starting point: https:/
 For now our choice is https://github.com/oapi-codegen/oapi-codegen.
 
 Generated code goes into "/gopkg/model/generated" folder. And package names are derived from the name of the API and the main version. Package names also showing you clearly that code in these packages are "keytiles public API generated" codes.
+
+# Generating Javascript/Typescript code
+
+Recently we also added this to provide generated code (primarily for used in TypeScript projects).
+
+The tool we use for this is: https://openapi-generator.tech/
+
+Generated code goes into "/typescript/src/model/generated". Package (folder) names are derived from the name of the API and the main version.
 
 # Versioning the generated codes
 
