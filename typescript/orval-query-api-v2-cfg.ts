@@ -1,7 +1,14 @@
-import * as customCode from './custom-code.js'
+import * as importMappingSupport from './import-mapping-support.js'
 import { defineConfig } from 'orval'
 
-import * as utils from 'util'
+// This is the map of import mappings - when external schema file is used.
+// key: the name of the included schema file
+// value: the generated ts file from that - from which we need to import the types from
+var importMappings = {
+  "common-types-v2.yaml": "./common-types-v2",
+  "common-schedule-v1.yaml": "./common-schedule-v1",
+  "common-metadata-v1.yaml": "./common-metadata-v1",
+};
 
 export default defineConfig({
    reports_api_v1: {
@@ -11,7 +18,7 @@ export default defineConfig({
 
         parserOptions: {
           resolve: {
-            file: customCode.RemoveSchemasFromExternalSchemaFilesFileResolver
+            file: importMappingSupport.createImportMappingAwareFileResolver(importMappings)
             
             //external: false
           }
@@ -42,7 +49,7 @@ export default defineConfig({
     },
     
     hooks: {
-      afterAllFilesWrite: customCode.afterFilesGeneratedHookFs
+      afterAllFilesWrite: importMappingSupport.afterFilesGeneratedHookFs
     }
 
 

@@ -18,13 +18,13 @@ For now our choice is https://github.com/oapi-codegen/oapi-codegen.
 
 Generated code goes into "/gopkg/model/generated" folder. And package names are derived from the name of the API and the main version. Package names also showing you clearly that code in these packages are "keytiles public API generated" codes.
 
-# Generating Javascript/Typescript code
+# Generating Typescript code
 
-Recently we also added this to provide generated code (primarily for used in TypeScript projects).
+Recently we also added this to provide generated code.
 
-The tool we use for this is: https://openapi-generator.tech/
+The tool we use for this is: https://orval.dev/
 
-Generated code goes into "/typescript/src/model/generated". Package (folder) names are derived from the name of the API and the main version.
+Generated code goes into "/typescript/src/model/generated" folder.
 
 # Versioning the generated codes
 
