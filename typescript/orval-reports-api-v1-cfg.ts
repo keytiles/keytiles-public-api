@@ -13,16 +13,16 @@ var importMappings = {
 export default defineConfig({
    reports_api_v1: {
 
-    input: {
-        target: '../src/main/openapi/reports-api-v1.yaml',
+input: {
+    target: '../src/main/openapi/reports-api-v1.yaml',
 
-        parserOptions: {
-          resolve: {
-            file: importMappingSupport.createImportMappingAwareFileResolver(importMappings)
-            
-            //external: false
-          }
-        },
+    parserOptions: {
+      resolve: {
+        file: importMappingSupport.createImportMappingAwareFileResolver(importMappings)
+        
+        //external: false
+      }
+    },
 
       //   filters: {
       //    mode: 'exclude',

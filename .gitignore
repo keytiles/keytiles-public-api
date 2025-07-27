@@ -17,4 +17,5 @@ hs_err_pid*
 dependency-reduced-pom.xml
 classpath.txt
 
-node_modules
+typescript/node_modules
+typescript/dist
