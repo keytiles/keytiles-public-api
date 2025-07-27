@@ -1,4 +1,4 @@
-# Release 2.0.0
+# Release 2.0.1
 
 ## Breaking changes
 
@@ -12,6 +12,11 @@ We just have a few very simple breaking changes - still breaking changes (in gen
 ## New features
 
 - pre-releasing reports-api v1.0
+
+# Release 2.0.0
+
+This version is invalid.
+We ran into problems first time setup Github based NPM package - for first time generated TypeScript code :-( And we could not fix this so omit this version entirely seemed to be easier...
 
 # Release 1.2.0
 

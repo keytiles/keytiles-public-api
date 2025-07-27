@@ -1,6 +1,17 @@
 #!/bin/bash
 
-rm -rf typescript/src
+cd typescript
+
+# Make node install
+if [ ! -d "node_modules" ]; then
+  # just needed once
+  echo "It looks this is your first time... installing node modules..."
+  npm install
+fi
+
+rm -rf src
+
+cd ..
 
 # generating all the models
 
