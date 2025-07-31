@@ -58,23 +58,25 @@ languages (so far)
 
 ## Golang
 
-This repository is a Golang library at the same time.
+This repository is a Golang library as well itself.
 
 So to use it, just add this to your Go dependencies
 
-`go get -u github.com/keytiles/keytiles-public-api@vx.y.z`
+`go get -u github.com/keytiles/keytiles-public-api@vx.y.z` - where "vx.y.z" is the version you want.
 
 To see the available versions simply check the version tags of the repo's main branch and/or [CHANGELOG](CHANGELOG.md).
 
-The generated models you find in `/gopkg/model/generated` folder.
+The generated models you find in [/gopkg/model/generated](gopkg/model/generated/) folder.
 
 ## TypeScript
 
 We publish the NPM package on Github. To use it in your project
 
-`npm install @keytiles/keytiles-public-api@x.y.z`
+`npm install @keytiles/keytiles-public-api@x.y.z` - where "x.y.z" is the version you want.
 
 To see the available versions visit https://github.com/keytiles/keytiles-public-api/pkgs/npm/keytiles-public-api and/or [CHANGELOG](CHANGELOG.md).
+
+The generated code you find in the [typescript/src](typescript/src/) folder.
 
 # Versioning the generated codes
 
