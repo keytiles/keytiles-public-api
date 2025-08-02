@@ -1,4 +1,4 @@
-import { CommonErrorCodes, ProblemBaseClass, ContainerResponseClass, ContainerQueryRangeResponseClass } from './common-types-v2';
+import { CommonErrorCodes, ContainerResponseClass, ContainerQueryRangeResponseClass } from './common-types-v3';
 import type { AxiosRequestConfig, AxiosResponse } from 'axios';
 /**
  * Defines the beginning of the query range - you are interested in data which time is >= than this timestamp.
@@ -51,17 +51,7 @@ export declare const StatApiEndpointLocalErrorCodes: {
  * NOTE! Error codes is an Enum. Unfortunately in OpenApi (so far) there is no possibility to provide description for Enum values. But we have detailed description of each error codes! Please check the OpenApi file in our Github repo - you find them as comments for each Enum values!
  */
 export type StatApiEndpointErrorCodes = StatApiEndpointLocalErrorCodes & CommonErrorCodes;
-export type StatApiEndpointProblemClassAllOf = {
-    /** @nullable */
-    errorCodes?: StatApiEndpointErrorCodes[] | null;
-};
-export type StatApiEndpointProblemClass = ProblemBaseClass & StatApiEndpointProblemClassAllOf;
 export type EventCountersResponseClassAllOf = {
-    /**
-     * List of errors/warnings
-     * @nullable
-     */
-    problems?: StatApiEndpointProblemClass[] | null;
     keyColumnsMappings?: KeyColumnsIntIdMappingsClass;
     resultColumns?: EventCountersHeaderClass;
     /** These are the rows of the data - each row represented by an array of Integer values.
@@ -89,11 +79,6 @@ export type GetTilesResponseClassAllOfTiles = {
     [key: string]: TileDataClass;
 };
 export type GetTilesResponseClassAllOf = {
-    /**
-     * List of errors/warnings
-     * @nullable
-     */
-    problems?: StatApiEndpointProblemClass[] | null;
     /** Containes Tile details. This is a map. Keys are tileIds. */
     tiles?: GetTilesResponseClassAllOfTiles;
 };

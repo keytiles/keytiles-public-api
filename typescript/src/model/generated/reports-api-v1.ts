@@ -1,5 +1,5 @@
 // imports coming from defined immportMapping
-import { CommonErrorCodes, ProblemPlaceEnum, ProblemBaseClass, BaseResponseClass, MessageResponseClass, ResponseContainerInfoClass, ContainerResponseClass, ContainerQueryRangeResponseClass } from './common-types-v2'
+import { CommonErrorCodes, ProblemPlaceEnum, ProblemClass, BaseResponseClass, MessageResponseClass, ResponseContainerInfoClass, ContainerResponseClass, ContainerQueryRangeResponseClass } from './common-types-v3'
 import { ChangelogEntry, MetaData } from './common-metadata-v1'
 import { ScheduleDayName, Schedule, HourlyScheduleSetup, DailyScheduleSetup, WeeklyScheduleSetup, MonthlyScheduleSetup } from './common-schedule-v1'
 
@@ -65,23 +65,6 @@ export const ReportsEndpointLocalErrorCodes = {
  * NOTE! Error codes is an Enum. Unfortunately in OpenApi (so far) there is no possibility to provide description for Enum values. But we have detailed description of each error codes! Please check the OpenApi file in our Github repo - you find them as comments for each Enum values!
  */
 export type ReportsEndpointErrorCodes = ReportsEndpointLocalErrorCodes & CommonErrorCodes;
-
-export type ReportsEndpointProblemClassAllOf = {
-  /** @nullable */
-  errorCodes?: ReportsEndpointErrorCodes[] | null;
-};
-
-export type ReportsEndpointProblemClass = ProblemBaseClass & ReportsEndpointProblemClassAllOf;
-
-export type MachineReadableReportsEndpointMessageResponseClassAllOf = {
-  /**
-   * List of errors/warnings
-   * @nullable
-   */
-  problems?: ReportsEndpointProblemClass[] | null;
-};
-
-export type MachineReadableReportsEndpointMessageResponseClass = MessageResponseClass & MachineReadableReportsEndpointMessageResponseClassAllOf;
 
 export type ListContainerReportSetupsResponseClass = ContainerResponseClass & {
   /**
@@ -358,7 +341,7 @@ For now only Admins of Data Containers can create a report setup.
 
  * @summary To create a new report setup belongs to the Container
  */
-export const postV1ReportsContainersSetupRestContainerId = <TData = AxiosResponse<MachineReadableReportsEndpointMessageResponseClass>>(
+export const postV1ReportsContainersSetupRestContainerId = <TData = AxiosResponse<MessageResponseClass>>(
     containerId: string,
     reportSetup: ReportSetup, options?: AxiosRequestConfig
  ): Promise<TData> => {
@@ -387,7 +370,7 @@ For now only Admins of Data Containers can modify a report setup.
 
  * @summary To modify an existing report setup.
  */
-export const putV1ReportsContainersSetupRestContainerIdReportSetupId = <TData = AxiosResponse<MachineReadableReportsEndpointMessageResponseClass>>(
+export const putV1ReportsContainersSetupRestContainerIdReportSetupId = <TData = AxiosResponse<MessageResponseClass>>(
     containerId: string,
     reportSetupId: string,
     reportSetup: ReportSetup, options?: AxiosRequestConfig
@@ -432,7 +415,7 @@ Please note that a report generation might take time.
 
  * @summary To generate (create) a new report instance of this report setup.
  */
-export const postV1ReportsContainersSetupRestContainerIdReportSetupIdInstances = <TData = AxiosResponse<MachineReadableReportsEndpointMessageResponseClass>>(
+export const postV1ReportsContainersSetupRestContainerIdReportSetupIdInstances = <TData = AxiosResponse<MessageResponseClass>>(
     containerId: string,
     reportSetupId: string,
     generateReportRequestClass: GenerateReportRequestClass, options?: AxiosRequestConfig
@@ -458,7 +441,7 @@ export const getV1ReportsContainersInstanceRestContainerIdReportInstanceId = <TD
 /**
  * @summary To permanently delete a specific report instance - after this this report is not available anymore.
  */
-export const deleteV1ReportsContainersInstanceRestContainerIdReportInstanceId = <TData = AxiosResponse<MachineReadableReportsEndpointMessageResponseClass>>(
+export const deleteV1ReportsContainersInstanceRestContainerIdReportInstanceId = <TData = AxiosResponse<MessageResponseClass>>(
     containerId: string,
     reportInstanceId: string, options?: AxiosRequestConfig
  ): Promise<TData> => {
@@ -468,11 +451,11 @@ export const deleteV1ReportsContainersInstanceRestContainerIdReportInstanceId = 
   }
 
 export type GetV1ReportsContainersSetupRestContainerIdResult = AxiosResponse<ListContainerReportSetupsResponseClass>
-export type PostV1ReportsContainersSetupRestContainerIdResult = AxiosResponse<MachineReadableReportsEndpointMessageResponseClass>
+export type PostV1ReportsContainersSetupRestContainerIdResult = AxiosResponse<MessageResponseClass>
 export type GetV1ReportsContainersSetupRestContainerIdReportSetupIdResult = AxiosResponse<ReportSetup>
-export type PutV1ReportsContainersSetupRestContainerIdReportSetupIdResult = AxiosResponse<MachineReadableReportsEndpointMessageResponseClass>
+export type PutV1ReportsContainersSetupRestContainerIdReportSetupIdResult = AxiosResponse<MessageResponseClass>
 export type DeleteV1ReportsContainersSetupRestContainerIdReportSetupIdResult = AxiosResponse<ReportSetup>
 export type GetV1ReportsContainersSetupRestContainerIdReportSetupIdInstancesResult = AxiosResponse<ListContainerReportInstancesResponseClass>
-export type PostV1ReportsContainersSetupRestContainerIdReportSetupIdInstancesResult = AxiosResponse<MachineReadableReportsEndpointMessageResponseClass>
+export type PostV1ReportsContainersSetupRestContainerIdReportSetupIdInstancesResult = AxiosResponse<MessageResponseClass>
 export type GetV1ReportsContainersInstanceRestContainerIdReportInstanceIdResult = AxiosResponse<GetContainerReportInstanceResponseClass>
-export type DeleteV1ReportsContainersInstanceRestContainerIdReportInstanceIdResult = AxiosResponse<MachineReadableReportsEndpointMessageResponseClass>
+export type DeleteV1ReportsContainersInstanceRestContainerIdReportInstanceIdResult = AxiosResponse<MessageResponseClass>

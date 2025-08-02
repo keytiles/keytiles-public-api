@@ -4,6 +4,6 @@
 
 cd typescript
 
-npx orval --config ./orval-management-api-v1-cfg.ts
+npx orval --config ./orval-query-api-v3-cfg.ts
 
 cd ..

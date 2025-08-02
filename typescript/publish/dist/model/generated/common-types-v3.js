@@ -53,8 +53,8 @@ export const ProblemPlaceEnum = {
     calculated: 'calculated',
 };
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ProblemBaseClassSeverity = {
+export const ProblemClassSeverity = {
     warning: 'warning',
     error: 'error',
 };
-//# sourceMappingURL=common-types-v2.js.map
+//# sourceMappingURL=common-types-v3.js.map

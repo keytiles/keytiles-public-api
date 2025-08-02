@@ -12,6 +12,7 @@ components:
 
     ChangelogEntry:
       description: Defines a change - who changed what, when?
+      nullable: true
       type: object
       required:
         - time
@@ -42,7 +43,11 @@ components:
           type: string
         changelog:
           type: array
-          description: Changes which were made. Append only log - in time ascending order.
+          description: >
+                      Changes which were made. Append only log - in time ascending order.
+                      
+                      Since it can be a lot over time in some situations, it is possible specific endpoints not returning this list by default only upon request. So this field
+                      is nullable indicating "not returned"
           items:
             $ref: '#/components/schemas/ChangelogEntry'
         majorVersion:

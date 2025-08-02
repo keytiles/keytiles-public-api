@@ -1,20 +1,18 @@
-import * as importMappingSupport from './import-mapping-support.js'
+import * as importMappingSupport from '@keytiles/orval-importmapping-support/dist/import-mapping-support.js'
 import { defineConfig } from 'orval'
 
 // This is the map of import mappings - when external schema file is used.
 // key: the name of the included schema file
 // value: the generated ts file from that - from which we need to import the types from
 var importMappings = {
-  "common-types-v2.yaml": "./common-types-v2",
-  "common-schedule-v1.yaml": "./common-schedule-v1",
-  "common-metadata-v1.yaml": "./common-metadata-v1",
+  "common-types-v3.yaml": "./common-types-v3",
 };
 
 export default defineConfig({
-   reports_api_v1: {
+   query_api_v3: {
      
     input: {
-        target: '../src/main/openapi/management-api-v1.yaml',
+        target: '../src/main/openapi/query-api-v3.yaml',
 
         parserOptions: {
           resolve: {
@@ -30,12 +28,12 @@ export default defineConfig({
       //   }
      },
 
-     output: {
+    output: {
         workspace: 'src/',
         // mode: single | split | tags | tags-split
         mode: 'single',
-        target: 'model/generated/management-api-v1.ts',
-        //schemas: 'model/generated/management-api-v1',
+        target: 'model/generated/query-api-v3.ts',
+        //schemas: 'model/generated/query-api-v3',
         //client: 'react-query',
         httpClient: 'axios',
         fileExtension: '.ts',
@@ -46,11 +44,13 @@ export default defineConfig({
          
         }
 
-     },
-     
+    },
+    
     hooks: {
-      afterAllFilesWrite: importMappingSupport.afterFilesGeneratedHookFs
+      afterAllFilesWrite: importMappingSupport.afterFilesGeneratedHookFn
     }
+
+
    },
 
 });

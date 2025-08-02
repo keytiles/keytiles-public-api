@@ -1,4 +1,4 @@
-import { CommonErrorCodes, ProblemBaseClass, MessageResponseClass, ContainerQueryRangeResponseClass } from './common-types-v2';
+import { CommonErrorCodes, MessageResponseClass, ContainerQueryRangeResponseClass } from './common-types-v3';
 import type { AxiosRequestConfig, AxiosResponse } from 'axios';
 type IfEquals<X, Y, A = X, B = never> = (<T>() => T extends X ? 1 : 2) extends <T>() => T extends Y ? 1 : 2 ? A : B;
 type WritableKeys<T> = {
@@ -79,19 +79,6 @@ export declare const ManagementEndpointLocalErrorCodes: {
  * NOTE! Error codes is an Enum. Unfortunately in OpenApi (so far) there is no possibility to provide description for Enum values. But we have detailed description of each error codes! Please check the OpenApi file in our Github repo - you find them as comments for each Enum values!
  */
 export type ManagementEndpointErrorCodes = ManagementEndpointLocalErrorCodes & CommonErrorCodes;
-export type ManagementEndpointProblemClassAllOf = {
-    /** @nullable */
-    errorCodes?: ManagementEndpointErrorCodes[] | null;
-};
-export type ManagementEndpointProblemClass = ProblemBaseClass & ManagementEndpointProblemClassAllOf;
-export type MachineReadableManagementEndpointMessageResponseClassAllOf = {
-    /**
-     * List of errors/warnings
-     * @nullable
-     */
-    problems?: ManagementEndpointProblemClass[] | null;
-};
-export type MachineReadableManagementEndpointMessageResponseClass = MessageResponseClass & MachineReadableManagementEndpointMessageResponseClassAllOf;
 export interface UserContainerLink {
     /** The alpha-numeric unique id of the Container */
     containerId: string;

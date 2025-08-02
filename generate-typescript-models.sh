@@ -16,9 +16,10 @@ cd ..
 # generating all the models
 
 source scripts/_generate-typescript-commons.sh
-source scripts/_generate-typescript-management-api-v1.sh
+source scripts/_generate-typescript-management-api-v2.sh
+source scripts/_generate-typescript-hitcollection-api-v2.sh
 source scripts/_generate-typescript-reports-api-v1.sh
-source scripts/_generate-typescript-query-api-v2.sh
+source scripts/_generate-typescript-query-api-v3.sh
 
 # time to compile typescript
 

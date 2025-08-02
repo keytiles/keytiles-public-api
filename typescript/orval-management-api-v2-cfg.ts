@@ -6,23 +6,21 @@ import { defineConfig } from 'orval'
 // value: the generated ts file from that - from which we need to import the types from
 var importMappings = {
   "common-types-v3.yaml": "./common-types-v3",
-  "common-schedule-v1.yaml": "./common-schedule-v1",
-  "common-metadata-v1.yaml": "./common-metadata-v1",
 };
 
 export default defineConfig({
-   reports_api_v1: {
+   management_api_v2: {
+     
+    input: {
+        target: '../src/main/openapi/management-api-v2.yaml',
 
-input: {
-    target: '../src/main/openapi/reports-api-v1.yaml',
-
-    parserOptions: {
-      resolve: {
-        file: importMappingSupport.createImportMappingAwareFileResolver(importMappings)
-        
-        //external: false
-      }
-    },
+        parserOptions: {
+          resolve: {
+            file: importMappingSupport.createImportMappingAwareFileResolver(importMappings)
+            
+            //external: false
+          }
+        },
 
       //   filters: {
       //    mode: 'exclude',
@@ -34,8 +32,8 @@ input: {
         workspace: 'src/',
         // mode: single | split | tags | tags-split
         mode: 'single',
-        target: 'model/generated/reports-api-v1.ts',
-        //schemas: 'model/generated/common-types-v2',
+        target: 'model/generated/management-api-v2.ts',
+        //schemas: 'model/generated/management-api-v2',
         //client: 'react-query',
         httpClient: 'axios',
         fileExtension: '.ts',
@@ -43,11 +41,11 @@ input: {
         indexFiles: false,
 
         override: {
-          
-        },
+         
+        }
 
      },
-
+     
     hooks: {
       afterAllFilesWrite: importMappingSupport.afterFilesGeneratedHookFn
     }

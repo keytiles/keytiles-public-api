@@ -3,7 +3,7 @@
  * Do not edit manually.
  * Common object definitions
  * These object definitions are shared among multiple contracts
- * OpenAPI spec version: 2.1
+ * OpenAPI spec version: 3.0
  */
 export type CommonErrorCodes = typeof CommonErrorCodes[keyof typeof CommonErrorCodes];
 
@@ -71,17 +71,17 @@ export const ProblemPlaceEnum = {
   calculated: 'calculated',
 } as const;
 
-export type ProblemBaseClassSeverity = typeof ProblemBaseClassSeverity[keyof typeof ProblemBaseClassSeverity];
+export type ProblemClassSeverity = typeof ProblemClassSeverity[keyof typeof ProblemClassSeverity];
 
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ProblemBaseClassSeverity = {
+export const ProblemClassSeverity = {
   warning: 'warning',
   error: 'error',
 } as const;
 
-export interface ProblemBaseClass {
-  severity: ProblemBaseClassSeverity;
+export interface ProblemClass {
+  severity: ProblemClassSeverity;
   /** The problem in human readable form */
   message: string;
   place?: ProblemPlaceEnum;
@@ -91,7 +91,7 @@ export interface ProblemBaseClass {
    */
   placeName?: string | null;
   /** @nullable */
-  errorCodes?: CommonErrorCodes[] | null;
+  errorCodes?: string[] | null;
 }
 
 /**
@@ -112,7 +112,7 @@ export interface BaseResponseClass {
    * List of errors/warnings
    * @nullable
    */
-  problems?: ProblemBaseClass[] | null;
+  problems?: ProblemClass[] | null;
   /**
    * Extra data (variables) the endpoint wants to return for programmatic processing.
    * @nullable

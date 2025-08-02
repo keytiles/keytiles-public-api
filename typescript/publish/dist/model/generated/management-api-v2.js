@@ -3,7 +3,7 @@
  * Do not edit manually.
  * Keytiles Management API
  * API to manage users, permissions, containers, etc.
- * OpenAPI spec version: 1.5.0
+ * OpenAPI spec version: 2.0
  */
 import axios from 'axios';
 // eslint-disable-next-line @typescript-eslint/no-redeclare
@@ -200,4 +200,4 @@ More info: [https://www.keytiles.com/docs/how-does-referrer-grouping-work](https
 export const getV1ManagementConfigReferrerclassification = (options) => {
     return axios.get(`/v1/management/config/referrerclassification`, options);
 };
-//# sourceMappingURL=management-api-v1.js.map
+//# sourceMappingURL=management-api-v2.js.map

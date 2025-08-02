@@ -3,7 +3,7 @@
  * Do not edit manually.
  * Common object definitions
  * These object definitions are shared among multiple contracts
- * OpenAPI spec version: 2.1
+ * OpenAPI spec version: 3.0
  */
 export type CommonErrorCodes = typeof CommonErrorCodes[keyof typeof CommonErrorCodes];
 export declare const CommonErrorCodes: {
@@ -63,13 +63,13 @@ export declare const ProblemPlaceEnum: {
     readonly persistence: "persistence";
     readonly calculated: "calculated";
 };
-export type ProblemBaseClassSeverity = typeof ProblemBaseClassSeverity[keyof typeof ProblemBaseClassSeverity];
-export declare const ProblemBaseClassSeverity: {
+export type ProblemClassSeverity = typeof ProblemClassSeverity[keyof typeof ProblemClassSeverity];
+export declare const ProblemClassSeverity: {
     readonly warning: "warning";
     readonly error: "error";
 };
-export interface ProblemBaseClass {
-    severity: ProblemBaseClassSeverity;
+export interface ProblemClass {
+    severity: ProblemClassSeverity;
     /** The problem in human readable form */
     message: string;
     place?: ProblemPlaceEnum;
@@ -79,7 +79,7 @@ export interface ProblemBaseClass {
      */
     placeName?: string | null;
     /** @nullable */
-    errorCodes?: CommonErrorCodes[] | null;
+    errorCodes?: string[] | null;
 }
 /**
  * Extra data (variables) the endpoint wants to return for programmatic processing.
@@ -100,7 +100,7 @@ export interface BaseResponseClass {
      * List of errors/warnings
      * @nullable
      */
-    problems?: ProblemBaseClass[] | null;
+    problems?: ProblemClass[] | null;
     /**
      * Extra data (variables) the endpoint wants to return for programmatic processing.
      * @nullable

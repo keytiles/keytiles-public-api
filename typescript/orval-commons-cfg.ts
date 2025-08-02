@@ -1,18 +1,18 @@
 import { defineConfig } from 'orval'
 
 export default defineConfig({
-   common_types_v2: {
+   common_types_v1: {
      
     input: {
-        target: '../src/main/openapi/common-types-v2.yaml',
+        target: '../src/main/openapi/common-types-v1.yaml',
      },
 
      output: {
         workspace: 'src/',
         // mode: single | split | tags | tags-split
         mode: 'single',
-        target: 'model/generated/common-types-v2.ts',
-        //schemas: 'model/generated/common-types-v2',
+        target: 'model/generated/common-types-v1.ts',
+        //schemas: 'model/generated/common-types-v1',
         //client: 'react-query',
         //httpClient: 'axios',
         fileExtension: '.ts',
@@ -25,6 +25,31 @@ export default defineConfig({
 
      }
    },
+
+   common_types_v3: {
+     
+    input: {
+        target: '../src/main/openapi/common-types-v3.yaml',
+     },
+
+     output: {
+        workspace: 'src/',
+        // mode: single | split | tags | tags-split
+        mode: 'single',
+        target: 'model/generated/common-types-v3.ts',
+        //schemas: 'model/generated/common-types-v3',
+        //client: 'react-query',
+        //httpClient: 'axios',
+        fileExtension: '.ts',
+        namingConvention: 'PascalCase',
+        indexFiles: false,
+
+        override: {
+          useTypeOverInterfaces: false,
+        }
+     }
+   },
+
 
    common_metadata_v1: {
      
