@@ -22,10 +22,13 @@ export interface MetaData {
   title: string;
   /** Optional field. This is a longer description of what this entity is about. */
   description?: string;
-  /** Changes which were made. Append only log - in time ascending order.
+  /**
+   * Changes which were made. Append only log - in time ascending order.
 Since it can be a lot over time in some situations, it is possible specific endpoints not returning this list by default only upon request. So this field is nullable indicating "not returned"
- */
-  changelog?: ChangelogEntry[];
+
+   * @nullable
+   */
+  changelog?: ChangelogEntry[] | null;
   /** The major version of the MetaData schema which was used when this object was created. This helps to evolve MetaData over time. */
   majorVersion: number;
 }

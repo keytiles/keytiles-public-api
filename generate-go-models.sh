@@ -16,9 +16,10 @@ SURE_TO_CONTINUE="yes"
 export SURE_TO_CONTINUE
 
 source scripts/_generate-go-commons.sh
-source scripts/_generate-go-managementapi_v1.sh
+source scripts/_generate-go-hitcollectionapi_v2.sh
+source scripts/_generate-go-managementapi_v2.sh
 source scripts/_generate-go-reportsapi_v1.sh
-source scripts/_generate-go-queryapi_v2.sh
+source scripts/_generate-go-queryapi_v3.sh
 
 echo "all done!"
 echo "check https://keytiles.atlassian.net/wiki/spaces/KEYTILES/pages/182321153/keytiles-public-api+-+and+generated+models#To-generate-Go-models now!"

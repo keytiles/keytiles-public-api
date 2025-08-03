@@ -18,8 +18,8 @@ import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import com.keytiles.api.model.common.v2.ContainerResponseClass;
-import com.keytiles.api.model.common.v2.ResponseContainerInfoClass;
+import com.keytiles.api.model.common.types.v3.ContainerResponseClass;
+import com.keytiles.api.model.common.types.v3.ResponseContainerInfoClass;
 import java.util.ArrayList;
 import java.util.List;
 

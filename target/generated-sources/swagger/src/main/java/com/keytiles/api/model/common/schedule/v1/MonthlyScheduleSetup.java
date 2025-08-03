@@ -33,8 +33,6 @@ public class MonthlyScheduleSetup implements Serializable, OneOfScheduleSetup {
 
 
   
-  // @Generator: arg 'triggerTime': mandatory field 
-  // @Generator: arg 'dayName': non-nullable and does not have default value - we must enforce a non-null initial value 
   @JsonCreator
   public MonthlyScheduleSetup(@JsonProperty("triggerTime") String triggerTime, @JsonProperty("dayName") OneOfMonthlyScheduleSetupDayName dayName) {
     super();

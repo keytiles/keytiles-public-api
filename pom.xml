@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.keytiles</groupId>
 	<artifactId>keytiles-public-api</artifactId>
-	<version>2.0.1</version>
+	<version>2.0.0</version>
 	<packaging>jar</packaging>
 
 	<properties>
@@ -150,7 +150,7 @@
 						<configuration>
 							<inputSpec>${project.basedir}/src/main/openapi/common-types-v1.yaml</inputSpec>
 							<output>${project.basedir}/target/generated-sources/swagger/</output>
-							<modelPackage>com.keytiles.api.model.common.v1</modelPackage>
+							<modelPackage>com.keytiles.api.model.common.types.v1</modelPackage>
 							<language>com.keytiles.swagger.codegen.KeytilesJavaCodegen</language>
 							<!-- <library>resttemplate</library> -->
 							<generateApis>false</generateApis>
@@ -162,7 +162,7 @@
 							<generateSupportingFiles>false</generateSupportingFiles>
 							<configOptions>
 								<mavenExecutionId>common-types-v1</mavenExecutionId>
-								<addExplanationsToModel>false</addExplanationsToModel>
+								<addExplanationsToModel>true</addExplanationsToModel>
 								
 								<interfaceOnly>true</interfaceOnly>
 								<dateLibrary>java8</dateLibrary>
@@ -171,15 +171,15 @@
 					</execution>
 									
 					<execution>
-						<id>common-types-v2</id>
+						<id>common-types-v3</id>
 						<phase>generate-sources</phase>
 						<goals>
 							<goal>generate</goal>
 						</goals>
 						<configuration>
-							<inputSpec>${project.basedir}/src/main/openapi/common-types-v2.yaml</inputSpec>
+							<inputSpec>${project.basedir}/src/main/openapi/common-types-v3.yaml</inputSpec>
 							<output>${project.basedir}/target/generated-sources/swagger/</output>
-							<modelPackage>com.keytiles.api.model.common.v2</modelPackage>
+							<modelPackage>com.keytiles.api.model.common.types.v3</modelPackage>
 							<language>com.keytiles.swagger.codegen.KeytilesJavaCodegen</language>
 							<!-- <library>resttemplate</library> -->
 							<generateApis>false</generateApis>
@@ -190,7 +190,7 @@
 							<generateModelDocumentation>false</generateModelDocumentation>
 							<generateSupportingFiles>false</generateSupportingFiles>
 							<configOptions>
-								<mavenExecutionId>common-types-v2</mavenExecutionId>
+								<mavenExecutionId>common-types-v3</mavenExecutionId>
 								<addExplanationsToModel>true</addExplanationsToModel>
 								
 								<interfaceOnly>true</interfaceOnly>
@@ -258,15 +258,15 @@
 					</execution>	
 
 					<execution>
-						<id>hitcollection-api-v1</id>
+						<id>hitcollection-api-v2</id>
 						<phase>generate-sources</phase>
 						<goals>
 							<goal>generate</goal>
 						</goals>
 						<configuration>
-							<inputSpec>${project.basedir}/src/main/openapi/hit-collection-api-v1.yaml</inputSpec>
+							<inputSpec>${project.basedir}/src/main/openapi/hit-collection-api-v2.yaml</inputSpec>
 							<output>${project.basedir}/target/generated-sources/swagger/</output>
-							<modelPackage>com.keytiles.api.model.hitcollection.v1</modelPackage>
+							<modelPackage>com.keytiles.api.model.hitcollection.v2</modelPackage>
 							<language>com.keytiles.swagger.codegen.KeytilesJavaCodegen</language>
 							<!-- <library>resttemplate</library> -->
 							<library>resttemplate</library>
@@ -279,10 +279,10 @@
 							<generateModelDocumentation>false</generateModelDocumentation>
 							<generateSupportingFiles>false</generateSupportingFiles>
 							<configOptions>
-								<mavenExecutionId>hitcollection-api-v1</mavenExecutionId>
-								<addExplanationsToModel>false</addExplanationsToModel>
+								<mavenExecutionId>hitcollection-api-v2</mavenExecutionId>
+								<addExplanationsToModel>true</addExplanationsToModel>
 								<!-- warning! order really matters here! see README! -->
-								<addSchemaModelsToImportMappingsFromMavenExecutions>common-types-v2,common-schedule-v1,common-metadata-v1</addSchemaModelsToImportMappingsFromMavenExecutions>
+								<addSchemaModelsToImportMappingsFromMavenExecutions>common-types-v3,common-schedule-v1,common-metadata-v1</addSchemaModelsToImportMappingsFromMavenExecutions>
 								<!-- default: true -->
 								<!-- excludeImportMappingsFromGeneration>false</excludeImportMappingsFromGeneration> -->
 								
@@ -293,15 +293,15 @@
 					</execution>
 					
 					<execution>
-						<id>management-api-v1</id>
+						<id>management-api-v2</id>
 						<phase>generate-sources</phase>
 						<goals>
 							<goal>generate</goal>
 						</goals>
 						<configuration>
-							<inputSpec>${project.basedir}/src/main/openapi/management-api-v1.yaml</inputSpec>
+							<inputSpec>${project.basedir}/src/main/openapi/management-api-v2.yaml</inputSpec>
 							<output>${project.basedir}/target/generated-sources/swagger/</output>
-							<modelPackage>com.keytiles.api.model.management.v1</modelPackage>
+							<modelPackage>com.keytiles.api.model.management.v2</modelPackage>
 							<language>com.keytiles.swagger.codegen.KeytilesJavaCodegen</language>
 							<!-- <library>resttemplate</library> -->
 							<library>resttemplate</library>
@@ -314,10 +314,10 @@
 							<generateModelDocumentation>false</generateModelDocumentation>
 							<generateSupportingFiles>false</generateSupportingFiles>
 							<configOptions>
-								<mavenExecutionId>management-api-v1</mavenExecutionId>
+								<mavenExecutionId>management-api-v2</mavenExecutionId>
 								<addExplanationsToModel>true</addExplanationsToModel>
 								<!-- warning! order really matters here! see README! -->
-								<addSchemaModelsToImportMappingsFromMavenExecutions>common-types-v2,common-schedule-v1,common-metadata-v1</addSchemaModelsToImportMappingsFromMavenExecutions>
+								<addSchemaModelsToImportMappingsFromMavenExecutions>common-types-v3,common-schedule-v1,common-metadata-v1</addSchemaModelsToImportMappingsFromMavenExecutions>
 								<!-- default: true -->
 								<!-- <excludeImportMappingsFromGeneration>false</excludeImportMappingsFromGeneration> -->
 								
@@ -336,7 +336,7 @@
 						<configuration>
 							<inputSpec>${project.basedir}/src/main/openapi/query-api-v1.yaml</inputSpec>
 							<output>${project.basedir}/target/generated-sources/swagger/</output>
-							<modelPackage>com.keytiles.api.model.stat.v1</modelPackage>
+							<modelPackage>com.keytiles.api.model.query.v1</modelPackage>
 							<language>com.keytiles.swagger.codegen.KeytilesJavaCodegen</language>
 							<!-- <library>resttemplate</library> -->
 							<library>resttemplate</library>
@@ -363,15 +363,15 @@
 					</execution>
 										
 					<execution>
-						<id>query-api-v2</id>
+						<id>query-api-v3</id>
 						<phase>generate-sources</phase>
 						<goals>
 							<goal>generate</goal>
 						</goals>
 						<configuration>
-							<inputSpec>${project.basedir}/src/main/openapi/query-api-v2.yaml</inputSpec>
+							<inputSpec>${project.basedir}/src/main/openapi/query-api-v3.yaml</inputSpec>
 							<output>${project.basedir}/target/generated-sources/swagger/</output>
-							<modelPackage>com.keytiles.api.model.stat.v2</modelPackage>
+							<modelPackage>com.keytiles.api.model.query.v3</modelPackage>
 							<language>com.keytiles.swagger.codegen.KeytilesJavaCodegen</language>
 							<!-- <library>resttemplate</library> -->
 							<library>resttemplate</library>
@@ -387,7 +387,7 @@
 								<mavenExecutionId>query-api-v2</mavenExecutionId>
 								<addExplanationsToModel>true</addExplanationsToModel>
 								<!-- warning! order really matters here! see README! -->
-								<addSchemaModelsToImportMappingsFromMavenExecutions>common-types-v2,common-schedule-v1,common-metadata-v1</addSchemaModelsToImportMappingsFromMavenExecutions>
+								<addSchemaModelsToImportMappingsFromMavenExecutions>common-types-v3,common-schedule-v1,common-metadata-v1</addSchemaModelsToImportMappingsFromMavenExecutions>
 								<!-- default: true -->
 								<!-- excludeImportMappingsFromGeneration>false</excludeImportMappingsFromGeneration> -->
 								
@@ -422,7 +422,7 @@
 								<mavenExecutionId>reports-api-v1</mavenExecutionId>
 								<addExplanationsToModel>true</addExplanationsToModel>
 								<!-- warning! order really matters here! see README! -->
-								<addSchemaModelsToImportMappingsFromMavenExecutions>common-types-v2,common-schedule-v1,common-metadata-v1</addSchemaModelsToImportMappingsFromMavenExecutions>
+								<addSchemaModelsToImportMappingsFromMavenExecutions>common-types-v3,common-schedule-v1,common-metadata-v1</addSchemaModelsToImportMappingsFromMavenExecutions>
 								<!-- default: true -->
 								<!-- excludeImportMappingsFromGeneration>false</excludeImportMappingsFromGeneration> -->
 								

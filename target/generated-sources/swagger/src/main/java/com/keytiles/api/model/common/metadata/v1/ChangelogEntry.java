@@ -36,9 +36,6 @@ public class ChangelogEntry implements Serializable{
 
 
   
-  // @Generator: arg 'time': mandatory field 
-  // @Generator: arg 'who': mandatory field 
-  // @Generator: arg 'comment': non-nullable and does not have default value - we must enforce a non-null initial value 
   @JsonCreator
   public ChangelogEntry(@JsonProperty("time") Integer time, @JsonProperty("who") String who, @JsonProperty("comment") String comment) {
     super();

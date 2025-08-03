@@ -34,18 +34,16 @@ public class MetaData implements Serializable{
   // @Generator: becomes private - as non-nullable so we need to protect it with setter and null-check 
   private String description = null;
 
-  // @Generator: non-nullable property so Codegen applied a default empty array to it automatically because it is possible with this type 
-  // @Generator: becomes private - as non-nullable so we need to protect it with setter and null-check 
-  private List<ChangelogEntry> changelog = new ArrayList<>();
-
   // @Generator: becomes private - as non-nullable so we need to protect it with setter and null-check 
   private Integer majorVersion = null;
 
 
+  // @Generator: this array does not have default and nullable - so let's keep it on NULL then 
+  // @Generator: becomes public - as nullable (no need to null-check) and not readonly 
+  @JsonProperty("changelog")
+  public List<ChangelogEntry> changelog = null;
+
   
-  // @Generator: arg 'title': mandatory field 
-  // @Generator: arg 'description': non-nullable and does not have default value - we must enforce a non-null initial value 
-  // @Generator: arg 'majorVersion': mandatory field 
   @JsonCreator
   public MetaData(@JsonProperty("title") String title, @JsonProperty("description") String description, @JsonProperty("majorVersion") Integer majorVersion) {
     super();
@@ -91,20 +89,6 @@ public class MetaData implements Serializable{
       throw new IllegalArgumentException("'description' value can not be NULL");
     }
     this.description = description;
-  }
-
-  @JsonProperty("changelog")
-  public List<ChangelogEntry> getChangelog() {
-    return changelog;
-  }  
-
-  // @Generator: added to protect field 'changelog' against null-value assignment 
-  @JsonProperty("changelog")
-  public void setChangelog(List<ChangelogEntry> changelog) {
-    if(changelog == null) {
-      throw new IllegalArgumentException("'changelog' value can not be NULL");
-    }
-    this.changelog = changelog;
   }
 
   @JsonProperty("majorVersion")

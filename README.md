@@ -88,7 +88,8 @@ But defineable for sure. We go with "union" approach basically.
 
 Meaning what we try to keep is the following:
 
-- Bump patch version - if there are only fixes in generated library codes (see supported languages above)
+- Bump patch version - if there are only fixes in generated library codes (see supported languages above).  
+  It is also possible if there was a problem with the generated lib in specific language which we fix BUT without changing schemas, we just release a fix version.
 - Bump minor version - if there are any new things in ani API contracts - but no breaking change anywhere
 - Bump major version - if there is at least breaking change in any API contracts. Simply put: you might run into compile issues
   including this new version of the lib in any supported programming language.

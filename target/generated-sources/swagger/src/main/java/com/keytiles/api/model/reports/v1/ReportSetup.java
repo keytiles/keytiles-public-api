@@ -56,9 +56,6 @@ public class ReportSetup implements Serializable{
   public List<ReportQuery> queries = new ArrayList<>();
 
   
-  // @Generator: arg 'id': mandatory field 
-  // @Generator: arg 'metaData': mandatory field 
-  // @Generator: arg 'resourceVersion': mandatory field 
   @JsonCreator
   public ReportSetup(@JsonProperty("id") String id, @JsonProperty("metaData") MetaData metaData, @JsonProperty("resourceVersion") Integer resourceVersion) {
     super();

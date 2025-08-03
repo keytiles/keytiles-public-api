@@ -60,11 +60,6 @@ public class ReportInstance implements Serializable{
   public String description = null;
 
   
-  // @Generator: arg 'id': non-nullable and does not have default value - we must enforce a non-null initial value 
-  // @Generator: arg 'parentReportSetupId': non-nullable and does not have default value - we must enforce a non-null initial value 
-  // @Generator: arg 'createdAt': non-nullable and does not have default value - we must enforce a non-null initial value 
-  // @Generator: arg 'isTestOnly': non-nullable and does not have default value - we must enforce a non-null initial value 
-  // @Generator: arg 'title': non-nullable and does not have default value - we must enforce a non-null initial value 
   @JsonCreator
   public ReportInstance(@JsonProperty("id") String id, @JsonProperty("parentReportSetupId") String parentReportSetupId, @JsonProperty("createdAt") Integer createdAt, @JsonProperty("isTestOnly") Boolean isTestOnly, @JsonProperty("title") String title) {
     super();

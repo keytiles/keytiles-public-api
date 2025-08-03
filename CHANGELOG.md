@@ -1,4 +1,4 @@
-# Release 2.0.1
+# Release 2.0.0
 
 ## Breaking changes
 
@@ -24,6 +24,14 @@ But let's list all the changes contract to contract.
   Compare simply with `hitcollection-api-v1.yaml` to see details.
 - `query-api-v3.yaml` is introduced. Same simplifications were applied here as in the newly introduced `management-api-v2.yaml`.
   Compare simply with `query-api-v2.yaml` to see details. Custom classes and overrides in ".problems" properties now gone.
+- In generated Java, Golang code we do not provide anymore the above listed and obsolete versions as you can simply switch to the newer versions in your code, namely
+  - `common-types-v2.yaml` is not generated anymore
+  - `management-api-v1.yaml` is not generated anymore
+  - `hitcollection-api-v1.yaml` is not generated anymore
+  - `query-api-v2.yaml` is not generated anymore
+- In generated Java code the package of Query API is changed from `com.keytiles.api.model.stat.v1` to `com.keytiles.api.model.query.v1`
+  And the new Query API v3 is generated into `com.keytiles.api.model.query.v3`
+- In generated Java code the package of `common-types-v1` API file is changed from `com.keytiles.api.model.common.v1` to `com.keytiles.api.model.common.types.v1`. And the newly arrived v3 is `com.keytiles.api.model.common.types.v3`
 
 ## New features
 
@@ -32,11 +40,7 @@ But let's list all the changes contract to contract.
 - `common.schedule-v1.yaml` is introduced. Will be useful in situations where certain actions should be schedulable.
   For now the Reporting layer is using this as first citizen.
 - Pre-releasing `reports-api v1.yaml` so we can start working with it. This is a completely new API.
-
-# Release 2.0.0
-
-This version is invalid.
-We ran into problems first time setup Github based NPM package - for first time generated TypeScript code :-( And we could not fix this so omit this version entirely seemed to be easier...
+- In terms of generated code we added TypeScript together with Axios client.
 
 # Release 1.2.0
 

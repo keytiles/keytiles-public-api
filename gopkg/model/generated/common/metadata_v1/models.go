@@ -18,7 +18,8 @@ type ChangelogEntry struct {
 // MetaData defines model for MetaData.
 type MetaData struct {
 	// Changelog Changes which were made. Append only log - in time ascending order.
-	Changelog *[]ChangelogEntry `json:"changelog,omitempty" yaml:"changelog,omitempty"`
+	// Since it can be a lot over time in some situations, it is possible specific endpoints not returning this list by default only upon request. So this field is nullable indicating "not returned"
+	Changelog *[]ChangelogEntry `json:"changelog" yaml:"changelog"`
 
 	// Description Optional field. This is a longer description of what this entity is about.
 	Description *string `json:"description,omitempty" yaml:"description,omitempty"`

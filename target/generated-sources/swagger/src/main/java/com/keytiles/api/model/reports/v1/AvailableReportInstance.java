@@ -36,9 +36,6 @@ public class AvailableReportInstance implements Serializable{
 
 
   
-  // @Generator: arg 'id': non-nullable and does not have default value - we must enforce a non-null initial value 
-  // @Generator: arg 'createdAt': non-nullable and does not have default value - we must enforce a non-null initial value 
-  // @Generator: arg 'isTestOnly': non-nullable and does not have default value - we must enforce a non-null initial value 
   @JsonCreator
   public AvailableReportInstance(@JsonProperty("id") String id, @JsonProperty("createdAt") Integer createdAt, @JsonProperty("isTestOnly") Boolean isTestOnly) {
     super();

@@ -43,6 +43,7 @@ components:
           type: string
         changelog:
           type: array
+          nullable: true
           description: >
                       Changes which were made. Append only log - in time ascending order.
                       

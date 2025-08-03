@@ -14,12 +14,13 @@ then
     fi
 fi
 
+#rm -rf gopkg/model/generated/common
 
 mkdir -p gopkg/model/generated/common/types_v1
 oapi-codegen -config go-helper/generator1/generate-go-commons-typesv1.config.yaml src/main/openapi/common-types-v1.yaml
 
-mkdir -p gopkg/model/generated/common/types_v2
-oapi-codegen -config go-helper/generator1/generate-go-commons-typesv2.config.yaml src/main/openapi/common-types-v2.yaml
+mkdir -p gopkg/model/generated/common/types_v3
+oapi-codegen -config go-helper/generator1/generate-go-commons-typesv3.config.yaml src/main/openapi/common-types-v3.yaml
 
 mkdir -p gopkg/model/generated/common/schedule_v1
 oapi-codegen -config go-helper/generator1/generate-go-commons-schedulev1.config.yaml src/main/openapi/common-schedule-v1.yaml
