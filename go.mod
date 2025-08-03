@@ -1,4 +1,4 @@
-module github.com/keytiles/keytiles-public-api
+module github.com/keytiles/keytiles-public-api/v2
 
 go 1.23.4
 
