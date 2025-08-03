@@ -18,8 +18,8 @@ import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import com.keytiles.api.model.common.v2.ContainerResponseClass;
-import com.keytiles.api.model.common.v2.ResponseContainerInfoClass;
+import com.keytiles.api.model.common.types.v3.ContainerResponseClass;
+import com.keytiles.api.model.common.types.v3.ResponseContainerInfoClass;
 import com.keytiles.api.model.reports.v1.ReportInstance;
 
 import java.io.Serializable;
@@ -33,7 +33,6 @@ public class GetContainerReportInstanceResponseClass extends ContainerResponseCl
 
 
   
-  // @Generator: arg 'reportInstance': non-nullable and does not have default value - we must enforce a non-null initial value 
   @JsonCreator
   public GetContainerReportInstanceResponseClass(@JsonProperty("requestReceivedAt") Integer requestReceivedAt, @JsonProperty("container") ResponseContainerInfoClass container, @JsonProperty("reportInstance") ReportInstance reportInstance) {
     super(requestReceivedAt, container);

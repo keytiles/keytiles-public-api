@@ -29,7 +29,7 @@ paths:
       description: >
                 With this endpoint you have the possibility to query all report setups of a Data Container.
       parameters:
-        - $ref: 'common-types-v2.yaml#/components/parameters/containerId'
+        - $ref: 'common-types-v3.yaml#/components/parameters/containerId'
 
       security:
       - basicAuth: []
@@ -46,21 +46,21 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseClass'
         '403':
           description: "You do not have permission to do this with the given credentials"
           content:
             application/json:
               schema:
-                #$ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
-                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+                #$ref: 'common-types-v3.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseClass'
         '404':
           description: "The container does not exist (or disabled)"
           content:
             application/json:
               schema:
-                #$ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
-                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+                #$ref: 'common-types-v3.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseClass'
 
     post:
       summary: "To create a new report setup belongs to the Container"
@@ -71,7 +71,7 @@ paths:
       tags:
       - Manage report setups
       parameters:
-        - $ref: 'common-types-v2.yaml#/components/parameters/containerId'
+        - $ref: 'common-types-v3.yaml#/components/parameters/containerId'
       requestBody:
         content:
           application/json:
@@ -92,37 +92,37 @@ paths:
           content:
             'application/json':
               schema:
-                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseClass'
         '400':
           description: "There were problems with the request or the resource you sent on this request - more details you get in the response."
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseClass'
         '401':
           description: "Authentication failed - you provided invalid credentials or not at all"
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseClass'
         '403':
           description: "You do not have permission to do this with the given credentials"
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseClass'
         '404':
           description: "The container does not exist (or disabled)"
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseClass'
         '409':
           description: "Some preconditions are not OK. For example, you assigned an ID on client side but that ID is already taken. More details you find in the response."
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseClass'
     
 
   '/v1/reports/containers/setup/rest/{containerId}/{reportSetupId}':
@@ -132,7 +132,7 @@ paths:
       tags:
       - Manage report setups
       parameters:
-        - $ref: 'common-types-v2.yaml#/components/parameters/containerId'
+        - $ref: 'common-types-v3.yaml#/components/parameters/containerId'
         - $ref: '#/components/parameters/reportSetupId'
 
       security:
@@ -150,22 +150,22 @@ paths:
           content:
             application/json:
               schema:
-                #$ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
-                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+                #$ref: 'common-types-v3.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseClass'
         '403':
           description: "You do not have permission to do this with the given credentials"
           content:
             application/json:
               schema:
-                #$ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
-                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+                #$ref: 'common-types-v3.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseClass'
         '404':
           description: "The container does not exist (or disabled) or the requested report setup does not exist - more details in the response!"
           content:
             application/json:
               schema:
-                #$ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
-                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+                #$ref: 'common-types-v3.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseClass'
 
     put:
       summary: "To modify an existing report setup."
@@ -176,7 +176,7 @@ paths:
       tags:
       - Manage report setups
       parameters:
-        - $ref: 'common-types-v2.yaml#/components/parameters/containerId'
+        - $ref: 'common-types-v3.yaml#/components/parameters/containerId'
         - $ref: '#/components/parameters/reportSetupId'
       requestBody:
         content:
@@ -193,37 +193,37 @@ paths:
           content:
             'application/json':
               schema:
-                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseClass'
         '400':
           description: "There were problems with the request or the resource you sent on this request - more details you get in the response."
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseClass'
         '401':
           description: "Authentication failed - you provided invalid credentials or not at all"
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseClass'
         '403':
           description: "You do not have permission to do this with the given credentials"
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseClass'
         '404':
           description: "The container does not exist (or disabled) or the requested report setup does not exist - more details in the response!"
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseClass'
         '409':
           description: "Some preconditions are not OK. Most likely the 'resourceVersion' did not match because there was a race condition. More details you find in the response."
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseClass'
 
     delete:
       summary: "To delete a specific report setup of the Container as well as all previously generated report instances."
@@ -234,7 +234,7 @@ paths:
       tags:
       - Manage report setups
       parameters:
-        - $ref: 'common-types-v2.yaml#/components/parameters/containerId'
+        - $ref: 'common-types-v3.yaml#/components/parameters/containerId'
         - $ref: '#/components/parameters/reportSetupId'
 
       security:
@@ -252,19 +252,19 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseClass'
         '403':
           description: "You do not have permission to do this with the given credentials"
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseClass'
         '404':
           description: "The container does not exist (or disabled) or the requested report setup does not exist - more details in the response!"
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseClass'
 
 
   '/v1/reports/containers/setup/rest/{containerId}/{reportSetupId}/instances':
@@ -274,7 +274,7 @@ paths:
       tags:
       - Generate and Query reports
       parameters:
-        - $ref: 'common-types-v2.yaml#/components/parameters/containerId'
+        - $ref: 'common-types-v3.yaml#/components/parameters/containerId'
         - $ref: '#/components/parameters/reportSetupId'
 
       security:
@@ -292,22 +292,22 @@ paths:
           content:
             application/json:
               schema:
-                #$ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
-                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+                #$ref: 'common-types-v3.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseClass'
         '403':
           description: "You do not have permission to do this with the given credentials"
           content:
             application/json:
               schema:
-                #$ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
-                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+                #$ref: 'common-types-v3.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseClass'
         '404':
           description: "The container does not exist (or disabled) or the requested report setup does not exist - more details in the response!"
           content:
             application/json:
               schema:
-                #$ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
-                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+                #$ref: 'common-types-v3.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseClass'
 
     post:
       summary: "To generate (create) a new report instance of this report setup."
@@ -318,7 +318,7 @@ paths:
       tags:
       - Generate and Query reports
       parameters:
-        - $ref: 'common-types-v2.yaml#/components/parameters/containerId'
+        - $ref: 'common-types-v3.yaml#/components/parameters/containerId'
         - $ref: '#/components/parameters/reportSetupId'
       requestBody:
         content:
@@ -345,31 +345,31 @@ paths:
           content:
             'application/json':
               schema:
-                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseClass'
         '400':
           description: "There were problems with the request or the resource you sent on this request - more details you get in the response."
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseClass'
         '401':
           description: "Authentication failed - you provided invalid credentials or not at all"
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseClass'
         '403':
           description: "You do not have permission to do this with the given credentials"
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseClass'
         '404':
           description: "The container does not exist (or disabled) or the requested report setup does not exist - more details in the response!"
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseClass'
 
 
   '/v1/reports/containers/instance/rest/{containerId}/{reportInstanceId}':
@@ -379,7 +379,7 @@ paths:
       tags:
       - Generate and Query reports
       parameters:
-        - $ref: 'common-types-v2.yaml#/components/parameters/containerId'
+        - $ref: 'common-types-v3.yaml#/components/parameters/containerId'
         - $ref: '#/components/parameters/reportInstanceId'
 
       security:
@@ -397,29 +397,29 @@ paths:
           content:
             application/json:
               schema:
-                #$ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
-                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+                #$ref: 'common-types-v3.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseClass'
         '403':
           description: "You do not have permission to do this with the given credentials"
           content:
             application/json:
               schema:
-                #$ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
-                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+                #$ref: 'common-types-v3.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseClass'
         '404':
           description: "The container does not exist (or disabled) or the requested report instance does not exist - more details in the response!"
           content:
             application/json:
               schema:
-                #$ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
-                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+                #$ref: 'common-types-v3.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseClass'
 
     delete:
       summary: "To permanently delete a specific report instance - after this this report is not available anymore."
       tags:
       - Generate and Query reports
       parameters:
-        - $ref: 'common-types-v2.yaml#/components/parameters/containerId'
+        - $ref: 'common-types-v3.yaml#/components/parameters/containerId'
         - $ref: '#/components/parameters/reportInstanceId'
 
       security:
@@ -431,28 +431,28 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseClass'
         '401':
           description: "Authentication failed - you provided invalid credentials"
           content:
             application/json:
               schema:
-                #$ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
-                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+                #$ref: 'common-types-v3.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseClass'
         '403':
           description: "You do not have permission to do this with the given credentials"
           content:
             application/json:
               schema:
-                #$ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
-                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'
+                #$ref: 'common-types-v3.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseClass'
         '404':
           description: "The container does not exist (or disabled) or the requested report instance does not exist - more details in the response!"
           content:
             application/json:
               schema:
-                #$ref: 'common-types-v2.yaml#/components/schemas/MessageResponseClass'
-                $ref: '#/components/schemas/MachineReadableReportsEndpointMessageResponseClass'                
+                #$ref: 'common-types-v3.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseClass'                
 
 
 
@@ -497,40 +497,11 @@ components:
       description: NOTE! Error codes is an Enum. Unfortunately in OpenApi (so far) there is no possibility to provide description for Enum values. But we have detailed description of each error codes! Please check the OpenApi file in our Github repo - you find them as comments for each Enum values! 
       allOf:
       - $ref: "#/components/schemas/ReportsEndpointLocalErrorCodes"
-      - $ref: "common-types-v2.yaml#/components/schemas/CommonErrorCodes"
-
-
-    # Let's extend the global Problem class with our Reports API specific error codes
-    ReportsEndpointProblemClass:
-      allOf:
-      - $ref: 'common-types-v2.yaml#/components/schemas/ProblemBaseClass'
-      - type: object
-        properties:
-          errorCodes:
-            type: array
-            items:
-              $ref: "#/components/schemas/ReportsEndpointErrorCodes"
-            nullable: true
-            default: []
-
-    # Let's extend the original response class with the above assembled machine readable Problems
-    MachineReadableReportsEndpointMessageResponseClass:
-      allOf:
-      - $ref: "common-types-v2.yaml#/components/schemas/MessageResponseClass"
-      - type: object
-        properties:
-          problems:
-            type: array
-            items:
-              $ref: '#/components/schemas/ReportsEndpointProblemClass'
-            nullable: true
-            default: []
-            description: 'List of errors/warnings'
-
+      - $ref: "common-types-v3.yaml#/components/schemas/CommonErrorCodes"
 
     ListContainerReportSetupsResponseClass:
       allOf:
-      - $ref: "common-types-v2.yaml#/components/schemas/ContainerResponseClass"
+      - $ref: "common-types-v3.yaml#/components/schemas/ContainerResponseClass"
       type: object
       properties:
         reportSetupIds:
@@ -543,7 +514,7 @@ components:
 
     GetContainerReportSetupResponseClass:
       allOf:
-      - $ref: "common-types-v2.yaml#/components/schemas/ContainerResponseClass"
+      - $ref: "common-types-v3.yaml#/components/schemas/ContainerResponseClass"
       type: object
       properties:
         reportSetup:
@@ -762,11 +733,13 @@ components:
           type: string
 
     DataTableColumn:
+      type: object
       oneOf:
       - $ref: '#/components/schemas/DataTableAxisColumn'
       - $ref: '#/components/schemas/DataTableDataColumn'
 
     DataTableCell:
+      type: object
       oneOf:
       - type: string
       - type: number
@@ -884,7 +857,7 @@ components:
         
     ListContainerReportInstancesResponseClass:
       allOf:
-      - $ref: "common-types-v2.yaml#/components/schemas/ContainerResponseClass"
+      - $ref: "common-types-v3.yaml#/components/schemas/ContainerResponseClass"
       type: object
       properties:
         ofReportSetupId:
@@ -899,7 +872,7 @@ components:
 
     GetContainerReportInstanceResponseClass:
       allOf:
-      - $ref: "common-types-v2.yaml#/components/schemas/ContainerResponseClass"
+      - $ref: "common-types-v3.yaml#/components/schemas/ContainerResponseClass"
       type: object
       properties:
         reportInstance:

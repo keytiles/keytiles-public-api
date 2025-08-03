@@ -16,3 +16,5 @@ deps*.txt
 hs_err_pid*
 dependency-reduced-pom.xml
 classpath.txt
+
+typescript/node_modules

@@ -38,7 +38,6 @@ public class DataTable implements Serializable{
 
 
   
-  // @Generator: arg 'columns': mandatory field 
   @JsonCreator
   public DataTable(@JsonProperty("columns") List<DataTableColumn> columns) {
     super();

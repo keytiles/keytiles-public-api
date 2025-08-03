@@ -1,7 +1,7 @@
 openapi: 3.0.1
 
 info:
-  version: '1.2'
+  version: '2.1'
   title: Common object definitions
   description: "These object definitions are shared among multiple contracts"
 

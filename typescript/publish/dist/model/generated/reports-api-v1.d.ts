@@ -1,0 +1,337 @@
+import { CommonErrorCodes, MessageResponseClass, ContainerResponseClass } from './common-types-v3';
+import { MetaData } from './common-metadata-v1';
+import { Schedule } from './common-schedule-v1';
+import type { AxiosRequestConfig, AxiosResponse } from 'axios';
+/**
+ * Defines the beginning of the query range - you are interested in data which time is >= than this timestamp.
+  
+Format is mixed. It can be
+ * a UNIX timestamp in UTC (seconds since Epoch) e.g.: `1657261221` - means 2022-07-08 6:20:21 GMT
+   (note: server and client clock might be different! see: /v2/system/clock endpoint to query server time)
+ * a relative time spec compared to current time in form of 'now[-X<m|h|d>]' where 'm' means minutes, 'h' means hours and 'd' means days,
+   e.g.: `now-10m` means 10 minutes earlier compared to current time,
+   `now-2h` means 2 hours earlier and so on
+
+   
+This must point to the past!   (note: server validates according to his own clock!)
+
+ */
+export type FromTimestampParameter = string;
+/**
+ * Defines the end of the query range - you are interested in data which time is <= than this timestamp.
+  
+**Default value:** the current timestamp, so 'now' if you do not specify this parameter.
+  
+Format is mixed. It can be
+ * a UNIX timestamp in UTC (seconds since Epoch) e.g.: `1657261221` - means 2022-07-08 6:20:21 GMT
+   (note: server and client clock might be different! see: /v2/system/clock endpoint to query server time)
+ * a relative time spec compared to current time in form of 'now[-X<m|h|d>]' where 'm' means minutes, 'h' means hours and 'd' means days,
+   e.g.: `now-10m` means 10 minutes earlier compared to current time,
+   `now-2h` means 2 hours earlier and so on
+
+   
+Can not point to the future!   (note: server validates according to his own clock!)
+
+ */
+export type ToTimestampParameter = string;
+export type ReportsEndpointLocalErrorCodes = typeof ReportsEndpointLocalErrorCodes[keyof typeof ReportsEndpointLocalErrorCodes];
+export declare const ReportsEndpointLocalErrorCodes: {
+    readonly containerId_missing: "containerId_missing";
+    readonly containerId_invalid: "containerId_invalid";
+    readonly reportSetupId_invalid: "reportSetupId_invalid";
+};
+/**
+ * NOTE! Error codes is an Enum. Unfortunately in OpenApi (so far) there is no possibility to provide description for Enum values. But we have detailed description of each error codes! Please check the OpenApi file in our Github repo - you find them as comments for each Enum values!
+ */
+export type ReportsEndpointErrorCodes = ReportsEndpointLocalErrorCodes & CommonErrorCodes;
+export type ListContainerReportSetupsResponseClass = ContainerResponseClass & {
+    /**
+     * All avaiable report setup IDs.
+     */
+    reportSetupIds?: string[];
+};
+export type GetContainerReportSetupResponseClass = ContainerResponseClass & {
+    reportSetup?: ReportSetup;
+};
+export type ReportRecipientsRoles = typeof ReportRecipientsRoles[keyof typeof ReportRecipientsRoles];
+export declare const ReportRecipientsRoles: {
+    readonly view: "view";
+    readonly admin: "admin";
+    readonly developer: "developer";
+};
+/**
+ * This is an optional setup - controlls who will receive these reports.
+  
+If not given at all then ALL Data Container users will get the report. Otherwise if given then Keytiles users who are matching to ANY of the given criteria will receive the report.
+
+ * @nullable
+ */
+export type ReportRecipients = {
+    /** Optional entry. List of specific Keytiles users (email or ID) to send the reports to. The users who are listed here will get the reports for sure if
+   * they are not disabled in Keytiles (can not log in)
+   * they are not associated with the Data Container anyhow
+   */
+    users?: string[];
+    /** Optional entry. All Data Container users who has ANY of the listed roles will receive this report. */
+    roles?: ReportRecipientsRoles[];
+} | null;
+export type ReportQueryPlugin = typeof ReportQueryPlugin[keyof typeof ReportQueryPlugin];
+export declare const ReportQueryPlugin: {
+    readonly eventCountPlugin: "eventCountPlugin";
+    readonly campaignPerformancePlugin: "campaignPerformancePlugin";
+    readonly socialPerformancePlugin: "socialPerformancePlugin";
+    readonly linksPerformancePlugin: "linksPerformancePlugin";
+    readonly tagsPerformancePlugin: "tagsPerformancePlugin";
+    readonly visitorBehaviorPlugin: "visitorBehaviorPlugin";
+};
+/**
+ * The parameters a query plugin needs depends on the plugin. These key-value pairs provide the setup how the query plugin will generate this part of the report.
+ */
+export type ReportQueryParameters = {
+    /** If set to TRUE then you get a break-down in time interval. The interval is driven by your schedule.
+   * Hourly schedule: you get 15 minutes break-down
+   * Daily schedule: you get an hourly breakdown
+   * Weekly schedule: you get a daily breakdown
+   * Monthly schedule: you get a weekly breakdown
+   */
+    groupByTime?: boolean;
+    /** Which event counts to include into the report? E.g. "pageview", or custom events e.g. "30 seconds passed". These will be the columns in your report. You can also construct formulas using the pure eventNames.
+   */
+    eventsIncluded?: string[];
+    /** If set to TRUE then you get a break-down on Tile level - otherwise just sum of the traffic of all Tiles.
+   */
+    groupByTiles?: boolean;
+    /** If set to TRUE then you get a break-down based on content structure (=tileGroupPath). Can not be used together with 'groupByTiles'!
+   */
+    groupByTileGroupPaths?: boolean;
+    /** You can limit how deep you want the report to go down in the content structure. E.g. if you set it to 1 that means you get a break down only for first level.
+   */
+    groupByTileGroupPathMaxDepth?: number;
+    /** Optional param. How many rows you want to display maximum? Only makes sense if 'groupByTiles=true' or 'groupByTileGroupPaths=true'. Using the 'performanceDescendingOrder' basically you can see the top performing ones, or the worst performing ones - up to you.
+   */
+    limit?: number;
+    /** Sort the list based on these "eventsIncluded"
+   */
+    sortBy?: string[];
+    performanceDescendingOrder?: boolean;
+    /** Data filter option. Comma separated list of tile types you want to limit the query for. If you list more values here then they are interpreted with an OR operator.
+    
+  IMPORTANT! You can not use this together with `tileTypeIsNot` parameter! You can only use this or that but not both.
+    
+  In the list you can either use: * The name of the type ('frontpage', 'page', 'article', ...), or * The numeric ID of the tile type - returned by `/v2/stat/webhits/{containerId}/idmappings` endpoint - using the format `id:<numeric ID>`, e.g. **"id:123"**
+   */
+    tileTypesOnly?: string;
+    /** Data filter option. Comma separated list of matchers (see below) which returns counters only for those Tiles who's tileGroupPath is matching to one of the listed matchers. So if you list more values here then they are interpreted with an OR operator.
+    
+  note: if you have comma in your matcher (strange, but ok...) you can escape that with `\\` character!
+    
+  You can use the **'\*'** character to match any substring. But where and how you put this Asterisk character matters! Let us show you how through an example!
+  Let's assume you have articles and pages (Tiles) in the following content areas:
+    
+  * /auto * /tech * /tech/mobile-rumours * /tech/mobile * /tech/mobile/android * /tech/mobile/ios * /politics
+    
+  And now you execute queries with two different **tileGroupPathMatchingOnly** settings: 1. **"/tech/mobile\*"** and 1. **"/tech/mobile/\*"**
+  In the first query **"/tech/mobile\*"** would match for everything begins with "/tech/mobile" string. So this would include *"/tech/mobile/android"*, *"/tech/mobile/ios"* Tiles but also would include *"/tech/mobile-rumours"* Tiles. Which are clearly two different areas right?
+    
+  But what if you want to really limit for Tiles under the *"/tech/mobile"* area?
+    
+  Well then you can use the second query value: **"/tech/mobile/\*"**. This would include *"/tech/mobile/android"*, *"/tech/mobile/ios"* but would NOT include *"/tech/mobile-rumours"* anymore - as that is not a match anymore. But we are not done yet! Please note: this would also include Tiles under *"/tech/mobile/"* group itself. Because **"/\*"** means "everything which is under this group"
+   */
+    tileGroupPathMatchingOnly?: string;
+    [key: string]: unknown;
+};
+/**
+ * A report can contain multiple queries. This object describes one query of those.
+ */
+export interface ReportQuery {
+    /** The unique ID (within the report) of this query - UUID style. In concrete report instances this helps to identify the result of this query within the whole report. */
+    id?: string;
+    /** Title, description - of this query of the report. */
+    metaData: MetaData;
+    /** It is possible to temporarily disable a query. This way you do not lose its setup, so you can re-enable it later again. */
+    isDisabled?: boolean;
+    /** Which query plugin to use for this query? Each plugin provides different possibilities. */
+    plugin: ReportQueryPlugin;
+    /** The parameters a query plugin needs depends on the plugin. These key-value pairs provide the setup how the query plugin will generate this part of the report. */
+    parameters?: ReportQueryParameters;
+}
+export interface ReportSetup {
+    /** The unique ID of this report setup - UUID style */
+    id: string;
+    /** Title, description and changelog - of this report. */
+    metaData: MetaData;
+    /**
+     * Controlls when will the report run automatically. If you do not schedule the report then the report is only generated when you manually trigger it.
+     * @nullable
+     */
+    schedule?: Schedule;
+    /** Optionally you can fine grain which Data Container users will receive this report when generated. */
+    recipients?: ReportRecipients;
+    /**
+     * Queries of this report.
+     * @nullable
+     */
+    queries?: ReportQuery[] | null;
+    /**
+     * This is the resource version (which is automatically incremented by every change). When you do an update (PUT) you need to send it back! The server will check if it is matching with the resource version he has. If not then that means someone else already did an update in the meantime therefore your request can not be accepted - otherwise you may overwrite the changes someone did.
+     */
+    resourceVersion: number;
+}
+export interface DataTableDataColumn {
+    label?: string;
+    collapseFunction?: string;
+}
+export interface DataTableAxisColumn {
+    label?: string;
+}
+export type DataTableColumn = DataTableAxisColumn | DataTableDataColumn;
+export type DataTableCell = string | number;
+export type DataTableRow = DataTableCell[];
+/**
+ * DataTable is the output of queries - a self contained table of data with Axis columns (optional) and >1 Data columns. Plus of course the data rows.
+ */
+export interface DataTable {
+    /**
+     * List of "Axis" columns. Order in array is important as the index of the entry tells the position.
+     */
+    columns: DataTableColumn[];
+    /** */
+    rows?: DataTableRow[];
+}
+export interface ReportInstanceSection {
+    /** The title of this section - copied from the ReportSetup appropriate Query part which produced this section when this instance was generated. */
+    title?: string;
+    /** This is a longer description of this section - copied from the ReportSetup appropriate Query part which produced this section when this instance was generated. */
+    description?: string;
+    /** */
+    dataTables?: DataTable[];
+}
+/**
+ * This is a specific instance of a ReportSetup which was generated at a certain point in time. Keytiles stores these reports for a while.
+A report instance consists of sections - each section is generated by a query.
+
+ */
+export interface ReportInstance {
+    /** The unique ID of this report setup - UUID style */
+    id?: string;
+    /** The ID of the ReportSetup this instance belongs to. */
+    parentReportSetupId?: string;
+    /** The server time in UNIX timestamp in UTC (seconds since Epoch) when this instance was created */
+    createdAt?: number;
+    /** Tells if this report instance is a result of a test generation only or not. */
+    isTestOnly?: boolean;
+    /**
+     * In case the report generation was triggered manually by someone then this field contains the ID of the user triggered the generation.
+     * @nullable
+     */
+    generatorUserId?: string | null;
+    /**
+     * In case the report generation was triggered manually by someone then this field contains the Nickname of the user triggered the generation.
+     * @nullable
+     */
+    generatorUserNickname?: string | null;
+    /** The title of the report - copied from the ReportSetup metaData when this instance was generated. */
+    title?: string;
+    /**
+     * This is a longer description of the report - copied from the ReportSetup metaData when this instance was generated.
+     * @nullable
+     */
+    description?: string | null;
+    /** */
+    sections?: ReportInstanceSection[];
+}
+export interface AvailableReportInstance {
+    id?: string;
+    /** The server time in UNIX timestamp in UTC (seconds since Epoch) when this instance was created */
+    createdAt?: number;
+    /** Tells if this report instance is marked as 'test only' or not. */
+    isTestOnly?: boolean;
+}
+export type ListContainerReportInstancesResponseClass = ContainerResponseClass & {
+    /** Report instances belong to this report setup. */
+    ofReportSetupId?: string;
+    /**
+     * All available report instances - ordered by creation timestamp descending
+     */
+    availableInstances?: AvailableReportInstance[];
+};
+export type GetContainerReportInstanceResponseClass = ContainerResponseClass & {
+    reportInstance?: ReportInstance;
+};
+export interface GenerateReportRequestClass {
+    /** Set it to TRUE if you just want to test the report generation.
+  In this case the recipients (if set in report setup) will not be notified about this report at all. And only the user who generated it will receive a notification when report is ready to view. But apart from this the full report will be generated.
+   */
+    isTestOnly?: boolean;
+    /** A report might contain multiple ReportQuery parts, all of them has its unique ID within the report.
+  It is possible to generate only specific queries instead of the full report - by providing a list of those ReportQuery IDs here.
+  **BUT** if you do this, then this also sets 'isTestOnly' to TRUE! So the generated ReportInstance considered to be a test only.
+   */
+    executeQueryIdsOnly?: string[];
+    /** If this is set to TRUE then recipients will not receive any notification from Keytiles when this Report Instance is created.
+  **IMPORTANT!** Use this with caution! This option was introduced mostly because of internal reasons under certain circumstances.
+   */
+    skipNotifications?: boolean;
+}
+/**
+ * With this endpoint you have the possibility to query all report setups of a Data Container.
+
+ * @summary To query existing report setups belong to the Container
+ */
+export declare const getV1ReportsContainersSetupRestContainerId: <TData = AxiosResponse<ListContainerReportSetupsResponseClass>>(containerId: string, options?: AxiosRequestConfig) => Promise<TData>;
+/**
+ * You can assign an ID for this setup on client side as well but if you don't then a new ID will be generated (and returned in response header).
+  
+For now only Admins of Data Containers can create a report setup.
+
+ * @summary To create a new report setup belongs to the Container
+ */
+export declare const postV1ReportsContainersSetupRestContainerId: <TData = AxiosResponse<MessageResponseClass>>(containerId: string, reportSetup: ReportSetup, options?: AxiosRequestConfig) => Promise<TData>;
+/**
+ * @summary To query a specific report setup of the Container
+ */
+export declare const getV1ReportsContainersSetupRestContainerIdReportSetupId: <TData = AxiosResponse<ReportSetup>>(containerId: string, reportSetupId: string, options?: AxiosRequestConfig) => Promise<TData>;
+/**
+ * The 'resourceVersion' field is very important here - it must match with the version the server currently has otherwise you will get a 409 error. This mechanism helps to detect possible race conditions.
+  
+For now only Admins of Data Containers can modify a report setup.
+
+ * @summary To modify an existing report setup.
+ */
+export declare const putV1ReportsContainersSetupRestContainerIdReportSetupId: <TData = AxiosResponse<MessageResponseClass>>(containerId: string, reportSetupId: string, reportSetup: ReportSetup, options?: AxiosRequestConfig) => Promise<TData>;
+/**
+ * In case you do not want to lose all previous instances consider simply just remove the 'schedule' of the report instead of deleting it! If you do so then the report will not run automatically anymore.
+  
+For now only Admins of Data Containers can delete a report setup.
+
+ * @summary To delete a specific report setup of the Container as well as all previously generated report instances.
+ */
+export declare const deleteV1ReportsContainersSetupRestContainerIdReportSetupId: <TData = AxiosResponse<ReportSetup>>(containerId: string, reportSetupId: string, options?: AxiosRequestConfig) => Promise<TData>;
+/**
+ * @summary To query (list) all availale report instance IDs of a given ReportSetup - available in the Data Container
+ */
+export declare const getV1ReportsContainersSetupRestContainerIdReportSetupIdInstances: <TData = AxiosResponse<ListContainerReportInstancesResponseClass>>(containerId: string, reportSetupId: string, options?: AxiosRequestConfig) => Promise<TData>;
+/**
+ * When triggered manually then the report generation starts immediately. You can fine tune the report generation (mostly for testing purposes) - see request body!
+Please note that a report generation might take time.
+
+ * @summary To generate (create) a new report instance of this report setup.
+ */
+export declare const postV1ReportsContainersSetupRestContainerIdReportSetupIdInstances: <TData = AxiosResponse<MessageResponseClass>>(containerId: string, reportSetupId: string, generateReportRequestClass: GenerateReportRequestClass, options?: AxiosRequestConfig) => Promise<TData>;
+/**
+ * @summary To query a specific report instance with the given ID of the Data Container
+ */
+export declare const getV1ReportsContainersInstanceRestContainerIdReportInstanceId: <TData = AxiosResponse<GetContainerReportInstanceResponseClass>>(containerId: string, reportInstanceId: string, options?: AxiosRequestConfig) => Promise<TData>;
+/**
+ * @summary To permanently delete a specific report instance - after this this report is not available anymore.
+ */
+export declare const deleteV1ReportsContainersInstanceRestContainerIdReportInstanceId: <TData = AxiosResponse<MessageResponseClass>>(containerId: string, reportInstanceId: string, options?: AxiosRequestConfig) => Promise<TData>;
+export type GetV1ReportsContainersSetupRestContainerIdResult = AxiosResponse<ListContainerReportSetupsResponseClass>;
+export type PostV1ReportsContainersSetupRestContainerIdResult = AxiosResponse<MessageResponseClass>;
+export type GetV1ReportsContainersSetupRestContainerIdReportSetupIdResult = AxiosResponse<ReportSetup>;
+export type PutV1ReportsContainersSetupRestContainerIdReportSetupIdResult = AxiosResponse<MessageResponseClass>;
+export type DeleteV1ReportsContainersSetupRestContainerIdReportSetupIdResult = AxiosResponse<ReportSetup>;
+export type GetV1ReportsContainersSetupRestContainerIdReportSetupIdInstancesResult = AxiosResponse<ListContainerReportInstancesResponseClass>;
+export type PostV1ReportsContainersSetupRestContainerIdReportSetupIdInstancesResult = AxiosResponse<MessageResponseClass>;
+export type GetV1ReportsContainersInstanceRestContainerIdReportInstanceIdResult = AxiosResponse<GetContainerReportInstanceResponseClass>;
+export type DeleteV1ReportsContainersInstanceRestContainerIdReportInstanceIdResult = AxiosResponse<MessageResponseClass>;

@@ -15,7 +15,7 @@ package com.keytiles.api.model.reports.v1;
 import java.util.Objects;
 import java.util.Arrays;
 
-import com.keytiles.api.model.common.v2.CommonErrorCodes;
+import com.keytiles.api.model.common.types.v3.CommonErrorCodes;
 import com.keytiles.api.model.reports.v1.ReportsEndpointLocalErrorCodes;
 
 import java.io.Serializable;

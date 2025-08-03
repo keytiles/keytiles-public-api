@@ -33,6 +33,7 @@ components:
           # x-go-type-skip-optional-pointer: true
           enum: ['hourly', 'daily', 'weekly', 'monthly']
         setup:
+          type: object
           oneOf:
           - $ref: '#/components/schemas/HourlyScheduleSetup'
           - $ref: '#/components/schemas/DailyScheduleSetup'

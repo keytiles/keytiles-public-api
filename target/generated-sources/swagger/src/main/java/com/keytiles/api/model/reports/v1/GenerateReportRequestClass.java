@@ -39,8 +39,6 @@ public class GenerateReportRequestClass implements Serializable{
 
 
   
-  // @Generator: arg 'isTestOnly': non-nullable and does not have default value - we must enforce a non-null initial value 
-  // @Generator: arg 'skipNotifications': non-nullable and does not have default value - we must enforce a non-null initial value 
   @JsonCreator
   public GenerateReportRequestClass(@JsonProperty("isTestOnly") Boolean isTestOnly, @JsonProperty("skipNotifications") Boolean skipNotifications) {
     super();

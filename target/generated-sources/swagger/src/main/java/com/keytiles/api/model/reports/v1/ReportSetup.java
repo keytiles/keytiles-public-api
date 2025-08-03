@@ -18,10 +18,10 @@ import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import com.keytiles.api.model.reports.v1.MetaData;
+import com.keytiles.api.model.common.metadata.v1.MetaData;
+import com.keytiles.api.model.common.schedule.v1.Schedule;
 import com.keytiles.api.model.reports.v1.ReportQuery;
 import com.keytiles.api.model.reports.v1.ReportRecipients;
-import com.keytiles.api.model.reports.v1.Schedule;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,9 +56,6 @@ public class ReportSetup implements Serializable{
   public List<ReportQuery> queries = new ArrayList<>();
 
   
-  // @Generator: arg 'id': mandatory field 
-  // @Generator: arg 'metaData': mandatory field 
-  // @Generator: arg 'resourceVersion': mandatory field 
   @JsonCreator
   public ReportSetup(@JsonProperty("id") String id, @JsonProperty("metaData") MetaData metaData, @JsonProperty("resourceVersion") Integer resourceVersion) {
     super();

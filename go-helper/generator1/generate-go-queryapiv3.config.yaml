@@ -1,0 +1,15 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/oapi-codegen/oapi-codegen/HEAD/configuration-schema.json
+package: kt_pubapi_gen_queryv3
+output: gopkg/model/generated/query_v3/models.go
+generate:
+  models: true
+output-options:
+  # also add YAML tags to the models not just json (on 2025-02-01 this is just available in "main" branch - you have to compile and install 'oapi-codegen' yourself!)
+  yaml-tags: true
+  # to make sure that all types are generated
+  skip-prune: true
+  user-templates:
+    # we remove the "Merge" method - no need for that in our "oneOf" stuff
+    union.tmpl: './go-helper/generator1/customized-templates/union.tmpl'
+import-mapping:
+  common-types-v3.yaml: 'github.com/keytiles/keytiles-public-api/gopkg/model/generated/common/types_v3'

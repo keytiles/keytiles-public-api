@@ -39,8 +39,6 @@ public class ReportInstanceSection implements Serializable{
 
 
   
-  // @Generator: arg 'title': non-nullable and does not have default value - we must enforce a non-null initial value 
-  // @Generator: arg 'description': non-nullable and does not have default value - we must enforce a non-null initial value 
   @JsonCreator
   public ReportInstanceSection(@JsonProperty("title") String title, @JsonProperty("description") String description) {
     super();
