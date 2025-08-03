@@ -30,6 +30,7 @@ public class DataTableAxisColumn implements Serializable, OneOfDataTableColumn {
 
 
   
+  // @Generator: arg 'label': non-nullable and does not have default value - we must enforce a non-null initial value 
   @JsonCreator
   public DataTableAxisColumn(@JsonProperty("label") String label) {
     super();

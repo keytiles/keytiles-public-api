@@ -47,6 +47,8 @@ public class MappingRecordClass implements Serializable{
   public Integer lastSeenTs = null;
 
   
+  // @Generator: arg 'strId': non-nullable and does not have default value - we must enforce a non-null initial value 
+  // @Generator: arg 'intId': non-nullable and does not have default value - we must enforce a non-null initial value 
   @JsonCreator
   public MappingRecordClass(@JsonProperty("strId") String strId, @JsonProperty("intId") Integer intId) {
     super();

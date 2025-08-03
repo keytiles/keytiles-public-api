@@ -71,6 +71,9 @@ public class WebClientCounterClass implements Serializable{
 
 
   
+  // @Generator: arg 'userAgentType': non-nullable and does not have default value - we must enforce a non-null initial value 
+  // @Generator: arg 'webClient': non-nullable and does not have default value - we must enforce a non-null initial value 
+  // @Generator: arg 'count': non-nullable and does not have default value - we must enforce a non-null initial value 
   @JsonCreator
   public WebClientCounterClass(@JsonProperty("userAgentType") UserAgentTypeEnum userAgentType, @JsonProperty("webClient") Object webClient, @JsonProperty("count") Long count) {
     super();

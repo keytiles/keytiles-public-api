@@ -33,6 +33,8 @@ public class VisitorsEnvironmentResponseClassCookieSupport implements Serializab
 
 
   
+  // @Generator: arg 'cookiesEnabledCount': non-nullable and does not have default value - we must enforce a non-null initial value 
+  // @Generator: arg 'cookiesDisabledCount': non-nullable and does not have default value - we must enforce a non-null initial value 
   @JsonCreator
   public VisitorsEnvironmentResponseClassCookieSupport(@JsonProperty("cookiesEnabledCount") Long cookiesEnabledCount, @JsonProperty("cookiesDisabledCount") Long cookiesDisabledCount) {
     super();

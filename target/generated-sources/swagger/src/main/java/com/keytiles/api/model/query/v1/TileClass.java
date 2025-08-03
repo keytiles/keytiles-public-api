@@ -47,6 +47,10 @@ public class TileClass implements Serializable{
 
 
   
+  // @Generator: arg 'id': non-nullable and does not have default value - we must enforce a non-null initial value 
+  // @Generator: arg 'firstSeen': non-nullable and does not have default value - we must enforce a non-null initial value 
+  // @Generator: arg 'lastSeen': non-nullable and does not have default value - we must enforce a non-null initial value 
+  // @Generator: arg 'type': non-nullable and does not have default value - we must enforce a non-null initial value 
   @JsonCreator
   public TileClass(@JsonProperty("id") String id, @JsonProperty("firstSeen") Integer firstSeen, @JsonProperty("lastSeen") Integer lastSeen, @JsonProperty("type") TileTypeEnum type) {
     super();

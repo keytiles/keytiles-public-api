@@ -1,4 +1,4 @@
-import { CommonErrorCodes, MessageResponseClass } from './common-types-v3';
+import { CommonErrorCodesV3, MessageResponseV3Class } from './common-types-v3';
 import type { AxiosRequestConfig, AxiosResponse } from 'axios';
 /**
  * Defines the beginning of the query range - you are interested in data which time is >= than this timestamp.
@@ -364,7 +364,7 @@ export declare const HitCollectionEndpointLocalErrorCodes: {
 /**
  * NOTE! Error codes is an Enum. Unfortunately in OpenApi (so far) there is no possibility to provide description for Enum values. But we have detailed description of each error codes! Please check the OpenApi file in our Github repo - you find them as comments for each Enum values!
  */
-export type HitCollectionEndpointErrorCodes = HitCollectionEndpointLocalErrorCodes & CommonErrorCodes;
+export type HitCollectionEndpointErrorCodes = HitCollectionEndpointLocalErrorCodes & CommonErrorCodesV3;
 export type WebhitsResponseClassAllOfDebugInfo = {
     /**
      * If tileId was generated then tells which mechanism has generated it.
@@ -380,7 +380,7 @@ export type WebhitsResponseClassAllOf = {
     tileId?: string;
     debugInfo?: WebhitsResponseClassAllOfDebugInfo;
 };
-export type WebhitsResponseClass = MessageResponseClass & WebhitsResponseClassAllOf;
+export type WebhitsResponseClass = MessageResponseV3Class & WebhitsResponseClassAllOf;
 /**
  * @summary Send in a website hit
  */

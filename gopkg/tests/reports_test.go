@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"testing"
 
-	kt_pubapi_gen_common_schedulev1 "github.com/keytiles/keytiles-public-api/gopkg/model/generated/common/schedule_v1"
-	kt_pubapi_gen_reports "github.com/keytiles/keytiles-public-api/gopkg/model/generated/reports_v1"
+	kt_pubapi_gen_common_schedulev1 "github.com/keytiles/keytiles-public-api/v2/gopkg/model/generated/common/schedule_v1"
+	kt_pubapi_gen_reports "github.com/keytiles/keytiles-public-api/v2/gopkg/model/generated/reports_v1"
 	"github.com/stretchr/testify/assert"
 )
 

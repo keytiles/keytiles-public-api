@@ -30,6 +30,7 @@ public class SystemClockResponseClass implements Serializable{
 
 
   
+  // @Generator: arg 'serverTime': non-nullable and does not have default value - we must enforce a non-null initial value 
   @JsonCreator
   public SystemClockResponseClass(@JsonProperty("serverTime") Integer serverTime) {
     super();

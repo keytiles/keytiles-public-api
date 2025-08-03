@@ -5,11 +5,11 @@
  * These object definitions are shared among multiple contracts
  * OpenAPI spec version: 3.0
  */
-export type CommonErrorCodes = typeof CommonErrorCodes[keyof typeof CommonErrorCodes];
+export type CommonErrorCodesV3 = typeof CommonErrorCodesV3[keyof typeof CommonErrorCodesV3];
 
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const CommonErrorCodes = {
+export const CommonErrorCodesV3 = {
   url_invalid: 'url_invalid',
   actionToken_internalError: 'actionToken_internalError',
   actionToken_missing: 'actionToken_missing',
@@ -52,11 +52,11 @@ export const CommonErrorCodes = {
  * This info piece is most useful for 400 - "Bad Request" problems but can be meaningful of course in other scenarios too. It marks the place which has the problem.
  * @nullable
  */
-export type ProblemPlaceEnum = typeof ProblemPlaceEnum[keyof typeof ProblemPlaceEnum] | null;
+export type ProblemPlaceEnumV3 = typeof ProblemPlaceEnumV3[keyof typeof ProblemPlaceEnumV3] | null;
 
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ProblemPlaceEnum = {
+export const ProblemPlaceEnumV3 = {
   queryParam: 'queryParam',
   urlParam: 'urlParam',
   url: 'url',
@@ -71,20 +71,20 @@ export const ProblemPlaceEnum = {
   calculated: 'calculated',
 } as const;
 
-export type ProblemClassSeverity = typeof ProblemClassSeverity[keyof typeof ProblemClassSeverity];
+export type ProblemV3ClassSeverity = typeof ProblemV3ClassSeverity[keyof typeof ProblemV3ClassSeverity];
 
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ProblemClassSeverity = {
+export const ProblemV3ClassSeverity = {
   warning: 'warning',
   error: 'error',
 } as const;
 
-export interface ProblemClass {
-  severity: ProblemClassSeverity;
+export interface ProblemV3Class {
+  severity: ProblemV3ClassSeverity;
   /** The problem in human readable form */
   message: string;
-  place?: ProblemPlaceEnum;
+  place?: ProblemPlaceEnumV3;
   /**
    * If it makes sense it tells you which place was problematic. E.g. if a request parameter should be an Integer but you send in something wrong then "placeName" will tell you exactly which request parameter was wrong.
    * @nullable
@@ -98,9 +98,9 @@ export interface ProblemClass {
  * Extra data (variables) the endpoint wants to return for programmatic processing.
  * @nullable
  */
-export type BaseResponseClassVars = { [key: string]: unknown } | null;
+export type BaseResponseV3ClassVars = { [key: string]: unknown } | null;
 
-export interface BaseResponseClass {
+export interface BaseResponseV3Class {
   /** The server time in UNIX timestamp in UTC (seconds since Epoch) when this response was received and processing was started */
   requestReceivedAt: number;
   /**
@@ -112,38 +112,38 @@ export interface BaseResponseClass {
    * List of errors/warnings
    * @nullable
    */
-  problems?: ProblemClass[] | null;
+  problems?: ProblemV3Class[] | null;
   /**
    * Extra data (variables) the endpoint wants to return for programmatic processing.
    * @nullable
    */
-  vars?: BaseResponseClassVars;
+  vars?: BaseResponseV3ClassVars;
 }
 
-export type MessageResponseClassAllOf = {
+export type MessageResponseV3ClassAllOf = {
   /** The human readable message */
   message?: string;
 };
 
-export type MessageResponseClass = BaseResponseClass & MessageResponseClassAllOf;
+export type MessageResponseV3Class = BaseResponseV3Class & MessageResponseV3ClassAllOf;
 
 /**
  * @nullable
  */
-export type ResponseContainerInfoClass = {
+export type ResponseContainerInfoV3Class = {
   /** The ID of the container - this is typically a UUID like value */
   id: string;
   /** The name of the container */
   name?: string;
 } | null;
 
-export type ContainerResponseClassAllOf = {
-  container: ResponseContainerInfoClass;
+export type ContainerResponseV3ClassAllOf = {
+  container: ResponseContainerInfoV3Class;
 };
 
-export type ContainerResponseClass = BaseResponseClass & ContainerResponseClassAllOf;
+export type ContainerResponseV3Class = BaseResponseV3Class & ContainerResponseV3ClassAllOf;
 
-export type ContainerQueryRangeResponseClassAllOf = {
+export type ContainerQueryRangeResponseV3ClassAllOf = {
   /** In the request you requested data starting by this UNIX timestamp in UTC (seconds since Epoch) */
   requestedFromTimestamp: number;
   /** In the request you requested data until this UNIX timestamp in UTC (seconds since Epoch) */
@@ -154,7 +154,7 @@ export type ContainerQueryRangeResponseClassAllOf = {
   dataToTimestamp: number;
 };
 
-export type ContainerQueryRangeResponseClass = ContainerResponseClass & ContainerQueryRangeResponseClassAllOf;
+export type ContainerQueryRangeResponseV3Class = ContainerResponseV3Class & ContainerQueryRangeResponseV3ClassAllOf;
 
 /**
  * Defines the beginning of the query range - you are interested in data which time is >= than this timestamp.  

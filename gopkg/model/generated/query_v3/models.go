@@ -4,7 +4,7 @@
 package kt_pubapi_gen_queryv3
 
 import (
-	externalRef0 "github.com/keytiles/keytiles-public-api/gopkg/model/generated/common/types_v3"
+	externalRef0 "github.com/keytiles/keytiles-public-api/v2/gopkg/model/generated/common/types_v3"
 )
 
 const (
@@ -114,8 +114,8 @@ type EventCountersResponseClass struct {
 	// AggregatedCounterRows These are the rows of the data - each row represented by an array of Integer values.
 	//
 	// In rows the number of columns and the index of each colum is identical to the description you find in `/resultColumns` entry!
-	AggregatedCounterRows *[][]int64                               `json:"aggregatedCounterRows,omitempty" yaml:"aggregatedCounterRows,omitempty"`
-	Container             *externalRef0.ResponseContainerInfoClass `json:"container" yaml:"container"`
+	AggregatedCounterRows *[][]int64                                 `json:"aggregatedCounterRows,omitempty" yaml:"aggregatedCounterRows,omitempty"`
+	Container             *externalRef0.ResponseContainerInfoV3Class `json:"container" yaml:"container"`
 
 	// DataFromTimestamp This response contains data starting by this UNIX timestamp in UTC (seconds since Epoch) - will be always rounded to at least minutes or even more (see section "Interval of your interest" above!)
 	DataFromTimestamp int32 `json:"dataFromTimestamp" yaml:"dataFromTimestamp"`
@@ -127,7 +127,7 @@ type EventCountersResponseClass struct {
 	KeyColumnsMappings *KeyColumnsIntIdMappingsClass `json:"keyColumnsMappings" yaml:"keyColumnsMappings"`
 
 	// Problems List of errors/warnings
-	Problems *[]externalRef0.ProblemClass `json:"problems" yaml:"problems"`
+	Problems *[]externalRef0.ProblemV3Class `json:"problems" yaml:"problems"`
 
 	// ProcessingTookMillis Number of milliseconds the processing took on server side
 	ProcessingTookMillis *int32 `json:"processingTookMillis" yaml:"processingTookMillis"`
@@ -154,10 +154,10 @@ type EventCountersResponseClass struct {
 
 // GetIdMappingsResponseClass defines model for GetIdMappingsResponseClass.
 type GetIdMappingsResponseClass struct {
-	CampaignContents *[]MappingRecordClass                    `json:"campaignContents" yaml:"campaignContents"`
-	CampaignMediums  *[]MappingRecordClass                    `json:"campaignMediums" yaml:"campaignMediums"`
-	Campaigns        *[]MappingRecordClass                    `json:"campaigns" yaml:"campaigns"`
-	Container        *externalRef0.ResponseContainerInfoClass `json:"container" yaml:"container"`
+	CampaignContents *[]MappingRecordClass                      `json:"campaignContents" yaml:"campaignContents"`
+	CampaignMediums  *[]MappingRecordClass                      `json:"campaignMediums" yaml:"campaignMediums"`
+	Campaigns        *[]MappingRecordClass                      `json:"campaigns" yaml:"campaigns"`
+	Container        *externalRef0.ResponseContainerInfoV3Class `json:"container" yaml:"container"`
 
 	// DataFromTimestamp This response contains data starting by this UNIX timestamp in UTC (seconds since Epoch) - will be always rounded to at least minutes or even more (see section "Interval of your interest" above!)
 	DataFromTimestamp int32 `json:"dataFromTimestamp" yaml:"dataFromTimestamp"`
@@ -168,7 +168,7 @@ type GetIdMappingsResponseClass struct {
 	PrimaryTags     *[]MappingRecordClass `json:"primaryTags" yaml:"primaryTags"`
 
 	// Problems List of errors/warnings
-	Problems *[]externalRef0.ProblemClass `json:"problems" yaml:"problems"`
+	Problems *[]externalRef0.ProblemV3Class `json:"problems" yaml:"problems"`
 
 	// ProcessingTookMillis Number of milliseconds the processing took on server side
 	ProcessingTookMillis *int32 `json:"processingTookMillis" yaml:"processingTookMillis"`
@@ -195,10 +195,10 @@ type GetIdMappingsResponseClass struct {
 
 // GetTilesResponseClass defines model for GetTilesResponseClass.
 type GetTilesResponseClass struct {
-	Container *externalRef0.ResponseContainerInfoClass `json:"container" yaml:"container"`
+	Container *externalRef0.ResponseContainerInfoV3Class `json:"container" yaml:"container"`
 
 	// Problems List of errors/warnings
-	Problems *[]externalRef0.ProblemClass `json:"problems" yaml:"problems"`
+	Problems *[]externalRef0.ProblemV3Class `json:"problems" yaml:"problems"`
 
 	// ProcessingTookMillis Number of milliseconds the processing took on server side
 	ProcessingTookMillis *int32 `json:"processingTookMillis" yaml:"processingTookMillis"`
@@ -354,8 +354,8 @@ type TileEventCountersResponseClass struct {
 	// AggregatedCounterRows These are the rows of the data - each row represented by an array of Integer values.
 	//
 	// In rows the number of columns and the index of each colum is identical to the description you find in `/resultColumns` entry!
-	AggregatedCounterRows *[][]int64                               `json:"aggregatedCounterRows,omitempty" yaml:"aggregatedCounterRows,omitempty"`
-	Container             *externalRef0.ResponseContainerInfoClass `json:"container" yaml:"container"`
+	AggregatedCounterRows *[][]int64                                 `json:"aggregatedCounterRows,omitempty" yaml:"aggregatedCounterRows,omitempty"`
+	Container             *externalRef0.ResponseContainerInfoV3Class `json:"container" yaml:"container"`
 
 	// DataFromTimestamp This response contains data starting by this UNIX timestamp in UTC (seconds since Epoch) - will be always rounded to at least minutes or even more (see section "Interval of your interest" above!)
 	DataFromTimestamp int32 `json:"dataFromTimestamp" yaml:"dataFromTimestamp"`
@@ -367,7 +367,7 @@ type TileEventCountersResponseClass struct {
 	KeyColumnsMappings *KeyColumnsIntIdMappingsClass `json:"keyColumnsMappings" yaml:"keyColumnsMappings"`
 
 	// Problems List of errors/warnings
-	Problems *[]externalRef0.ProblemClass `json:"problems" yaml:"problems"`
+	Problems *[]externalRef0.ProblemV3Class `json:"problems" yaml:"problems"`
 
 	// ProcessingTookMillis Number of milliseconds the processing took on server side
 	ProcessingTookMillis *int32 `json:"processingTookMillis" yaml:"processingTookMillis"`

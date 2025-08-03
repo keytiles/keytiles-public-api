@@ -33,6 +33,8 @@ public class ResponseContainerInfoClass implements Serializable{
 
 
   
+  // @Generator: arg 'id': non-nullable and does not have default value - we must enforce a non-null initial value 
+  // @Generator: arg 'name': non-nullable and does not have default value - we must enforce a non-null initial value 
   @JsonCreator
   public ResponseContainerInfoClass(@JsonProperty("id") String id, @JsonProperty("name") String name) {
     super();

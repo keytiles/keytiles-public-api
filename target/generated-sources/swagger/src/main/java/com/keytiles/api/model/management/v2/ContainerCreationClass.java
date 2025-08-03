@@ -38,6 +38,9 @@ public class ContainerCreationClass implements Serializable{
 
 
   
+  // @Generator: arg 'name': mandatory field 
+  // @Generator: arg 'businessDomain': mandatory field 
+  // @Generator: arg 'options': mandatory field 
   @JsonCreator
   public ContainerCreationClass(@JsonProperty("name") String name, @JsonProperty("businessDomain") String businessDomain, @JsonProperty("options") ContainerOptionsClass options) {
     super();

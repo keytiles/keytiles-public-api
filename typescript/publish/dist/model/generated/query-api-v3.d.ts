@@ -1,4 +1,4 @@
-import { CommonErrorCodes, ContainerResponseClass, ContainerQueryRangeResponseClass } from './common-types-v3';
+import { CommonErrorCodesV3, ContainerResponseV3Class, ContainerQueryRangeResponseV3Class } from './common-types-v3';
 import type { AxiosRequestConfig, AxiosResponse } from 'axios';
 /**
  * Defines the beginning of the query range - you are interested in data which time is >= than this timestamp.
@@ -50,7 +50,7 @@ export declare const StatApiEndpointLocalErrorCodes: {
 /**
  * NOTE! Error codes is an Enum. Unfortunately in OpenApi (so far) there is no possibility to provide description for Enum values. But we have detailed description of each error codes! Please check the OpenApi file in our Github repo - you find them as comments for each Enum values!
  */
-export type StatApiEndpointErrorCodes = StatApiEndpointLocalErrorCodes & CommonErrorCodes;
+export type StatApiEndpointErrorCodes = StatApiEndpointLocalErrorCodes & CommonErrorCodesV3;
 export type EventCountersResponseClassAllOf = {
     keyColumnsMappings?: KeyColumnsIntIdMappingsClass;
     resultColumns?: EventCountersHeaderClass;
@@ -60,7 +60,7 @@ export type EventCountersResponseClassAllOf = {
    */
     aggregatedCounterRows?: number[][];
 };
-export type EventCountersResponseClass = ContainerQueryRangeResponseClass & EventCountersResponseClassAllOf;
+export type EventCountersResponseClass = ContainerQueryRangeResponseV3Class & EventCountersResponseClassAllOf;
 /**
  * Containes Tile counters and Tile details. This is a map. Keys are tileIds.
  */
@@ -82,7 +82,7 @@ export type GetTilesResponseClassAllOf = {
     /** Containes Tile details. This is a map. Keys are tileIds. */
     tiles?: GetTilesResponseClassAllOfTiles;
 };
-export type GetTilesResponseClass = ContainerResponseClass & GetTilesResponseClassAllOf;
+export type GetTilesResponseClass = ContainerResponseV3Class & GetTilesResponseClassAllOf;
 /**
  * Contains information about under which tileGroupPaths this Tile showed up in the query range. This is a map. Keys are IDs assigned to tileGroupPath - you can resolve them with entried in `/keyColumnsMappings/tileGroupPath`
   
@@ -318,7 +318,7 @@ export type GetIdMappingsResponseClassAllOf = {
     /** @nullable */
     secondaryTags?: MappingRecordClass[] | null;
 };
-export type GetIdMappingsResponseClass = ContainerQueryRangeResponseClass & GetIdMappingsResponseClassAllOf;
+export type GetIdMappingsResponseClass = ContainerQueryRangeResponseV3Class & GetIdMappingsResponseClassAllOf;
 export interface SystemClockResponseClass {
     /** Current server time in UNIX timestamp in UTC (seconds since Epoch) when this response was generated */
     serverTime?: number;

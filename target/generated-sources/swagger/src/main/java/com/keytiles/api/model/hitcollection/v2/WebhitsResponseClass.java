@@ -18,12 +18,12 @@ import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import com.keytiles.api.model.common.types.v3.MessageResponseClass;
+import com.keytiles.api.model.common.types.v3.MessageResponseV3Class;
 import com.keytiles.api.model.hitcollection.v2.WebhitsResponseClassDebugInfo;
 
 import java.io.Serializable;
 
-public class WebhitsResponseClass extends MessageResponseClass implements Serializable{
+public class WebhitsResponseClass extends MessageResponseV3Class implements Serializable{
   private static final long serialVersionUID = 1L;
 
 
@@ -35,6 +35,8 @@ public class WebhitsResponseClass extends MessageResponseClass implements Serial
 
 
   
+  // @Generator: arg 'tileId': non-nullable and does not have default value - we must enforce a non-null initial value 
+  // @Generator: arg 'debugInfo': non-nullable and does not have default value - we must enforce a non-null initial value 
   @JsonCreator
   public WebhitsResponseClass(@JsonProperty("requestReceivedAt") Integer requestReceivedAt, @JsonProperty("message") String message, @JsonProperty("tileId") String tileId, @JsonProperty("debugInfo") WebhitsResponseClassDebugInfo debugInfo) {
     super(requestReceivedAt, message);

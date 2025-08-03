@@ -18,13 +18,13 @@ import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import com.keytiles.api.model.common.types.v3.ProblemPlaceEnum;
+import com.keytiles.api.model.common.types.v3.ProblemPlaceEnumV3;
 import java.util.ArrayList;
 import java.util.List;
 
 import java.io.Serializable;
 
-public class ProblemClass implements Serializable{
+public class ProblemV3Class implements Serializable{
   private static final long serialVersionUID = 1L;
 
 
@@ -67,10 +67,10 @@ public class ProblemClass implements Serializable{
   private String message = null;
 
 
-  // @Generator: field refers to 'ProblemPlaceEnum' which is 'nullable=true' so this is inherited into this field 
+  // @Generator: field refers to 'ProblemPlaceEnumV3' which is 'nullable=true' so this is inherited into this field 
   // @Generator: becomes public - as nullable (no need to null-check) and not readonly 
   @JsonProperty("place")
-  public ProblemPlaceEnum place = null;
+  public ProblemPlaceEnumV3 place = null;
 
   // @Generator: becomes public - as nullable (no need to null-check) and not readonly 
   @JsonProperty("placeName")
@@ -81,8 +81,10 @@ public class ProblemClass implements Serializable{
   public List<String> errorCodes = new ArrayList<>();
 
   
+  // @Generator: arg 'severity': mandatory field 
+  // @Generator: arg 'message': mandatory field 
   @JsonCreator
-  public ProblemClass(@JsonProperty("severity") SeverityEnum severity, @JsonProperty("message") String message) {
+  public ProblemV3Class(@JsonProperty("severity") SeverityEnum severity, @JsonProperty("message") String message) {
     super();
     if(severity == null) {
       throw new IllegalArgumentException("'severity' value can not be NULL");
@@ -127,7 +129,7 @@ public class ProblemClass implements Serializable{
 
 
   // @Generator: builder style helper method to add values to not-readonly array field
-  public ProblemClass addErrorCodesItem(String errorCodesItem) {
+  public ProblemV3Class addErrorCodesItem(String errorCodesItem) {
     if (this.errorCodes == null) {
  		this.errorCodes = new ArrayList<>();
     }
@@ -136,7 +138,7 @@ public class ProblemClass implements Serializable{
   }
 
   // @Generator: builder style helper method to remove values from not-readonly array field
-  public ProblemClass removeErrorCodesItem(String errorCodesItem) {
+  public ProblemV3Class removeErrorCodesItem(String errorCodesItem) {
     if (this.errorCodes != null) {
     	this.errorCodes.remove(errorCodesItem);
     }
@@ -151,12 +153,12 @@ public class ProblemClass implements Serializable{
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    ProblemClass problemClass = (ProblemClass) o;
-    return Objects.equals(this.severity, problemClass.severity) &&
-        Objects.equals(this.message, problemClass.message) &&
-        Objects.equals(this.place, problemClass.place) &&
-        Objects.equals(this.placeName, problemClass.placeName) &&
-        Objects.equals(this.errorCodes, problemClass.errorCodes);
+    ProblemV3Class problemV3Class = (ProblemV3Class) o;
+    return Objects.equals(this.severity, problemV3Class.severity) &&
+        Objects.equals(this.message, problemV3Class.message) &&
+        Objects.equals(this.place, problemV3Class.place) &&
+        Objects.equals(this.placeName, problemV3Class.placeName) &&
+        Objects.equals(this.errorCodes, problemV3Class.errorCodes);
   }
 
   @Override
@@ -168,7 +170,7 @@ public class ProblemClass implements Serializable{
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class ProblemClass {\n");
+    sb.append("class ProblemV3Class {\n");
     
     sb.append("    severity: ").append(toIndentedString(severity)).append("\n");
     sb.append("    message: ").append(toIndentedString(message)).append("\n");

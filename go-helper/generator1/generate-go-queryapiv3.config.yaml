@@ -12,4 +12,4 @@ output-options:
     # we remove the "Merge" method - no need for that in our "oneOf" stuff
     union.tmpl: './go-helper/generator1/customized-templates/union.tmpl'
 import-mapping:
-  common-types-v3.yaml: 'github.com/keytiles/keytiles-public-api/gopkg/model/generated/common/types_v3'
+  common-types-v3.yaml: 'github.com/keytiles/keytiles-public-api/v2/gopkg/model/generated/common/types_v3'

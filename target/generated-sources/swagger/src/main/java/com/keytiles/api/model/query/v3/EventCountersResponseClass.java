@@ -18,16 +18,16 @@ import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import com.keytiles.api.model.common.types.v3.ContainerQueryRangeResponseClass;
+import com.keytiles.api.model.common.types.v3.ContainerQueryRangeResponseV3Class;
 import com.keytiles.api.model.query.v3.EventCountersHeaderClass;
 import com.keytiles.api.model.query.v3.KeyColumnsIntIdMappingsClass;
 import java.util.ArrayList;
 import java.util.List;
-import com.keytiles.api.model.common.types.v3.ResponseContainerInfoClass;
+import com.keytiles.api.model.common.types.v3.ResponseContainerInfoV3Class;
 
 import java.io.Serializable;
 
-public class EventCountersResponseClass extends ContainerQueryRangeResponseClass implements Serializable{
+public class EventCountersResponseClass extends ContainerQueryRangeResponseV3Class implements Serializable{
   private static final long serialVersionUID = 1L;
 
 
@@ -45,8 +45,9 @@ public class EventCountersResponseClass extends ContainerQueryRangeResponseClass
   public KeyColumnsIntIdMappingsClass keyColumnsMappings = null;
 
   
+  // @Generator: arg 'resultColumns': non-nullable and does not have default value - we must enforce a non-null initial value 
   @JsonCreator
-  public EventCountersResponseClass(@JsonProperty("requestReceivedAt") Integer requestReceivedAt, @JsonProperty("container") ResponseContainerInfoClass container, @JsonProperty("requestedFromTimestamp") Integer requestedFromTimestamp, @JsonProperty("requestedToTimestamp") Integer requestedToTimestamp, @JsonProperty("dataFromTimestamp") Integer dataFromTimestamp, @JsonProperty("dataToTimestamp") Integer dataToTimestamp, @JsonProperty("resultColumns") EventCountersHeaderClass resultColumns) {
+  public EventCountersResponseClass(@JsonProperty("requestReceivedAt") Integer requestReceivedAt, @JsonProperty("container") ResponseContainerInfoV3Class container, @JsonProperty("requestedFromTimestamp") Integer requestedFromTimestamp, @JsonProperty("requestedToTimestamp") Integer requestedToTimestamp, @JsonProperty("dataFromTimestamp") Integer dataFromTimestamp, @JsonProperty("dataToTimestamp") Integer dataToTimestamp, @JsonProperty("resultColumns") EventCountersHeaderClass resultColumns) {
     super(requestReceivedAt, container, requestedFromTimestamp, requestedToTimestamp, dataFromTimestamp, dataToTimestamp);
     if(resultColumns == null) {
       throw new IllegalArgumentException("'resultColumns' value can not be NULL");

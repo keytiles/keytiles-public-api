@@ -33,6 +33,8 @@ public class TimeIntervalClass implements Serializable{
 
 
   
+  // @Generator: arg 'starts': non-nullable and does not have default value - we must enforce a non-null initial value 
+  // @Generator: arg 'length': non-nullable and does not have default value - we must enforce a non-null initial value 
   @JsonCreator
   public TimeIntervalClass(@JsonProperty("starts") Integer starts, @JsonProperty("length") Integer length) {
     super();

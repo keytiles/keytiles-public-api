@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const CommonErrorCodes = {
+export const CommonErrorCodesV3 = {
     url_invalid: 'url_invalid',
     actionToken_internalError: 'actionToken_internalError',
     actionToken_missing: 'actionToken_missing',
@@ -38,7 +38,7 @@ export const CommonErrorCodes = {
     underlying_resource_unavailable: 'underlying_resource_unavailable',
 };
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ProblemPlaceEnum = {
+export const ProblemPlaceEnumV3 = {
     queryParam: 'queryParam',
     urlParam: 'urlParam',
     url: 'url',
@@ -53,7 +53,7 @@ export const ProblemPlaceEnum = {
     calculated: 'calculated',
 };
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ProblemClassSeverity = {
+export const ProblemV3ClassSeverity = {
     warning: 'warning',
     error: 'error',
 };

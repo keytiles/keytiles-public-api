@@ -31,6 +31,7 @@ public class TileCountersForIntervalClass extends TileCountersClass implements S
 
 
   
+  // @Generator: arg 'intervalId': non-nullable and does not have default value - we must enforce a non-null initial value 
   @JsonCreator
   public TileCountersForIntervalClass(@JsonProperty("pageview") Long pageview, @JsonProperty("vsessStarted") Long vsessStarted, @JsonProperty("bounce") Long bounce, @JsonProperty("newVisitor") Long newVisitor, @JsonProperty("bounceNewVisitor") Long bounceNewVisitor, @JsonProperty("refSearch") Long refSearch, @JsonProperty("refInternal") Long refInternal, @JsonProperty("refLink") Long refLink, @JsonProperty("refSocial") Long refSocial, @JsonProperty("refDirect") Long refDirect, @JsonProperty("intervalId") Integer intervalId) {
     super(pageview, vsessStarted, bounce, newVisitor, bounceNewVisitor, refSearch, refInternal, refLink, refSocial, refDirect);

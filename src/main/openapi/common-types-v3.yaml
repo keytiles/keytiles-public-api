@@ -65,7 +65,7 @@ components:
     # This enum defines global error codes which could appear basically in any API Endpoints
     # note: no support in OpenApi for now how to document values so we just add the description as comments for now.
     #       see: https://github.com/OAI/OpenAPI-Specification/issues/348 
-    CommonErrorCodes:
+    CommonErrorCodesV3:
       type: string
       enum:
       # The URL of the request does not make sense - this endpoing does not exist
@@ -142,7 +142,7 @@ components:
       # To fulfill the API call it depends on another service/resource (e.g. another API or persistence) - which it seems currently not available. In general client should retry the request later.
       - underlying_resource_unavailable
 
-    ProblemPlaceEnum:
+    ProblemPlaceEnumV3:
       type: string
       enum:
       - queryParam
@@ -162,7 +162,7 @@ components:
 
     # An entry like this describes a problem - typically we support list of problems
     # A problem can be a Warning or an Error
-    ProblemClass:
+    ProblemV3Class:
       type: object
       required:
       - severity
@@ -176,7 +176,7 @@ components:
           type: string
           description: 'The problem in human readable form'
         place:
-          $ref: "#/components/schemas/ProblemPlaceEnum"
+          $ref: "#/components/schemas/ProblemPlaceEnumV3"
         placeName:
           type: string
           nullable: true
@@ -189,7 +189,7 @@ components:
           default: []
           nullable: true
 
-    BaseResponseClass:
+    BaseResponseV3Class:
       type: object
       required:
       - requestReceivedAt
@@ -208,7 +208,7 @@ components:
         problems:
           type: array
           items:
-            $ref: '#/components/schemas/ProblemClass'
+            $ref: '#/components/schemas/ProblemV3Class'
           nullable: true
           default: []
           description: 'List of errors/warnings'
@@ -219,16 +219,16 @@ components:
           additionalProperties: true
 
 
-    MessageResponseClass:
+    MessageResponseV3Class:
       allOf:
-      - $ref: '#/components/schemas/BaseResponseClass'
+      - $ref: '#/components/schemas/BaseResponseV3Class'
       - type: object
         properties:
           message:
             type: string
             description: "The human readable message"
 
-    ResponseContainerInfoClass:
+    ResponseContainerInfoV3Class:
       type: object
       nullable: true
       required:
@@ -243,23 +243,23 @@ components:
           description: "The name of the container"
           example: "My Website"
 
-    ContainerResponseClass:
+    ContainerResponseV3Class:
       allOf:
-      - $ref: '#/components/schemas/BaseResponseClass'
+      - $ref: '#/components/schemas/BaseResponseV3Class'
       - type: object
         required:
         - container
         properties:
           container:
-            $ref: '#/components/schemas/ResponseContainerInfoClass'
+            $ref: '#/components/schemas/ResponseContainerInfoV3Class'
 
       
     # note: model generation made mistake here: own added properties were missing
     # googling lead here: https://github.com/swagger-api/swagger-core/issues/1601
     # thats the reason why inheritance looks like this
-    ContainerQueryRangeResponseClass:
+    ContainerQueryRangeResponseV3Class:
       allOf:
-      - $ref: '#/components/schemas/ContainerResponseClass'
+      - $ref: '#/components/schemas/ContainerResponseV3Class'
       - type: object
         required:
         - requestedFromTimestamp

@@ -93,6 +93,9 @@ public class WebhitClass extends HitClass implements Serializable{
   public CampaignData campaignData = null;
 
   
+  // @Generator: arg 'eventType': mandatory field 
+  // @Generator: arg 'action': non-nullable and does not have default value - we must enforce a non-null initial value 
+  // @Generator: arg 'userAgentType': mandatory field 
   @JsonCreator
   public WebhitClass(@JsonProperty("containerId") String containerId, @JsonProperty("method") MethodEnum method, @JsonProperty("value") Integer value, @JsonProperty("tileId") String tileId, @JsonProperty("tileTitle") String tileTitle, @JsonProperty("eventType") String eventType, @JsonProperty("action") String action, @JsonProperty("userAgentType") String userAgentType) {
     super(containerId, method, value, tileId, tileTitle);

@@ -36,6 +36,9 @@ public class ContainerUserDetails implements Serializable{
 
 
   
+  // @Generator: arg 'userId': mandatory field 
+  // @Generator: arg 'nickname': non-nullable and does not have default value - we must enforce a non-null initial value 
+  // @Generator: arg 'email': non-nullable and does not have default value - we must enforce a non-null initial value 
   @JsonCreator
   public ContainerUserDetails(@JsonProperty("userId") String userId, @JsonProperty("nickname") String nickname, @JsonProperty("email") String email) {
     super();

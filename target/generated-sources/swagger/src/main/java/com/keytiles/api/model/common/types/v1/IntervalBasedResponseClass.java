@@ -45,6 +45,11 @@ public class IntervalBasedResponseClass extends BaseResponseClass implements Ser
 
 
   
+  // @Generator: arg 'container': non-nullable and does not have default value - we must enforce a non-null initial value 
+  // @Generator: arg 'requestedFromTimestamp': non-nullable and does not have default value - we must enforce a non-null initial value 
+  // @Generator: arg 'requestedToTimestamp': non-nullable and does not have default value - we must enforce a non-null initial value 
+  // @Generator: arg 'dataFromTimestamp': non-nullable and does not have default value - we must enforce a non-null initial value 
+  // @Generator: arg 'dataToTimestamp': non-nullable and does not have default value - we must enforce a non-null initial value 
   @JsonCreator
   public IntervalBasedResponseClass(@JsonProperty("requestReceivedAt") Integer requestReceivedAt, @JsonProperty("processingTookMillis") Integer processingTookMillis, @JsonProperty("container") ResponseContainerInfoClass container, @JsonProperty("requestedFromTimestamp") Integer requestedFromTimestamp, @JsonProperty("requestedToTimestamp") Integer requestedToTimestamp, @JsonProperty("dataFromTimestamp") Integer dataFromTimestamp, @JsonProperty("dataToTimestamp") Integer dataToTimestamp) {
     super(requestReceivedAt, processingTookMillis);

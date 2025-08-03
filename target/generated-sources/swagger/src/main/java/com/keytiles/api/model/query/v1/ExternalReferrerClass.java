@@ -40,6 +40,8 @@ public class ExternalReferrerClass implements Serializable{
 
 
   
+  // @Generator: arg 'name': non-nullable and does not have default value - we must enforce a non-null initial value 
+  // @Generator: arg 'url': non-nullable and does not have default value - we must enforce a non-null initial value 
   @JsonCreator
   public ExternalReferrerClass(@JsonProperty("name") String name, @JsonProperty("url") String url) {
     super();

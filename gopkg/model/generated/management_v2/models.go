@@ -4,7 +4,7 @@
 package kt_pubapi_gen_managementv2
 
 import (
-	externalRef0 "github.com/keytiles/keytiles-public-api/gopkg/model/generated/common/types_v3"
+	externalRef1 "github.com/keytiles/keytiles-public-api/v2/gopkg/model/generated/common/types_v3"
 )
 
 const (
@@ -254,7 +254,7 @@ type HitFaultClass struct {
 
 // HitFaultReportResponse defines model for HitFaultReportResponse.
 type HitFaultReportResponse struct {
-	Container *externalRef0.ResponseContainerInfoClass `json:"container" yaml:"container"`
+	Container *externalRef1.ResponseContainerInfoV3Class `json:"container" yaml:"container"`
 
 	// DataFromTimestamp This response contains data starting by this UNIX timestamp in UTC (seconds since Epoch) - will be always rounded to at least minutes or even more (see section "Interval of your interest" above!)
 	DataFromTimestamp int32 `json:"dataFromTimestamp" yaml:"dataFromTimestamp"`
@@ -264,7 +264,7 @@ type HitFaultReportResponse struct {
 	Faults          *[]HitFaultClass `json:"faults,omitempty" yaml:"faults,omitempty"`
 
 	// Problems List of errors/warnings
-	Problems *[]externalRef0.ProblemClass `json:"problems" yaml:"problems"`
+	Problems *[]externalRef1.ProblemV3Class `json:"problems" yaml:"problems"`
 
 	// ProcessingTookMillis Number of milliseconds the processing took on server side
 	ProcessingTookMillis *int32 `json:"processingTookMillis" yaml:"processingTookMillis"`
@@ -396,7 +396,7 @@ type GetV1ManagementContainersReportsContainerIdHitfaultParams struct {
 	//    `now-2h` means 2 hours earlier and so on
 	//
 	// This must point to the past!   (note: server validates according to his own clock!)
-	FromTimestamp externalRef0.FromTimestamp `form:"fromTimestamp" json:"fromTimestamp" yaml:"fromTimestamp"`
+	FromTimestamp externalRef1.FromTimestamp `form:"fromTimestamp" json:"fromTimestamp" yaml:"fromTimestamp"`
 
 	// ToTimestamp Defines the end of the query range - you are interested in data which time is <= than this timestamp.
 	//
@@ -410,7 +410,7 @@ type GetV1ManagementContainersReportsContainerIdHitfaultParams struct {
 	//    `now-2h` means 2 hours earlier and so on
 	//
 	// Can not point to the future!   (note: server validates according to his own clock!)
-	ToTimestamp *externalRef0.ToTimestamp `form:"toTimestamp,omitempty" json:"toTimestamp,omitempty" yaml:"toTimestamp,omitempty"`
+	ToTimestamp *externalRef1.ToTimestamp `form:"toTimestamp,omitempty" json:"toTimestamp,omitempty" yaml:"toTimestamp,omitempty"`
 
 	// TileIdsOnly You can provide a comma separated list of tileIds. If given then only those Faults are returned whos related Tile is matching to the list.
 	TileIdsOnly *string `form:"tileIdsOnly,omitempty" json:"tileIdsOnly,omitempty" yaml:"tileIdsOnly,omitempty"`

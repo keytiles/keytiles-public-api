@@ -98,6 +98,11 @@ public class HitClass implements Serializable{
   public String tileLabelsJSON = null;
 
   
+  // @Generator: arg 'containerId': mandatory field 
+  // @Generator: arg 'method': mandatory field 
+  // @Generator: arg 'value': mandatory field 
+  // @Generator: arg 'tileId': mandatory field 
+  // @Generator: arg 'tileTitle': mandatory field 
   @JsonCreator
   public HitClass(@JsonProperty("containerId") String containerId, @JsonProperty("method") MethodEnum method, @JsonProperty("value") Integer value, @JsonProperty("tileId") String tileId, @JsonProperty("tileTitle") String tileTitle) {
     super();

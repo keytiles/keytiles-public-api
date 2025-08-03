@@ -33,6 +33,8 @@ public class VisitSessionStatClassNumberOfTotalActionsDistribution implements Se
 
 
   
+  // @Generator: arg 'numOfActions': non-nullable and does not have default value - we must enforce a non-null initial value 
+  // @Generator: arg 'visitSessionCount': non-nullable and does not have default value - we must enforce a non-null initial value 
   @JsonCreator
   public VisitSessionStatClassNumberOfTotalActionsDistribution(@JsonProperty("numOfActions") Integer numOfActions, @JsonProperty("visitSessionCount") Long visitSessionCount) {
     super();

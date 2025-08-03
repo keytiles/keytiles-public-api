@@ -15,7 +15,7 @@ package com.keytiles.api.model.management.v2;
 import java.util.Objects;
 import java.util.Arrays;
 
-import com.keytiles.api.model.common.types.v3.CommonErrorCodes;
+import com.keytiles.api.model.common.types.v3.CommonErrorCodesV3;
 import com.keytiles.api.model.management.v2.ManagementEndpointLocalErrorCodes;
 
 import java.io.Serializable;
@@ -25,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 /**
  * Gets or Sets ManagementEndpointErrorCodes
  *
- * @Generator: Keytiles Codegen generated this as merged Enum - came from 'ManagementEndpointErrorCodes' schema model, composed from: ManagementEndpointLocalErrorCodes, CommonErrorCodes 
+ * @Generator: Keytiles Codegen generated this as merged Enum - came from 'ManagementEndpointErrorCodes' schema model, composed from: ManagementEndpointLocalErrorCodes, CommonErrorCodesV3 
  */
 public enum ManagementEndpointErrorCodes {
   CONTAINERID_MISSING("containerId_missing"),

@@ -4,7 +4,7 @@
 package kt_pubapi_gen_hitcollectionv2
 
 import (
-	externalRef0 "github.com/keytiles/keytiles-public-api/gopkg/model/generated/common/types_v3"
+	externalRef0 "github.com/keytiles/keytiles-public-api/v2/gopkg/model/generated/common/types_v3"
 )
 
 // Defines values for HitClassMethod.
@@ -386,7 +386,7 @@ type WebhitsResponseClass struct {
 	Message *string `json:"message,omitempty" yaml:"message,omitempty"`
 
 	// Problems List of errors/warnings
-	Problems *[]externalRef0.ProblemClass `json:"problems" yaml:"problems"`
+	Problems *[]externalRef0.ProblemV3Class `json:"problems" yaml:"problems"`
 
 	// ProcessingTookMillis Number of milliseconds the processing took on server side
 	ProcessingTookMillis *int32 `json:"processingTookMillis" yaml:"processingTookMillis"`

@@ -15,7 +15,7 @@ package com.keytiles.api.model.hitcollection.v2;
 import java.util.Objects;
 import java.util.Arrays;
 
-import com.keytiles.api.model.common.types.v3.CommonErrorCodes;
+import com.keytiles.api.model.common.types.v3.CommonErrorCodesV3;
 import com.keytiles.api.model.hitcollection.v2.HitCollectionEndpointLocalErrorCodes;
 
 import java.io.Serializable;
@@ -25,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 /**
  * Gets or Sets HitCollectionEndpointErrorCodes
  *
- * @Generator: Keytiles Codegen generated this as merged Enum - came from 'HitCollectionEndpointErrorCodes' schema model, composed from: HitCollectionEndpointLocalErrorCodes, CommonErrorCodes 
+ * @Generator: Keytiles Codegen generated this as merged Enum - came from 'HitCollectionEndpointErrorCodes' schema model, composed from: HitCollectionEndpointLocalErrorCodes, CommonErrorCodesV3 
  */
 public enum HitCollectionEndpointErrorCodes {
   EVENTDATA_MISSING("eventData_missing"),

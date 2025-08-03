@@ -5,6 +5,7 @@ import { defineConfig } from 'orval'
 // key: the name of the included schema file
 // value: the generated ts file from that - from which we need to import the types from
 var importMappings = {
+  "common-types-v1.yaml": "./common-types-v1",
   "common-types-v3.yaml": "./common-types-v3",
 };
 

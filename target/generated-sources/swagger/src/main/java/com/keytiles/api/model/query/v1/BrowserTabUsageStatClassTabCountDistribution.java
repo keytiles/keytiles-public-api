@@ -33,6 +33,8 @@ public class BrowserTabUsageStatClassTabCountDistribution implements Serializabl
 
 
   
+  // @Generator: arg 'openTabCount': non-nullable and does not have default value - we must enforce a non-null initial value 
+  // @Generator: arg 'visitSessionCount': non-nullable and does not have default value - we must enforce a non-null initial value 
   @JsonCreator
   public BrowserTabUsageStatClassTabCountDistribution(@JsonProperty("openTabCount") Integer openTabCount, @JsonProperty("visitSessionCount") Long visitSessionCount) {
     super();

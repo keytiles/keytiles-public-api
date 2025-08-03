@@ -45,6 +45,7 @@ public class TileGroupPathClass implements Serializable{
 
 
   
+  // @Generator: arg 'path': non-nullable and does not have default value - we must enforce a non-null initial value 
   @JsonCreator
   public TileGroupPathClass(@JsonProperty("path") String path) {
     super();

@@ -18,15 +18,15 @@ import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import com.keytiles.api.model.common.types.v3.ContainerQueryRangeResponseClass;
+import com.keytiles.api.model.common.types.v3.ContainerQueryRangeResponseV3Class;
 import com.keytiles.api.model.management.v2.HitFaultClass;
 import java.util.ArrayList;
 import java.util.List;
-import com.keytiles.api.model.common.types.v3.ResponseContainerInfoClass;
+import com.keytiles.api.model.common.types.v3.ResponseContainerInfoV3Class;
 
 import java.io.Serializable;
 
-public class HitFaultReportResponse extends ContainerQueryRangeResponseClass implements Serializable{
+public class HitFaultReportResponse extends ContainerQueryRangeResponseV3Class implements Serializable{
   private static final long serialVersionUID = 1L;
 
 
@@ -37,7 +37,7 @@ public class HitFaultReportResponse extends ContainerQueryRangeResponseClass imp
 
   
   @JsonCreator
-  public HitFaultReportResponse(@JsonProperty("requestReceivedAt") Integer requestReceivedAt, @JsonProperty("container") ResponseContainerInfoClass container, @JsonProperty("requestedFromTimestamp") Integer requestedFromTimestamp, @JsonProperty("requestedToTimestamp") Integer requestedToTimestamp, @JsonProperty("dataFromTimestamp") Integer dataFromTimestamp, @JsonProperty("dataToTimestamp") Integer dataToTimestamp) {
+  public HitFaultReportResponse(@JsonProperty("requestReceivedAt") Integer requestReceivedAt, @JsonProperty("container") ResponseContainerInfoV3Class container, @JsonProperty("requestedFromTimestamp") Integer requestedFromTimestamp, @JsonProperty("requestedToTimestamp") Integer requestedToTimestamp, @JsonProperty("dataFromTimestamp") Integer dataFromTimestamp, @JsonProperty("dataToTimestamp") Integer dataToTimestamp) {
     super(requestReceivedAt, container, requestedFromTimestamp, requestedToTimestamp, dataFromTimestamp, dataToTimestamp);
   }
   

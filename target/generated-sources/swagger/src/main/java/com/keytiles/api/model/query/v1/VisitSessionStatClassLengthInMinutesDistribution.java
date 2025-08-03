@@ -33,6 +33,8 @@ public class VisitSessionStatClassLengthInMinutesDistribution implements Seriali
 
 
   
+  // @Generator: arg 'lengthInMin': non-nullable and does not have default value - we must enforce a non-null initial value 
+  // @Generator: arg 'visitSessionCount': non-nullable and does not have default value - we must enforce a non-null initial value 
   @JsonCreator
   public VisitSessionStatClassLengthInMinutesDistribution(@JsonProperty("lengthInMin") Integer lengthInMin, @JsonProperty("visitSessionCount") Long visitSessionCount) {
     super();

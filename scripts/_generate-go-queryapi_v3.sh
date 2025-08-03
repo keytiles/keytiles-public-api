@@ -14,6 +14,7 @@ then
     fi
 fi
 
+echo "generating query-api-v3 ..."
 
 mkdir -p gopkg/model/generated/query_v3
 oapi-codegen -config go-helper/generator1/generate-go-queryapiv3.config.yaml src/main/openapi/query-api-v3.yaml

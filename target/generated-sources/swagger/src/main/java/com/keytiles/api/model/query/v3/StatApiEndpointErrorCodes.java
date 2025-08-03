@@ -15,7 +15,7 @@ package com.keytiles.api.model.query.v3;
 import java.util.Objects;
 import java.util.Arrays;
 
-import com.keytiles.api.model.common.types.v3.CommonErrorCodes;
+import com.keytiles.api.model.common.types.v3.CommonErrorCodesV3;
 import com.keytiles.api.model.query.v3.StatApiEndpointLocalErrorCodes;
 
 import java.io.Serializable;
@@ -25,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 /**
  * Gets or Sets StatApiEndpointErrorCodes
  *
- * @Generator: Keytiles Codegen generated this as merged Enum - came from 'StatApiEndpointErrorCodes' schema model, composed from: StatApiEndpointLocalErrorCodes, CommonErrorCodes 
+ * @Generator: Keytiles Codegen generated this as merged Enum - came from 'StatApiEndpointErrorCodes' schema model, composed from: StatApiEndpointLocalErrorCodes, CommonErrorCodesV3 
  */
 public enum StatApiEndpointErrorCodes {
   QUERYRANGE_FROM_EXTENDED("queryRange_from_extended"),

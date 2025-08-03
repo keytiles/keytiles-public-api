@@ -53,6 +53,9 @@ public class HitFaultClass implements Serializable{
   public String errorDescription = null;
 
   
+  // @Generator: arg 'faultTimestamp': mandatory field 
+  // @Generator: arg 'faultType': mandatory field 
+  // @Generator: arg 'errorCode': mandatory field 
   @JsonCreator
   public HitFaultClass(@JsonProperty("faultTimestamp") Integer faultTimestamp, @JsonProperty("faultType") HitFaultType faultType, @JsonProperty("errorCode") String errorCode) {
     super();

@@ -121,25 +121,25 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'common-types-v3.yaml#/components/schemas/BaseResponseClass'
+                $ref: 'common-types-v3.yaml#/components/schemas/BaseResponseV3Class'
         '401':
           description: "Authentication failed - you provided invalid credentials or not provided credentials at all"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v3.yaml#/components/schemas/BaseResponseClass'
+                $ref: 'common-types-v3.yaml#/components/schemas/BaseResponseV3Class'
         '403':
           description: "You have no permission to read statistics of the given Container"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v3.yaml#/components/schemas/BaseResponseClass'
+                $ref: 'common-types-v3.yaml#/components/schemas/BaseResponseV3Class'
         '400':
           description: "Something was wrong with the request"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v3.yaml#/components/schemas/BaseResponseClass'
+                $ref: 'common-types-v3.yaml#/components/schemas/BaseResponseV3Class'
 
 
   '/v2/stat/webhits/{containerId}/tiles':
@@ -179,25 +179,25 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'common-types-v3.yaml#/components/schemas/BaseResponseClass'
+                $ref: 'common-types-v3.yaml#/components/schemas/BaseResponseV3Class'
         '401':
           description: "Authentication failed - you provided invalid credentials or not provided credentials at all"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v3.yaml#/components/schemas/BaseResponseClass'
+                $ref: 'common-types-v3.yaml#/components/schemas/BaseResponseV3Class'
         '403':
           description: "You have no permission to read statistics of the given Container"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v3.yaml#/components/schemas/BaseResponseClass'
+                $ref: 'common-types-v3.yaml#/components/schemas/BaseResponseV3Class'
         '400':
           description: "Something was wrong with the request"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v3.yaml#/components/schemas/BaseResponseClass'
+                $ref: 'common-types-v3.yaml#/components/schemas/BaseResponseV3Class'
 
 
   '/v2/stat/webhits/{containerId}/eventcounts':
@@ -251,25 +251,25 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'common-types-v3.yaml#/components/schemas/BaseResponseClass'
+                $ref: 'common-types-v3.yaml#/components/schemas/BaseResponseV3Class'
         '401':
           description: "Authentication failed - you provided invalid credentials or not provided credentials at all"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v3.yaml#/components/schemas/BaseResponseClass'
+                $ref: 'common-types-v3.yaml#/components/schemas/BaseResponseV3Class'
         '403':
           description: "You have no permission to read statistics of the given Container"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v3.yaml#/components/schemas/BaseResponseClass'
+                $ref: 'common-types-v3.yaml#/components/schemas/BaseResponseV3Class'
         '400':
           description: "Something was wrong with the request"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v3.yaml#/components/schemas/BaseResponseClass'
+                $ref: 'common-types-v3.yaml#/components/schemas/BaseResponseV3Class'
 
 
   '/v2/stat/webhits/{containerId}/eventcounts/tiles':
@@ -329,25 +329,25 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'common-types-v3.yaml#/components/schemas/BaseResponseClass'
+                $ref: 'common-types-v3.yaml#/components/schemas/BaseResponseV3Class'
         '401':
           description: "Authentication failed - you provided invalid credentials or not provided credentials at all"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v3.yaml#/components/schemas/BaseResponseClass'
+                $ref: 'common-types-v3.yaml#/components/schemas/BaseResponseV3Class'
         '403':
           description: "You have no permission to read statistics of the given Container"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v3.yaml#/components/schemas/BaseResponseClass'
+                $ref: 'common-types-v3.yaml#/components/schemas/BaseResponseV3Class'
         '400':
           description: "Something was wrong with the request"
           content:
             application/json:
               schema:
-                $ref: 'common-types-v3.yaml#/components/schemas/BaseResponseClass'
+                $ref: 'common-types-v3.yaml#/components/schemas/BaseResponseV3Class'
 
 
   '/v1/system/clock':
@@ -979,12 +979,12 @@ components:
       description: NOTE! Error codes is an Enum. Unfortunately in OpenApi (so far) there is no possibility to provide description for Enum values. But we have detailed description of each error codes! Please check the OpenApi file in our Github repo - you find them as comments for each Enum values! 
       allOf:
       - $ref: "#/components/schemas/StatApiEndpointLocalErrorCodes"
-      - $ref: "common-types-v3.yaml#/components/schemas/CommonErrorCodes"
+      - $ref: "common-types-v3.yaml#/components/schemas/CommonErrorCodesV3"
 
   
     EventCountersResponseClass:
       allOf:
-        - $ref: 'common-types-v3.yaml#/components/schemas/ContainerQueryRangeResponseClass'    
+        - $ref: 'common-types-v3.yaml#/components/schemas/ContainerQueryRangeResponseV3Class'
         - type: object
           properties:
             keyColumnsMappings:
@@ -1017,7 +1017,7 @@ components:
 
     GetTilesResponseClass:
       allOf:
-        - $ref: 'common-types-v3.yaml#/components/schemas/ContainerResponseClass'    
+        - $ref: 'common-types-v3.yaml#/components/schemas/ContainerResponseV3Class'
         - type: object
           properties:
             tiles:
@@ -1313,7 +1313,7 @@ components:
     
     GetIdMappingsResponseClass:
       allOf:
-        - $ref: 'common-types-v3.yaml#/components/schemas/ContainerQueryRangeResponseClass'    
+        - $ref: 'common-types-v3.yaml#/components/schemas/ContainerQueryRangeResponseV3Class'
         - type: object
           x-keytiles-serialize-only-if-non-default-properties:
           - eventTypes

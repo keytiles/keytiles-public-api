@@ -83,6 +83,9 @@ public class VisitSessionStatClass implements Serializable{
 
 
   
+  // @Generator: arg 'userAgentType': non-nullable and does not have default value - we must enforce a non-null initial value 
+  // @Generator: arg 'countOfVisitSessions': non-nullable and does not have default value - we must enforce a non-null initial value 
+  // @Generator: arg 'avgVisitSessionLengthInSeconds': non-nullable and does not have default value - we must enforce a non-null initial value 
   @JsonCreator
   public VisitSessionStatClass(@JsonProperty("userAgentType") UserAgentTypeEnum userAgentType, @JsonProperty("countOfVisitSessions") Integer countOfVisitSessions, @JsonProperty("avgVisitSessionLengthInSeconds") Integer avgVisitSessionLengthInSeconds) {
     super();

@@ -50,6 +50,11 @@ public class ContainerClass extends ContainerCreationClass implements Serializab
 
 
   
+  // @Generator: arg 'id': private final field because it is readonly (also non-null check as not nullable) 
+  // @Generator: arg 'version': mandatory field 
+  // @Generator: arg 'createdTimestamp': private final field because it is readonly (also non-null check as not nullable) 
+  // @Generator: arg 'isEnabled': mandatory field 
+  // @Generator: arg 'userDetails': private final field because it is readonly (also non-null check as not nullable) 
   @JsonCreator
   public ContainerClass(@JsonProperty("name") String name, @JsonProperty("businessDomain") String businessDomain, @JsonProperty("options") ContainerOptionsClass options, @JsonProperty("id") String id, @JsonProperty("createdTimestamp") Integer createdTimestamp, @JsonProperty("userDetails") List<ContainerUserDetails> userDetails, @JsonProperty("version") Integer version, @JsonProperty("isEnabled") Boolean isEnabled) {
     super(name, businessDomain, options);

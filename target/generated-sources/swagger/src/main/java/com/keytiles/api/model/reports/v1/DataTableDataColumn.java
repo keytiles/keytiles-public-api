@@ -33,6 +33,8 @@ public class DataTableDataColumn implements Serializable, OneOfDataTableColumn {
 
 
   
+  // @Generator: arg 'label': non-nullable and does not have default value - we must enforce a non-null initial value 
+  // @Generator: arg 'collapseFunction': non-nullable and does not have default value - we must enforce a non-null initial value 
   @JsonCreator
   public DataTableDataColumn(@JsonProperty("label") String label, @JsonProperty("collapseFunction") String collapseFunction) {
     super();

@@ -38,6 +38,7 @@ public class CampaignData implements Serializable{
   public String content = null;
 
   
+  // @Generator: arg 'name': non-nullable and does not have default value - we must enforce a non-null initial value 
   @JsonCreator
   public CampaignData(@JsonProperty("name") String name) {
     super();

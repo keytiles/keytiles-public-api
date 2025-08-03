@@ -42,6 +42,11 @@ public class ReferrerClassifierConfigClass implements Serializable{
 
 
   
+  // @Generator: arg 'name': non-nullable and does not have default value - we must enforce a non-null initial value 
+  // @Generator: arg 'domainRegex': non-nullable and does not have default value - we must enforce a non-null initial value 
+  // @Generator: arg 'pathRegex': non-nullable and does not have default value - we must enforce a non-null initial value 
+  // @Generator: arg 'classifierClassName': non-nullable and does not have default value - we must enforce a non-null initial value 
+  // @Generator: arg 'options': non-nullable and does not have default value - we must enforce a non-null initial value 
   @JsonCreator
   public ReferrerClassifierConfigClass(@JsonProperty("name") String name, @JsonProperty("domainRegex") String domainRegex, @JsonProperty("pathRegex") String pathRegex, @JsonProperty("classifierClassName") String classifierClassName, @JsonProperty("options") String options) {
     super();

@@ -73,6 +73,10 @@ public class Schedule implements Serializable{
 
 
   
+  // @Generator: arg 'type': mandatory field 
+  // @Generator: arg 'setup': mandatory field 
+  // @Generator: arg 'tzOffset': mandatory field 
+  // @Generator: arg 'majorVersion': mandatory field 
   @JsonCreator
   public Schedule(@JsonProperty("type") TypeEnum type, @JsonProperty("setup") OneOfScheduleSetup setup, @JsonProperty("tzOffset") Integer tzOffset, @JsonProperty("majorVersion") Integer majorVersion) {
     super();

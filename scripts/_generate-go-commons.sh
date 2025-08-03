@@ -14,6 +14,8 @@ then
     fi
 fi
 
+echo "generating commons..."
+
 #rm -rf gopkg/model/generated/common
 
 mkdir -p gopkg/model/generated/common/types_v1

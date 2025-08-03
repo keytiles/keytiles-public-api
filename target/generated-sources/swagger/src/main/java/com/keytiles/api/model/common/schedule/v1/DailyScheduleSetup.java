@@ -37,6 +37,7 @@ public class DailyScheduleSetup implements Serializable, OneOfScheduleSetup {
 
 
   
+  // @Generator: arg 'triggerTime': mandatory field 
   @JsonCreator
   public DailyScheduleSetup(@JsonProperty("triggerTime") String triggerTime) {
     super();

@@ -14,6 +14,7 @@ then
     fi
 fi
 
+echo "generating management-api-v2 ..."
 
 mkdir -p gopkg/model/generated/management_v2
 oapi-codegen -config go-helper/generator1/generate-go-managementapiv2.config.yaml src/main/openapi/management-api-v2.yaml

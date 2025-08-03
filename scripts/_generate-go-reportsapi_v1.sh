@@ -14,6 +14,7 @@ then
     fi
 fi
 
+echo "generating reports-api-v1 ..."
 
 mkdir -p gopkg/model/generated/reports_v1
 oapi-codegen -config go-helper/generator1/generate-go-reportsapiv1.config.yaml src/main/openapi/reports-api-v1.yaml

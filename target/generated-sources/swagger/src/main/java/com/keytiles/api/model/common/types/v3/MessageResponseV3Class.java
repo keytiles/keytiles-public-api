@@ -18,14 +18,14 @@ import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import com.keytiles.api.model.common.types.v3.BaseResponseClass;
-import com.keytiles.api.model.common.types.v3.ProblemClass;
+import com.keytiles.api.model.common.types.v3.BaseResponseV3Class;
+import com.keytiles.api.model.common.types.v3.ProblemV3Class;
 import java.util.List;
 import java.util.Map;
 
 import java.io.Serializable;
 
-public class MessageResponseClass extends BaseResponseClass implements Serializable{
+public class MessageResponseV3Class extends BaseResponseV3Class implements Serializable{
   private static final long serialVersionUID = 1L;
 
 
@@ -34,8 +34,9 @@ public class MessageResponseClass extends BaseResponseClass implements Serializa
 
 
   
+  // @Generator: arg 'message': non-nullable and does not have default value - we must enforce a non-null initial value 
   @JsonCreator
-  public MessageResponseClass(@JsonProperty("requestReceivedAt") Integer requestReceivedAt, @JsonProperty("message") String message) {
+  public MessageResponseV3Class(@JsonProperty("requestReceivedAt") Integer requestReceivedAt, @JsonProperty("message") String message) {
     super(requestReceivedAt);
     if(message == null) {
       throw new IllegalArgumentException("'message' value can not be NULL");
@@ -69,8 +70,8 @@ public class MessageResponseClass extends BaseResponseClass implements Serializa
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    MessageResponseClass messageResponseClass = (MessageResponseClass) o;
-    return Objects.equals(this.message, messageResponseClass.message) &&
+    MessageResponseV3Class messageResponseV3Class = (MessageResponseV3Class) o;
+    return Objects.equals(this.message, messageResponseV3Class.message) &&
         super.equals(o);
   }
 
@@ -83,7 +84,7 @@ public class MessageResponseClass extends BaseResponseClass implements Serializa
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class MessageResponseClass {\n");
+    sb.append("class MessageResponseV3Class {\n");
     sb.append("    ").append(toIndentedString(super.toString())).append("\n");
     sb.append("    message: ").append(toIndentedString(message)).append("\n");
     sb.append("}");

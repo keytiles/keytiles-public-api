@@ -45,6 +45,11 @@ public class ReportQuery implements Serializable{
 
 
   
+  // @Generator: arg 'id': non-nullable and does not have default value - we must enforce a non-null initial value 
+  // @Generator: arg 'metaData': mandatory field 
+  // @Generator: arg 'isDisabled': non-nullable and does not have default value - we must enforce a non-null initial value 
+  // @Generator: arg 'plugin': mandatory field 
+  // @Generator: arg 'parameters': non-nullable and does not have default value - we must enforce a non-null initial value 
   @JsonCreator
   public ReportQuery(@JsonProperty("id") String id, @JsonProperty("metaData") MetaData metaData, @JsonProperty("isDisabled") Boolean isDisabled, @JsonProperty("plugin") ReportQueryPlugin plugin, @JsonProperty("parameters") Map parameters) {
     super();

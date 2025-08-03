@@ -46,19 +46,19 @@ paths:
           content:
             'application/json':
               schema:
-                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
        '404':
           description: "This error is thrown if you want to send in hit for a Data Container which does not exist."
           content:
             'application/json':
               schema:
-                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
        '412':
           description: "This error is thrown if you want to send in hit for a Data Container which although exists it is not functioning (e.g. it is disabled) - more details you find in the response."
           content:
             'application/json':
               schema:
-                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseClass'
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
 
 components:
   schemas:
@@ -467,11 +467,11 @@ components:
       description: NOTE! Error codes is an Enum. Unfortunately in OpenApi (so far) there is no possibility to provide description for Enum values. But we have detailed description of each error codes! Please check the OpenApi file in our Github repo - you find them as comments for each Enum values! 
       allOf:
       - $ref: "#/components/schemas/HitCollectionEndpointLocalErrorCodes"
-      - $ref: "common-types-v3.yaml#/components/schemas/CommonErrorCodes"
+      - $ref: "common-types-v3.yaml#/components/schemas/CommonErrorCodesV3"
 
     WebhitsResponseClass:
       allOf:
-      - $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseClass'
+      - $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
       - type: object
         properties:
           tileId:

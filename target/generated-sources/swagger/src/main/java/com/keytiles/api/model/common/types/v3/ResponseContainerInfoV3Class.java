@@ -21,7 +21,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 import java.io.Serializable;
 
-public class ResponseContainerInfoClass implements Serializable{
+public class ResponseContainerInfoV3Class implements Serializable{
   private static final long serialVersionUID = 1L;
 
 
@@ -33,8 +33,10 @@ public class ResponseContainerInfoClass implements Serializable{
 
 
   
+  // @Generator: arg 'id': mandatory field 
+  // @Generator: arg 'name': non-nullable and does not have default value - we must enforce a non-null initial value 
   @JsonCreator
-  public ResponseContainerInfoClass(@JsonProperty("id") String id, @JsonProperty("name") String name) {
+  public ResponseContainerInfoV3Class(@JsonProperty("id") String id, @JsonProperty("name") String name) {
     super();
     if(id == null) {
       throw new IllegalArgumentException("'id' value can not be NULL");
@@ -86,9 +88,9 @@ public class ResponseContainerInfoClass implements Serializable{
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    ResponseContainerInfoClass responseContainerInfoClass = (ResponseContainerInfoClass) o;
-    return Objects.equals(this.id, responseContainerInfoClass.id) &&
-        Objects.equals(this.name, responseContainerInfoClass.name);
+    ResponseContainerInfoV3Class responseContainerInfoV3Class = (ResponseContainerInfoV3Class) o;
+    return Objects.equals(this.id, responseContainerInfoV3Class.id) &&
+        Objects.equals(this.name, responseContainerInfoV3Class.name);
   }
 
   @Override
@@ -100,7 +102,7 @@ public class ResponseContainerInfoClass implements Serializable{
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class ResponseContainerInfoClass {\n");
+    sb.append("class ResponseContainerInfoV3Class {\n");
     
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");

@@ -33,6 +33,8 @@ public class ScreenResolutionCounterClass implements Serializable{
 
 
   
+  // @Generator: arg 'resolution': non-nullable and does not have default value - we must enforce a non-null initial value 
+  // @Generator: arg 'count': non-nullable and does not have default value - we must enforce a non-null initial value 
   @JsonCreator
   public ScreenResolutionCounterClass(@JsonProperty("resolution") String resolution, @JsonProperty("count") Long count) {
     super();

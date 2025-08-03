@@ -14,9 +14,10 @@ Actually, **the change is not a real breaking change in terms of returned respon
 But let's list all the changes contract to contract.
 
 - `common-types-v3.yaml` is introduced. The change here is triggering all of the changes in all other contracts.
-  The only difference compared to v2 is in `ProblemBaseClass` (renamed to `ProblemClass` as we don't want to extend it anymore), the `errorCodes` field from now
+  The only difference compared to v2 is in `ProblemBaseClass` (renamed to `ProblemV3Class` as we don't want to extend it anymore), the `errorCodes` field from now
   is simply a string and not an enum anymore.
   This is a small change but this is the change exactly which makes it possible to get rid of lots of inheritance and extending in API level error handling.
+  note: to avoid any possible conflicts with `common-types-v1.yaml` (we have APIs using both simultaneously still) all classes/objects got a "V3" infix/suffix.
 - `management-api-v2.yaml` is introduced. This facilitates the change we described above, starts to use `common-types-v3.yaml` and compared to `management-api-v1.yaml` stops extending the
   `ProblemBaseClass`. Therefore we also do not need own `ManagementEndpointProblemClass` neither `MachineReadableManagementEndpointMessageResponseClass`.
   It is simply reusing the `MessageResponseClass` from `common-types-v3.yaml` instead of defining own.

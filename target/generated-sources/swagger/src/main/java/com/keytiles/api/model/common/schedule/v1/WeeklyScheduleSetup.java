@@ -34,6 +34,8 @@ public class WeeklyScheduleSetup implements Serializable, OneOfScheduleSetup {
 
 
   
+  // @Generator: arg 'triggerTime': mandatory field 
+  // @Generator: arg 'dayName': non-nullable and does not have default value - we must enforce a non-null initial value 
   @JsonCreator
   public WeeklyScheduleSetup(@JsonProperty("triggerTime") String triggerTime, @JsonProperty("dayName") ScheduleDayName dayName) {
     super();

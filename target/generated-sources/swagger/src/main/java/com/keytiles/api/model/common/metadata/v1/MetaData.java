@@ -44,6 +44,9 @@ public class MetaData implements Serializable{
   public List<ChangelogEntry> changelog = null;
 
   
+  // @Generator: arg 'title': mandatory field 
+  // @Generator: arg 'description': non-nullable and does not have default value - we must enforce a non-null initial value 
+  // @Generator: arg 'majorVersion': mandatory field 
   @JsonCreator
   public MetaData(@JsonProperty("title") String title, @JsonProperty("description") String description, @JsonProperty("majorVersion") Integer majorVersion) {
     super();

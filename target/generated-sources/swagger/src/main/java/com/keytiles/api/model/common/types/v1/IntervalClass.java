@@ -36,6 +36,9 @@ public class IntervalClass implements Serializable{
 
 
   
+  // @Generator: arg 'id': non-nullable and does not have default value - we must enforce a non-null initial value 
+  // @Generator: arg 'starts': non-nullable and does not have default value - we must enforce a non-null initial value 
+  // @Generator: arg 'length': non-nullable and does not have default value - we must enforce a non-null initial value 
   @JsonCreator
   public IntervalClass(@JsonProperty("id") Integer id, @JsonProperty("starts") Integer starts, @JsonProperty("length") Integer length) {
     super();

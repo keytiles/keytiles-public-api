@@ -1,4 +1,5 @@
-import { CommonErrorCodes, MessageResponseClass, ContainerQueryRangeResponseClass } from './common-types-v3';
+import { MessageResponseClass } from './common-types-v1';
+import { CommonErrorCodesV3, MessageResponseV3Class, ContainerQueryRangeResponseV3Class } from './common-types-v3';
 import type { AxiosRequestConfig, AxiosResponse } from 'axios';
 type IfEquals<X, Y, A = X, B = never> = (<T>() => T extends X ? 1 : 2) extends <T>() => T extends Y ? 1 : 2 ? A : B;
 type WritableKeys<T> = {
@@ -78,7 +79,7 @@ export declare const ManagementEndpointLocalErrorCodes: {
 /**
  * NOTE! Error codes is an Enum. Unfortunately in OpenApi (so far) there is no possibility to provide description for Enum values. But we have detailed description of each error codes! Please check the OpenApi file in our Github repo - you find them as comments for each Enum values!
  */
-export type ManagementEndpointErrorCodes = ManagementEndpointLocalErrorCodes & CommonErrorCodes;
+export type ManagementEndpointErrorCodes = ManagementEndpointLocalErrorCodes & CommonErrorCodesV3;
 export interface UserContainerLink {
     /** The alpha-numeric unique id of the Container */
     containerId: string;
@@ -261,7 +262,7 @@ export interface ReferrerClassifierConfigClass {
 export type HitFaultReportResponseAllOf = {
     faults?: HitFaultClass[];
 };
-export type HitFaultReportResponse = ContainerQueryRangeResponseClass & HitFaultReportResponseAllOf;
+export type HitFaultReportResponse = ContainerQueryRangeResponseV3Class & HitFaultReportResponseAllOf;
 export interface HitFaultClass {
     /** Timestamp of the fault - UNIX timestamp in UTC (seconds since Epoch) */
     faultTimestamp: number;
@@ -390,7 +391,7 @@ Some fields can be modified only by Keytiles administrators. (See field descript
 
  * @summary Update the user data
  */
-export declare const putV1ManagementUsersRestUserIdTerm: <TData = AxiosResponse<MessageResponseClass>>(userIdTerm: string, userClass: NonReadonly<UserClass>, options?: AxiosRequestConfig) => Promise<TData>;
+export declare const putV1ManagementUsersRestUserIdTerm: <TData = AxiosResponse<MessageResponseClass | MessageResponseV3Class>>(userIdTerm: string, userClass: NonReadonly<UserClass>, options?: AxiosRequestConfig) => Promise<TData>;
 /**
  * **Important!** This action can not be undone!
   
@@ -488,7 +489,7 @@ More info: [https://www.keytiles.com/docs/how-does-referrer-grouping-work](https
 export declare const getV1ManagementConfigReferrerclassification: <TData = AxiosResponse<ReferrerClassifierConfigClass[]>>(options?: AxiosRequestConfig) => Promise<TData>;
 export type PostV1ManagementUsersRestResult = AxiosResponse<MessageResponseClass>;
 export type GetV1ManagementUsersRestUserIdTermResult = AxiosResponse<UserClass>;
-export type PutV1ManagementUsersRestUserIdTermResult = AxiosResponse<MessageResponseClass>;
+export type PutV1ManagementUsersRestUserIdTermResult = AxiosResponse<MessageResponseClass | MessageResponseV3Class>;
 export type DeleteV1ManagementUsersRestUserIdTermResult = AxiosResponse<MessageResponseClass>;
 export type PutV1ManagementUsersRestUserIdTermPasswordResult = AxiosResponse<MessageResponseClass>;
 export type GetV1ManagementUsersActionsUserIdTermPasswordResetResult = AxiosResponse<MessageResponseClass>;

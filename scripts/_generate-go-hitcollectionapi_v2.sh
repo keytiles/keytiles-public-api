@@ -14,6 +14,7 @@ then
     fi
 fi
 
+echo "generating hitcollection-api-v2 ..."
 
 mkdir -p gopkg/model/generated/hitcollection_v2
 oapi-codegen -config go-helper/generator1/generate-go-hitcollectionapiv2.config.yaml src/main/openapi/hit-collection-api-v2.yaml

@@ -18,7 +18,7 @@ import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import com.keytiles.api.model.common.types.v3.ProblemClass;
+import com.keytiles.api.model.common.types.v3.ProblemV3Class;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,7 +26,7 @@ import java.util.Map;
 
 import java.io.Serializable;
 
-public class BaseResponseClass implements Serializable{
+public class BaseResponseV3Class implements Serializable{
   private static final long serialVersionUID = 1L;
 
 
@@ -40,7 +40,7 @@ public class BaseResponseClass implements Serializable{
 
   // @Generator: becomes public - as nullable (no need to null-check) and not readonly 
   @JsonProperty("problems")
-  public List<ProblemClass> problems = new ArrayList<>();
+  public List<ProblemV3Class> problems = new ArrayList<>();
 
   // @Generator: this map does not have default and nullable - so let's keep it on NULL then 
   // @Generator: becomes public - as nullable (no need to null-check) and not readonly 
@@ -48,8 +48,9 @@ public class BaseResponseClass implements Serializable{
   public Map<String, Object> vars = null;
 
   
+  // @Generator: arg 'requestReceivedAt': mandatory field 
   @JsonCreator
-  public BaseResponseClass(@JsonProperty("requestReceivedAt") Integer requestReceivedAt) {
+  public BaseResponseV3Class(@JsonProperty("requestReceivedAt") Integer requestReceivedAt) {
     super();
     if(requestReceivedAt == null) {
       throw new IllegalArgumentException("'requestReceivedAt' value can not be NULL");
@@ -76,7 +77,7 @@ public class BaseResponseClass implements Serializable{
 
 
   // @Generator: builder style helper method to add values to not-readonly array field
-  public BaseResponseClass addProblemsItem(ProblemClass problemsItem) {
+  public BaseResponseV3Class addProblemsItem(ProblemV3Class problemsItem) {
     if (this.problems == null) {
  		this.problems = new ArrayList<>();
     }
@@ -85,7 +86,7 @@ public class BaseResponseClass implements Serializable{
   }
 
   // @Generator: builder style helper method to remove values from not-readonly array field
-  public BaseResponseClass removeProblemsItem(ProblemClass problemsItem) {
+  public BaseResponseV3Class removeProblemsItem(ProblemV3Class problemsItem) {
     if (this.problems != null) {
     	this.problems.remove(problemsItem);
     }
@@ -93,7 +94,7 @@ public class BaseResponseClass implements Serializable{
   }
 
   // @Generator: builder style helper method to put values into not-readonly map field
-  public BaseResponseClass putVarsItem(String key, Object varsItem) {
+  public BaseResponseV3Class putVarsItem(String key, Object varsItem) {
     if (this.vars == null) {
 		this.vars = new HashMap<>();
     }
@@ -102,7 +103,7 @@ public class BaseResponseClass implements Serializable{
   }
 
   // @Generator: builder style helper method to remove values from not-readonly map field
-  public BaseResponseClass removeVarsItem(String key) {
+  public BaseResponseV3Class removeVarsItem(String key) {
     if (this.vars != null) {
     	this.vars.remove(key);
     }
@@ -117,11 +118,11 @@ public class BaseResponseClass implements Serializable{
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    BaseResponseClass baseResponseClass = (BaseResponseClass) o;
-    return Objects.equals(this.requestReceivedAt, baseResponseClass.requestReceivedAt) &&
-        Objects.equals(this.processingTookMillis, baseResponseClass.processingTookMillis) &&
-        Objects.equals(this.problems, baseResponseClass.problems) &&
-        Objects.equals(this.vars, baseResponseClass.vars);
+    BaseResponseV3Class baseResponseV3Class = (BaseResponseV3Class) o;
+    return Objects.equals(this.requestReceivedAt, baseResponseV3Class.requestReceivedAt) &&
+        Objects.equals(this.processingTookMillis, baseResponseV3Class.processingTookMillis) &&
+        Objects.equals(this.problems, baseResponseV3Class.problems) &&
+        Objects.equals(this.vars, baseResponseV3Class.vars);
   }
 
   @Override
@@ -133,7 +134,7 @@ public class BaseResponseClass implements Serializable{
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class BaseResponseClass {\n");
+    sb.append("class BaseResponseV3Class {\n");
     
     sb.append("    requestReceivedAt: ").append(toIndentedString(requestReceivedAt)).append("\n");
     sb.append("    processingTookMillis: ").append(toIndentedString(processingTookMillis)).append("\n");

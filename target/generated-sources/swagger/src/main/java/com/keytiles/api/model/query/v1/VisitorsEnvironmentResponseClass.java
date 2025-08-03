@@ -55,6 +55,7 @@ public class VisitorsEnvironmentResponseClass extends IntervalBasedResponseClass
 
 
   
+  // @Generator: arg 'cookieSupport': non-nullable and does not have default value - we must enforce a non-null initial value 
   @JsonCreator
   public VisitorsEnvironmentResponseClass(@JsonProperty("requestReceivedAt") Integer requestReceivedAt, @JsonProperty("processingTookMillis") Integer processingTookMillis, @JsonProperty("container") ResponseContainerInfoClass container, @JsonProperty("requestedFromTimestamp") Integer requestedFromTimestamp, @JsonProperty("requestedToTimestamp") Integer requestedToTimestamp, @JsonProperty("dataFromTimestamp") Integer dataFromTimestamp, @JsonProperty("dataToTimestamp") Integer dataToTimestamp, @JsonProperty("cookieSupport") VisitorsEnvironmentResponseClassCookieSupport cookieSupport) {
     super(requestReceivedAt, processingTookMillis, container, requestedFromTimestamp, requestedToTimestamp, dataFromTimestamp, dataToTimestamp);

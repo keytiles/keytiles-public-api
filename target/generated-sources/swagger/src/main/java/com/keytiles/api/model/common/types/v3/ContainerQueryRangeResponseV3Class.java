@@ -18,12 +18,12 @@ import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import com.keytiles.api.model.common.types.v3.ContainerResponseClass;
-import com.keytiles.api.model.common.types.v3.ResponseContainerInfoClass;
+import com.keytiles.api.model.common.types.v3.ContainerResponseV3Class;
+import com.keytiles.api.model.common.types.v3.ResponseContainerInfoV3Class;
 
 import java.io.Serializable;
 
-public class ContainerQueryRangeResponseClass extends ContainerResponseClass implements Serializable{
+public class ContainerQueryRangeResponseV3Class extends ContainerResponseV3Class implements Serializable{
   private static final long serialVersionUID = 1L;
 
 
@@ -41,8 +41,12 @@ public class ContainerQueryRangeResponseClass extends ContainerResponseClass imp
 
 
   
+  // @Generator: arg 'requestedFromTimestamp': mandatory field 
+  // @Generator: arg 'requestedToTimestamp': mandatory field 
+  // @Generator: arg 'dataFromTimestamp': mandatory field 
+  // @Generator: arg 'dataToTimestamp': mandatory field 
   @JsonCreator
-  public ContainerQueryRangeResponseClass(@JsonProperty("requestReceivedAt") Integer requestReceivedAt, @JsonProperty("container") ResponseContainerInfoClass container, @JsonProperty("requestedFromTimestamp") Integer requestedFromTimestamp, @JsonProperty("requestedToTimestamp") Integer requestedToTimestamp, @JsonProperty("dataFromTimestamp") Integer dataFromTimestamp, @JsonProperty("dataToTimestamp") Integer dataToTimestamp) {
+  public ContainerQueryRangeResponseV3Class(@JsonProperty("requestReceivedAt") Integer requestReceivedAt, @JsonProperty("container") ResponseContainerInfoV3Class container, @JsonProperty("requestedFromTimestamp") Integer requestedFromTimestamp, @JsonProperty("requestedToTimestamp") Integer requestedToTimestamp, @JsonProperty("dataFromTimestamp") Integer dataFromTimestamp, @JsonProperty("dataToTimestamp") Integer dataToTimestamp) {
     super(requestReceivedAt, container);
     if(requestedFromTimestamp == null) {
       throw new IllegalArgumentException("'requestedFromTimestamp' value can not be NULL");
@@ -130,11 +134,11 @@ public class ContainerQueryRangeResponseClass extends ContainerResponseClass imp
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    ContainerQueryRangeResponseClass containerQueryRangeResponseClass = (ContainerQueryRangeResponseClass) o;
-    return Objects.equals(this.requestedFromTimestamp, containerQueryRangeResponseClass.requestedFromTimestamp) &&
-        Objects.equals(this.requestedToTimestamp, containerQueryRangeResponseClass.requestedToTimestamp) &&
-        Objects.equals(this.dataFromTimestamp, containerQueryRangeResponseClass.dataFromTimestamp) &&
-        Objects.equals(this.dataToTimestamp, containerQueryRangeResponseClass.dataToTimestamp) &&
+    ContainerQueryRangeResponseV3Class containerQueryRangeResponseV3Class = (ContainerQueryRangeResponseV3Class) o;
+    return Objects.equals(this.requestedFromTimestamp, containerQueryRangeResponseV3Class.requestedFromTimestamp) &&
+        Objects.equals(this.requestedToTimestamp, containerQueryRangeResponseV3Class.requestedToTimestamp) &&
+        Objects.equals(this.dataFromTimestamp, containerQueryRangeResponseV3Class.dataFromTimestamp) &&
+        Objects.equals(this.dataToTimestamp, containerQueryRangeResponseV3Class.dataToTimestamp) &&
         super.equals(o);
   }
 
@@ -147,7 +151,7 @@ public class ContainerQueryRangeResponseClass extends ContainerResponseClass imp
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class ContainerQueryRangeResponseClass {\n");
+    sb.append("class ContainerQueryRangeResponseV3Class {\n");
     sb.append("    ").append(toIndentedString(super.toString())).append("\n");
     sb.append("    requestedFromTimestamp: ").append(toIndentedString(requestedFromTimestamp)).append("\n");
     sb.append("    requestedToTimestamp: ").append(toIndentedString(requestedToTimestamp)).append("\n");

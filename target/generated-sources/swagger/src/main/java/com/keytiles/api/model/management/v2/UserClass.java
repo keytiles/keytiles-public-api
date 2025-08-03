@@ -69,6 +69,15 @@ public class UserClass implements Serializable{
   public Map<String, String> data = null;
 
   
+  // @Generator: arg 'id': private final field because it is readonly (also non-null check as not nullable) 
+  // @Generator: arg 'version': mandatory field 
+  // @Generator: arg 'email': mandatory field 
+  // @Generator: arg 'password': non-nullable and does not have default value - we must enforce a non-null initial value 
+  // @Generator: arg 'nickname': mandatory field 
+  // @Generator: arg 'lastLoginTimestamp': private final field because it is readonly 
+  // @Generator: arg 'createdTimestamp': private final field because it is readonly (also non-null check as not nullable) 
+  // @Generator: arg 'isEnabled': mandatory field 
+  // @Generator: arg 'isKeytilesAdmin': mandatory field 
   @JsonCreator
   public UserClass(@JsonProperty("id") String id, @JsonProperty("lastLoginTimestamp") Integer lastLoginTimestamp, @JsonProperty("createdTimestamp") Integer createdTimestamp, @JsonProperty("version") Integer version, @JsonProperty("email") String email, @JsonProperty("password") String password, @JsonProperty("nickname") String nickname, @JsonProperty("isEnabled") Boolean isEnabled, @JsonProperty("isKeytilesAdmin") Boolean isKeytilesAdmin) {
     super();

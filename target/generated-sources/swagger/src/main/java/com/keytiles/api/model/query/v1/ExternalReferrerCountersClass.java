@@ -33,6 +33,8 @@ public class ExternalReferrerCountersClass implements Serializable{
 
 
   
+  // @Generator: arg 'intervalId': non-nullable and does not have default value - we must enforce a non-null initial value 
+  // @Generator: arg 'entryCount': non-nullable and does not have default value - we must enforce a non-null initial value 
   @JsonCreator
   public ExternalReferrerCountersClass(@JsonProperty("intervalId") Integer intervalId, @JsonProperty("entryCount") Long entryCount) {
     super();

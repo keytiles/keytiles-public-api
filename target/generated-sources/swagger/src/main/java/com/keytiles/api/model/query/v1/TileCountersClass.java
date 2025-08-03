@@ -69,6 +69,16 @@ public class TileCountersClass implements Serializable{
 
 
   
+  // @Generator: arg 'pageview': non-nullable and does not have default value - we must enforce a non-null initial value 
+  // @Generator: arg 'vsessStarted': non-nullable and does not have default value - we must enforce a non-null initial value 
+  // @Generator: arg 'bounce': non-nullable and does not have default value - we must enforce a non-null initial value 
+  // @Generator: arg 'newVisitor': non-nullable and does not have default value - we must enforce a non-null initial value 
+  // @Generator: arg 'bounceNewVisitor': non-nullable and does not have default value - we must enforce a non-null initial value 
+  // @Generator: arg 'refSearch': non-nullable and does not have default value - we must enforce a non-null initial value 
+  // @Generator: arg 'refInternal': non-nullable and does not have default value - we must enforce a non-null initial value 
+  // @Generator: arg 'refLink': non-nullable and does not have default value - we must enforce a non-null initial value 
+  // @Generator: arg 'refSocial': non-nullable and does not have default value - we must enforce a non-null initial value 
+  // @Generator: arg 'refDirect': non-nullable and does not have default value - we must enforce a non-null initial value 
   @JsonCreator
   public TileCountersClass(@JsonProperty("pageview") Long pageview, @JsonProperty("vsessStarted") Long vsessStarted, @JsonProperty("bounce") Long bounce, @JsonProperty("newVisitor") Long newVisitor, @JsonProperty("bounceNewVisitor") Long bounceNewVisitor, @JsonProperty("refSearch") Long refSearch, @JsonProperty("refInternal") Long refInternal, @JsonProperty("refLink") Long refLink, @JsonProperty("refSocial") Long refSocial, @JsonProperty("refDirect") Long refDirect) {
     super();

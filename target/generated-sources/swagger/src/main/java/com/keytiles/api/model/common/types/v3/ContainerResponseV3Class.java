@@ -18,27 +18,28 @@ import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import com.keytiles.api.model.common.types.v3.BaseResponseClass;
-import com.keytiles.api.model.common.types.v3.ProblemClass;
-import com.keytiles.api.model.common.types.v3.ResponseContainerInfoClass;
+import com.keytiles.api.model.common.types.v3.BaseResponseV3Class;
+import com.keytiles.api.model.common.types.v3.ProblemV3Class;
+import com.keytiles.api.model.common.types.v3.ResponseContainerInfoV3Class;
 import java.util.List;
 import java.util.Map;
 
 import java.io.Serializable;
 
-public class ContainerResponseClass extends BaseResponseClass implements Serializable{
+public class ContainerResponseV3Class extends BaseResponseV3Class implements Serializable{
   private static final long serialVersionUID = 1L;
 
 
 
-  // @Generator: field refers to 'ResponseContainerInfoClass' which is 'nullable=true' so this is inherited into this field 
+  // @Generator: field refers to 'ResponseContainerInfoV3Class' which is 'nullable=true' so this is inherited into this field 
   // @Generator: becomes public - as nullable (no need to null-check) and not readonly 
   @JsonProperty("container")
-  public ResponseContainerInfoClass container = null;
+  public ResponseContainerInfoV3Class container = null;
 
   
+  // @Generator: arg 'container': mandatory field (but NULL value is accepted too) 
   @JsonCreator
-  public ContainerResponseClass(@JsonProperty("requestReceivedAt") Integer requestReceivedAt, @JsonProperty("container") ResponseContainerInfoClass container) {
+  public ContainerResponseV3Class(@JsonProperty("requestReceivedAt") Integer requestReceivedAt, @JsonProperty("container") ResponseContainerInfoV3Class container) {
     super(requestReceivedAt);
     this.container = container;
   }
@@ -55,8 +56,8 @@ public class ContainerResponseClass extends BaseResponseClass implements Seriali
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    ContainerResponseClass containerResponseClass = (ContainerResponseClass) o;
-    return Objects.equals(this.container, containerResponseClass.container) &&
+    ContainerResponseV3Class containerResponseV3Class = (ContainerResponseV3Class) o;
+    return Objects.equals(this.container, containerResponseV3Class.container) &&
         super.equals(o);
   }
 
@@ -69,7 +70,7 @@ public class ContainerResponseClass extends BaseResponseClass implements Seriali
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class ContainerResponseClass {\n");
+    sb.append("class ContainerResponseV3Class {\n");
     sb.append("    ").append(toIndentedString(super.toString())).append("\n");
     sb.append("    container: ").append(toIndentedString(container)).append("\n");
     sb.append("}");

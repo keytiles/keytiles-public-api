@@ -36,6 +36,9 @@ public class UserCreationClass implements Serializable{
 
 
   
+  // @Generator: arg 'email': mandatory field 
+  // @Generator: arg 'nickname': mandatory field 
+  // @Generator: arg 'password': mandatory field 
   @JsonCreator
   public UserCreationClass(@JsonProperty("email") String email, @JsonProperty("nickname") String nickname, @JsonProperty("password") String password) {
     super();

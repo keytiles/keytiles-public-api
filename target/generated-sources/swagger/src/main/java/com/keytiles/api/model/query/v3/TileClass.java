@@ -56,6 +56,7 @@ public class TileClass implements Serializable{
   public Map<String, TileGroupPathClass> tileGroupPaths = null;
 
   
+  // @Generator: arg 'type': non-nullable and does not have default value - we must enforce a non-null initial value 
   @JsonCreator
   public TileClass(@JsonProperty("type") Integer type) {
     super();

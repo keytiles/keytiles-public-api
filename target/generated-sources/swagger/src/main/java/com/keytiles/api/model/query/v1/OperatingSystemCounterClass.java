@@ -33,6 +33,8 @@ public class OperatingSystemCounterClass implements Serializable{
 
 
   
+  // @Generator: arg 'opSystemType': non-nullable and does not have default value - we must enforce a non-null initial value 
+  // @Generator: arg 'count': non-nullable and does not have default value - we must enforce a non-null initial value 
   @JsonCreator
   public OperatingSystemCounterClass(@JsonProperty("opSystemType") String opSystemType, @JsonProperty("count") Long count) {
     super();

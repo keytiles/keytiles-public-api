@@ -43,6 +43,8 @@ public class UserContainerLink implements Serializable{
   public UserContainerRoleClass role = null;
 
   
+  // @Generator: arg 'containerId': mandatory field 
+  // @Generator: arg 'roles': mandatory field 
   @JsonCreator
   public UserContainerLink(@JsonProperty("containerId") String containerId, @JsonProperty("roles") List<UserContainerRoleClassV2> roles) {
     super();

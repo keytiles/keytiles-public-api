@@ -24,7 +24,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * This info piece is most useful for 400 - \&quot;Bad Request\&quot; problems but can be meaningful of course in other scenarios too. It marks the place which has the problem.
  *
  */
-public enum ProblemPlaceEnum {
+public enum ProblemPlaceEnumV3 {
   QUERYPARAM("queryParam"),
   URLPARAM("urlParam"),
   URL("url"),
@@ -40,7 +40,7 @@ public enum ProblemPlaceEnum {
 
   private String value;
 
-  ProblemPlaceEnum(String value) {
+  ProblemPlaceEnumV3(String value) {
     this.value = value;
   }
 
@@ -55,8 +55,8 @@ public enum ProblemPlaceEnum {
   }
 
   @JsonCreator
-  public static ProblemPlaceEnum fromValue(String input) {
-    for (ProblemPlaceEnum b : ProblemPlaceEnum.values()) {
+  public static ProblemPlaceEnumV3 fromValue(String input) {
+    for (ProblemPlaceEnumV3 b : ProblemPlaceEnumV3.values()) {
       if (b.value.equals(input)) {
         return b;
       }

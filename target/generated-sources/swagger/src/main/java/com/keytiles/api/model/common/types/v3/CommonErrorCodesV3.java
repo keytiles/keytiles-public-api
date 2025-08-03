@@ -21,10 +21,10 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
- * Gets or Sets CommonErrorCodes
+ * Gets or Sets CommonErrorCodesV3
  *
  */
-public enum CommonErrorCodes {
+public enum CommonErrorCodesV3 {
   URL_INVALID("url_invalid"),
   ACTIONTOKEN_INTERNALERROR("actionToken_internalError"),
   ACTIONTOKEN_MISSING("actionToken_missing"),
@@ -64,7 +64,7 @@ public enum CommonErrorCodes {
 
   private String value;
 
-  CommonErrorCodes(String value) {
+  CommonErrorCodesV3(String value) {
     this.value = value;
   }
 
@@ -79,8 +79,8 @@ public enum CommonErrorCodes {
   }
 
   @JsonCreator
-  public static CommonErrorCodes fromValue(String input) {
-    for (CommonErrorCodes b : CommonErrorCodes.values()) {
+  public static CommonErrorCodesV3 fromValue(String input) {
+    for (CommonErrorCodesV3 b : CommonErrorCodesV3.values()) {
       if (b.value.equals(input)) {
         return b;
       }
