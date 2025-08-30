@@ -93,6 +93,19 @@ type AvailableReportInstance struct {
 	IsTestOnly *bool `json:"isTestOnly,omitempty" yaml:"isTestOnly,omitempty"`
 }
 
+// AvailableReportSetup Contains minimalistic information about a report setup like its ID, title, description.
+type AvailableReportSetup struct {
+	// CreatedAt The server time in UNIX timestamp in UTC (seconds since Epoch) when this instance was created
+	CreatedAt *int32 `json:"createdAt,omitempty" yaml:"createdAt,omitempty"`
+
+	// Id The unique ID of this report setup - UUID style
+	Id string `json:"id" yaml:"id"`
+
+	// IsDisabled It is possible to temporarily disable a report. The report is still generatable manually but automatic schedules will not be executed.
+	IsDisabled *bool                 `json:"isDisabled,omitempty" yaml:"isDisabled,omitempty"`
+	MetaData   externalRef0.MetaData `json:"metaData" yaml:"metaData"`
+}
+
 // DataTable DataTable is the output of queries - a self contained table of data with Axis columns (optional) and >1 Data columns. Plus of course the data rows.
 type DataTable struct {
 	// Columns List of "Axis" columns. Order in array is important as the index of the entry tells the position.
@@ -287,9 +300,15 @@ type ReportRecipientsRoles string
 
 // ReportSetup defines model for ReportSetup.
 type ReportSetup struct {
+	// CreatedAt The server time in UNIX timestamp in UTC (seconds since Epoch) when this setup was created
+	CreatedAt *int32 `json:"createdAt,omitempty" yaml:"createdAt,omitempty"`
+
 	// Id The unique ID of this report setup - UUID style
-	Id       string                `json:"id" yaml:"id"`
-	MetaData externalRef0.MetaData `json:"metaData" yaml:"metaData"`
+	Id string `json:"id" yaml:"id"`
+
+	// IsDisabled It is possible to temporarily disable a report. The report is still generatable manually but automatic schedules will not be executed.
+	IsDisabled *bool                 `json:"isDisabled,omitempty" yaml:"isDisabled,omitempty"`
+	MetaData   externalRef0.MetaData `json:"metaData" yaml:"metaData"`
 
 	// Queries Queries of this report.
 	Queries *[]ReportQuery `json:"queries" yaml:"queries"`
@@ -318,14 +337,14 @@ type ReportInstanceId = string
 // ReportSetupId defines model for reportSetupId.
 type ReportSetupId = string
 
+// PostV1ReportsContainersInstanceActionsContainerIdReportSetupIdGenerateJSONRequestBody defines body for PostV1ReportsContainersInstanceActionsContainerIdReportSetupIdGenerate for application/json ContentType.
+type PostV1ReportsContainersInstanceActionsContainerIdReportSetupIdGenerateJSONRequestBody = GenerateReportRequestClass
+
 // PostV1ReportsContainersSetupRestContainerIdJSONRequestBody defines body for PostV1ReportsContainersSetupRestContainerId for application/json ContentType.
 type PostV1ReportsContainersSetupRestContainerIdJSONRequestBody = ReportSetup
 
 // PutV1ReportsContainersSetupRestContainerIdReportSetupIdJSONRequestBody defines body for PutV1ReportsContainersSetupRestContainerIdReportSetupId for application/json ContentType.
 type PutV1ReportsContainersSetupRestContainerIdReportSetupIdJSONRequestBody = ReportSetup
-
-// PostV1ReportsContainersSetupRestContainerIdReportSetupIdInstancesJSONRequestBody defines body for PostV1ReportsContainersSetupRestContainerIdReportSetupIdInstances for application/json ContentType.
-type PostV1ReportsContainersSetupRestContainerIdReportSetupIdInstancesJSONRequestBody = GenerateReportRequestClass
 
 // Getter for additional properties for ReportQuery_Parameters. Returns the specified
 // element and whether it was found

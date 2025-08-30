@@ -13,21 +13,25 @@ servers:
   description: TEST server
    
 tags:
-- name: Manage report setups
-  description: Endpoints to create / modify / delete / change report setups.
+- name: Container level Report instance management REST API
+  description: Endpoints to create / modify / delete / query Container level report setups.
+- name: Container level Report setup related actions
+  description: Endpoints to execute certain actions related to Container level report setups.
 - name: Generate and Query reports
   description: Endpoints to generate / query / manage concrete reports - instances of a report setup.
 
 paths:
 
-  '/v1/reports/containers/setup/rest/{containerId}':
+  '/v1/reports/containers/setup/actions/{containerId}/list':
   
     get:
-      summary: "To query existing report setups belong to the Container"
+      summary: "To query the overview of existing report setups belong to the Container"
       tags:
-      - Manage report setups
+      - Container level Report setup related actions
       description: >
-                With this endpoint you have the possibility to query all report setups of a Data Container.
+                With this endpoint you have the possibility to query all available report setups of a Data Container.  
+                  
+                Anyone with "view" or "admin" role in Data Container can query.
       parameters:
         - $ref: 'common-types-v3.yaml#/components/parameters/containerId'
 
@@ -60,14 +64,16 @@ paths:
               schema:
                 $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
 
+  '/v1/reports/containers/setup/rest/{containerId}':
+
     post:
       summary: "To create a new report setup belongs to the Container"
       description: >
                 You can assign an ID for this setup on client side as well but if you don't then a new ID will be generated (and returned in response header).  
                   
-                For now only Admins of Data Containers can create a report setup.
+                Only users with "admin" role in Data Container can create a report setup.
       tags:
-      - Manage report setups
+      - Container level Report instance management REST API
       parameters:
         - $ref: 'common-types-v3.yaml#/components/parameters/containerId'
       requestBody:
@@ -127,8 +133,10 @@ paths:
   
     get:
       summary: "To query a specific report setup of the Container"
+      description: >
+                Anyone with "view" or "admin" role in Data Container can query.
       tags:
-      - Manage report setups
+      - Container level Report instance management REST API
       parameters:
         - $ref: 'common-types-v3.yaml#/components/parameters/containerId'
         - $ref: '#/components/parameters/reportSetupId'
@@ -167,9 +175,9 @@ paths:
       description: >
                 The 'resourceVersion' field is very important here - it must match with the version the server currently has otherwise you will get a 409 error. This mechanism helps to detect possible race conditions.  
                   
-                For now only Admins of Data Containers can modify a report setup.
+                Only users with "admin" role in the Data Container can modify a report setup.
       tags:
-      - Manage report setups
+      - Container level Report instance management REST API
       parameters:
         - $ref: 'common-types-v3.yaml#/components/parameters/containerId'
         - $ref: '#/components/parameters/reportSetupId'
@@ -225,9 +233,9 @@ paths:
       description: >
                 In case you do not want to lose all previous instances consider simply just remove the 'schedule' of the report instead of deleting it! If you do so then the report will not run automatically anymore.  
                   
-                For now only Admins of Data Containers can delete a report setup.
+                Only users with "admin" role in the Data Container can delete a report setup.
       tags:
-      - Manage report setups
+      - Container level Report instance management REST API
       parameters:
         - $ref: 'common-types-v3.yaml#/components/parameters/containerId'
         - $ref: '#/components/parameters/reportSetupId'
@@ -262,10 +270,14 @@ paths:
                 $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
 
 
-  '/v1/reports/containers/setup/rest/{containerId}/{reportSetupId}/instances':
+
+
+  '/v1/reports/containers/instance/actions/{containerId}/{reportSetupId}/list':
   
     get:
-      summary: "To query (list) all availale report instance IDs of a given ReportSetup - available in the Data Container"
+      summary: "To query (list) all availale report instances of a given ReportSetup - available in the Data Container"
+      description: >
+                Anyone with "view" or "admin" role in Data Container can list.
       tags:
       - Generate and Query reports
       parameters:
@@ -301,12 +313,16 @@ paths:
               schema:
                 $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
 
+  '/v1/reports/containers/instance/actions/{containerId}/{reportSetupId}/generate':
+
     post:
-      summary: "To generate (create) a new report instance of this report setup."
+      summary: "To generate (create) a new report instance of a report setup manually."
       description: >
                 When triggered manually then the report generation starts immediately. You can fine tune the report generation (mostly for testing purposes) - see request body!
 
-                Please note that a report generation might take time. 
+                Please note that a report generation might take time.  
+                  
+                Only Data Container admins can trigger a generation manually for now.
       tags:
       - Generate and Query reports
       parameters:
@@ -368,6 +384,8 @@ paths:
   
     get:
       summary: "To query a specific report instance with the given ID of the Data Container"
+      description: >
+                Anyone with "view" or "admin" role in Data Container can query.
       tags:
       - Generate and Query reports
       parameters:
@@ -405,6 +423,8 @@ paths:
 
     delete:
       summary: "To permanently delete a specific report instance - after this this report is not available anymore."
+      description: >
+                Only users with "admin" role in Data Container can do this.
       tags:
       - Generate and Query reports
       parameters:
@@ -490,12 +510,11 @@ components:
       - $ref: "common-types-v3.yaml#/components/schemas/ContainerResponseV3Class"
       type: object
       properties:
-        reportSetupIds:
+        AvailableReportSetups:
           type: array
           items:
-            type: string
+            $ref: "#/components/schemas/AvailableReportSetup"
           nullable: false
-          example: ["reportSetupId"]
           description: 'All avaiable report setup IDs.'
 
     GetContainerReportSetupResponseClass:
@@ -672,6 +691,30 @@ components:
           additionalProperties: true
 
 
+    AvailableReportSetup:
+      type: object
+      description: Contains minimalistic information about a report setup like its ID, title, description.
+      required:
+        - id
+        - metaData
+      properties:
+        id:
+          type: string
+          description: The unique ID of this report setup - UUID style
+        metaData:
+          description: Title, description and changelog - of this report.
+          $ref: 'common-metadata-v1.yaml#/components/schemas/MetaData'
+        createdAt:
+          type: integer
+          format: int32
+          description: "The server time in UNIX timestamp in UTC (seconds since Epoch) when this instance was created"
+          example: 1543355710
+        isDisabled:
+          type: boolean
+          description: It is possible to temporarily disable a report. The report is still generatable manually but automatic schedules will not be executed.
+
+
+
     ReportSetup:
       type: object
       required:
@@ -685,6 +728,14 @@ components:
         metaData:
           description: Title, description and changelog - of this report.
           $ref: 'common-metadata-v1.yaml#/components/schemas/MetaData'
+        createdAt:
+          type: integer
+          format: int32
+          description: "The server time in UNIX timestamp in UTC (seconds since Epoch) when this setup was created"
+          example: 1543355710
+        isDisabled:
+          type: boolean
+          description: It is possible to temporarily disable a report. The report is still generatable manually but automatic schedules will not be executed.
         schedule:
           description: Controlls when will the report run automatically. If you do not schedule the report then the report is only generated when you manually trigger it.
           $ref: 'common-schedule-v1.yaml#/components/schemas/Schedule'
@@ -831,7 +882,7 @@ components:
       properties:
         id:
           type: string
-          example: "reportInstanceId"
+          #example: "reportInstanceId"
         createdAt:
           type: integer
           format: int32
