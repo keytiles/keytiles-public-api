@@ -928,25 +928,10 @@ components:
         metaData:
           description: >
                       The title of the report is copied from the ReportSetup metaData when this instance was generated.
-                      As well as the description.
+                      As well as the description. It is good as Report setup can be changed any time.
 
                       In case the report generation was triggered manually by someone then you find info in the history part of meta data about whom did it.
           $ref: 'common-metadata-v1.yaml#/components/schemas/MetaData'
-        generatorUserId:
-          type: string
-          description: In case the report generation was triggered manually by someone then this field contains the ID of the user triggered the generation.
-          nullable: true
-        generatorUserNickname:
-          type: string
-          description: In case the report generation was triggered manually by someone then this field contains the Nickname of the user triggered the generation.
-          nullable: true
-        title:
-          description: The title of the report - copied from the ReportSetup metaData when this instance was generated.
-          type: string
-        description:
-          description: This is a longer description of the report - copied from the ReportSetup metaData when this instance was generated.
-          type: string
-          nullable: true
         fromTimestamp:
           type: integer
           description: >

@@ -203,17 +203,8 @@ type ReportInstance struct {
 	// CreatedAt The server time in UNIX timestamp in UTC (seconds since Epoch) when this instance was created
 	CreatedAt *int32 `json:"createdAt,omitempty" yaml:"createdAt,omitempty"`
 
-	// Description This is a longer description of the report - copied from the ReportSetup metaData when this instance was generated.
-	Description *string `json:"description" yaml:"description"`
-
 	// FromTimestamp Query range - starting from this timestamp. This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT
 	FromTimestamp *int `json:"fromTimestamp,omitempty" yaml:"fromTimestamp,omitempty"`
-
-	// GeneratorUserId In case the report generation was triggered manually by someone then this field contains the ID of the user triggered the generation.
-	GeneratorUserId *string `json:"generatorUserId" yaml:"generatorUserId"`
-
-	// GeneratorUserNickname In case the report generation was triggered manually by someone then this field contains the Nickname of the user triggered the generation.
-	GeneratorUserNickname *string `json:"generatorUserNickname" yaml:"generatorUserNickname"`
 
 	// Id The unique ID of this report setup - UUID style
 	Id *string `json:"id,omitempty" yaml:"id,omitempty"`
@@ -229,9 +220,6 @@ type ReportInstance struct {
 	// State It takes time for a report instance until it is fully generated. So every report instance is going through a lifecycle.
 	// This is maintained by the server.
 	State *ReportInstanceState `json:"state,omitempty" yaml:"state,omitempty"`
-
-	// Title The title of the report - copied from the ReportSetup metaData when this instance was generated.
-	Title *string `json:"title,omitempty" yaml:"title,omitempty"`
 
 	// ToTimestamp Query range - until this timestamp. This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT
 	ToTimestamp *int `json:"toTimestamp,omitempty" yaml:"toTimestamp,omitempty"`
