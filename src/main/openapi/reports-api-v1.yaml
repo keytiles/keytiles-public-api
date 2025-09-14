@@ -13,24 +13,22 @@ servers:
   description: TEST server
    
 tags:
-- name: Container level Report instance management REST API
+- name: Container level Report setup management REST API
   description: Endpoints to create / modify / delete / query Container level report setups.
 - name: Container level Report setup related actions
-  description: Endpoints to execute certain actions related to Container level report setups.
-- name: Generate and Query reports
-  description: Endpoints to generate / query / manage concrete reports - instances of a report setup.
+  description: Endpoints to execute certain actions related to Container level report setups - like listing available instances or generate a new instance.
+- name: Container level Report instance REST API
+  description: Endpoints to query / delete Container level concrete report instances (of setups)
 
 paths:
 
-  '/v1/reports/containers/setup/actions/{containerId}/list':
+  '/v1/reports/containers/rest/{containerId}/report-setup-overview':
   
     get:
-      summary: "To query the overview of existing report setups belong to the Container"
+      summary: "To query (list) the overview of all existing report setups belong to the Container"
       tags:
-      - Container level Report setup related actions
+      - Container level Report setup management REST API
       description: >
-                With this endpoint you have the possibility to query all available report setups of a Data Container.  
-                  
                 Anyone with "view" or "admin" role in Data Container can query.
       parameters:
         - $ref: 'common-types-v3.yaml#/components/parameters/containerId'
@@ -64,7 +62,49 @@ paths:
               schema:
                 $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
 
-  '/v1/reports/containers/setup/rest/{containerId}':
+  '/v1/reports/containers/rest/{containerId}/report-setup-overview/{reportSetupId}':
+  
+    get:
+      summary: "To query the overview of a specific existing report setup belongs to the Container"
+      tags:
+      - Container level Report setup management REST API
+      description: >
+                Anyone with "view" or "admin" role in Data Container can query.
+      parameters:
+        - $ref: 'common-types-v3.yaml#/components/parameters/containerId'
+        - $ref: '#/components/parameters/reportSetupId'
+
+      security:
+      - basicAuth: []
+
+      responses:
+        '200':
+          description: "You get the overview of the requested report setup."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportSetupOverview'
+        '401':
+          description: "Authentication failed - you provided invalid credentials or not at all"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
+        '403':
+          description: "You do not have permission to do this with the given credentials"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
+        '404':
+          description: "The container does not exist (or disabled)"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
+
+
+  '/v1/reports/containers/rest/{containerId}/report-setup':
 
     post:
       summary: "To create a new report setup belongs to the Container"
@@ -73,7 +113,7 @@ paths:
                   
                 Only users with "admin" role in Data Container can create a report setup.
       tags:
-      - Container level Report instance management REST API
+      - Container level Report setup management REST API
       parameters:
         - $ref: 'common-types-v3.yaml#/components/parameters/containerId'
       requestBody:
@@ -129,14 +169,14 @@ paths:
                 $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
     
 
-  '/v1/reports/containers/setup/rest/{containerId}/{reportSetupId}':
+  '/v1/reports/containers/rest/{containerId}/report-setup/{reportSetupId}':
   
     get:
       summary: "To query a specific report setup of the Container"
       description: >
                 Anyone with "view" or "admin" role in Data Container can query.
       tags:
-      - Container level Report instance management REST API
+      - Container level Report setup management REST API
       parameters:
         - $ref: 'common-types-v3.yaml#/components/parameters/containerId'
         - $ref: '#/components/parameters/reportSetupId'
@@ -177,7 +217,7 @@ paths:
                   
                 Only users with "admin" role in the Data Container can modify a report setup.
       tags:
-      - Container level Report instance management REST API
+      - Container level Report setup management REST API
       parameters:
         - $ref: 'common-types-v3.yaml#/components/parameters/containerId'
         - $ref: '#/components/parameters/reportSetupId'
@@ -235,7 +275,7 @@ paths:
                   
                 Only users with "admin" role in the Data Container can delete a report setup.
       tags:
-      - Container level Report instance management REST API
+      - Container level Report setup management REST API
       parameters:
         - $ref: 'common-types-v3.yaml#/components/parameters/containerId'
         - $ref: '#/components/parameters/reportSetupId'
@@ -272,17 +312,22 @@ paths:
 
 
 
-  '/v1/reports/containers/instance/actions/{containerId}/{reportSetupId}/list':
+  '/v1/reports/containers/actions/{containerId}/report-setup/{reportSetupId}/list-report-instance-overview':
   
-    get:
+    post:
       summary: "To query (list) all availale report instances of a given ReportSetup - available in the Data Container"
       description: >
                 Anyone with "view" or "admin" role in Data Container can list.
       tags:
-      - Generate and Query reports
+      - Container level Report setup related actions
       parameters:
         - $ref: 'common-types-v3.yaml#/components/parameters/containerId'
         - $ref: '#/components/parameters/reportSetupId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ListReportInstancesRequestClass'
 
       security:
       - basicAuth: []
@@ -313,7 +358,7 @@ paths:
               schema:
                 $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
 
-  '/v1/reports/containers/instance/actions/{containerId}/{reportSetupId}/generate':
+  '/v1/reports/containers/actions/{containerId}/report-setup/{reportSetupId}/generate':
 
     post:
       summary: "To generate (create) a new report instance of a report setup manually."
@@ -322,9 +367,9 @@ paths:
 
                 Please note that a report generation might take time.  
                   
-                Only Data Container admins can trigger a generation manually for now.
+                Only with "admin" role in Data Container can trigger a generation manually for now.
       tags:
-      - Generate and Query reports
+      - Container level Report setup related actions
       parameters:
         - $ref: 'common-types-v3.yaml#/components/parameters/containerId'
         - $ref: '#/components/parameters/reportSetupId'
@@ -342,8 +387,7 @@ paths:
           description: > 
                       The report generation is accepted and will take place soon. This might take for a while...
                       
-                      An ID is immediately generated for this report instance. And **please note:** returned in response header!
-                      
+                      **note:** The ID of the new report instance is immediately generated and returned in `X-ReportInstanceId` response header!
                       By knowing the ID you can query this report instance later.
           headers:
              'X-ReportInstanceId':
@@ -380,14 +424,14 @@ paths:
                 $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
 
 
-  '/v1/reports/containers/instance/rest/{containerId}/{reportInstanceId}':
+  '/v1/reports/containers/rest/{containerId}/report-instance/{reportInstanceId}':
   
     get:
       summary: "To query a specific report instance with the given ID of the Data Container"
       description: >
                 Anyone with "view" or "admin" role in Data Container can query.
       tags:
-      - Generate and Query reports
+      - Container level Report instance REST API
       parameters:
         - $ref: 'common-types-v3.yaml#/components/parameters/containerId'
         - $ref: '#/components/parameters/reportInstanceId'
@@ -426,7 +470,7 @@ paths:
       description: >
                 Only users with "admin" role in Data Container can do this.
       tags:
-      - Generate and Query reports
+      - Container level Report instance REST API
       parameters:
         - $ref: 'common-types-v3.yaml#/components/parameters/containerId'
         - $ref: '#/components/parameters/reportInstanceId'
@@ -495,6 +539,8 @@ components:
       - containerId_invalid
       # The ID of the ReportSetup is not valid - there is no setup with this ID
       - reportSetupId_invalid
+      # The ID of the ReportInstance is not valid - there is no setup with this ID
+      - reportInstanceId_invalid
       
 
     # Let's merge the "local" error codes with the "global" ones in this enum
@@ -506,16 +552,10 @@ components:
       - $ref: "common-types-v3.yaml#/components/schemas/CommonErrorCodesV3"
 
     ListContainerReportSetupsResponseClass:
-      allOf:
-      - $ref: "common-types-v3.yaml#/components/schemas/ContainerResponseV3Class"
-      type: object
-      properties:
-        AvailableReportSetups:
-          type: array
-          items:
-            $ref: "#/components/schemas/AvailableReportSetup"
-          nullable: false
-          description: 'All avaiable report setup IDs.'
+      type: array
+      items:
+        $ref: "#/components/schemas/ReportSetupOverview"
+      description: 'Overview of all avaiable report setups.'
 
     GetContainerReportSetupResponseClass:
       allOf:
@@ -691,9 +731,9 @@ components:
           additionalProperties: true
 
 
-    AvailableReportSetup:
+    ReportSetupOverview:
       type: object
-      description: Contains minimalistic information about a report setup like its ID, title, description.
+      description: Contains minimalistic information about an existing report setup - like its ID, title, description, creation time. It is a quick overview.
       required:
         - id
         - metaData
@@ -712,7 +752,6 @@ components:
         isDisabled:
           type: boolean
           description: It is possible to temporarily disable a report. The report is still generatable manually but automatic schedules will not be executed.
-
 
 
     ReportSetup:
@@ -754,6 +793,21 @@ components:
           type: integer
           description: This is the resource version (which is automatically incremented by every change). When you do an update (PUT) you need to send it back! The server will check if it is matching with the resource version he has. If not then that means someone else already did an update in the meantime therefore your request can not be accepted - otherwise you may overwrite the changes someone did.
           nullable: false
+
+    ReportInstanceState:
+      type: string
+      description: >
+                  It takes time for a report instance until it is fully generated. So every report instance is going through a lifecycle.
+
+                  This is maintained by the server.
+      readOnly: true
+      enum:
+      # The instance is created but no data in it yet
+      - created
+      # The queries are getting executed and data is under generation now
+      - generating
+      # All queries are done and data is complete
+      - complete
 
     DataTableDataColumn:
       type: object
@@ -817,6 +871,18 @@ components:
           nullable: false
           default: []
 
+    ReportInstanceSectionState:
+      type: string
+      description: >
+                  It takes time for a report until it is fully generated. Report sections are going through a lifecycle and these are their states.
+      enum:
+      # The instance is created but no data in it yet
+      - created
+      # The queries are getting executed and data is under generation now
+      - generating
+      # All queries are done and data is complete
+      - complete
+      readOnly: true
 
     ReportInstanceSection:
       type: object
@@ -827,6 +893,8 @@ components:
         description:
           description: This is a longer description of this section - copied from the ReportSetup appropriate Query part which produced this section when this instance was generated.
           type: string
+        state:
+          $ref: '#/components/schemas/ReportInstanceSectionState'
         dataTables:
           type: array
           items:
@@ -852,9 +920,18 @@ components:
           format: int32
           description: "The server time in UNIX timestamp in UTC (seconds since Epoch) when this instance was created"
           example: 1543355710
+        state:
+          $ref: '#/components/schemas/ReportInstanceState'
         isTestOnly:
           type: boolean
           description: Tells if this report instance is a result of a test generation only or not.
+        metaData:
+          description: >
+                      The title of the report is copied from the ReportSetup metaData when this instance was generated.
+                      As well as the description.
+
+                      In case the report generation was triggered manually by someone then you find info in the history part of meta data about whom did it.
+          $ref: 'common-metadata-v1.yaml#/components/schemas/MetaData'
         generatorUserId:
           type: string
           description: In case the report generation was triggered manually by someone then this field contains the ID of the user triggered the generation.
@@ -870,6 +947,16 @@ components:
           description: This is a longer description of the report - copied from the ReportSetup metaData when this instance was generated.
           type: string
           nullable: true
+        fromTimestamp:
+          type: integer
+          description: >
+                        Query range - starting from this timestamp. This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT
+          example: 1657261221
+        toTimestamp:
+          type: integer
+          description: >
+                        Query range - until this timestamp. This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT  
+          example: 1657261221
         sections:
           type: array
           items:
@@ -877,12 +964,16 @@ components:
           default: []
           nullable: false
 
-    AvailableReportInstance:
+    ReportInstanceOverview:
       type: object
+      description: Contains minimalistic information about an existing instance of a report setup - like its ID, creation time, parent report setup ID, etc. It is a quick overview.
       properties:
         id:
           type: string
           #example: "reportInstanceId"
+        parentReportSetupId:
+          type: string
+          description: The ID of the report setup this instance belongs to
         createdAt:
           type: integer
           format: int32
@@ -891,6 +982,14 @@ components:
         isTestOnly:
           type: boolean
           description: "Tells if this report instance is marked as 'test only' or not."
+        fromTimestamp:
+          type: integer
+          description: >
+                        Query range - starting from this timestamp. This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT  
+        toTimestamp:
+          type: integer
+          description: >
+                        Query range - until this timestamp. This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT  
         
     ListContainerReportInstancesResponseClass:
       allOf:
@@ -903,7 +1002,7 @@ components:
         availableInstances:
           type: array
           items:
-            $ref: '#/components/schemas/AvailableReportInstance'
+            $ref: '#/components/schemas/ReportInstanceOverview'
           nullable: false
           description: 'All available report instances - ordered by creation timestamp descending'
 
@@ -941,3 +1040,48 @@ components:
                       If this is set to TRUE then recipients will not receive any notification from Keytiles when this Report Instance is created.
 
                       **IMPORTANT!** Use this with caution! This option was introduced mostly because of internal reasons under certain circumstances.
+        fromTimestamp:
+          type: string
+          description: >
+                        When executed manually (not scheduled way) defines the beginning of the query range - you are interested in data which time is >= than this timestamp.  
+                          
+                        Format is mixed. It can be
+                        * a UNIX timestamp in UTC (seconds since Epoch) e.g.: `1657261221` - means 2022-07-08 6:20:21 GMT  
+                          (note: server and client clock might be different! see: /v2/system/clock endpoint to query server time)
+                        * a relative time spec compared to current time in form of 'now[-X<m|h|d>]' where 'm' means minutes, 'h' means hours and 'd' means days,
+                          e.g.: `now-10m` means 10 minutes earlier compared to current time,
+                          `now-2h` means 2 hours earlier and so on
+                          
+                        This must point to the past!  
+                        (note: server validates according to his own clock!)
+          example: now-1h
+        toTimestamp:
+          type: string
+          description: >
+                        When executed manually (not scheduled way) defines the end of the query range - you are interested in data which time is <= than this timestamp.
+                          
+                        **Default value:** the current timestamp, so 'now' if you do not specify this parameter.
+                          
+                        Format is mixed. It can be
+                        * a UNIX timestamp in UTC (seconds since Epoch) e.g.: `1657261221` - means 2022-07-08 6:20:21 GMT  
+                          (note: server and client clock might be different! see: /v2/system/clock endpoint to query server time)
+                        * a relative time spec compared to current time in form of 'now[-X<m|h|d>]' where 'm' means minutes, 'h' means hours and 'd' means days,
+                          e.g.: `now-10m` means 10 minutes earlier compared to current time,
+                          `now-2h` means 2 hours earlier and so on
+                          
+                        Can not point to the future!  
+                        (note: server validates according to his own clock!)
+          example: now-2h
+
+
+    ListReportInstancesRequestClass:
+      type: object
+      description: >
+                  You can fine tune how the list is generated with the attributes of this request.
+      properties:
+        includeTestOnlyInstances:
+          type: boolean
+          description: By default the request excludes the "test only" instances - unless you request here to include them
+        excludeNotTestOnlyInstances:
+          type: boolean
+          description: By default the request includes normal (not "test only") instances - unless you request here to exclude them

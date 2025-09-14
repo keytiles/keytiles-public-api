@@ -16,6 +16,20 @@ const (
 	BasicAuthScopes = "basicAuth.Scopes"
 )
 
+// Defines values for ReportInstanceSectionState.
+const (
+	ReportInstanceSectionStateComplete   ReportInstanceSectionState = "complete"
+	ReportInstanceSectionStateCreated    ReportInstanceSectionState = "created"
+	ReportInstanceSectionStateGenerating ReportInstanceSectionState = "generating"
+)
+
+// Defines values for ReportInstanceState.
+const (
+	ReportInstanceStateComplete   ReportInstanceState = "complete"
+	ReportInstanceStateCreated    ReportInstanceState = "created"
+	ReportInstanceStateGenerating ReportInstanceState = "generating"
+)
+
 // Defines values for ReportQueryPlugin.
 const (
 	CampaignPerformancePlugin ReportQueryPlugin = "campaignPerformancePlugin"
@@ -51,6 +65,7 @@ const (
 	ReportsEndpointErrorCodesFieldDeprecated                  ReportsEndpointErrorCodes = "field_deprecated"
 	ReportsEndpointErrorCodesMandatoryEmailSendingFailed      ReportsEndpointErrorCodes = "mandatoryEmailSending_failed"
 	ReportsEndpointErrorCodesQueryLimitReached                ReportsEndpointErrorCodes = "query_limit_reached"
+	ReportsEndpointErrorCodesReportInstanceIdInvalid          ReportsEndpointErrorCodes = "reportInstanceId_invalid"
 	ReportsEndpointErrorCodesReportSetupIdInvalid             ReportsEndpointErrorCodes = "reportSetupId_invalid"
 	ReportsEndpointErrorCodesRequestDataContradicting         ReportsEndpointErrorCodes = "requestData_contradicting"
 	ReportsEndpointErrorCodesRequestDataInvalid               ReportsEndpointErrorCodes = "requestData_invalid"
@@ -78,33 +93,11 @@ const (
 
 // Defines values for ReportsEndpointLocalErrorCodes.
 const (
-	ReportsEndpointLocalErrorCodesContainerIdInvalid   ReportsEndpointLocalErrorCodes = "containerId_invalid"
-	ReportsEndpointLocalErrorCodesContainerIdMissing   ReportsEndpointLocalErrorCodes = "containerId_missing"
-	ReportsEndpointLocalErrorCodesReportSetupIdInvalid ReportsEndpointLocalErrorCodes = "reportSetupId_invalid"
+	ReportsEndpointLocalErrorCodesContainerIdInvalid      ReportsEndpointLocalErrorCodes = "containerId_invalid"
+	ReportsEndpointLocalErrorCodesContainerIdMissing      ReportsEndpointLocalErrorCodes = "containerId_missing"
+	ReportsEndpointLocalErrorCodesReportInstanceIdInvalid ReportsEndpointLocalErrorCodes = "reportInstanceId_invalid"
+	ReportsEndpointLocalErrorCodesReportSetupIdInvalid    ReportsEndpointLocalErrorCodes = "reportSetupId_invalid"
 )
-
-// AvailableReportInstance defines model for AvailableReportInstance.
-type AvailableReportInstance struct {
-	// CreatedAt The server time in UNIX timestamp in UTC (seconds since Epoch) when this instance was created
-	CreatedAt *int32  `json:"createdAt,omitempty" yaml:"createdAt,omitempty"`
-	Id        *string `json:"id,omitempty" yaml:"id,omitempty"`
-
-	// IsTestOnly Tells if this report instance is marked as 'test only' or not.
-	IsTestOnly *bool `json:"isTestOnly,omitempty" yaml:"isTestOnly,omitempty"`
-}
-
-// AvailableReportSetup Contains minimalistic information about a report setup like its ID, title, description.
-type AvailableReportSetup struct {
-	// CreatedAt The server time in UNIX timestamp in UTC (seconds since Epoch) when this instance was created
-	CreatedAt *int32 `json:"createdAt,omitempty" yaml:"createdAt,omitempty"`
-
-	// Id The unique ID of this report setup - UUID style
-	Id string `json:"id" yaml:"id"`
-
-	// IsDisabled It is possible to temporarily disable a report. The report is still generatable manually but automatic schedules will not be executed.
-	IsDisabled *bool                 `json:"isDisabled,omitempty" yaml:"isDisabled,omitempty"`
-	MetaData   externalRef0.MetaData `json:"metaData" yaml:"metaData"`
-}
 
 // DataTable DataTable is the output of queries - a self contained table of data with Axis columns (optional) and >1 Data columns. Plus of course the data rows.
 type DataTable struct {
@@ -150,6 +143,17 @@ type GenerateReportRequestClass struct {
 	// **BUT** if you do this, then this also sets 'isTestOnly' to TRUE! So the generated ReportInstance considered to be a test only.
 	ExecuteQueryIdsOnly *[]string `json:"executeQueryIdsOnly,omitempty" yaml:"executeQueryIdsOnly,omitempty"`
 
+	// FromTimestamp When executed manually (not scheduled way) defines the beginning of the query range - you are interested in data which time is >= than this timestamp.
+	//
+	// Format is mixed. It can be * a UNIX timestamp in UTC (seconds since Epoch) e.g.: `1657261221` - means 2022-07-08 6:20:21 GMT
+	//   (note: server and client clock might be different! see: /v2/system/clock endpoint to query server time)
+	// * a relative time spec compared to current time in form of 'now[-X<m|h|d>]' where 'm' means minutes, 'h' means hours and 'd' means days,
+	//   e.g.: `now-10m` means 10 minutes earlier compared to current time,
+	//   `now-2h` means 2 hours earlier and so on
+	//
+	// This must point to the past!   (note: server validates according to his own clock!)
+	FromTimestamp *string `json:"fromTimestamp,omitempty" yaml:"fromTimestamp,omitempty"`
+
 	// IsTestOnly Set it to TRUE if you just want to test the report generation.
 	// In this case the recipients (if set in report setup) will not be notified about this report at all. And only the user who generated it will receive a notification when report is ready to view. But apart from this the full report will be generated.
 	IsTestOnly *bool `json:"isTestOnly,omitempty" yaml:"isTestOnly,omitempty"`
@@ -157,6 +161,19 @@ type GenerateReportRequestClass struct {
 	// SkipNotifications If this is set to TRUE then recipients will not receive any notification from Keytiles when this Report Instance is created.
 	// **IMPORTANT!** Use this with caution! This option was introduced mostly because of internal reasons under certain circumstances.
 	SkipNotifications *bool `json:"skipNotifications,omitempty" yaml:"skipNotifications,omitempty"`
+
+	// ToTimestamp When executed manually (not scheduled way) defines the end of the query range - you are interested in data which time is <= than this timestamp.
+	//
+	// **Default value:** the current timestamp, so 'now' if you do not specify this parameter.
+	//
+	// Format is mixed. It can be * a UNIX timestamp in UTC (seconds since Epoch) e.g.: `1657261221` - means 2022-07-08 6:20:21 GMT
+	//   (note: server and client clock might be different! see: /v2/system/clock endpoint to query server time)
+	// * a relative time spec compared to current time in form of 'now[-X<m|h|d>]' where 'm' means minutes, 'h' means hours and 'd' means days,
+	//   e.g.: `now-10m` means 10 minutes earlier compared to current time,
+	//   `now-2h` means 2 hours earlier and so on
+	//
+	// Can not point to the future!   (note: server validates according to his own clock!)
+	ToTimestamp *string `json:"toTimestamp,omitempty" yaml:"toTimestamp,omitempty"`
 }
 
 // GetContainerReportInstanceResponseClass defines model for GetContainerReportInstanceResponseClass.
@@ -168,8 +185,17 @@ type GetContainerReportSetupResponseClass = externalRef2.ContainerResponseV3Clas
 // ListContainerReportInstancesResponseClass defines model for ListContainerReportInstancesResponseClass.
 type ListContainerReportInstancesResponseClass = externalRef2.ContainerResponseV3Class
 
-// ListContainerReportSetupsResponseClass defines model for ListContainerReportSetupsResponseClass.
-type ListContainerReportSetupsResponseClass = externalRef2.ContainerResponseV3Class
+// ListContainerReportSetupsResponseClass Overview of all avaiable report setups.
+type ListContainerReportSetupsResponseClass = []ReportSetupOverview
+
+// ListReportInstancesRequestClass You can fine tune how the list is generated with the attributes of this request.
+type ListReportInstancesRequestClass struct {
+	// ExcludeNotTestOnlyInstances By default the request includes normal (not "test only") instances - unless you request here to exclude them
+	ExcludeNotTestOnlyInstances *bool `json:"excludeNotTestOnlyInstances,omitempty" yaml:"excludeNotTestOnlyInstances,omitempty"`
+
+	// IncludeTestOnlyInstances By default the request excludes the "test only" instances - unless you request here to include them
+	IncludeTestOnlyInstances *bool `json:"includeTestOnlyInstances,omitempty" yaml:"includeTestOnlyInstances,omitempty"`
+}
 
 // ReportInstance This is a specific instance of a ReportSetup which was generated at a certain point in time. Keytiles stores these reports for a while.
 // A report instance consists of sections - each section is generated by a query.
@@ -179,6 +205,9 @@ type ReportInstance struct {
 
 	// Description This is a longer description of the report - copied from the ReportSetup metaData when this instance was generated.
 	Description *string `json:"description" yaml:"description"`
+
+	// FromTimestamp Query range - starting from this timestamp. This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT
+	FromTimestamp *int `json:"fromTimestamp,omitempty" yaml:"fromTimestamp,omitempty"`
 
 	// GeneratorUserId In case the report generation was triggered manually by someone then this field contains the ID of the user triggered the generation.
 	GeneratorUserId *string `json:"generatorUserId" yaml:"generatorUserId"`
@@ -190,14 +219,41 @@ type ReportInstance struct {
 	Id *string `json:"id,omitempty" yaml:"id,omitempty"`
 
 	// IsTestOnly Tells if this report instance is a result of a test generation only or not.
-	IsTestOnly *bool `json:"isTestOnly,omitempty" yaml:"isTestOnly,omitempty"`
+	IsTestOnly *bool                  `json:"isTestOnly,omitempty" yaml:"isTestOnly,omitempty"`
+	MetaData   *externalRef0.MetaData `json:"metaData,omitempty" yaml:"metaData,omitempty"`
 
 	// ParentReportSetupId The ID of the ReportSetup this instance belongs to.
 	ParentReportSetupId *string                  `json:"parentReportSetupId,omitempty" yaml:"parentReportSetupId,omitempty"`
 	Sections            *[]ReportInstanceSection `json:"sections,omitempty" yaml:"sections,omitempty"`
 
+	// State It takes time for a report instance until it is fully generated. So every report instance is going through a lifecycle.
+	// This is maintained by the server.
+	State *ReportInstanceState `json:"state,omitempty" yaml:"state,omitempty"`
+
 	// Title The title of the report - copied from the ReportSetup metaData when this instance was generated.
 	Title *string `json:"title,omitempty" yaml:"title,omitempty"`
+
+	// ToTimestamp Query range - until this timestamp. This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT
+	ToTimestamp *int `json:"toTimestamp,omitempty" yaml:"toTimestamp,omitempty"`
+}
+
+// ReportInstanceOverview Contains minimalistic information about an existing instance of a report setup - like its ID, creation time, parent report setup ID, etc. It is a quick overview.
+type ReportInstanceOverview struct {
+	// CreatedAt The server time in UNIX timestamp in UTC (seconds since Epoch) when this instance was created
+	CreatedAt *int32 `json:"createdAt,omitempty" yaml:"createdAt,omitempty"`
+
+	// FromTimestamp Query range - starting from this timestamp. This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT
+	FromTimestamp *int    `json:"fromTimestamp,omitempty" yaml:"fromTimestamp,omitempty"`
+	Id            *string `json:"id,omitempty" yaml:"id,omitempty"`
+
+	// IsTestOnly Tells if this report instance is marked as 'test only' or not.
+	IsTestOnly *bool `json:"isTestOnly,omitempty" yaml:"isTestOnly,omitempty"`
+
+	// ParentReportSetupId The ID of the report setup this instance belongs to
+	ParentReportSetupId *string `json:"parentReportSetupId,omitempty" yaml:"parentReportSetupId,omitempty"`
+
+	// ToTimestamp Query range - until this timestamp. This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT
+	ToTimestamp *int `json:"toTimestamp,omitempty" yaml:"toTimestamp,omitempty"`
 }
 
 // ReportInstanceSection defines model for ReportInstanceSection.
@@ -207,9 +263,19 @@ type ReportInstanceSection struct {
 	// Description This is a longer description of this section - copied from the ReportSetup appropriate Query part which produced this section when this instance was generated.
 	Description *string `json:"description,omitempty" yaml:"description,omitempty"`
 
+	// State It takes time for a report until it is fully generated. Report sections are going through a lifecycle and these are their states.
+	State *ReportInstanceSectionState `json:"state,omitempty" yaml:"state,omitempty"`
+
 	// Title The title of this section - copied from the ReportSetup appropriate Query part which produced this section when this instance was generated.
 	Title *string `json:"title,omitempty" yaml:"title,omitempty"`
 }
+
+// ReportInstanceSectionState It takes time for a report until it is fully generated. Report sections are going through a lifecycle and these are their states.
+type ReportInstanceSectionState string
+
+// ReportInstanceState It takes time for a report instance until it is fully generated. So every report instance is going through a lifecycle.
+// This is maintained by the server.
+type ReportInstanceState string
 
 // ReportQuery A report can contain multiple queries. This object describes one query of those.
 type ReportQuery struct {
@@ -325,6 +391,19 @@ type ReportSetup struct {
 	Schedule *externalRef1.Schedule `json:"schedule" yaml:"schedule"`
 }
 
+// ReportSetupOverview Contains minimalistic information about an existing report setup - like its ID, title, description, creation time. It is a quick overview.
+type ReportSetupOverview struct {
+	// CreatedAt The server time in UNIX timestamp in UTC (seconds since Epoch) when this instance was created
+	CreatedAt *int32 `json:"createdAt,omitempty" yaml:"createdAt,omitempty"`
+
+	// Id The unique ID of this report setup - UUID style
+	Id string `json:"id" yaml:"id"`
+
+	// IsDisabled It is possible to temporarily disable a report. The report is still generatable manually but automatic schedules will not be executed.
+	IsDisabled *bool                 `json:"isDisabled,omitempty" yaml:"isDisabled,omitempty"`
+	MetaData   externalRef0.MetaData `json:"metaData" yaml:"metaData"`
+}
+
 // ReportsEndpointErrorCodes defines model for ReportsEndpointErrorCodes.
 type ReportsEndpointErrorCodes string
 
@@ -337,14 +416,17 @@ type ReportInstanceId = string
 // ReportSetupId defines model for reportSetupId.
 type ReportSetupId = string
 
-// PostV1ReportsContainersInstanceActionsContainerIdReportSetupIdGenerateJSONRequestBody defines body for PostV1ReportsContainersInstanceActionsContainerIdReportSetupIdGenerate for application/json ContentType.
-type PostV1ReportsContainersInstanceActionsContainerIdReportSetupIdGenerateJSONRequestBody = GenerateReportRequestClass
+// PostV1ReportsContainersActionsContainerIdReportSetupReportSetupIdGenerateJSONRequestBody defines body for PostV1ReportsContainersActionsContainerIdReportSetupReportSetupIdGenerate for application/json ContentType.
+type PostV1ReportsContainersActionsContainerIdReportSetupReportSetupIdGenerateJSONRequestBody = GenerateReportRequestClass
 
-// PostV1ReportsContainersSetupRestContainerIdJSONRequestBody defines body for PostV1ReportsContainersSetupRestContainerId for application/json ContentType.
-type PostV1ReportsContainersSetupRestContainerIdJSONRequestBody = ReportSetup
+// PostV1ReportsContainersActionsContainerIdReportSetupReportSetupIdListReportInstanceOverviewJSONRequestBody defines body for PostV1ReportsContainersActionsContainerIdReportSetupReportSetupIdListReportInstanceOverview for application/json ContentType.
+type PostV1ReportsContainersActionsContainerIdReportSetupReportSetupIdListReportInstanceOverviewJSONRequestBody = ListReportInstancesRequestClass
 
-// PutV1ReportsContainersSetupRestContainerIdReportSetupIdJSONRequestBody defines body for PutV1ReportsContainersSetupRestContainerIdReportSetupId for application/json ContentType.
-type PutV1ReportsContainersSetupRestContainerIdReportSetupIdJSONRequestBody = ReportSetup
+// PostV1ReportsContainersRestContainerIdReportSetupJSONRequestBody defines body for PostV1ReportsContainersRestContainerIdReportSetup for application/json ContentType.
+type PostV1ReportsContainersRestContainerIdReportSetupJSONRequestBody = ReportSetup
+
+// PutV1ReportsContainersRestContainerIdReportSetupReportSetupIdJSONRequestBody defines body for PutV1ReportsContainersRestContainerIdReportSetupReportSetupId for application/json ContentType.
+type PutV1ReportsContainersRestContainerIdReportSetupReportSetupIdJSONRequestBody = ReportSetup
 
 // Getter for additional properties for ReportQuery_Parameters. Returns the specified
 // element and whether it was found
