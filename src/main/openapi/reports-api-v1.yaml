@@ -537,10 +537,12 @@ components:
       - containerId_missing
       # The ID of the Container is not valid - there is no Container with this ID
       - containerId_invalid
-      # The ID of the ReportSetup is not valid - there is no setup with this ID
+      # The ID of the ReportSetup is not valid - there is no setup with this ID or format of ID is not valid
       - reportSetupId_invalid
-      # The ID of the ReportInstance is not valid - there is no setup with this ID
+      # The ID of the ReportInstance is not valid - there is no setup with this ID or format of ID is not valid
       - reportInstanceId_invalid
+      # ReportSetup with this ID already exists
+      - reportSetup_exists
       
 
     # Let's merge the "local" error codes with the "global" ones in this enum

@@ -53,6 +53,7 @@ const (
 	ReportsEndpointErrorCodesActionTokenInvalid               ReportsEndpointErrorCodes = "actionToken_invalid"
 	ReportsEndpointErrorCodesActionTokenMissing               ReportsEndpointErrorCodes = "actionToken_missing"
 	ReportsEndpointErrorCodesActionTokenUnknownType           ReportsEndpointErrorCodes = "actionToken_unknownType"
+	ReportsEndpointErrorCodesAlreadyExists                    ReportsEndpointErrorCodes = "already_exists"
 	ReportsEndpointErrorCodesAuthenticationBase64DecodeFailed ReportsEndpointErrorCodes = "authentication_base64DecodeFailed"
 	ReportsEndpointErrorCodesAuthenticationInternalError      ReportsEndpointErrorCodes = "authentication_internalError"
 	ReportsEndpointErrorCodesAuthenticationInvalidCredentials ReportsEndpointErrorCodes = "authentication_invalid_credentials"
@@ -66,6 +67,7 @@ const (
 	ReportsEndpointErrorCodesMandatoryEmailSendingFailed      ReportsEndpointErrorCodes = "mandatoryEmailSending_failed"
 	ReportsEndpointErrorCodesQueryLimitReached                ReportsEndpointErrorCodes = "query_limit_reached"
 	ReportsEndpointErrorCodesReportInstanceIdInvalid          ReportsEndpointErrorCodes = "reportInstanceId_invalid"
+	ReportsEndpointErrorCodesReportSetupExists                ReportsEndpointErrorCodes = "reportSetup_exists"
 	ReportsEndpointErrorCodesReportSetupIdInvalid             ReportsEndpointErrorCodes = "reportSetupId_invalid"
 	ReportsEndpointErrorCodesRequestDataContradicting         ReportsEndpointErrorCodes = "requestData_contradicting"
 	ReportsEndpointErrorCodesRequestDataInvalid               ReportsEndpointErrorCodes = "requestData_invalid"
@@ -96,6 +98,7 @@ const (
 	ReportsEndpointLocalErrorCodesContainerIdInvalid      ReportsEndpointLocalErrorCodes = "containerId_invalid"
 	ReportsEndpointLocalErrorCodesContainerIdMissing      ReportsEndpointLocalErrorCodes = "containerId_missing"
 	ReportsEndpointLocalErrorCodesReportInstanceIdInvalid ReportsEndpointLocalErrorCodes = "reportInstanceId_invalid"
+	ReportsEndpointLocalErrorCodesReportSetupExists       ReportsEndpointLocalErrorCodes = "reportSetup_exists"
 	ReportsEndpointLocalErrorCodesReportSetupIdInvalid    ReportsEndpointLocalErrorCodes = "reportSetupId_invalid"
 )
 

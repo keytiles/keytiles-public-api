@@ -9,6 +9,7 @@ const (
 	ActionTokenInvalid               CommonErrorCodesV3 = "actionToken_invalid"
 	ActionTokenMissing               CommonErrorCodesV3 = "actionToken_missing"
 	ActionTokenUnknownType           CommonErrorCodesV3 = "actionToken_unknownType"
+	AlreadyExists                    CommonErrorCodesV3 = "already_exists"
 	AuthenticationBase64DecodeFailed CommonErrorCodesV3 = "authentication_base64DecodeFailed"
 	AuthenticationInternalError      CommonErrorCodesV3 = "authentication_internalError"
 	AuthenticationInvalidCredentials CommonErrorCodesV3 = "authentication_invalid_credentials"

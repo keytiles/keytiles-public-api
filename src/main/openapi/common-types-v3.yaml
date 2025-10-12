@@ -141,6 +141,8 @@ components:
       - field_deprecated
       # To fulfill the API call it depends on another service/resource (e.g. another API or persistence) - which it seems currently not available. In general client should retry the request later.
       - underlying_resource_unavailable
+      # The resource API call tries to create already exists
+      - already_exists
 
     ProblemPlaceEnumV3:
       type: string
