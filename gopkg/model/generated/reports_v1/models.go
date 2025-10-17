@@ -383,6 +383,7 @@ type ReportSetup struct {
 }
 
 // ReportSetupOverview Contains minimalistic information about an existing report setup - like its ID, title, description, creation time. It is a quick overview.
+// By default the `changelog` within `metaData` only contains the first and very last item. You might request more - see request parameters!
 type ReportSetupOverview struct {
 	// CreatedAt The server time in UNIX timestamp in UTC (seconds since Epoch) when this instance was created
 	CreatedAt *int32 `json:"createdAt,omitempty" yaml:"createdAt,omitempty"`
@@ -406,6 +407,34 @@ type ReportInstanceId = string
 
 // ReportSetupId defines model for reportSetupId.
 type ReportSetupId = string
+
+// PostV1ReportsContainersRestContainerIdReportSetupParams defines parameters for PostV1ReportsContainersRestContainerIdReportSetup.
+type PostV1ReportsContainersRestContainerIdReportSetupParams struct {
+	// ChangelogComment Short user message which if sent then added to the changelog entry created by the server.
+	ChangelogComment *externalRef2.ChangelogComment `form:"changelogComment,omitempty" json:"changelogComment,omitempty" yaml:"changelogComment,omitempty"`
+}
+
+// GetV1ReportsContainersRestContainerIdReportSetupOverviewParams defines parameters for GetV1ReportsContainersRestContainerIdReportSetupOverview.
+type GetV1ReportsContainersRestContainerIdReportSetupOverviewParams struct {
+	// ReturnFullChangelog By default returned `changelog` in meta data only contains the very first and last entries upon query - but you can request to return full changelog.
+	//
+	// **Default value:** false
+	ReturnFullChangelog *externalRef2.ReturnFullChangelog `form:"returnFullChangelog,omitempty" json:"returnFullChangelog,omitempty" yaml:"returnFullChangelog,omitempty"`
+}
+
+// GetV1ReportsContainersRestContainerIdReportSetupReportSetupIdParams defines parameters for GetV1ReportsContainersRestContainerIdReportSetupReportSetupId.
+type GetV1ReportsContainersRestContainerIdReportSetupReportSetupIdParams struct {
+	// ReturnFullChangelog By default returned `changelog` in meta data only contains the very first and last entries upon query - but you can request to return full changelog.
+	//
+	// **Default value:** false
+	ReturnFullChangelog *externalRef2.ReturnFullChangelog `form:"returnFullChangelog,omitempty" json:"returnFullChangelog,omitempty" yaml:"returnFullChangelog,omitempty"`
+}
+
+// PutV1ReportsContainersRestContainerIdReportSetupReportSetupIdParams defines parameters for PutV1ReportsContainersRestContainerIdReportSetupReportSetupId.
+type PutV1ReportsContainersRestContainerIdReportSetupReportSetupIdParams struct {
+	// ChangelogComment Short user message which if sent then added to the changelog entry created by the server.
+	ChangelogComment *externalRef2.ChangelogComment `form:"changelogComment,omitempty" json:"changelogComment,omitempty" yaml:"changelogComment,omitempty"`
+}
 
 // PostV1ReportsContainersActionsContainerIdReportSetupReportSetupIdGenerateJSONRequestBody defines body for PostV1ReportsContainersActionsContainerIdReportSetupReportSetupIdGenerate for application/json ContentType.
 type PostV1ReportsContainersActionsContainerIdReportSetupReportSetupIdGenerateJSONRequestBody = GenerateReportRequestClass

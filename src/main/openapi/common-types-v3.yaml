@@ -60,6 +60,26 @@ components:
                     Can not point to the future!  
                     (note: server validates according to his own clock!)
 
+    returnFullChangelog:
+      name: returnFullChangelog
+      in: query
+      required: false
+      description: >
+                  By default returned `changelog` in meta data only contains the very first and last entries upon query - but you can request to return full changelog.  
+                    
+                  **Default value:** false
+      schema:
+        type: boolean
+
+    changelogComment:
+      name: changelogComment
+      description: >
+                  Short user message which if sent then added to the changelog entry created by the server.
+      required: false
+      in: query
+      schema:
+        type: string
+
   schemas:
 
     # This enum defines global error codes which could appear basically in any API Endpoints

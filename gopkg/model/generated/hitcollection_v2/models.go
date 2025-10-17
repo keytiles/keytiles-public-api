@@ -19,6 +19,7 @@ const (
 	HitCollectionEndpointErrorCodesActionTokenInvalid               HitCollectionEndpointErrorCodes = "actionToken_invalid"
 	HitCollectionEndpointErrorCodesActionTokenMissing               HitCollectionEndpointErrorCodes = "actionToken_missing"
 	HitCollectionEndpointErrorCodesActionTokenUnknownType           HitCollectionEndpointErrorCodes = "actionToken_unknownType"
+	HitCollectionEndpointErrorCodesAlreadyExists                    HitCollectionEndpointErrorCodes = "already_exists"
 	HitCollectionEndpointErrorCodesAuthenticationBase64DecodeFailed HitCollectionEndpointErrorCodes = "authentication_base64DecodeFailed"
 	HitCollectionEndpointErrorCodesAuthenticationInternalError      HitCollectionEndpointErrorCodes = "authentication_internalError"
 	HitCollectionEndpointErrorCodesAuthenticationInvalidCredentials HitCollectionEndpointErrorCodes = "authentication_invalid_credentials"

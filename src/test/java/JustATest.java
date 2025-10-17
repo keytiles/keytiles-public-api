@@ -9,7 +9,7 @@ public class JustATest {
 	public void modelTest() {
 		ContainerQueryRangeResponseV3Class response = null;
 
-		MetaData meta = new MetaData("title", "description", 1);
-		meta.changelog = null;
+		MetaData meta = new MetaData(null, "title", 1);
+		meta.description = null;
 	}
 }

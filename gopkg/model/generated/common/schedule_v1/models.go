@@ -35,7 +35,7 @@ const (
 // DailyScheduleSetup Encodes scheduling tailored for daily execution.
 type DailyScheduleSetup struct {
 	// DayNames Optional setting. If given then scheduling will happen only on these days. This is a day mask basically.
-	DayNames *[]ScheduleDayName `json:"dayNames,omitempty" yaml:"dayNames,omitempty"`
+	DayNames *[]ScheduleDayName `json:"dayNames" yaml:"dayNames"`
 
 	// TriggerTime Mandatory element. This is an "HH:MM" formatted time descriptor. Means: within a day what time should we trigger the execution?
 	TriggerTime string `json:"triggerTime" yaml:"triggerTime"`
@@ -44,7 +44,7 @@ type DailyScheduleSetup struct {
 // HourlyScheduleSetup Encodes scheduling tailored for hourly execution.
 type HourlyScheduleSetup struct {
 	// DayNames Optional setting. If given then scheduling will happen only on these days. This is a day mask basically.
-	DayNames *[]ScheduleDayName `json:"dayNames,omitempty" yaml:"dayNames,omitempty"`
+	DayNames *[]ScheduleDayName `json:"dayNames" yaml:"dayNames"`
 
 	// FirstTime Mandatory element. This is an "HH:MM" formatted time descriptor. Means: within a day what time should we trigger the execution first? From this time the action is shcheduled every hour.
 	//
@@ -56,13 +56,20 @@ type HourlyScheduleSetup struct {
 	// For example, if `firstTime="09:15"` then actually the last execution of the action will happen at "17:15".
 	//
 	// In case not given then scheduling will happen within the day every hour starting from `firstTime`.
-	UntilTime *string `json:"untilTime,omitempty" yaml:"untilTime,omitempty"`
+	UntilTime *string `json:"untilTime" yaml:"untilTime"`
 }
 
 // MonthlyScheduleSetup Encodes scheduling tailored for monthly execution.
 type MonthlyScheduleSetup struct {
-	// DayName Optional element. To pick up the day when the report is triggered you have a few options. If not given then simply it will be 'firstDay'.
-	DayName *MonthlyScheduleSetup_DayName `json:"dayName,omitempty" yaml:"dayName,omitempty"`
+	// DayName Optional element. To pick up the day when the action is triggered you have a few options.
+	//
+	// You can put
+	//  * `firstDay` - action is triggered on first day of the month
+	//  * `lastDay` - action is triggered on last day of the month
+	//  * weekday like `Mon` etc - action is triggered on the first Monday of the month
+	//
+	// **default value**: If not given then simply it will be 'firstDay'.
+	DayName *MonthlyScheduleSetup_DayName `json:"dayName" yaml:"dayName"`
 
 	// TriggerTime Mandatory element. This is an "HH:MM" formatted time descriptor. Means: within a day what time should we trigger the execution?
 	TriggerTime string `json:"triggerTime" yaml:"triggerTime"`
@@ -71,7 +78,14 @@ type MonthlyScheduleSetup struct {
 // MonthlyScheduleSetupDayName1 defines model for MonthlyScheduleSetup.DayName.1.
 type MonthlyScheduleSetupDayName1 string
 
-// MonthlyScheduleSetup_DayName Optional element. To pick up the day when the report is triggered you have a few options. If not given then simply it will be 'firstDay'.
+// MonthlyScheduleSetup_DayName Optional element. To pick up the day when the action is triggered you have a few options.
+//
+// You can put
+//   - `firstDay` - action is triggered on first day of the month
+//   - `lastDay` - action is triggered on last day of the month
+//   - weekday like `Mon` etc - action is triggered on the first Monday of the month
+//
+// **default value**: If not given then simply it will be 'firstDay'.
 type MonthlyScheduleSetup_DayName struct {
 	union json.RawMessage
 }

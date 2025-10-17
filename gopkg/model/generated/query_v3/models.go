@@ -17,6 +17,7 @@ const (
 	StatApiEndpointErrorCodesActionTokenInvalid               StatApiEndpointErrorCodes = "actionToken_invalid"
 	StatApiEndpointErrorCodesActionTokenMissing               StatApiEndpointErrorCodes = "actionToken_missing"
 	StatApiEndpointErrorCodesActionTokenUnknownType           StatApiEndpointErrorCodes = "actionToken_unknownType"
+	StatApiEndpointErrorCodesAlreadyExists                    StatApiEndpointErrorCodes = "already_exists"
 	StatApiEndpointErrorCodesAuthenticationBase64DecodeFailed StatApiEndpointErrorCodes = "authentication_base64DecodeFailed"
 	StatApiEndpointErrorCodesAuthenticationInternalError      StatApiEndpointErrorCodes = "authentication_internalError"
 	StatApiEndpointErrorCodesAuthenticationInvalidCredentials StatApiEndpointErrorCodes = "authentication_invalid_credentials"

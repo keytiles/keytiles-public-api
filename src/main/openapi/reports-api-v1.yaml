@@ -30,8 +30,11 @@ paths:
       - Container level Report setup management REST API
       description: >
                 Anyone with "view" or "admin" role in Data Container can query.
+
+                By default `changelog` in 
       parameters:
         - $ref: 'common-types-v3.yaml#/components/parameters/containerId'
+        - $ref: 'common-types-v3.yaml#/components/parameters/returnFullChangelog'
 
       security:
       - basicAuth: []
@@ -116,6 +119,7 @@ paths:
       - Container level Report setup management REST API
       parameters:
         - $ref: 'common-types-v3.yaml#/components/parameters/containerId'
+        - $ref: 'common-types-v3.yaml#/components/parameters/changelogComment'
       requestBody:
         content:
           application/json:
@@ -180,6 +184,7 @@ paths:
       parameters:
         - $ref: 'common-types-v3.yaml#/components/parameters/containerId'
         - $ref: '#/components/parameters/reportSetupId'
+        - $ref: 'common-types-v3.yaml#/components/parameters/returnFullChangelog'
 
       security:
       - basicAuth: []
@@ -221,6 +226,7 @@ paths:
       parameters:
         - $ref: 'common-types-v3.yaml#/components/parameters/containerId'
         - $ref: '#/components/parameters/reportSetupId'
+        - $ref: 'common-types-v3.yaml#/components/parameters/changelogComment'
       requestBody:
         content:
           application/json:
@@ -523,7 +529,8 @@ components:
       description: 'ID of a specific (generated) report instance belongs to the Data Container'
       schema:
         type: string
-    
+
+     
 
   schemas:
 
@@ -735,7 +742,10 @@ components:
 
     ReportSetupOverview:
       type: object
-      description: Contains minimalistic information about an existing report setup - like its ID, title, description, creation time. It is a quick overview.
+      description: >
+                  Contains minimalistic information about an existing report setup - like its ID, title, description, creation time. It is a quick overview.
+
+                  By default the `changelog` within `metaData` only contains the first and very last item. You might request more - see request parameters!
       required:
         - id
         - metaData

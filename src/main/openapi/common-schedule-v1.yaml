@@ -74,6 +74,7 @@ components:
                       For example, if `firstTime="09:15"` then actually the last execution of the action will happen at "17:15".  
                         
                       In case not given then scheduling will happen within the day every hour starting from `firstTime`.
+          nullable: true
           example: '18:00'
         dayNames:
           type: array
@@ -82,6 +83,7 @@ components:
           description: Optional setting. If given then scheduling will happen only on these days. This is a day mask basically.
           items:
             $ref: '#/components/schemas/ScheduleDayName'
+          nullable: true
 
     DailyScheduleSetup:
       description: Encodes scheduling tailored for daily execution.
@@ -104,6 +106,7 @@ components:
           description: Optional setting. If given then scheduling will happen only on these days. This is a day mask basically.
           items:
             $ref: '#/components/schemas/ScheduleDayName'
+          nullable: true
 
     WeeklyScheduleSetup:
       description: Encodes scheduling tailored for weekly execution.
@@ -123,7 +126,10 @@ components:
           # we voted against it - let's keep the Nil possibility...
           # x-go-type-skip-optional-pointer: true
           default: 'Mon'
+          description: >
+                      Optional. If given then the action will run on this day of the week - otherwise default is Monday.
           $ref: '#/components/schemas/ScheduleDayName'
+          nullable: true
 
     MonthlyScheduleSetup:
       description: Encodes scheduling tailored for monthly execution.
@@ -140,7 +146,15 @@ components:
                       Mandatory element. This is an "HH:MM" formatted time descriptor. Means: within a day what time should we trigger the execution?
           example: '09:00'
         dayName:
-          description: Optional element. To pick up the day when the report is triggered you have a few options. If not given then simply it will be 'firstDay'.
+          description: >
+                      Optional element. To pick up the day when the action is triggered you have a few options.  
+                        
+                      You can put
+                       * `firstDay` - action is triggered on first day of the month
+                       * `lastDay` - action is triggered on last day of the month
+                       * weekday like `Mon` etc - action is triggered on the first Monday of the month
+                        
+                      **default value**: If not given then simply it will be 'firstDay'.
           # we voted against it - let's keep the Nil possibility...
           # x-go-type-skip-optional-pointer: true
           oneOf:
@@ -148,3 +162,4 @@ components:
             - type: string
               enum: ['firstDay', 'lastDay']
           default: 'firstDay'
+          nullable: true

@@ -178,11 +178,17 @@ type ResponseContainerInfoV3Class struct {
 	Name *string `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
+// ChangelogComment defines model for changelogComment.
+type ChangelogComment = string
+
 // ContainerId defines model for containerId.
 type ContainerId = string
 
 // FromTimestamp defines model for fromTimestamp.
 type FromTimestamp = string
+
+// ReturnFullChangelog defines model for returnFullChangelog.
+type ReturnFullChangelog = bool
 
 // ToTimestamp defines model for toTimestamp.
 type ToTimestamp = string

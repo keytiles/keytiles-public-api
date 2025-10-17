@@ -25,6 +25,7 @@ const (
 	ManagementEndpointErrorCodesActionTokenInvalid               ManagementEndpointErrorCodes = "actionToken_invalid"
 	ManagementEndpointErrorCodesActionTokenMissing               ManagementEndpointErrorCodes = "actionToken_missing"
 	ManagementEndpointErrorCodesActionTokenUnknownType           ManagementEndpointErrorCodes = "actionToken_unknownType"
+	ManagementEndpointErrorCodesAlreadyExists                    ManagementEndpointErrorCodes = "already_exists"
 	ManagementEndpointErrorCodesAuthenticationBase64DecodeFailed ManagementEndpointErrorCodes = "authentication_base64DecodeFailed"
 	ManagementEndpointErrorCodesAuthenticationInternalError      ManagementEndpointErrorCodes = "authentication_internalError"
 	ManagementEndpointErrorCodesAuthenticationInvalidCredentials ManagementEndpointErrorCodes = "authentication_invalid_credentials"
