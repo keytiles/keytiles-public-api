@@ -1,0 +1,9 @@
+{
+    "tzOffset": 5,
+    "type": "weekly",
+    "majorVersion": 1,
+    "setup": {
+        "triggerTime": "09:00",
+        "dayName": "Mon"
+    }
+}

@@ -15,6 +15,7 @@ components:
       type: string
       enum: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
       description: Name of the days we use in day masks.
+      nullable: true
 
     Schedule:
       description: 'Describes a Schedule of something. As of now you have basically 4 types: hourly, daily, weekly and Monthly schedules.'
@@ -131,6 +132,17 @@ components:
           $ref: '#/components/schemas/ScheduleDayName'
           nullable: true
 
+    MonthlyScheduleDayName:
+      type: string
+      enum: ['firstMon', 'firstTue', 'firstWed', 'firstThu', 'firstFri', 'firstSat', 'firstSun','firstDay', 'lastDay']
+      description: >
+                  Name of days we can use in a monthly setup.
+                    * `firstDay` - action is triggered on first day of the month
+                    * `lastDay` - action is triggered on last day of the month
+                    * weekday like `firstMon` etc - action is triggered on the first Monday of the month
+      nullable: true
+      default: 'firstDay'
+
     MonthlyScheduleSetup:
       description: Encodes scheduling tailored for monthly execution.
       type: object
@@ -157,9 +169,6 @@ components:
                       **default value**: If not given then simply it will be 'firstDay'.
           # we voted against it - let's keep the Nil possibility...
           # x-go-type-skip-optional-pointer: true
-          oneOf:
-            - $ref: '#/components/schemas/ScheduleDayName'
-            - type: string
-              enum: ['firstDay', 'lastDay']
+          $ref: '#/components/schemas/MonthlyScheduleDayName'
           default: 'firstDay'
           nullable: true

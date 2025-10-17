@@ -7,10 +7,17 @@ import (
 	"encoding/json"
 )
 
-// Defines values for MonthlyScheduleSetupDayName1.
+// Defines values for MonthlyScheduleDayName.
 const (
-	FirstDay MonthlyScheduleSetupDayName1 = "firstDay"
-	LastDay  MonthlyScheduleSetupDayName1 = "lastDay"
+	FirstDay MonthlyScheduleDayName = "firstDay"
+	FirstFri MonthlyScheduleDayName = "firstFri"
+	FirstMon MonthlyScheduleDayName = "firstMon"
+	FirstSat MonthlyScheduleDayName = "firstSat"
+	FirstSun MonthlyScheduleDayName = "firstSun"
+	FirstThu MonthlyScheduleDayName = "firstThu"
+	FirstTue MonthlyScheduleDayName = "firstTue"
+	FirstWed MonthlyScheduleDayName = "firstWed"
+	LastDay  MonthlyScheduleDayName = "lastDay"
 )
 
 // Defines values for ScheduleType.
@@ -59,35 +66,22 @@ type HourlyScheduleSetup struct {
 	UntilTime *string `json:"untilTime" yaml:"untilTime"`
 }
 
+// MonthlyScheduleDayName Name of days we can use in a monthly setup.
+//   - `firstDay` - action is triggered on first day of the month
+//   - `lastDay` - action is triggered on last day of the month
+//   - weekday like `firstMon` etc - action is triggered on the first Monday of the month
+type MonthlyScheduleDayName string
+
 // MonthlyScheduleSetup Encodes scheduling tailored for monthly execution.
 type MonthlyScheduleSetup struct {
-	// DayName Optional element. To pick up the day when the action is triggered you have a few options.
-	//
-	// You can put
-	//  * `firstDay` - action is triggered on first day of the month
-	//  * `lastDay` - action is triggered on last day of the month
-	//  * weekday like `Mon` etc - action is triggered on the first Monday of the month
-	//
-	// **default value**: If not given then simply it will be 'firstDay'.
-	DayName *MonthlyScheduleSetup_DayName `json:"dayName" yaml:"dayName"`
+	// DayName Name of days we can use in a monthly setup.
+	//   * `firstDay` - action is triggered on first day of the month
+	//   * `lastDay` - action is triggered on last day of the month
+	//   * weekday like `firstMon` etc - action is triggered on the first Monday of the month
+	DayName *MonthlyScheduleDayName `json:"dayName" yaml:"dayName"`
 
 	// TriggerTime Mandatory element. This is an "HH:MM" formatted time descriptor. Means: within a day what time should we trigger the execution?
 	TriggerTime string `json:"triggerTime" yaml:"triggerTime"`
-}
-
-// MonthlyScheduleSetupDayName1 defines model for MonthlyScheduleSetup.DayName.1.
-type MonthlyScheduleSetupDayName1 string
-
-// MonthlyScheduleSetup_DayName Optional element. To pick up the day when the action is triggered you have a few options.
-//
-// You can put
-//   - `firstDay` - action is triggered on first day of the month
-//   - `lastDay` - action is triggered on last day of the month
-//   - weekday like `Mon` etc - action is triggered on the first Monday of the month
-//
-// **default value**: If not given then simply it will be 'firstDay'.
-type MonthlyScheduleSetup_DayName struct {
-	union json.RawMessage
 }
 
 // Schedule Describes a Schedule of something. As of now you have basically 4 types: hourly, daily, weekly and Monthly schedules.
@@ -117,48 +111,10 @@ type ScheduleDayName string
 // WeeklyScheduleSetup Encodes scheduling tailored for weekly execution.
 type WeeklyScheduleSetup struct {
 	// DayName Name of the days we use in day masks.
-	DayName *ScheduleDayName `json:"dayName,omitempty" yaml:"dayName,omitempty"`
+	DayName *ScheduleDayName `json:"dayName" yaml:"dayName"`
 
 	// TriggerTime Mandatory element. This is an "HH:MM" formatted time descriptor. Means: within a day what time should we trigger the execution?
 	TriggerTime string `json:"triggerTime" yaml:"triggerTime"`
-}
-
-// AsScheduleDayName returns the union data inside the MonthlyScheduleSetup_DayName as a ScheduleDayName
-func (t MonthlyScheduleSetup_DayName) AsScheduleDayName() (ScheduleDayName, error) {
-	var body ScheduleDayName
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromScheduleDayName overwrites any union data inside the MonthlyScheduleSetup_DayName as the provided ScheduleDayName
-func (t *MonthlyScheduleSetup_DayName) FromScheduleDayName(v ScheduleDayName) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// AsMonthlyScheduleSetupDayName1 returns the union data inside the MonthlyScheduleSetup_DayName as a MonthlyScheduleSetupDayName1
-func (t MonthlyScheduleSetup_DayName) AsMonthlyScheduleSetupDayName1() (MonthlyScheduleSetupDayName1, error) {
-	var body MonthlyScheduleSetupDayName1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromMonthlyScheduleSetupDayName1 overwrites any union data inside the MonthlyScheduleSetup_DayName as the provided MonthlyScheduleSetupDayName1
-func (t *MonthlyScheduleSetup_DayName) FromMonthlyScheduleSetupDayName1(v MonthlyScheduleSetupDayName1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-func (t MonthlyScheduleSetup_DayName) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *MonthlyScheduleSetup_DayName) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
 }
 
 // AsHourlyScheduleSetup returns the union data inside the Schedule_Setup as a HourlyScheduleSetup

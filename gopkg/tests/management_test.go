@@ -1,6 +1,7 @@
 package tests
 
 import (
+	"fmt"
 	"testing"
 
 	kt_pubapi_gen_common_typesv3 "github.com/keytiles/keytiles-public-api/v2/gopkg/model/generated/common/types_v3"
@@ -8,7 +9,6 @@ import (
 )
 
 // Transforms anything into a pointer - useful for assigning values to pointer fields os structs / pointer vars
-func Ptr[T any](t T) *T { return &t }
 
 func TestManagementProblemsJSONSerializationAndDeserialization(t *testing.T) {
 
@@ -30,7 +30,7 @@ func TestManagementProblemsJSONSerializationAndDeserialization(t *testing.T) {
 
 		Problems: Ptr([]kt_pubapi_gen_common_typesv3.ProblemV3Class{problem}),
 	}
-	print(resp)
+	fmt.Printf("HitFaultReportResponse: %v\n", resp)
 
 	if problem.ErrorCodes != nil {
 		for _, item := range *problem.ErrorCodes {

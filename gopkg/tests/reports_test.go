@@ -17,11 +17,11 @@ func TestReportJSONSerializationAndDeserialization(t *testing.T) {
 	hourlySchedule.FromHourlyScheduleSetup(kt_pubapi_gen_common_schedulev1.HourlyScheduleSetup{
 		FirstTime: "09:00",
 		DayNames:  &[]kt_pubapi_gen_common_schedulev1.ScheduleDayName{kt_pubapi_gen_common_schedulev1.Mon, kt_pubapi_gen_common_schedulev1.Thu},
-		UntilTime: ptr[string]("18:00"),
+		UntilTime: Ptr("18:00"),
 	})
 
 	schedule := kt_pubapi_gen_common_schedulev1.Schedule{
-		Type:         kt_pubapi_gen_common_schedulev1.ScheduleType(kt_pubapi_gen_common_schedulev1.Hourly),
+		Type:         kt_pubapi_gen_common_schedulev1.Hourly,
 		Setup:        hourlySchedule,
 		MajorVersion: 1,
 	}

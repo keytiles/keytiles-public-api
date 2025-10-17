@@ -1,0 +1,11 @@
+{
+    "tzOffset": 5,
+    "type": "daily",
+    "majorVersion": 1,
+    "setup": {
+        "triggerTime": "09:00",
+        // these fields must be present in JSON representation!
+        // they disappear if somehow "omitempty" is added to the "json:" annotation - and we dont want that 
+        "dayNames": null
+    }
+}

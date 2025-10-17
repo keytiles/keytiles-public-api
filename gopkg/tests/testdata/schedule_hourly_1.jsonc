@@ -1,0 +1,10 @@
+{
+    "tzOffset": 5,
+    "type": "hourly",
+    "majorVersion": 1,
+    "setup": {
+        "firstTime": "09:00",
+        "untilTime": "18:00",
+        "dayNames": ["Mon", "Thu"]
+    }
+}
