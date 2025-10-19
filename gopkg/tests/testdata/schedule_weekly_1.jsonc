@@ -1,5 +1,5 @@
 {
-    "tzOffset": 5,
+    "timeZoneIANAName": "Europe/Berlin",
     "type": "weekly",
     "majorVersion": 1,
     "setup": {

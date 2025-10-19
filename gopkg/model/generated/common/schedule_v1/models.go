@@ -90,11 +90,15 @@ type Schedule struct {
 	MajorVersion int            `json:"majorVersion" yaml:"majorVersion"`
 	Setup        Schedule_Setup `json:"setup" yaml:"setup"`
 
+	// TimeZoneIANAName The IANA name of the time zone - e.g. "Europe/Berlin" in which time zone we should interpret this schedule.
+	//
+	// All things - like `firstTime="09:00"` (hourly setup) or `triggerTime="10:00"` (daily, weekly, monthly setup) - and even the days(!) will be interpreted in this time zone.
+	//
+	// For more info check: [https://www.iana.org/time-zones](https://www.iana.org/time-zones) or [https://en.wikipedia.org/wiki/List_of_tz_database_time_zones](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)
+	TimeZoneIANAName string `json:"timeZoneIANAName" yaml:"timeZoneIANAName"`
+
 	// Type Describes which type of schedule is this?
 	Type ScheduleType `json:"type" yaml:"type"`
-
-	// TzOffset Encodes the time zone offset from UTC - all things like time and even the days(!) are given using this offset
-	TzOffset int `json:"tzOffset" yaml:"tzOffset"`
 }
 
 // Schedule_Setup defines model for Schedule.Setup.

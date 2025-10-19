@@ -11,8 +11,8 @@ import (
 func TestSchedulesJSONSerialization(t *testing.T) {
 
 	schedule := kt_pubapi_gen_common_schedulev1.Schedule{
-		MajorVersion: 1,
-		TzOffset:     5,
+		MajorVersion:     1,
+		TimeZoneIANAName: "Europe/Berlin",
 	}
 	var expJsonStr string
 	var err error

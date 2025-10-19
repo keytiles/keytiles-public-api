@@ -25,7 +25,7 @@ components:
         - type
         - setup
         - majorVersion
-        - tzOffset
+        - timeZoneIANAName
       properties:
         type:
           description: Describes which type of schedule is this?
@@ -40,9 +40,15 @@ components:
           - $ref: '#/components/schemas/DailyScheduleSetup'
           - $ref: '#/components/schemas/WeeklyScheduleSetup'
           - $ref: '#/components/schemas/MonthlyScheduleSetup'
-        tzOffset:
-          type: integer
-          description: Encodes the time zone offset from UTC - all things like time and even the days(!) are given using this offset
+        timeZoneIANAName:
+          type: string
+          description: >
+                      The IANA name of the time zone - e.g. "Europe/Berlin" in which time zone we should interpret this schedule.  
+                        
+                      All things - like `firstTime="09:00"` (hourly setup) or `triggerTime="10:00"` (daily, weekly, monthly setup) - and even the days(!)
+                      will be interpreted in this time zone.  
+                        
+                      For more info check: [https://www.iana.org/time-zones](https://www.iana.org/time-zones) or [https://en.wikipedia.org/wiki/List_of_tz_database_time_zones](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)
         majorVersion:
           type: integer
           # we voted against it - let's keep the Nil possibility...
