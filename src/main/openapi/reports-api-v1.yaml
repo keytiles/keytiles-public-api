@@ -131,16 +131,11 @@ paths:
 
       responses:
         '201':
-          description: The report setup resouce is created. The ID of this new report setup is returned in response header.
-          headers:
-             'X-ReportSetupId':
-              schema:
-                type: string
-              description: The ID of the new report setup
+          description: The report setup resouce is created successfully. You receive back the newly created ReportSetup in the response with enriched fields like ID, changelog etc.
           content:
             'application/json':
               schema:
-                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
+                $ref: '#/components/schemas/ReportSetup'
         '400':
           description: "There were problems with the request or the resource you sent on this request - more details you get in the response."
           content:
@@ -218,7 +213,8 @@ paths:
     put:
       summary: "To modify an existing report setup."
       description: >
-                The 'resourceVersion' field is very important here - it must match with the version the server currently has otherwise you will get a 409 error. This mechanism helps to detect possible race conditions.  
+                The 'resourceVersion' field is very important here - it must match with the version the server currently has otherwise you will get a 409 error.
+                This mechanism helps to detect possible race conditions.  
                   
                 Only users with "admin" role in the Data Container can modify a report setup.
       tags:
@@ -227,6 +223,7 @@ paths:
         - $ref: 'common-types-v3.yaml#/components/parameters/containerId'
         - $ref: '#/components/parameters/reportSetupId'
         - $ref: 'common-types-v3.yaml#/components/parameters/changelogComment'
+        - $ref: 'common-types-v3.yaml#/components/parameters/returnFullChangelog'
       requestBody:
         content:
           application/json:
@@ -238,11 +235,14 @@ paths:
 
       responses:
         '200':
-          description: The report setup was modified successfully. This means that the 'resourceVersion' was incremented by one on server side (also update in your local copy!).
+          description: >
+                      The report setup was modified successfully. This means that the 'resourceVersion' was incremented by one on server side.  
+                        
+                      In the response you get back the modified resource - including updated resourceVersion and also changelog.
           content:
             'application/json':
               schema:
-                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
+                $ref: '#/components/schemas/ReportSetup'
         '400':
           description: "There were problems with the request or the resource you sent on this request - more details you get in the response."
           content:
@@ -1083,6 +1083,7 @@ components:
         includeTestOnlyInstances:
           type: boolean
           description: By default the request excludes the "test only" instances - unless you request here to include them
+          default: false
         excludeNotTestOnlyInstances:
           type: boolean
           description: By default the request includes normal (not "test only") instances - unless you request here to exclude them

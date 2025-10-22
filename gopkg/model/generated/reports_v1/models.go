@@ -437,6 +437,11 @@ type GetV1ReportsContainersRestContainerIdReportSetupReportSetupIdParams struct 
 type PutV1ReportsContainersRestContainerIdReportSetupReportSetupIdParams struct {
 	// ChangelogComment Short user message which if sent then added to the changelog entry created by the server.
 	ChangelogComment *externalRef2.ChangelogComment `form:"changelogComment,omitempty" json:"changelogComment,omitempty" yaml:"changelogComment,omitempty"`
+
+	// ReturnFullChangelog By default returned `changelog` in meta data only contains the very first and last entries upon query - but you can request to return full changelog.
+	//
+	// **Default value:** false
+	ReturnFullChangelog *externalRef2.ReturnFullChangelog `form:"returnFullChangelog,omitempty" json:"returnFullChangelog,omitempty" yaml:"returnFullChangelog,omitempty"`
 }
 
 // PostV1ReportsContainersActionsContainerIdReportSetupReportSetupIdGenerateJSONRequestBody defines body for PostV1ReportsContainersActionsContainerIdReportSetupReportSetupIdGenerate for application/json ContentType.
