@@ -44,6 +44,8 @@ components:
           type: string
           description: >
                       The IANA name of the time zone - e.g. "Europe/Berlin" in which time zone we should interpret this schedule.  
+                      or  
+                      You can also simply put `UTC` here - which will be recognized too.
                         
                       All things - like `firstTime="09:00"` (hourly setup) or `triggerTime="10:00"` (daily, weekly, monthly setup) - and even the days(!)
                       will be interpreted in this time zone.  

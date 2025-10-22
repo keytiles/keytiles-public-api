@@ -382,7 +382,7 @@ type ReportSetup struct {
 	Schedule *externalRef1.Schedule `json:"schedule" yaml:"schedule"`
 }
 
-// ReportSetupOverview Contains minimalistic information about an existing report setup - like its ID, title, description, creation time. It is a quick overview.
+// ReportSetupOverview Contains minimalistic information about an existing report setup - like its ID, title, description, creation time, schedule. It is a quick overview.
 // By default the `changelog` within `metaData` only contains the first and very last item. You might request more - see request parameters!
 type ReportSetupOverview struct {
 	// CreatedAt The server time in UNIX timestamp in UTC (seconds since Epoch) when this instance was created
@@ -394,6 +394,9 @@ type ReportSetupOverview struct {
 	// IsDisabled It is possible to temporarily disable a report. The report is still generatable manually but automatic schedules will not be executed.
 	IsDisabled *bool                 `json:"isDisabled,omitempty" yaml:"isDisabled,omitempty"`
 	MetaData   externalRef0.MetaData `json:"metaData" yaml:"metaData"`
+
+	// Schedule Describes a Schedule of something. As of now you have basically 4 types: hourly, daily, weekly and Monthly schedules.
+	Schedule *externalRef1.Schedule `json:"schedule" yaml:"schedule"`
 }
 
 // ReportsEndpointErrorCodes defines model for ReportsEndpointErrorCodes.

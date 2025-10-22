@@ -743,7 +743,7 @@ components:
     ReportSetupOverview:
       type: object
       description: >
-                  Contains minimalistic information about an existing report setup - like its ID, title, description, creation time. It is a quick overview.
+                  Contains minimalistic information about an existing report setup - like its ID, title, description, creation time, schedule. It is a quick overview.
 
                   By default the `changelog` within `metaData` only contains the first and very last item. You might request more - see request parameters!
       required:
@@ -764,6 +764,10 @@ components:
         isDisabled:
           type: boolean
           description: It is possible to temporarily disable a report. The report is still generatable manually but automatic schedules will not be executed.
+        schedule:
+          description: Controlls when will the report run automatically. If you do not schedule the report then the report is only generated when you manually trigger it.
+          $ref: 'common-schedule-v1.yaml#/components/schemas/Schedule'
+          nullable: true
 
 
     ReportSetup:
