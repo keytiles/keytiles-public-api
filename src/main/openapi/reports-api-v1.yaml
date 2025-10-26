@@ -749,6 +749,8 @@ components:
       required:
         - id
         - metaData
+        - createdAt
+        - isDisabled
       properties:
         id:
           type: string
