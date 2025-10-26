@@ -776,6 +776,8 @@ components:
         - id
         - metaData
         - resourceVersion
+        - createdAt
+        - isDisabled
       properties:
         id:
           type: string

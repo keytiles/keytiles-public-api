@@ -358,13 +358,13 @@ type ReportRecipientsRoles string
 // ReportSetup defines model for ReportSetup.
 type ReportSetup struct {
 	// CreatedAt The server time in UNIX timestamp in UTC (seconds since Epoch) when this setup was created
-	CreatedAt *int32 `json:"createdAt,omitempty" yaml:"createdAt,omitempty"`
+	CreatedAt int32 `json:"createdAt" yaml:"createdAt"`
 
 	// Id The unique ID of this report setup - UUID style
 	Id string `json:"id" yaml:"id"`
 
 	// IsDisabled It is possible to temporarily disable a report. The report is still generatable manually but automatic schedules will not be executed.
-	IsDisabled *bool                 `json:"isDisabled,omitempty" yaml:"isDisabled,omitempty"`
+	IsDisabled bool                  `json:"isDisabled" yaml:"isDisabled"`
 	MetaData   externalRef0.MetaData `json:"metaData" yaml:"metaData"`
 
 	// Queries Queries of this report.
