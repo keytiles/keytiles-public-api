@@ -979,6 +979,11 @@ components:
             $ref: '#/components/schemas/ReportInstanceSection'
           default: []
           nullable: false
+        resourceVersion:
+          type: integer
+          description: This is the resource version (which is automatically incremented by every change). When you do an update (PUT) you need to send it back! The server will check if it is matching with the resource version he has. If not then that means someone else already did an update in the meantime therefore your request can not be accepted - otherwise you may overwrite the changes someone did.
+          nullable: false
+
 
     ReportInstanceOverview:
       type: object

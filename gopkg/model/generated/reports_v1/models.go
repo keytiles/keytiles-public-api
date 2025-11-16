@@ -220,8 +220,11 @@ type ReportInstance struct {
 	MetaData   externalRef0.MetaData `json:"metaData" yaml:"metaData"`
 
 	// ParentReportSetupId The ID of the ReportSetup this instance belongs to.
-	ParentReportSetupId string                   `json:"parentReportSetupId" yaml:"parentReportSetupId"`
-	Sections            *[]ReportInstanceSection `json:"sections,omitempty" yaml:"sections,omitempty"`
+	ParentReportSetupId string `json:"parentReportSetupId" yaml:"parentReportSetupId"`
+
+	// ResourceVersion This is the resource version (which is automatically incremented by every change). When you do an update (PUT) you need to send it back! The server will check if it is matching with the resource version he has. If not then that means someone else already did an update in the meantime therefore your request can not be accepted - otherwise you may overwrite the changes someone did.
+	ResourceVersion int                      `json:"resourceVersion" yaml:"resourceVersion"`
+	Sections        *[]ReportInstanceSection `json:"sections,omitempty" yaml:"sections,omitempty"`
 
 	// State It takes time for a report instance until it is fully generated. So every report instance is going through a lifecycle.
 	// This is maintained by the server.
