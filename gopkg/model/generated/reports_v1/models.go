@@ -179,14 +179,11 @@ type GenerateReportRequestClass struct {
 	ToTimestamp *string `json:"toTimestamp,omitempty" yaml:"toTimestamp,omitempty"`
 }
 
-// GetContainerReportInstanceResponseClass defines model for GetContainerReportInstanceResponseClass.
-type GetContainerReportInstanceResponseClass = externalRef2.ContainerResponseV3Class
-
 // GetContainerReportSetupResponseClass defines model for GetContainerReportSetupResponseClass.
 type GetContainerReportSetupResponseClass = externalRef2.ContainerResponseV3Class
 
-// ListContainerReportInstancesResponseClass defines model for ListContainerReportInstancesResponseClass.
-type ListContainerReportInstancesResponseClass = externalRef2.ContainerResponseV3Class
+// ListContainerReportInstancesResponseClass All available report instances of the report setup.
+type ListContainerReportInstancesResponseClass = []ReportInstanceOverview
 
 // ListContainerReportSetupsResponseClass Overview of all avaiable report setups.
 type ListContainerReportSetupsResponseClass = []ReportSetupOverview
@@ -260,8 +257,11 @@ type ReportInstanceOverview struct {
 
 // ReportInstanceSection defines model for ReportInstanceSection.
 type ReportInstanceSection struct {
-	DataTables []DataTable           `json:"dataTables" yaml:"dataTables"`
-	MetaData   externalRef0.MetaData `json:"metaData" yaml:"metaData"`
+	DataTables []DataTable `json:"dataTables" yaml:"dataTables"`
+
+	// GenerationTookMillis Number of milliseconds the processing took on server side
+	GenerationTookMillis *int32                `json:"generationTookMillis" yaml:"generationTookMillis"`
+	MetaData             externalRef0.MetaData `json:"metaData" yaml:"metaData"`
 }
 
 // ReportInstanceSectionState It takes time for a report until it is fully generated. Report sections are going through a lifecycle and these are their states.

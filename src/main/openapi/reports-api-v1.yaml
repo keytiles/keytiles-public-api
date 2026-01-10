@@ -340,7 +340,7 @@ paths:
 
       responses:
         '200':
-          description: "You receive the list of all report instance IDs."
+          description: "You receive the list of all report instances matching the query."
           content:
             application/json:
               schema:
@@ -451,7 +451,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GetContainerReportInstanceResponseClass'
+                $ref: '#/components/schemas/ReportInstance'
         '401':
           description: "Authentication failed - you provided invalid credentials"
           content:
@@ -914,6 +914,11 @@ components:
           description: >
                       The title and description of this section. This is copied from the corresponding Query of the ReportSetup this section represents.
           $ref: 'common-metadata-v1.yaml#/components/schemas/MetaData'
+        generationTookMillis:
+          type: integer
+          format: int32
+          nullable: true
+          description: "Number of milliseconds the processing took on server side"
         dataTables:
           type: array
           items:
@@ -1025,27 +1030,11 @@ components:
                         Query range - until this timestamp. This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT  
         
     ListContainerReportInstancesResponseClass:
-      allOf:
-      - $ref: "common-types-v3.yaml#/components/schemas/ContainerResponseV3Class"
-      type: object
-      properties:
-        ofReportSetupId:
-          type: string
-          description: Report instances belong to this report setup.
-        availableInstances:
-          type: array
-          items:
-            $ref: '#/components/schemas/ReportInstanceOverview'
-          nullable: false
-          description: 'All available report instances - ordered by creation timestamp descending'
-
-    GetContainerReportInstanceResponseClass:
-      allOf:
-      - $ref: "common-types-v3.yaml#/components/schemas/ContainerResponseV3Class"
-      type: object
-      properties:
-        reportInstance:
-          $ref: '#/components/schemas/ReportInstance'
+      type: array
+      items:
+        $ref: '#/components/schemas/ReportInstanceOverview'
+      nullable: false
+      description: 'All available report instances of the report setup.'
 
     GenerateReportRequestClass:
       type: object
