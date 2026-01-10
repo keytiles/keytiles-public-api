@@ -182,19 +182,31 @@ type GenerateReportRequestClass struct {
 // GetContainerReportSetupResponseClass defines model for GetContainerReportSetupResponseClass.
 type GetContainerReportSetupResponseClass = externalRef2.ContainerResponseV3Class
 
-// ListContainerReportInstancesResponseClass All available report instances of the report setup.
-type ListContainerReportInstancesResponseClass = []ReportInstanceOverview
+// ListContainerReportInstancesResponseClass defines model for ListContainerReportInstancesResponseClass.
+type ListContainerReportInstancesResponseClass struct {
+	// CountOfAllInstances The number of all instances matching the request specs.
+	CountOfAllInstances *int `json:"countOfAllInstances,omitempty" yaml:"countOfAllInstances,omitempty"`
+
+	// ReportInstances Returned report instances of the report setup matching the request specs - in creation time descending order.
+	ReportInstances *[]ReportInstanceOverview `json:"reportInstances,omitempty" yaml:"reportInstances,omitempty"`
+}
 
 // ListContainerReportSetupsResponseClass Overview of all avaiable report setups.
 type ListContainerReportSetupsResponseClass = []ReportSetupOverview
 
-// ListReportInstancesRequestClass You can fine tune how the list is generated with the attributes of this request.
+// ListReportInstancesRequestClass You can fine tune how the list is generated with the attributes of this request. As you see paging is supported too.
 type ListReportInstancesRequestClass struct {
 	// ExcludeNotTestOnlyInstances By default the request includes normal (not "test only") instances - unless you request here to exclude them
 	ExcludeNotTestOnlyInstances *bool `json:"excludeNotTestOnlyInstances,omitempty" yaml:"excludeNotTestOnlyInstances,omitempty"`
 
 	// IncludeTestOnlyInstances By default the request excludes the "test only" instances - unless you request here to include them
 	IncludeTestOnlyInstances *bool `json:"includeTestOnlyInstances,omitempty" yaml:"includeTestOnlyInstances,omitempty"`
+
+	// Limit For paging - you can limit the number of returned instances.
+	Limit *int `json:"limit" yaml:"limit"`
+
+	// UntilCreationTimestamp For paging - you can specify UNIX timestamp in UTC (seconds since Epoch). We return instances in creation time descending order and if you specify this then only those instances returned who's creation time is smaller than this timestamp.
+	UntilCreationTimestamp *int32 `json:"untilCreationTimestamp,omitempty" yaml:"untilCreationTimestamp,omitempty"`
 }
 
 // ReportInstance This is a specific instance of a ReportSetup which was generated at a certain point in time. Keytiles stores these reports for a while.
@@ -450,8 +462,8 @@ type PutV1ReportsContainersRestContainerIdReportSetupReportSetupIdParams struct 
 // PostV1ReportsContainersActionsContainerIdReportSetupReportSetupIdGenerateJSONRequestBody defines body for PostV1ReportsContainersActionsContainerIdReportSetupReportSetupIdGenerate for application/json ContentType.
 type PostV1ReportsContainersActionsContainerIdReportSetupReportSetupIdGenerateJSONRequestBody = GenerateReportRequestClass
 
-// PostV1ReportsContainersActionsContainerIdReportSetupReportSetupIdListReportInstanceOverviewJSONRequestBody defines body for PostV1ReportsContainersActionsContainerIdReportSetupReportSetupIdListReportInstanceOverview for application/json ContentType.
-type PostV1ReportsContainersActionsContainerIdReportSetupReportSetupIdListReportInstanceOverviewJSONRequestBody = ListReportInstancesRequestClass
+// PostV1ReportsContainersActionsContainerIdReportSetupReportSetupIdListReportInstanceOverviewsJSONRequestBody defines body for PostV1ReportsContainersActionsContainerIdReportSetupReportSetupIdListReportInstanceOverviews for application/json ContentType.
+type PostV1ReportsContainersActionsContainerIdReportSetupReportSetupIdListReportInstanceOverviewsJSONRequestBody = ListReportInstancesRequestClass
 
 // PostV1ReportsContainersRestContainerIdReportSetupJSONRequestBody defines body for PostV1ReportsContainersRestContainerIdReportSetup for application/json ContentType.
 type PostV1ReportsContainersRestContainerIdReportSetupJSONRequestBody = ReportSetup

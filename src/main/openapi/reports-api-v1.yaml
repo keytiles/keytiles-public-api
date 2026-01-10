@@ -318,7 +318,7 @@ paths:
 
 
 
-  '/v1/reports/containers/actions/{containerId}/report-setup/{reportSetupId}/list-report-instance-overview':
+  '/v1/reports/containers/actions/{containerId}/report-setup/{reportSetupId}/list-report-instance-overviews':
   
     post:
       summary: "To query (list) all availale report instances of a given ReportSetup - available in the Data Container"
@@ -1028,13 +1028,42 @@ components:
           type: integer
           description: >
                         Query range - until this timestamp. This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT  
-        
+
+    ListReportInstancesRequestClass:
+      type: object
+      description: >
+                  You can fine tune how the list is generated with the attributes of this request. As you see paging is supported too.
+      properties:
+        includeTestOnlyInstances:
+          type: boolean
+          description: By default the request excludes the "test only" instances - unless you request here to include them
+          default: false
+        excludeNotTestOnlyInstances:
+          type: boolean
+          description: By default the request includes normal (not "test only") instances - unless you request here to exclude them
+          default: false
+        limit:
+          type: integer
+          nullable: true
+          description: 'For paging - you can limit the number of returned instances.'
+        untilCreationTimestamp:
+          type: integer
+          format: int32
+          description: "For paging - you can specify UNIX timestamp in UTC (seconds since Epoch). We return instances in creation time descending order and if you specify this then only those instances returned who's creation time is smaller than this timestamp."
+          example: 1543355710
+
     ListContainerReportInstancesResponseClass:
-      type: array
-      items:
-        $ref: '#/components/schemas/ReportInstanceOverview'
-      nullable: false
-      description: 'All available report instances of the report setup.'
+      type: object
+      properties:
+        countOfAllInstances:
+          type: integer
+          description: 'The number of all instances matching the request specs.'
+        reportInstances:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReportInstanceOverview'
+          nullable: false
+          description: 'Returned report instances of the report setup matching the request specs - in creation time descending order.'
 
     GenerateReportRequestClass:
       type: object
@@ -1095,16 +1124,3 @@ components:
                         (note: server validates according to his own clock!)
           example: now-2h
 
-
-    ListReportInstancesRequestClass:
-      type: object
-      description: >
-                  You can fine tune how the list is generated with the attributes of this request.
-      properties:
-        includeTestOnlyInstances:
-          type: boolean
-          description: By default the request excludes the "test only" instances - unless you request here to include them
-          default: false
-        excludeNotTestOnlyInstances:
-          type: boolean
-          description: By default the request includes normal (not "test only") instances - unless you request here to exclude them
