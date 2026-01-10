@@ -271,6 +271,9 @@ type ReportInstanceOverview struct {
 type ReportInstanceSection struct {
 	DataTables []DataTable `json:"dataTables" yaml:"dataTables"`
 
+	// ErrorMessage In case the generation failed for any reason here is the human readable error message. This can be a multi-line text as well.
+	ErrorMessage *string `json:"errorMessage" yaml:"errorMessage"`
+
 	// GenerationTookMillis Number of milliseconds the processing took on server side
 	GenerationTookMillis *int32                `json:"generationTookMillis" yaml:"generationTookMillis"`
 	MetaData             externalRef0.MetaData `json:"metaData" yaml:"metaData"`

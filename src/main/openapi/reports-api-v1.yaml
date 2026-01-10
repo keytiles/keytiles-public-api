@@ -925,6 +925,10 @@ components:
             $ref: '#/components/schemas/DataTable'
           default: []
           nullable: false
+        errorMessage:
+          type: string
+          description: 'In case the generation failed for any reason here is the human readable error message. This can be a multi-line text as well.'
+          nullable: true
 
     ReportInstance:
       type: object
