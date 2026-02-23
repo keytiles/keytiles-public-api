@@ -755,7 +755,7 @@ components:
                        You will get the `eventCountNoSession`, `visitSessionStartedCount` and `visitSessionEventFirstOfTypeCount` counters additionally.
                        
                      You can find more information about the available event counters in our website Developer Area here: 
-                     [Returned event counters and their meaning](https://www.keytiles.com/developer-area/query-api-v2/webhits-event-counter-queries#event-counters-reference)
+                     [Returned event counters and their meaning](https://www.keytiles.com/developer-area/query-api-v3/webhits-event-counter-queries#event-counters-reference)
                     
       example: 'newVisitors,bounceVisitors'
 
