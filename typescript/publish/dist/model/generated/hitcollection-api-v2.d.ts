@@ -33,6 +33,18 @@ Can not point to the future!   (note: server validates according to his own cloc
  */
 export type ToTimestampParameter = string;
 /**
+ * By default returned `changelog` in meta data only contains the very first and last entries upon query - but you can request to return full changelog.
+  
+**Default value:** false
+
+ */
+export type ReturnFullChangelogParameter = boolean;
+/**
+ * Short user message which if sent then added to the changelog entry created by the server.
+
+ */
+export type ChangelogCommentParameter = string;
+/**
  * Describes how the value is used. **incremental:** means the value is added to the stored values. **absolute:** means the value is overriding the current stored value.
  */
 export type HitClassMethod = typeof HitClassMethod[keyof typeof HitClassMethod];

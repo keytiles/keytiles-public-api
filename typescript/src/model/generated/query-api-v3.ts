@@ -84,6 +84,20 @@ Can not point to the future!   (note: server validates according to his own cloc
  */
 export type ToTimestampParameter = string;
 
+/**
+ * By default returned `changelog` in meta data only contains the very first and last entries upon query - but you can request to return full changelog.  
+  
+**Default value:** false
+
+ */
+export type ReturnFullChangelogParameter = boolean;
+
+/**
+ * Short user message which if sent then added to the changelog entry created by the server.
+
+ */
+export type ChangelogCommentParameter = string;
+
 export type StatApiEndpointLocalErrorCodes = typeof StatApiEndpointLocalErrorCodes[keyof typeof StatApiEndpointLocalErrorCodes];
 
 
@@ -643,7 +657,7 @@ The possible values are the following:
    You will get the `eventCountNoSession`, `visitSessionStartedCount` and `visitSessionEventFirstOfTypeCount` counters additionally.
    
  You can find more information about the available event counters in our website Developer Area here: 
- [Returned event counters and their meaning](https://www.keytiles.com/developer-area/query-api-v2/webhits-event-counter-queries#event-counters-reference)
+ [Returned event counters and their meaning](https://www.keytiles.com/developer-area/query-api-v3/webhits-event-counter-queries#event-counters-reference)
 
  */
 export type InterestParameter = string;
@@ -914,7 +928,7 @@ The possible values are the following:
    You will get the `eventCountNoSession`, `visitSessionStartedCount` and `visitSessionEventFirstOfTypeCount` counters additionally.
    
  You can find more information about the available event counters in our website Developer Area here: 
- [Returned event counters and their meaning](https://www.keytiles.com/developer-area/query-api-v2/webhits-event-counter-queries#event-counters-reference)
+ [Returned event counters and their meaning](https://www.keytiles.com/developer-area/query-api-v3/webhits-event-counter-queries#event-counters-reference)
 
  */
 interest?: InterestParameter;
@@ -1234,7 +1248,7 @@ The possible values are the following:
    You will get the `eventCountNoSession`, `visitSessionStartedCount` and `visitSessionEventFirstOfTypeCount` counters additionally.
    
  You can find more information about the available event counters in our website Developer Area here: 
- [Returned event counters and their meaning](https://www.keytiles.com/developer-area/query-api-v2/webhits-event-counter-queries#event-counters-reference)
+ [Returned event counters and their meaning](https://www.keytiles.com/developer-area/query-api-v3/webhits-event-counter-queries#event-counters-reference)
 
  */
 interest?: InterestParameter;

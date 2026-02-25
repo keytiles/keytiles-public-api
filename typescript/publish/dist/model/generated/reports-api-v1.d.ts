@@ -34,22 +34,34 @@ Can not point to the future!   (note: server validates according to his own cloc
 
  */
 export type ToTimestampParameter = string;
+/**
+ * By default returned `changelog` in meta data only contains the very first and last entries upon query - but you can request to return full changelog.
+  
+**Default value:** false
+
+ */
+export type ReturnFullChangelogParameter = boolean;
+/**
+ * Short user message which if sent then added to the changelog entry created by the server.
+
+ */
+export type ChangelogCommentParameter = string;
 export type ReportsEndpointLocalErrorCodes = typeof ReportsEndpointLocalErrorCodes[keyof typeof ReportsEndpointLocalErrorCodes];
 export declare const ReportsEndpointLocalErrorCodes: {
     readonly containerId_missing: "containerId_missing";
     readonly containerId_invalid: "containerId_invalid";
     readonly reportSetupId_invalid: "reportSetupId_invalid";
+    readonly reportInstanceId_invalid: "reportInstanceId_invalid";
+    readonly reportSetup_exists: "reportSetup_exists";
 };
 /**
  * NOTE! Error codes is an Enum. Unfortunately in OpenApi (so far) there is no possibility to provide description for Enum values. But we have detailed description of each error codes! Please check the OpenApi file in our Github repo - you find them as comments for each Enum values!
  */
 export type ReportsEndpointErrorCodes = ReportsEndpointLocalErrorCodes & CommonErrorCodesV3;
-export type ListContainerReportSetupsResponseClass = ContainerResponseV3Class & {
-    /**
-     * All avaiable report setup IDs.
-     */
-    reportSetupIds?: string[];
-};
+/**
+ * Overview of all avaiable report setups.
+ */
+export type ListContainerReportSetupsResponseClass = ReportSetupOverview[];
 export type GetContainerReportSetupResponseClass = ContainerResponseV3Class & {
     reportSetup?: ReportSetup;
 };
@@ -155,11 +167,35 @@ export interface ReportQuery {
     /** The parameters a query plugin needs depends on the plugin. These key-value pairs provide the setup how the query plugin will generate this part of the report. */
     parameters?: ReportQueryParameters;
 }
+/**
+ * Contains minimalistic information about an existing report setup - like its ID, title, description, creation time, schedule. It is a quick overview.
+By default the `changelog` within `metaData` only contains the first and very last item. You might request more - see request parameters!
+
+ */
+export interface ReportSetupOverview {
+    /** The unique ID of this report setup - UUID style */
+    id: string;
+    /** Title, description and changelog - of this report. */
+    metaData: MetaData;
+    /** The server time in UNIX timestamp in UTC (seconds since Epoch) when this instance was created */
+    createdAt: number;
+    /** It is possible to temporarily disable a report. The report is still generatable manually but automatic schedules will not be executed. */
+    isDisabled: boolean;
+    /**
+     * Controlls when will the report run automatically. If you do not schedule the report then the report is only generated when you manually trigger it.
+     * @nullable
+     */
+    schedule?: Schedule;
+}
 export interface ReportSetup {
     /** The unique ID of this report setup - UUID style */
     id: string;
     /** Title, description and changelog - of this report. */
     metaData: MetaData;
+    /** The server time in UNIX timestamp in UTC (seconds since Epoch) when this setup was created */
+    createdAt: number;
+    /** It is possible to temporarily disable a report. The report is still generatable manually but automatic schedules will not be executed. */
+    isDisabled: boolean;
     /**
      * Controlls when will the report run automatically. If you do not schedule the report then the report is only generated when you manually trigger it.
      * @nullable
@@ -177,6 +213,17 @@ export interface ReportSetup {
      */
     resourceVersion: number;
 }
+/**
+ * It takes time for a report instance until it is fully generated. So every report instance is going through a lifecycle.
+This is maintained by the server.
+
+ */
+export type ReportInstanceState = typeof ReportInstanceState[keyof typeof ReportInstanceState];
+export declare const ReportInstanceState: {
+    readonly created: "created";
+    readonly generating: "generating";
+    readonly complete: "complete";
+};
 export interface DataTableDataColumn {
     label?: string;
     collapseFunction?: string;
@@ -198,13 +245,32 @@ export interface DataTable {
     /** */
     rows?: DataTableRow[];
 }
+/**
+ * It takes time for a report until it is fully generated. Report sections are going through a lifecycle and these are their states.
+
+ */
+export type ReportInstanceSectionState = typeof ReportInstanceSectionState[keyof typeof ReportInstanceSectionState];
+export declare const ReportInstanceSectionState: {
+    readonly created: "created";
+    readonly generating: "generating";
+    readonly complete: "complete";
+};
 export interface ReportInstanceSection {
-    /** The title of this section - copied from the ReportSetup appropriate Query part which produced this section when this instance was generated. */
-    title?: string;
-    /** This is a longer description of this section - copied from the ReportSetup appropriate Query part which produced this section when this instance was generated. */
-    description?: string;
+    /** The title and description of this section. This is copied from the corresponding Query of the ReportSetup this section represents.
+   */
+    metaData: MetaData;
+    /**
+     * Number of milliseconds the processing took on server side
+     * @nullable
+     */
+    generationTookMillis?: number | null;
     /** */
-    dataTables?: DataTable[];
+    dataTables: DataTable[];
+    /**
+     * In case the generation failed for any reason here is the human readable error message. This can be a multi-line text as well.
+     * @nullable
+     */
+    errorMessage?: string | null;
 }
 /**
  * This is a specific instance of a ReportSetup which was generated at a certain point in time. Keytiles stores these reports for a while.
@@ -213,51 +279,83 @@ A report instance consists of sections - each section is generated by a query.
  */
 export interface ReportInstance {
     /** The unique ID of this report setup - UUID style */
-    id?: string;
+    id: string;
     /** The ID of the ReportSetup this instance belongs to. */
-    parentReportSetupId?: string;
+    parentReportSetupId: string;
     /** The server time in UNIX timestamp in UTC (seconds since Epoch) when this instance was created */
-    createdAt?: number;
+    createdAt: number;
+    /** Number of milliseconds took to generate this report instance. */
+    creationTookMillis?: number;
+    state: ReportInstanceState;
     /** Tells if this report instance is a result of a test generation only or not. */
-    isTestOnly?: boolean;
-    /**
-     * In case the report generation was triggered manually by someone then this field contains the ID of the user triggered the generation.
-     * @nullable
-     */
-    generatorUserId?: string | null;
-    /**
-     * In case the report generation was triggered manually by someone then this field contains the Nickname of the user triggered the generation.
-     * @nullable
-     */
-    generatorUserNickname?: string | null;
-    /** The title of the report - copied from the ReportSetup metaData when this instance was generated. */
-    title?: string;
-    /**
-     * This is a longer description of the report - copied from the ReportSetup metaData when this instance was generated.
-     * @nullable
-     */
-    description?: string | null;
+    isTestOnly: boolean;
+    /** Tells if this report instance was generated manually or not. Inheritedly TRUE if `isTestOnly=true`. */
+    wasManuallyGenerated?: boolean;
+    /** The title of the report is copied from the ReportSetup metaData when this instance was generated. As well as the description. It is good as Report setup can be changed any time.
+  In case the report generation was triggered manually by someone then you find info in the history part of meta data about whom did it.
+   */
+    metaData: MetaData;
+    /** Query range - starting from this timestamp. This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT
+   */
+    fromTimestamp?: number;
+    /** Query range - until this timestamp. This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT
+   */
+    toTimestamp?: number;
     /** */
     sections?: ReportInstanceSection[];
-}
-export interface AvailableReportInstance {
-    id?: string;
-    /** The server time in UNIX timestamp in UTC (seconds since Epoch) when this instance was created */
-    createdAt?: number;
-    /** Tells if this report instance is marked as 'test only' or not. */
-    isTestOnly?: boolean;
-}
-export type ListContainerReportInstancesResponseClass = ContainerResponseV3Class & {
-    /** Report instances belong to this report setup. */
-    ofReportSetupId?: string;
     /**
-     * All available report instances - ordered by creation timestamp descending
+     * This is the resource version (which is automatically incremented by every change). When you do an update (PUT) you need to send it back! The server will check if it is matching with the resource version he has. If not then that means someone else already did an update in the meantime therefore your request can not be accepted - otherwise you may overwrite the changes someone did.
      */
-    availableInstances?: AvailableReportInstance[];
-};
-export type GetContainerReportInstanceResponseClass = ContainerResponseV3Class & {
-    reportInstance?: ReportInstance;
-};
+    resourceVersion: number;
+}
+/**
+ * Contains minimalistic information about an existing instance of a report setup - like its ID, creation time, parent report setup ID, etc. It is a quick overview.
+ */
+export interface ReportInstanceOverview {
+    id: string;
+    /** The ID of the report setup this instance belongs to */
+    parentReportSetupId: string;
+    /** Title, description and changelog - of this report. */
+    metaData: MetaData;
+    /** The server time in UNIX timestamp in UTC (seconds since Epoch) when this instance was created */
+    createdAt: number;
+    state: ReportInstanceState;
+    /** Tells if this report instance is marked as 'test only' or not. */
+    isTestOnly: boolean;
+    /** Tells if this report instance was generated manually or not. Inheritedly TRUE if `isTestOnly=true`. */
+    wasManuallyGenerated?: boolean;
+    /** Query range - starting from this timestamp. This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT
+   */
+    fromTimestamp?: number;
+    /** Query range - until this timestamp. This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT
+   */
+    toTimestamp?: number;
+}
+/**
+ * You can fine tune how the list is generated with the attributes of this request. As you see paging is supported too.
+
+ */
+export interface ListReportInstancesRequestClass {
+    /** By default the request excludes the "test only" instances - unless you request here to include them */
+    includeTestOnlyInstances?: boolean;
+    /** By default the request includes normal (not "test only") instances - unless you request here to exclude them */
+    excludeNotTestOnlyInstances?: boolean;
+    /**
+     * For paging - you can limit the number of returned instances.
+     * @nullable
+     */
+    limit?: number | null;
+    /** For paging - you can specify UNIX timestamp in UTC (seconds since Epoch). We return instances in creation time descending order and if you specify this then only those instances returned who's creation time is smaller than this timestamp. */
+    untilCreationTimestamp?: number;
+}
+export interface ListContainerReportInstancesResponseClass {
+    /** The number of all instances matching the request specs. */
+    countOfAllInstances?: number;
+    /**
+     * Returned report instances of the report setup matching the request specs - in creation time descending order.
+     */
+    reportInstances?: ReportInstanceOverview[];
+}
 export interface GenerateReportRequestClass {
     /** Set it to TRUE if you just want to test the report generation.
   In this case the recipients (if set in report setup) will not be notified about this report at all. And only the user who generated it will receive a notification when report is ready to view. But apart from this the full report will be generated.
@@ -272,66 +370,148 @@ export interface GenerateReportRequestClass {
   **IMPORTANT!** Use this with caution! This option was introduced mostly because of internal reasons under certain circumstances.
    */
     skipNotifications?: boolean;
+    groupByTime?: string;
+    /** When executed manually (not scheduled way) defines the beginning of the query range - you are interested in data which time is >= than this timestamp.
+    
+  Format is mixed. It can be * a UNIX timestamp in UTC (seconds since Epoch) e.g.: `1657261221` - means 2022-07-08 6:20:21 GMT
+    (note: server and client clock might be different! see: /v2/system/clock endpoint to query server time)
+  * a relative time spec compared to current time in form of 'now[-X<m|h|d>]' where 'm' means minutes, 'h' means hours and 'd' means days,
+    e.g.: `now-10m` means 10 minutes earlier compared to current time,
+    `now-2h` means 2 hours earlier and so on
+    
+  This must point to the past!   (note: server validates according to his own clock!)
+   */
+    fromTimestamp?: string;
+    /** When executed manually (not scheduled way) defines the end of the query range - you are interested in data which time is <= than this timestamp.
+    
+  **Default value:** the current timestamp, so 'now' if you do not specify this parameter.
+    
+  Format is mixed. It can be * a UNIX timestamp in UTC (seconds since Epoch) e.g.: `1657261221` - means 2022-07-08 6:20:21 GMT
+    (note: server and client clock might be different! see: /v2/system/clock endpoint to query server time)
+  * a relative time spec compared to current time in form of 'now[-X<m|h|d>]' where 'm' means minutes, 'h' means hours and 'd' means days,
+    e.g.: `now-10m` means 10 minutes earlier compared to current time,
+    `now-2h` means 2 hours earlier and so on
+    
+  Can not point to the future!   (note: server validates according to his own clock!)
+   */
+    toTimestamp?: string;
 }
+export type GetV1ReportsContainersRestContainerIdReportSetupOverviewParams = {
+    /**
+     * By default returned `changelog` in meta data only contains the very first and last entries upon query - but you can request to return full changelog.
+      
+    **Default value:** false
+    
+     */
+    returnFullChangelog?: ReturnFullChangelogParameter;
+};
+export type PostV1ReportsContainersRestContainerIdReportSetupParams = {
+    /**
+     * Short user message which if sent then added to the changelog entry created by the server.
+    
+     */
+    changelogComment?: ChangelogCommentParameter;
+};
+export type GetV1ReportsContainersRestContainerIdReportSetupReportSetupIdParams = {
+    /**
+     * By default returned `changelog` in meta data only contains the very first and last entries upon query - but you can request to return full changelog.
+      
+    **Default value:** false
+    
+     */
+    returnFullChangelog?: ReturnFullChangelogParameter;
+};
+export type PutV1ReportsContainersRestContainerIdReportSetupReportSetupIdParams = {
+    /**
+     * Short user message which if sent then added to the changelog entry created by the server.
+    
+     */
+    changelogComment?: ChangelogCommentParameter;
+    /**
+     * By default returned `changelog` in meta data only contains the very first and last entries upon query - but you can request to return full changelog.
+      
+    **Default value:** false
+    
+     */
+    returnFullChangelog?: ReturnFullChangelogParameter;
+};
 /**
- * With this endpoint you have the possibility to query all report setups of a Data Container.
+ * Anyone with "view" or "admin" role in Data Container can query.
+By default `changelog` in
 
- * @summary To query existing report setups belong to the Container
+ * @summary To query (list) the overview of all existing report setups belong to the Container
  */
-export declare const getV1ReportsContainersSetupRestContainerId: <TData = AxiosResponse<ListContainerReportSetupsResponseClass>>(containerId: string, options?: AxiosRequestConfig) => Promise<TData>;
+export declare const getV1ReportsContainersRestContainerIdReportSetupOverview: <TData = AxiosResponse<ListContainerReportSetupsResponseClass>>(containerId: string, params?: GetV1ReportsContainersRestContainerIdReportSetupOverviewParams, options?: AxiosRequestConfig) => Promise<TData>;
+/**
+ * Anyone with "view" or "admin" role in Data Container can query.
+
+ * @summary To query the overview of a specific existing report setup belongs to the Container
+ */
+export declare const getV1ReportsContainersRestContainerIdReportSetupOverviewReportSetupId: <TData = AxiosResponse<ReportSetupOverview>>(containerId: string, reportSetupId: string, options?: AxiosRequestConfig) => Promise<TData>;
 /**
  * You can assign an ID for this setup on client side as well but if you don't then a new ID will be generated (and returned in response header).
   
-For now only Admins of Data Containers can create a report setup.
+Only users with "admin" role in Data Container can create a report setup.
 
  * @summary To create a new report setup belongs to the Container
  */
-export declare const postV1ReportsContainersSetupRestContainerId: <TData = AxiosResponse<MessageResponseV3Class>>(containerId: string, reportSetup: ReportSetup, options?: AxiosRequestConfig) => Promise<TData>;
+export declare const postV1ReportsContainersRestContainerIdReportSetup: <TData = AxiosResponse<ReportSetup>>(containerId: string, reportSetup: ReportSetup, params?: PostV1ReportsContainersRestContainerIdReportSetupParams, options?: AxiosRequestConfig) => Promise<TData>;
 /**
+ * Anyone with "view" or "admin" role in Data Container can query.
+
  * @summary To query a specific report setup of the Container
  */
-export declare const getV1ReportsContainersSetupRestContainerIdReportSetupId: <TData = AxiosResponse<ReportSetup>>(containerId: string, reportSetupId: string, options?: AxiosRequestConfig) => Promise<TData>;
+export declare const getV1ReportsContainersRestContainerIdReportSetupReportSetupId: <TData = AxiosResponse<ReportSetup>>(containerId: string, reportSetupId: string, params?: GetV1ReportsContainersRestContainerIdReportSetupReportSetupIdParams, options?: AxiosRequestConfig) => Promise<TData>;
 /**
  * The 'resourceVersion' field is very important here - it must match with the version the server currently has otherwise you will get a 409 error. This mechanism helps to detect possible race conditions.
   
-For now only Admins of Data Containers can modify a report setup.
+Only users with "admin" role in the Data Container can modify a report setup.
 
  * @summary To modify an existing report setup.
  */
-export declare const putV1ReportsContainersSetupRestContainerIdReportSetupId: <TData = AxiosResponse<MessageResponseV3Class>>(containerId: string, reportSetupId: string, reportSetup: ReportSetup, options?: AxiosRequestConfig) => Promise<TData>;
+export declare const putV1ReportsContainersRestContainerIdReportSetupReportSetupId: <TData = AxiosResponse<ReportSetup>>(containerId: string, reportSetupId: string, reportSetup: ReportSetup, params?: PutV1ReportsContainersRestContainerIdReportSetupReportSetupIdParams, options?: AxiosRequestConfig) => Promise<TData>;
 /**
  * In case you do not want to lose all previous instances consider simply just remove the 'schedule' of the report instead of deleting it! If you do so then the report will not run automatically anymore.
   
-For now only Admins of Data Containers can delete a report setup.
+Only users with "admin" role in the Data Container can delete a report setup.
 
  * @summary To delete a specific report setup of the Container as well as all previously generated report instances.
  */
-export declare const deleteV1ReportsContainersSetupRestContainerIdReportSetupId: <TData = AxiosResponse<ReportSetup>>(containerId: string, reportSetupId: string, options?: AxiosRequestConfig) => Promise<TData>;
+export declare const deleteV1ReportsContainersRestContainerIdReportSetupReportSetupId: <TData = AxiosResponse<ReportSetup>>(containerId: string, reportSetupId: string, options?: AxiosRequestConfig) => Promise<TData>;
 /**
- * @summary To query (list) all availale report instance IDs of a given ReportSetup - available in the Data Container
+ * Anyone with "view" or "admin" role in Data Container can list.
+
+ * @summary To query (list) all availale report instances of a given ReportSetup - available in the Data Container
  */
-export declare const getV1ReportsContainersSetupRestContainerIdReportSetupIdInstances: <TData = AxiosResponse<ListContainerReportInstancesResponseClass>>(containerId: string, reportSetupId: string, options?: AxiosRequestConfig) => Promise<TData>;
+export declare const postV1ReportsContainersActionsContainerIdReportSetupReportSetupIdListReportInstanceOverviews: <TData = AxiosResponse<ListContainerReportInstancesResponseClass>>(containerId: string, reportSetupId: string, listReportInstancesRequestClass: ListReportInstancesRequestClass, options?: AxiosRequestConfig) => Promise<TData>;
 /**
  * When triggered manually then the report generation starts immediately. You can fine tune the report generation (mostly for testing purposes) - see request body!
 Please note that a report generation might take time.
+  
+Only with "admin" role in Data Container can trigger a generation manually for now.
 
- * @summary To generate (create) a new report instance of this report setup.
+ * @summary To generate (create) a new report instance of a report setup manually.
  */
-export declare const postV1ReportsContainersSetupRestContainerIdReportSetupIdInstances: <TData = AxiosResponse<MessageResponseV3Class>>(containerId: string, reportSetupId: string, generateReportRequestClass: GenerateReportRequestClass, options?: AxiosRequestConfig) => Promise<TData>;
+export declare const postV1ReportsContainersActionsContainerIdReportSetupReportSetupIdGenerate: <TData = AxiosResponse<MessageResponseV3Class>>(containerId: string, reportSetupId: string, generateReportRequestClass: GenerateReportRequestClass, options?: AxiosRequestConfig) => Promise<TData>;
 /**
+ * Anyone with "view" or "admin" role in Data Container can query.
+
  * @summary To query a specific report instance with the given ID of the Data Container
  */
-export declare const getV1ReportsContainersInstanceRestContainerIdReportInstanceId: <TData = AxiosResponse<GetContainerReportInstanceResponseClass>>(containerId: string, reportInstanceId: string, options?: AxiosRequestConfig) => Promise<TData>;
+export declare const getV1ReportsContainersRestContainerIdReportInstanceReportInstanceId: <TData = AxiosResponse<ReportInstance>>(containerId: string, reportInstanceId: string, options?: AxiosRequestConfig) => Promise<TData>;
 /**
+ * Only users with "admin" role in Data Container can do this.
+
  * @summary To permanently delete a specific report instance - after this this report is not available anymore.
  */
-export declare const deleteV1ReportsContainersInstanceRestContainerIdReportInstanceId: <TData = AxiosResponse<MessageResponseV3Class>>(containerId: string, reportInstanceId: string, options?: AxiosRequestConfig) => Promise<TData>;
-export type GetV1ReportsContainersSetupRestContainerIdResult = AxiosResponse<ListContainerReportSetupsResponseClass>;
-export type PostV1ReportsContainersSetupRestContainerIdResult = AxiosResponse<MessageResponseV3Class>;
-export type GetV1ReportsContainersSetupRestContainerIdReportSetupIdResult = AxiosResponse<ReportSetup>;
-export type PutV1ReportsContainersSetupRestContainerIdReportSetupIdResult = AxiosResponse<MessageResponseV3Class>;
-export type DeleteV1ReportsContainersSetupRestContainerIdReportSetupIdResult = AxiosResponse<ReportSetup>;
-export type GetV1ReportsContainersSetupRestContainerIdReportSetupIdInstancesResult = AxiosResponse<ListContainerReportInstancesResponseClass>;
-export type PostV1ReportsContainersSetupRestContainerIdReportSetupIdInstancesResult = AxiosResponse<MessageResponseV3Class>;
-export type GetV1ReportsContainersInstanceRestContainerIdReportInstanceIdResult = AxiosResponse<GetContainerReportInstanceResponseClass>;
-export type DeleteV1ReportsContainersInstanceRestContainerIdReportInstanceIdResult = AxiosResponse<MessageResponseV3Class>;
+export declare const deleteV1ReportsContainersRestContainerIdReportInstanceReportInstanceId: <TData = AxiosResponse<MessageResponseV3Class>>(containerId: string, reportInstanceId: string, options?: AxiosRequestConfig) => Promise<TData>;
+export type GetV1ReportsContainersRestContainerIdReportSetupOverviewResult = AxiosResponse<ListContainerReportSetupsResponseClass>;
+export type GetV1ReportsContainersRestContainerIdReportSetupOverviewReportSetupIdResult = AxiosResponse<ReportSetupOverview>;
+export type PostV1ReportsContainersRestContainerIdReportSetupResult = AxiosResponse<ReportSetup>;
+export type GetV1ReportsContainersRestContainerIdReportSetupReportSetupIdResult = AxiosResponse<ReportSetup>;
+export type PutV1ReportsContainersRestContainerIdReportSetupReportSetupIdResult = AxiosResponse<ReportSetup>;
+export type DeleteV1ReportsContainersRestContainerIdReportSetupReportSetupIdResult = AxiosResponse<ReportSetup>;
+export type PostV1ReportsContainersActionsContainerIdReportSetupReportSetupIdListReportInstanceOverviewsResult = AxiosResponse<ListContainerReportInstancesResponseClass>;
+export type PostV1ReportsContainersActionsContainerIdReportSetupReportSetupIdGenerateResult = AxiosResponse<MessageResponseV3Class>;
+export type GetV1ReportsContainersRestContainerIdReportInstanceReportInstanceIdResult = AxiosResponse<ReportInstance>;
+export type DeleteV1ReportsContainersRestContainerIdReportInstanceReportInstanceIdResult = AxiosResponse<MessageResponseV3Class>;

@@ -43,6 +43,7 @@ export declare const CommonErrorCodesV3: {
     readonly query_limit_reached: "query_limit_reached";
     readonly field_deprecated: "field_deprecated";
     readonly underlying_resource_unavailable: "underlying_resource_unavailable";
+    readonly already_exists: "already_exists";
 };
 /**
  * This info piece is most useful for 400 - "Bad Request" problems but can be meaningful of course in other scenarios too. It marks the place which has the problem.
@@ -166,3 +167,15 @@ Can not point to the future!   (note: server validates according to his own cloc
 
  */
 export type ToTimestampParameter = string;
+/**
+ * By default returned `changelog` in meta data only contains the very first and last entries upon query - but you can request to return full changelog.
+  
+**Default value:** false
+
+ */
+export type ReturnFullChangelogParameter = boolean;
+/**
+ * Short user message which if sent then added to the changelog entry created by the server.
+
+ */
+export type ChangelogCommentParameter = string;

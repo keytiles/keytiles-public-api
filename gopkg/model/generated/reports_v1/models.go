@@ -156,6 +156,7 @@ type GenerateReportRequestClass struct {
 	//
 	// This must point to the past!   (note: server validates according to his own clock!)
 	FromTimestamp *string `json:"fromTimestamp,omitempty" yaml:"fromTimestamp,omitempty"`
+	GroupByTime   *string `json:"groupByTime,omitempty" yaml:"groupByTime,omitempty"`
 
 	// IsTestOnly Set it to TRUE if you just want to test the report generation.
 	// In this case the recipients (if set in report setup) will not be notified about this report at all. And only the user who generated it will receive a notification when report is ready to view. But apart from this the full report will be generated.
@@ -241,6 +242,9 @@ type ReportInstance struct {
 
 	// ToTimestamp Query range - until this timestamp. This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT
 	ToTimestamp *int `json:"toTimestamp,omitempty" yaml:"toTimestamp,omitempty"`
+
+	// WasManuallyGenerated Tells if this report instance was generated manually or not. Inheritedly TRUE if `isTestOnly=true`.
+	WasManuallyGenerated *bool `json:"wasManuallyGenerated,omitempty" yaml:"wasManuallyGenerated,omitempty"`
 }
 
 // ReportInstanceOverview Contains minimalistic information about an existing instance of a report setup - like its ID, creation time, parent report setup ID, etc. It is a quick overview.
@@ -265,6 +269,9 @@ type ReportInstanceOverview struct {
 
 	// ToTimestamp Query range - until this timestamp. This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT
 	ToTimestamp *int `json:"toTimestamp,omitempty" yaml:"toTimestamp,omitempty"`
+
+	// WasManuallyGenerated Tells if this report instance was generated manually or not. Inheritedly TRUE if `isTestOnly=true`.
+	WasManuallyGenerated *bool `json:"wasManuallyGenerated,omitempty" yaml:"wasManuallyGenerated,omitempty"`
 }
 
 // ReportInstanceSection defines model for ReportInstanceSection.

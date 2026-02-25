@@ -12,6 +12,8 @@ export const ReportsEndpointLocalErrorCodes = {
     containerId_missing: 'containerId_missing',
     containerId_invalid: 'containerId_invalid',
     reportSetupId_invalid: 'reportSetupId_invalid',
+    reportInstanceId_invalid: 'reportInstanceId_invalid',
+    reportSetup_exists: 'reportSetup_exists',
 };
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const ReportRecipientsRoles = {
@@ -28,75 +30,106 @@ export const ReportQueryPlugin = {
     tagsPerformancePlugin: 'tagsPerformancePlugin',
     visitorBehaviorPlugin: 'visitorBehaviorPlugin',
 };
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ReportInstanceState = {
+    created: 'created',
+    generating: 'generating',
+    complete: 'complete',
+};
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ReportInstanceSectionState = {
+    created: 'created',
+    generating: 'generating',
+    complete: 'complete',
+};
 /**
- * With this endpoint you have the possibility to query all report setups of a Data Container.
+ * Anyone with "view" or "admin" role in Data Container can query.
+By default `changelog` in
 
- * @summary To query existing report setups belong to the Container
+ * @summary To query (list) the overview of all existing report setups belong to the Container
  */
-export const getV1ReportsContainersSetupRestContainerId = (containerId, options) => {
-    return axios.get(`/v1/reports/containers/setup/rest/${containerId}`, options);
+export const getV1ReportsContainersRestContainerIdReportSetupOverview = (containerId, params, options) => {
+    return axios.get(`/v1/reports/containers/rest/${containerId}/report-setup-overview`, Object.assign(Object.assign({}, options), { params: Object.assign(Object.assign({}, params), options === null || options === void 0 ? void 0 : options.params) }));
+};
+/**
+ * Anyone with "view" or "admin" role in Data Container can query.
+
+ * @summary To query the overview of a specific existing report setup belongs to the Container
+ */
+export const getV1ReportsContainersRestContainerIdReportSetupOverviewReportSetupId = (containerId, reportSetupId, options) => {
+    return axios.get(`/v1/reports/containers/rest/${containerId}/report-setup-overview/${reportSetupId}`, options);
 };
 /**
  * You can assign an ID for this setup on client side as well but if you don't then a new ID will be generated (and returned in response header).
   
-For now only Admins of Data Containers can create a report setup.
+Only users with "admin" role in Data Container can create a report setup.
 
  * @summary To create a new report setup belongs to the Container
  */
-export const postV1ReportsContainersSetupRestContainerId = (containerId, reportSetup, options) => {
-    return axios.post(`/v1/reports/containers/setup/rest/${containerId}`, reportSetup, options);
+export const postV1ReportsContainersRestContainerIdReportSetup = (containerId, reportSetup, params, options) => {
+    return axios.post(`/v1/reports/containers/rest/${containerId}/report-setup`, reportSetup, Object.assign(Object.assign({}, options), { params: Object.assign(Object.assign({}, params), options === null || options === void 0 ? void 0 : options.params) }));
 };
 /**
+ * Anyone with "view" or "admin" role in Data Container can query.
+
  * @summary To query a specific report setup of the Container
  */
-export const getV1ReportsContainersSetupRestContainerIdReportSetupId = (containerId, reportSetupId, options) => {
-    return axios.get(`/v1/reports/containers/setup/rest/${containerId}/${reportSetupId}`, options);
+export const getV1ReportsContainersRestContainerIdReportSetupReportSetupId = (containerId, reportSetupId, params, options) => {
+    return axios.get(`/v1/reports/containers/rest/${containerId}/report-setup/${reportSetupId}`, Object.assign(Object.assign({}, options), { params: Object.assign(Object.assign({}, params), options === null || options === void 0 ? void 0 : options.params) }));
 };
 /**
  * The 'resourceVersion' field is very important here - it must match with the version the server currently has otherwise you will get a 409 error. This mechanism helps to detect possible race conditions.
   
-For now only Admins of Data Containers can modify a report setup.
+Only users with "admin" role in the Data Container can modify a report setup.
 
  * @summary To modify an existing report setup.
  */
-export const putV1ReportsContainersSetupRestContainerIdReportSetupId = (containerId, reportSetupId, reportSetup, options) => {
-    return axios.put(`/v1/reports/containers/setup/rest/${containerId}/${reportSetupId}`, reportSetup, options);
+export const putV1ReportsContainersRestContainerIdReportSetupReportSetupId = (containerId, reportSetupId, reportSetup, params, options) => {
+    return axios.put(`/v1/reports/containers/rest/${containerId}/report-setup/${reportSetupId}`, reportSetup, Object.assign(Object.assign({}, options), { params: Object.assign(Object.assign({}, params), options === null || options === void 0 ? void 0 : options.params) }));
 };
 /**
  * In case you do not want to lose all previous instances consider simply just remove the 'schedule' of the report instead of deleting it! If you do so then the report will not run automatically anymore.
   
-For now only Admins of Data Containers can delete a report setup.
+Only users with "admin" role in the Data Container can delete a report setup.
 
  * @summary To delete a specific report setup of the Container as well as all previously generated report instances.
  */
-export const deleteV1ReportsContainersSetupRestContainerIdReportSetupId = (containerId, reportSetupId, options) => {
-    return axios.delete(`/v1/reports/containers/setup/rest/${containerId}/${reportSetupId}`, options);
+export const deleteV1ReportsContainersRestContainerIdReportSetupReportSetupId = (containerId, reportSetupId, options) => {
+    return axios.delete(`/v1/reports/containers/rest/${containerId}/report-setup/${reportSetupId}`, options);
 };
 /**
- * @summary To query (list) all availale report instance IDs of a given ReportSetup - available in the Data Container
+ * Anyone with "view" or "admin" role in Data Container can list.
+
+ * @summary To query (list) all availale report instances of a given ReportSetup - available in the Data Container
  */
-export const getV1ReportsContainersSetupRestContainerIdReportSetupIdInstances = (containerId, reportSetupId, options) => {
-    return axios.get(`/v1/reports/containers/setup/rest/${containerId}/${reportSetupId}/instances`, options);
+export const postV1ReportsContainersActionsContainerIdReportSetupReportSetupIdListReportInstanceOverviews = (containerId, reportSetupId, listReportInstancesRequestClass, options) => {
+    return axios.post(`/v1/reports/containers/actions/${containerId}/report-setup/${reportSetupId}/list-report-instance-overviews`, listReportInstancesRequestClass, options);
 };
 /**
  * When triggered manually then the report generation starts immediately. You can fine tune the report generation (mostly for testing purposes) - see request body!
 Please note that a report generation might take time.
+  
+Only with "admin" role in Data Container can trigger a generation manually for now.
 
- * @summary To generate (create) a new report instance of this report setup.
+ * @summary To generate (create) a new report instance of a report setup manually.
  */
-export const postV1ReportsContainersSetupRestContainerIdReportSetupIdInstances = (containerId, reportSetupId, generateReportRequestClass, options) => {
-    return axios.post(`/v1/reports/containers/setup/rest/${containerId}/${reportSetupId}/instances`, generateReportRequestClass, options);
+export const postV1ReportsContainersActionsContainerIdReportSetupReportSetupIdGenerate = (containerId, reportSetupId, generateReportRequestClass, options) => {
+    return axios.post(`/v1/reports/containers/actions/${containerId}/report-setup/${reportSetupId}/generate`, generateReportRequestClass, options);
 };
 /**
+ * Anyone with "view" or "admin" role in Data Container can query.
+
  * @summary To query a specific report instance with the given ID of the Data Container
  */
-export const getV1ReportsContainersInstanceRestContainerIdReportInstanceId = (containerId, reportInstanceId, options) => {
-    return axios.get(`/v1/reports/containers/instance/rest/${containerId}/${reportInstanceId}`, options);
+export const getV1ReportsContainersRestContainerIdReportInstanceReportInstanceId = (containerId, reportInstanceId, options) => {
+    return axios.get(`/v1/reports/containers/rest/${containerId}/report-instance/${reportInstanceId}`, options);
 };
 /**
+ * Only users with "admin" role in Data Container can do this.
+
  * @summary To permanently delete a specific report instance - after this this report is not available anymore.
  */
-export const deleteV1ReportsContainersInstanceRestContainerIdReportInstanceId = (containerId, reportInstanceId, options) => {
-    return axios.delete(`/v1/reports/containers/instance/rest/${containerId}/${reportInstanceId}`, options);
+export const deleteV1ReportsContainersRestContainerIdReportInstanceReportInstanceId = (containerId, reportInstanceId, options) => {
+    return axios.delete(`/v1/reports/containers/rest/${containerId}/report-instance/${reportInstanceId}`, options);
 };
 //# sourceMappingURL=reports-api-v1.js.map

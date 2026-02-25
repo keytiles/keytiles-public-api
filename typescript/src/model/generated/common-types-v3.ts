@@ -46,6 +46,7 @@ export const CommonErrorCodesV3 = {
   query_limit_reached: 'query_limit_reached',
   field_deprecated: 'field_deprecated',
   underlying_resource_unavailable: 'underlying_resource_unavailable',
+  already_exists: 'already_exists',
 } as const;
 
 /**
@@ -187,5 +188,19 @@ Can not point to the future!   (note: server validates according to his own cloc
 
  */
 export type ToTimestampParameter = string;
+
+/**
+ * By default returned `changelog` in meta data only contains the very first and last entries upon query - but you can request to return full changelog.  
+  
+**Default value:** false
+
+ */
+export type ReturnFullChangelogParameter = boolean;
+
+/**
+ * Short user message which if sent then added to the changelog entry created by the server.
+
+ */
+export type ChangelogCommentParameter = string;
 
 

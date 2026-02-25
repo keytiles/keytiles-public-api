@@ -36,6 +36,7 @@ export const CommonErrorCodesV3 = {
     query_limit_reached: 'query_limit_reached',
     field_deprecated: 'field_deprecated',
     underlying_resource_unavailable: 'underlying_resource_unavailable',
+    already_exists: 'already_exists',
 };
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const ProblemPlaceEnumV3 = {

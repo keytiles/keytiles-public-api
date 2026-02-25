@@ -808,7 +808,7 @@ components:
           items:
             $ref: '#/components/schemas/ReportQuery'
           nullable: true
-          default: []
+          #default: []
         resourceVersion:
           type: integer
           description: This is the resource version (which is automatically incremented by every change). When you do an update (PUT) you need to send it back! The server will check if it is matching with the resource version he has. If not then that means someone else already did an update in the meantime therefore your request can not be accepted - otherwise you may overwrite the changes someone did.
@@ -965,6 +965,9 @@ components:
         isTestOnly:
           type: boolean
           description: Tells if this report instance is a result of a test generation only or not.
+        wasManuallyGenerated:
+          type: boolean
+          description: Tells if this report instance was generated manually or not. Inheritedly TRUE if `isTestOnly=true`.
         metaData:
           description: >
                       The title of the report is copied from the ReportSetup metaData when this instance was generated.
@@ -1024,6 +1027,9 @@ components:
         isTestOnly:
           type: boolean
           description: "Tells if this report instance is marked as 'test only' or not."
+        wasManuallyGenerated:
+          type: boolean
+          description: Tells if this report instance was generated manually or not. Inheritedly TRUE if `isTestOnly=true`.
         fromTimestamp:
           type: integer
           description: >
@@ -1095,6 +1101,8 @@ components:
                       If this is set to TRUE then recipients will not receive any notification from Keytiles when this Report Instance is created.
 
                       **IMPORTANT!** Use this with caution! This option was introduced mostly because of internal reasons under certain circumstances.
+        groupByTime:
+          type: string
         fromTimestamp:
           type: string
           description: >
@@ -1109,7 +1117,7 @@ components:
                           
                         This must point to the past!  
                         (note: server validates according to his own clock!)
-          example: now-1h
+          example: now-2h
         toTimestamp:
           type: string
           description: >
@@ -1126,5 +1134,5 @@ components:
                           
                         Can not point to the future!  
                         (note: server validates according to his own clock!)
-          example: now-2h
+          example: now-1h
 

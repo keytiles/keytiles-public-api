@@ -16,5 +16,15 @@ export const ScheduleType = {
     monthly: 'monthly',
 };
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const MonthlyScheduleSetupDayName = Object.assign(Object.assign({}, ScheduleDayName), { firstDay: 'firstDay', lastDay: 'lastDay' });
+export const MonthlyScheduleDayName = {
+    firstMon: 'firstMon',
+    firstTue: 'firstTue',
+    firstWed: 'firstWed',
+    firstThu: 'firstThu',
+    firstFri: 'firstFri',
+    firstSat: 'firstSat',
+    firstSun: 'firstSun',
+    firstDay: 'firstDay',
+    lastDay: 'lastDay',
+};
 //# sourceMappingURL=common-schedule-v1.js.map

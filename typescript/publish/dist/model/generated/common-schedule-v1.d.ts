@@ -7,8 +7,9 @@
  */
 /**
  * Name of the days we use in day masks.
+ * @nullable
  */
-export type ScheduleDayName = typeof ScheduleDayName[keyof typeof ScheduleDayName];
+export type ScheduleDayName = typeof ScheduleDayName[keyof typeof ScheduleDayName] | null;
 export declare const ScheduleDayName: {
     readonly Mon: "Mon";
     readonly Tue: "Tue";
@@ -37,8 +38,13 @@ export type Schedule = {
     /** Describes which type of schedule is this? */
     type: ScheduleType;
     setup: ScheduleSetup;
-    /** Encodes the time zone offset from UTC - all things like time and even the days(!) are given using this offset */
-    tzOffset: number;
+    /** The IANA name of the time zone - e.g. "Europe/Berlin" in which time zone we should interpret this schedule.   or   You can also simply put `UTC` here - which will be recognized too.
+    
+  All things - like `firstTime="09:00"` (hourly setup) or `triggerTime="10:00"` (daily, weekly, monthly setup) - and even the days(!) will be interpreted in this time zone.
+    
+  For more info check: [https://www.iana.org/time-zones](https://www.iana.org/time-zones) or [https://en.wikipedia.org/wiki/List_of_tz_database_time_zones](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)
+   */
+    timeZoneIANAName: string;
     /** The major version of the Schedule schema which was used when this object was created. This helps to evolve Schedules over time. */
     majorVersion: number;
 } | null;
@@ -53,15 +59,21 @@ export interface HourlyScheduleSetup {
   
      */
     firstTime: string;
-    /** Optional setting. This is an "HH:MM" formatted time descriptor. Means: within a day triggering will happen only if the current time is <= than this time.
+    /**
+     * Optional setting. This is an "HH:MM" formatted time descriptor. Means: within a day triggering will happen only if the current time is <= than this time.
     
   For example, if `firstTime="09:15"` then actually the last execution of the action will happen at "17:15".
     
   In case not given then scheduling will happen within the day every hour starting from `firstTime`.
-   */
-    untilTime?: string;
-    /** Optional setting. If given then scheduling will happen only on these days. This is a day mask basically. */
-    dayNames?: ScheduleDayName[];
+  
+     * @nullable
+     */
+    untilTime?: string | null;
+    /**
+     * Optional setting. If given then scheduling will happen only on these days. This is a day mask basically.
+     * @nullable
+     */
+    dayNames?: ScheduleDayName[] | null;
 }
 /**
  * Encodes scheduling tailored for daily execution.
@@ -72,8 +84,11 @@ export interface DailyScheduleSetup {
   
      */
     triggerTime: string;
-    /** Optional setting. If given then scheduling will happen only on these days. This is a day mask basically. */
-    dayNames?: ScheduleDayName[];
+    /**
+     * Optional setting. If given then scheduling will happen only on these days. This is a day mask basically.
+     * @nullable
+     */
+    dayNames?: ScheduleDayName[] | null;
 }
 /**
  * Encodes scheduling tailored for weekly execution.
@@ -84,18 +99,32 @@ export interface WeeklyScheduleSetup {
   
      */
     triggerTime: string;
+    /**
+     * Optional. If given then the action will run on this day of the week - otherwise default is Monday.
+  
+     * @nullable
+     */
     dayName?: ScheduleDayName;
 }
-export declare const MonthlyScheduleSetupDayName: {
+/**
+ * Name of days we can use in a monthly setup.
+  * `firstDay` - action is triggered on first day of the month
+  * `lastDay` - action is triggered on last day of the month
+  * weekday like `firstMon` etc - action is triggered on the first Monday of the month
+
+ * @nullable
+ */
+export type MonthlyScheduleDayName = typeof MonthlyScheduleDayName[keyof typeof MonthlyScheduleDayName] | null;
+export declare const MonthlyScheduleDayName: {
+    readonly firstMon: "firstMon";
+    readonly firstTue: "firstTue";
+    readonly firstWed: "firstWed";
+    readonly firstThu: "firstThu";
+    readonly firstFri: "firstFri";
+    readonly firstSat: "firstSat";
+    readonly firstSun: "firstSun";
     readonly firstDay: "firstDay";
     readonly lastDay: "lastDay";
-    readonly Mon: "Mon";
-    readonly Tue: "Tue";
-    readonly Wed: "Wed";
-    readonly Thu: "Thu";
-    readonly Fri: "Fri";
-    readonly Sat: "Sat";
-    readonly Sun: "Sun";
 };
 /**
  * Encodes scheduling tailored for monthly execution.
@@ -106,6 +135,17 @@ export interface MonthlyScheduleSetup {
   
      */
     triggerTime: string;
-    /** Optional element. To pick up the day when the report is triggered you have a few options. If not given then simply it will be 'firstDay'. */
-    dayName?: typeof MonthlyScheduleSetupDayName[keyof typeof MonthlyScheduleSetupDayName];
+    /**
+     * Optional element. To pick up the day when the action is triggered you have a few options.
+    
+  You can put
+   * `firstDay` - action is triggered on first day of the month
+   * `lastDay` - action is triggered on last day of the month
+   * weekday like `Mon` etc - action is triggered on the first Monday of the month
+    
+  **default value**: If not given then simply it will be 'firstDay'.
+  
+     * @nullable
+     */
+    dayName?: MonthlyScheduleDayName;
 }
