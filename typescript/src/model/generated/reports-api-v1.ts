@@ -344,7 +344,7 @@ export interface ReportInstance {
   /** Tells if this report instance is a result of a test generation only or not. */
   isTestOnly: boolean;
   /** Tells if this report instance was generated manually or not. Inheritedly TRUE if `isTestOnly=true`. */
-  wasManuallyGenerated?: boolean;
+  wasManuallyGenerated: boolean;
   /** The title of the report is copied from the ReportSetup metaData when this instance was generated. As well as the description. It is good as Report setup can be changed any time.
 In case the report generation was triggered manually by someone then you find info in the history part of meta data about whom did it.
  */
@@ -378,7 +378,7 @@ export interface ReportInstanceOverview {
   /** Tells if this report instance is marked as 'test only' or not. */
   isTestOnly: boolean;
   /** Tells if this report instance was generated manually or not. Inheritedly TRUE if `isTestOnly=true`. */
-  wasManuallyGenerated?: boolean;
+  wasManuallyGenerated: boolean;
   /** Query range - starting from this timestamp. This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT  
  */
   fromTimestamp?: number;

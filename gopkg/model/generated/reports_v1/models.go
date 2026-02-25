@@ -244,7 +244,7 @@ type ReportInstance struct {
 	ToTimestamp *int `json:"toTimestamp,omitempty" yaml:"toTimestamp,omitempty"`
 
 	// WasManuallyGenerated Tells if this report instance was generated manually or not. Inheritedly TRUE if `isTestOnly=true`.
-	WasManuallyGenerated *bool `json:"wasManuallyGenerated,omitempty" yaml:"wasManuallyGenerated,omitempty"`
+	WasManuallyGenerated bool `json:"wasManuallyGenerated" yaml:"wasManuallyGenerated"`
 }
 
 // ReportInstanceOverview Contains minimalistic information about an existing instance of a report setup - like its ID, creation time, parent report setup ID, etc. It is a quick overview.
@@ -271,7 +271,7 @@ type ReportInstanceOverview struct {
 	ToTimestamp *int `json:"toTimestamp,omitempty" yaml:"toTimestamp,omitempty"`
 
 	// WasManuallyGenerated Tells if this report instance was generated manually or not. Inheritedly TRUE if `isTestOnly=true`.
-	WasManuallyGenerated *bool `json:"wasManuallyGenerated,omitempty" yaml:"wasManuallyGenerated,omitempty"`
+	WasManuallyGenerated bool `json:"wasManuallyGenerated" yaml:"wasManuallyGenerated"`
 }
 
 // ReportInstanceSection defines model for ReportInstanceSection.
