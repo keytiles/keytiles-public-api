@@ -335,11 +335,9 @@ type ReportQuery_Parameters struct {
 	// SortBy Sort the list based on these "eventsIncluded"
 	SortBy *[]string `json:"sortBy,omitempty" yaml:"sortBy,omitempty"`
 
-	// TileGroupPathMatchingOnly Data filter option. Comma separated list of matchers (see below) which returns counters only for those Tiles who's tileGroupPath is matching to one of the listed matchers. So if you list more values here then they are interpreted with an OR operator.
+	// TileGroupPathMatchingOnly Data filter option. List of matchers (see below) which returns counters only for those Tiles who's `tileGroupPath` is matching to one of the listed matchers. So if you list more values here then they are interpreted with an OR operator.
 	//
-	// note: if you have comma in your matcher (strange, but ok...) you can escape that with `\\` character!
-	//
-	// You can use the **'\*'** character to match any substring. But where and how you put this Asterisk character matters! Let us show you how through an example!
+	// You can use the `*` character to match any substring. But where and how you put this Asterisk character matters! Let us show you how through an example!
 	// Let's assume you have articles and pages (Tiles) in the following content areas:
 	//
 	// * /auto * /tech * /tech/mobile-rumours * /tech/mobile * /tech/mobile/android * /tech/mobile/ios * /politics
@@ -350,14 +348,14 @@ type ReportQuery_Parameters struct {
 	// But what if you want to really limit for Tiles under the *"/tech/mobile"* area?
 	//
 	// Well then you can use the second query value: **"/tech/mobile/\*"**. This would include *"/tech/mobile/android"*, *"/tech/mobile/ios"* but would NOT include *"/tech/mobile-rumours"* anymore - as that is not a match anymore. But we are not done yet! Please note: this would also include Tiles under *"/tech/mobile/"* group itself. Because **"/\*"** means "everything which is under this group"
-	TileGroupPathMatchingOnly *string `json:"tileGroupPathMatchingOnly,omitempty" yaml:"tileGroupPathMatchingOnly,omitempty"`
+	TileGroupPathMatchingOnly *[]string `json:"tileGroupPathMatchingOnly,omitempty" yaml:"tileGroupPathMatchingOnly,omitempty"`
 
-	// TileTypesOnly Data filter option. Comma separated list of tile types you want to limit the query for. If you list more values here then they are interpreted with an OR operator.
+	// TileTypesOnly Data filter option. List of tile types you want to limit the query for. If you list more values here then they are interpreted with an OR operator.
 	//
 	// IMPORTANT! You can not use this together with `tileTypeIsNot` parameter! You can only use this or that but not both.
 	//
 	// In the list you can either use: * The name of the type ('frontpage', 'page', 'article', ...), or * The numeric ID of the tile type - returned by `/v2/stat/webhits/{containerId}/idmappings` endpoint - using the format `id:<numeric ID>`, e.g. **"id:123"**
-	TileTypesOnly        *string                `json:"tileTypesOnly,omitempty" yaml:"tileTypesOnly,omitempty"`
+	TileTypesOnly        *[]string              `json:"tileTypesOnly,omitempty" yaml:"tileTypesOnly,omitempty"`
 	AdditionalProperties map[string]interface{} `json:"-"`
 }
 
