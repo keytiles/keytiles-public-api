@@ -833,8 +833,8 @@ components:
     DataTableDataColumn:
       type: object
       required:
-      - label
-      - index
+        - label
+        - index
       properties:
         label:
           type: string
@@ -846,8 +846,8 @@ components:
     DataTableAxisColumn:
       type: object
       required:
-      - label
-      - index
+        - label
+        - index
       properties:
         label:
           type: string

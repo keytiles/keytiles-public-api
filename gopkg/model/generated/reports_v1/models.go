@@ -116,8 +116,8 @@ type DataTable struct {
 
 // DataTableAxisColumn defines model for DataTableAxisColumn.
 type DataTableAxisColumn struct {
-	Index *int    `json:"index,omitempty" yaml:"index,omitempty"`
-	Label *string `json:"label,omitempty" yaml:"label,omitempty"`
+	Index int    `json:"index" yaml:"index"`
+	Label string `json:"label" yaml:"label"`
 }
 
 // DataTableCell defines model for DataTableCell.
@@ -134,8 +134,8 @@ type DataTableCell1 = float32
 // DataTableDataColumn defines model for DataTableDataColumn.
 type DataTableDataColumn struct {
 	CollapseFunction *string `json:"collapseFunction,omitempty" yaml:"collapseFunction,omitempty"`
-	Index            *int    `json:"index,omitempty" yaml:"index,omitempty"`
-	Label            *string `json:"label,omitempty" yaml:"label,omitempty"`
+	Index            int     `json:"index" yaml:"index"`
+	Label            string  `json:"label" yaml:"label"`
 }
 
 // DataTableRow defines model for DataTableRow.
