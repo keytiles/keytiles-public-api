@@ -104,13 +104,19 @@ const (
 
 // DataTable DataTable is the output of queries - a self contained table of data with Axis columns (optional) and >1 Data columns. Plus of course the data rows.
 type DataTable struct {
-	// Columns List of "Axis" columns. Order in array is important as the index of the entry tells the position.
-	Columns []DataTableColumn `json:"columns" yaml:"columns"`
-	Rows    *[]DataTableRow   `json:"rows,omitempty" yaml:"rows,omitempty"`
+	// AxisColumns List of "Axis" columns. The `index` is important as that tells the position in a Row. The row value of Axis columns are strings.
+	AxisColumns []DataTableAxisColumn `json:"axisColumns" yaml:"axisColumns"`
+
+	// DataColumns List of "Data" columns. The `index` is important as that tells the position in a Row. The row value of Data columns are numbers.
+	DataColumns []DataTableDataColumn `json:"dataColumns" yaml:"dataColumns"`
+
+	// Rows List of values. The position corresponds with `axisColumns` and `dataColumns` - `index` property.
+	Rows []DataTableRow `json:"rows" yaml:"rows"`
 }
 
 // DataTableAxisColumn defines model for DataTableAxisColumn.
 type DataTableAxisColumn struct {
+	Index *int    `json:"index,omitempty" yaml:"index,omitempty"`
 	Label *string `json:"label,omitempty" yaml:"label,omitempty"`
 }
 
@@ -125,14 +131,10 @@ type DataTableCell0 = string
 // DataTableCell1 defines model for .
 type DataTableCell1 = float32
 
-// DataTableColumn defines model for DataTableColumn.
-type DataTableColumn struct {
-	union json.RawMessage
-}
-
 // DataTableDataColumn defines model for DataTableDataColumn.
 type DataTableDataColumn struct {
 	CollapseFunction *string `json:"collapseFunction,omitempty" yaml:"collapseFunction,omitempty"`
+	Index            *int    `json:"index,omitempty" yaml:"index,omitempty"`
 	Label            *string `json:"label,omitempty" yaml:"label,omitempty"`
 }
 
@@ -716,44 +718,6 @@ func (t DataTableCell) MarshalJSON() ([]byte, error) {
 }
 
 func (t *DataTableCell) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsDataTableAxisColumn returns the union data inside the DataTableColumn as a DataTableAxisColumn
-func (t DataTableColumn) AsDataTableAxisColumn() (DataTableAxisColumn, error) {
-	var body DataTableAxisColumn
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromDataTableAxisColumn overwrites any union data inside the DataTableColumn as the provided DataTableAxisColumn
-func (t *DataTableColumn) FromDataTableAxisColumn(v DataTableAxisColumn) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// AsDataTableDataColumn returns the union data inside the DataTableColumn as a DataTableDataColumn
-func (t DataTableColumn) AsDataTableDataColumn() (DataTableDataColumn, error) {
-	var body DataTableDataColumn
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromDataTableDataColumn overwrites any union data inside the DataTableColumn as the provided DataTableDataColumn
-func (t *DataTableColumn) FromDataTableDataColumn(v DataTableDataColumn) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-func (t DataTableColumn) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *DataTableColumn) UnmarshalJSON(b []byte) error {
 	err := t.union.UnmarshalJSON(b)
 	return err
 }

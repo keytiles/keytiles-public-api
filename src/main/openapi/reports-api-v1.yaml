@@ -832,23 +832,27 @@ components:
 
     DataTableDataColumn:
       type: object
+      required:
+      - label
+      - index
       properties:
         label:
           type: string
+        index:
+          type: integer
         collapseFunction:
           type: string
 
     DataTableAxisColumn:
       type: object
+      required:
+      - label
+      - index
       properties:
         label:
           type: string
-
-    DataTableColumn:
-      type: object
-      oneOf:
-      - $ref: '#/components/schemas/DataTableAxisColumn'
-      - $ref: '#/components/schemas/DataTableDataColumn'
+        index:
+          type: integer
 
     DataTableCell:
       type: object
@@ -865,28 +869,25 @@ components:
       type: object
       description: DataTable is the output of queries - a self contained table of data with Axis columns (optional) and >1 Data columns. Plus of course the data rows.
       required:
-        - columns
+        - axisColumns
+        - dataColumns
+        - rows
       properties:
-        columns:
+        axisColumns:
           type: array
-          description: List of "Axis" columns. Order in array is important as the index of the entry tells the position.
+          description: List of "Axis" columns. The `index` is important as that tells the position in a Row. The row value of Axis columns are strings.
           items:
-            $ref: '#/components/schemas/DataTableColumn'
+            $ref: '#/components/schemas/DataTableAxisColumn'
           nullable: false
-
-        # axisColumns:
-        #   type: array
-        #   description: List of "Axis" columns - the index of the entry tells 
-        #   items:
-        #     $ref: '#/components/schemas/DataTableAxisColumn'
-        #   nullable: false
-        # dataColumns:
-        #   type: array
-        #   items:
-        #     $ref: '#/components/schemas/DataTableDataColumn'
-        #   nullable: false
+        dataColumns:
+          type: array
+          description: List of "Data" columns. The `index` is important as that tells the position in a Row. The row value of Data columns are numbers.
+          items:
+            $ref: '#/components/schemas/DataTableDataColumn'
+          nullable: false
         rows:
           type: array
+          description: List of values. The position corresponds with `axisColumns` and `dataColumns` - `index` property.
           items:
             $ref: '#/components/schemas/DataTableRow'
           nullable: false
