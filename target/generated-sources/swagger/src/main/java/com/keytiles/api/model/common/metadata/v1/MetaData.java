@@ -27,44 +27,44 @@ import java.io.Serializable;
 public class MetaData implements Serializable{
   private static final long serialVersionUID = 1L;
 
+  // @Generator: this array does not have default and nullable - so let's keep it on NULL then 
+  // @Generator: becomes private final - as readonly 
+  private final List<ChangelogEntry> changelog;
 
   // @Generator: becomes private - as non-nullable so we need to protect it with setter and null-check 
   private String title = null;
 
   // @Generator: becomes private - as non-nullable so we need to protect it with setter and null-check 
-  private String description = null;
-
-  // @Generator: becomes private - as non-nullable so we need to protect it with setter and null-check 
   private Integer majorVersion = null;
 
 
-  // @Generator: this array does not have default and nullable - so let's keep it on NULL then 
   // @Generator: becomes public - as nullable (no need to null-check) and not readonly 
-  @JsonProperty("changelog")
-  public List<ChangelogEntry> changelog = null;
+  @JsonProperty("description")
+  public String description = null;
 
   
   // @Generator: arg 'title': mandatory field 
-  // @Generator: arg 'description': non-nullable and does not have default value - we must enforce a non-null initial value 
+  // @Generator: arg 'changelog': private final field because it is readonly 
   // @Generator: arg 'majorVersion': mandatory field 
   @JsonCreator
-  public MetaData(@JsonProperty("title") String title, @JsonProperty("description") String description, @JsonProperty("majorVersion") Integer majorVersion) {
+  public MetaData(@JsonProperty("changelog") List<ChangelogEntry> changelog, @JsonProperty("title") String title, @JsonProperty("majorVersion") Integer majorVersion) {
     super();
     if(title == null) {
       throw new IllegalArgumentException("'title' value can not be NULL");
     }
-    if(description == null) {
-      throw new IllegalArgumentException("'description' value can not be NULL");
-    }
     if(majorVersion == null) {
       throw new IllegalArgumentException("'majorVersion' value can not be NULL");
     }
+    this.changelog = changelog;
     this.title = title;
-    this.description = description;
     this.majorVersion = majorVersion;
   }
   
   
+  @JsonProperty("changelog")
+  public List<ChangelogEntry> getChangelog() {
+    return changelog;
+  }
  
   @JsonProperty("title")
   public String getTitle() {
@@ -78,20 +78,6 @@ public class MetaData implements Serializable{
       throw new IllegalArgumentException("'title' value can not be NULL");
     }
     this.title = title;
-  }
-
-  @JsonProperty("description")
-  public String getDescription() {
-    return description;
-  }  
-
-  // @Generator: added to protect field 'description' against null-value assignment 
-  @JsonProperty("description")
-  public void setDescription(String description) {
-    if(description == null) {
-      throw new IllegalArgumentException("'description' value can not be NULL");
-    }
-    this.description = description;
   }
 
   @JsonProperty("majorVersion")
@@ -109,23 +95,6 @@ public class MetaData implements Serializable{
   }
 
 
-
-  // @Generator: builder style helper method to add values to not-readonly array field
-  public MetaData addChangelogItem(ChangelogEntry changelogItem) {
-    if (this.changelog == null) {
- 		this.changelog = new ArrayList<>();
-    }
-    this.changelog.add(changelogItem);
-    return this;
-  }
-
-  // @Generator: builder style helper method to remove values from not-readonly array field
-  public MetaData removeChangelogItem(ChangelogEntry changelogItem) {
-    if (this.changelog != null) {
-    	this.changelog.remove(changelogItem);
-    }
-    return this;
-  }
 
   @Override
   public boolean equals(java.lang.Object o) {

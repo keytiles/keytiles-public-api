@@ -38,6 +38,12 @@ public class ReportSetup implements Serializable{
   private MetaData metaData = null;
 
   // @Generator: becomes private - as non-nullable so we need to protect it with setter and null-check 
+  private Integer createdAt = null;
+
+  // @Generator: becomes private - as non-nullable so we need to protect it with setter and null-check 
+  private Boolean isDisabled = null;
+
+  // @Generator: becomes private - as non-nullable so we need to protect it with setter and null-check 
   private Integer resourceVersion = null;
 
 
@@ -51,16 +57,19 @@ public class ReportSetup implements Serializable{
   @JsonProperty("recipients")
   public ReportRecipients recipients = null;
 
+  // @Generator: this array does not have default and nullable - so let's keep it on NULL then 
   // @Generator: becomes public - as nullable (no need to null-check) and not readonly 
   @JsonProperty("queries")
-  public List<ReportQuery> queries = new ArrayList<>();
+  public List<ReportQuery> queries = null;
 
   
   // @Generator: arg 'id': mandatory field 
   // @Generator: arg 'metaData': mandatory field 
+  // @Generator: arg 'createdAt': mandatory field 
+  // @Generator: arg 'isDisabled': mandatory field 
   // @Generator: arg 'resourceVersion': mandatory field 
   @JsonCreator
-  public ReportSetup(@JsonProperty("id") String id, @JsonProperty("metaData") MetaData metaData, @JsonProperty("resourceVersion") Integer resourceVersion) {
+  public ReportSetup(@JsonProperty("id") String id, @JsonProperty("metaData") MetaData metaData, @JsonProperty("createdAt") Integer createdAt, @JsonProperty("isDisabled") Boolean isDisabled, @JsonProperty("resourceVersion") Integer resourceVersion) {
     super();
     if(id == null) {
       throw new IllegalArgumentException("'id' value can not be NULL");
@@ -68,11 +77,19 @@ public class ReportSetup implements Serializable{
     if(metaData == null) {
       throw new IllegalArgumentException("'metaData' value can not be NULL");
     }
+    if(createdAt == null) {
+      throw new IllegalArgumentException("'createdAt' value can not be NULL");
+    }
+    if(isDisabled == null) {
+      throw new IllegalArgumentException("'isDisabled' value can not be NULL");
+    }
     if(resourceVersion == null) {
       throw new IllegalArgumentException("'resourceVersion' value can not be NULL");
     }
     this.id = id;
     this.metaData = metaData;
+    this.createdAt = createdAt;
+    this.isDisabled = isDisabled;
     this.resourceVersion = resourceVersion;
   }
   
@@ -104,6 +121,34 @@ public class ReportSetup implements Serializable{
       throw new IllegalArgumentException("'metaData' value can not be NULL");
     }
     this.metaData = metaData;
+  }
+
+  @JsonProperty("createdAt")
+  public Integer getCreatedAt() {
+    return createdAt;
+  }  
+
+  // @Generator: added to protect field 'createdAt' against null-value assignment 
+  @JsonProperty("createdAt")
+  public void setCreatedAt(Integer createdAt) {
+    if(createdAt == null) {
+      throw new IllegalArgumentException("'createdAt' value can not be NULL");
+    }
+    this.createdAt = createdAt;
+  }
+
+  @JsonProperty("isDisabled")
+  public Boolean isIsDisabled() {
+    return isDisabled;
+  }  
+
+  // @Generator: added to protect field 'isDisabled' against null-value assignment 
+  @JsonProperty("isDisabled")
+  public void setIsDisabled(Boolean isDisabled) {
+    if(isDisabled == null) {
+      throw new IllegalArgumentException("'isDisabled' value can not be NULL");
+    }
+    this.isDisabled = isDisabled;
   }
 
   @JsonProperty("resourceVersion")
@@ -150,6 +195,8 @@ public class ReportSetup implements Serializable{
     ReportSetup reportSetup = (ReportSetup) o;
     return Objects.equals(this.id, reportSetup.id) &&
         Objects.equals(this.metaData, reportSetup.metaData) &&
+        Objects.equals(this.createdAt, reportSetup.createdAt) &&
+        Objects.equals(this.isDisabled, reportSetup.isDisabled) &&
         Objects.equals(this.schedule, reportSetup.schedule) &&
         Objects.equals(this.recipients, reportSetup.recipients) &&
         Objects.equals(this.queries, reportSetup.queries) &&
@@ -158,7 +205,7 @@ public class ReportSetup implements Serializable{
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, metaData, schedule, recipients, queries, resourceVersion);
+    return Objects.hash(id, metaData, createdAt, isDisabled, schedule, recipients, queries, resourceVersion);
   }
 
 
@@ -169,6 +216,8 @@ public class ReportSetup implements Serializable{
     
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    metaData: ").append(toIndentedString(metaData)).append("\n");
+    sb.append("    createdAt: ").append(toIndentedString(createdAt)).append("\n");
+    sb.append("    isDisabled: ").append(toIndentedString(isDisabled)).append("\n");
     sb.append("    schedule: ").append(toIndentedString(schedule)).append("\n");
     sb.append("    recipients: ").append(toIndentedString(recipients)).append("\n");
     sb.append("    queries: ").append(toIndentedString(queries)).append("\n");

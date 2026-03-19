@@ -19,14 +19,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.keytiles.api.model.common.metadata.v1.MetaData;
-import com.keytiles.api.model.reports.v1.ReportInstanceSection;
 import com.keytiles.api.model.reports.v1.ReportInstanceState;
-import java.util.ArrayList;
-import java.util.List;
 
 import java.io.Serializable;
 
-public class ReportInstance implements Serializable{
+public class ReportInstanceOverview implements Serializable{
   private static final long serialVersionUID = 1L;
 
   // @Generator: field refers to 'ReportInstanceState' which is 'readOnly=true' so this is inherited into this field 
@@ -40,10 +37,10 @@ public class ReportInstance implements Serializable{
   private String parentReportSetupId = null;
 
   // @Generator: becomes private - as non-nullable so we need to protect it with setter and null-check 
-  private Integer createdAt = null;
+  private MetaData metaData = null;
 
   // @Generator: becomes private - as non-nullable so we need to protect it with setter and null-check 
-  private Integer creationTookMillis = null;
+  private Integer createdAt = null;
 
   // @Generator: becomes private - as non-nullable so we need to protect it with setter and null-check 
   private Boolean isTestOnly = null;
@@ -52,35 +49,24 @@ public class ReportInstance implements Serializable{
   private Boolean wasManuallyGenerated = null;
 
   // @Generator: becomes private - as non-nullable so we need to protect it with setter and null-check 
-  private MetaData metaData = null;
-
-  // @Generator: becomes private - as non-nullable so we need to protect it with setter and null-check 
   private Integer fromTimestamp = null;
 
   // @Generator: becomes private - as non-nullable so we need to protect it with setter and null-check 
   private Integer toTimestamp = null;
 
-  // @Generator: becomes private - as non-nullable so we need to protect it with setter and null-check 
-  private List<ReportInstanceSection> sections = new ArrayList<>();
-
-  // @Generator: becomes private - as non-nullable so we need to protect it with setter and null-check 
-  private Integer resourceVersion = null;
-
 
   
   // @Generator: arg 'id': mandatory field 
   // @Generator: arg 'parentReportSetupId': mandatory field 
+  // @Generator: arg 'metaData': mandatory field 
   // @Generator: arg 'createdAt': mandatory field 
-  // @Generator: arg 'creationTookMillis': non-nullable and does not have default value - we must enforce a non-null initial value 
   // @Generator: arg 'state': private final field because it is readonly (also non-null check as not nullable) 
   // @Generator: arg 'isTestOnly': mandatory field 
   // @Generator: arg 'wasManuallyGenerated': mandatory field 
-  // @Generator: arg 'metaData': mandatory field 
   // @Generator: arg 'fromTimestamp': non-nullable and does not have default value - we must enforce a non-null initial value 
   // @Generator: arg 'toTimestamp': non-nullable and does not have default value - we must enforce a non-null initial value 
-  // @Generator: arg 'resourceVersion': mandatory field 
   @JsonCreator
-  public ReportInstance(@JsonProperty("state") ReportInstanceState state, @JsonProperty("id") String id, @JsonProperty("parentReportSetupId") String parentReportSetupId, @JsonProperty("createdAt") Integer createdAt, @JsonProperty("creationTookMillis") Integer creationTookMillis, @JsonProperty("isTestOnly") Boolean isTestOnly, @JsonProperty("wasManuallyGenerated") Boolean wasManuallyGenerated, @JsonProperty("metaData") MetaData metaData, @JsonProperty("fromTimestamp") Integer fromTimestamp, @JsonProperty("toTimestamp") Integer toTimestamp, @JsonProperty("resourceVersion") Integer resourceVersion) {
+  public ReportInstanceOverview(@JsonProperty("state") ReportInstanceState state, @JsonProperty("id") String id, @JsonProperty("parentReportSetupId") String parentReportSetupId, @JsonProperty("metaData") MetaData metaData, @JsonProperty("createdAt") Integer createdAt, @JsonProperty("isTestOnly") Boolean isTestOnly, @JsonProperty("wasManuallyGenerated") Boolean wasManuallyGenerated, @JsonProperty("fromTimestamp") Integer fromTimestamp, @JsonProperty("toTimestamp") Integer toTimestamp) {
     super();
     if(id == null) {
       throw new IllegalArgumentException("'id' value can not be NULL");
@@ -88,11 +74,11 @@ public class ReportInstance implements Serializable{
     if(parentReportSetupId == null) {
       throw new IllegalArgumentException("'parentReportSetupId' value can not be NULL");
     }
+    if(metaData == null) {
+      throw new IllegalArgumentException("'metaData' value can not be NULL");
+    }
     if(createdAt == null) {
       throw new IllegalArgumentException("'createdAt' value can not be NULL");
-    }
-    if(creationTookMillis == null) {
-      throw new IllegalArgumentException("'creationTookMillis' value can not be NULL");
     }
     if(state == null) {
       throw new IllegalArgumentException("'state' value can not be NULL");
@@ -103,29 +89,21 @@ public class ReportInstance implements Serializable{
     if(wasManuallyGenerated == null) {
       throw new IllegalArgumentException("'wasManuallyGenerated' value can not be NULL");
     }
-    if(metaData == null) {
-      throw new IllegalArgumentException("'metaData' value can not be NULL");
-    }
     if(fromTimestamp == null) {
       throw new IllegalArgumentException("'fromTimestamp' value can not be NULL");
     }
     if(toTimestamp == null) {
       throw new IllegalArgumentException("'toTimestamp' value can not be NULL");
     }
-    if(resourceVersion == null) {
-      throw new IllegalArgumentException("'resourceVersion' value can not be NULL");
-    }
     this.state = state;
     this.id = id;
     this.parentReportSetupId = parentReportSetupId;
+    this.metaData = metaData;
     this.createdAt = createdAt;
-    this.creationTookMillis = creationTookMillis;
     this.isTestOnly = isTestOnly;
     this.wasManuallyGenerated = wasManuallyGenerated;
-    this.metaData = metaData;
     this.fromTimestamp = fromTimestamp;
     this.toTimestamp = toTimestamp;
-    this.resourceVersion = resourceVersion;
   }
   
   
@@ -162,6 +140,20 @@ public class ReportInstance implements Serializable{
     this.parentReportSetupId = parentReportSetupId;
   }
 
+  @JsonProperty("metaData")
+  public MetaData getMetaData() {
+    return metaData;
+  }  
+
+  // @Generator: added to protect field 'metaData' against null-value assignment 
+  @JsonProperty("metaData")
+  public void setMetaData(MetaData metaData) {
+    if(metaData == null) {
+      throw new IllegalArgumentException("'metaData' value can not be NULL");
+    }
+    this.metaData = metaData;
+  }
+
   @JsonProperty("createdAt")
   public Integer getCreatedAt() {
     return createdAt;
@@ -174,20 +166,6 @@ public class ReportInstance implements Serializable{
       throw new IllegalArgumentException("'createdAt' value can not be NULL");
     }
     this.createdAt = createdAt;
-  }
-
-  @JsonProperty("creationTookMillis")
-  public Integer getCreationTookMillis() {
-    return creationTookMillis;
-  }  
-
-  // @Generator: added to protect field 'creationTookMillis' against null-value assignment 
-  @JsonProperty("creationTookMillis")
-  public void setCreationTookMillis(Integer creationTookMillis) {
-    if(creationTookMillis == null) {
-      throw new IllegalArgumentException("'creationTookMillis' value can not be NULL");
-    }
-    this.creationTookMillis = creationTookMillis;
   }
 
   @JsonProperty("isTestOnly")
@@ -218,20 +196,6 @@ public class ReportInstance implements Serializable{
     this.wasManuallyGenerated = wasManuallyGenerated;
   }
 
-  @JsonProperty("metaData")
-  public MetaData getMetaData() {
-    return metaData;
-  }  
-
-  // @Generator: added to protect field 'metaData' against null-value assignment 
-  @JsonProperty("metaData")
-  public void setMetaData(MetaData metaData) {
-    if(metaData == null) {
-      throw new IllegalArgumentException("'metaData' value can not be NULL");
-    }
-    this.metaData = metaData;
-  }
-
   @JsonProperty("fromTimestamp")
   public Integer getFromTimestamp() {
     return fromTimestamp;
@@ -260,52 +224,7 @@ public class ReportInstance implements Serializable{
     this.toTimestamp = toTimestamp;
   }
 
-  @JsonProperty("sections")
-  public List<ReportInstanceSection> getSections() {
-    return sections;
-  }  
 
-  // @Generator: added to protect field 'sections' against null-value assignment 
-  @JsonProperty("sections")
-  public void setSections(List<ReportInstanceSection> sections) {
-    if(sections == null) {
-      throw new IllegalArgumentException("'sections' value can not be NULL");
-    }
-    this.sections = sections;
-  }
-
-  @JsonProperty("resourceVersion")
-  public Integer getResourceVersion() {
-    return resourceVersion;
-  }  
-
-  // @Generator: added to protect field 'resourceVersion' against null-value assignment 
-  @JsonProperty("resourceVersion")
-  public void setResourceVersion(Integer resourceVersion) {
-    if(resourceVersion == null) {
-      throw new IllegalArgumentException("'resourceVersion' value can not be NULL");
-    }
-    this.resourceVersion = resourceVersion;
-  }
-
-
-
-  // @Generator: builder style helper method to add values to not-readonly array field
-  public ReportInstance addSectionsItem(ReportInstanceSection sectionsItem) {
-    if (this.sections == null) {
- 		this.sections = new ArrayList<>();
-    }
-    this.sections.add(sectionsItem);
-    return this;
-  }
-
-  // @Generator: builder style helper method to remove values from not-readonly array field
-  public ReportInstance removeSectionsItem(ReportInstanceSection sectionsItem) {
-    if (this.sections != null) {
-    	this.sections.remove(sectionsItem);
-    }
-    return this;
-  }
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -315,44 +234,38 @@ public class ReportInstance implements Serializable{
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    ReportInstance reportInstance = (ReportInstance) o;
-    return Objects.equals(this.id, reportInstance.id) &&
-        Objects.equals(this.parentReportSetupId, reportInstance.parentReportSetupId) &&
-        Objects.equals(this.createdAt, reportInstance.createdAt) &&
-        Objects.equals(this.creationTookMillis, reportInstance.creationTookMillis) &&
-        Objects.equals(this.state, reportInstance.state) &&
-        Objects.equals(this.isTestOnly, reportInstance.isTestOnly) &&
-        Objects.equals(this.wasManuallyGenerated, reportInstance.wasManuallyGenerated) &&
-        Objects.equals(this.metaData, reportInstance.metaData) &&
-        Objects.equals(this.fromTimestamp, reportInstance.fromTimestamp) &&
-        Objects.equals(this.toTimestamp, reportInstance.toTimestamp) &&
-        Objects.equals(this.sections, reportInstance.sections) &&
-        Objects.equals(this.resourceVersion, reportInstance.resourceVersion);
+    ReportInstanceOverview reportInstanceOverview = (ReportInstanceOverview) o;
+    return Objects.equals(this.id, reportInstanceOverview.id) &&
+        Objects.equals(this.parentReportSetupId, reportInstanceOverview.parentReportSetupId) &&
+        Objects.equals(this.metaData, reportInstanceOverview.metaData) &&
+        Objects.equals(this.createdAt, reportInstanceOverview.createdAt) &&
+        Objects.equals(this.state, reportInstanceOverview.state) &&
+        Objects.equals(this.isTestOnly, reportInstanceOverview.isTestOnly) &&
+        Objects.equals(this.wasManuallyGenerated, reportInstanceOverview.wasManuallyGenerated) &&
+        Objects.equals(this.fromTimestamp, reportInstanceOverview.fromTimestamp) &&
+        Objects.equals(this.toTimestamp, reportInstanceOverview.toTimestamp);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, parentReportSetupId, createdAt, creationTookMillis, state, isTestOnly, wasManuallyGenerated, metaData, fromTimestamp, toTimestamp, sections, resourceVersion);
+    return Objects.hash(id, parentReportSetupId, metaData, createdAt, state, isTestOnly, wasManuallyGenerated, fromTimestamp, toTimestamp);
   }
 
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class ReportInstance {\n");
+    sb.append("class ReportInstanceOverview {\n");
     
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    parentReportSetupId: ").append(toIndentedString(parentReportSetupId)).append("\n");
+    sb.append("    metaData: ").append(toIndentedString(metaData)).append("\n");
     sb.append("    createdAt: ").append(toIndentedString(createdAt)).append("\n");
-    sb.append("    creationTookMillis: ").append(toIndentedString(creationTookMillis)).append("\n");
     sb.append("    state: ").append(toIndentedString(state)).append("\n");
     sb.append("    isTestOnly: ").append(toIndentedString(isTestOnly)).append("\n");
     sb.append("    wasManuallyGenerated: ").append(toIndentedString(wasManuallyGenerated)).append("\n");
-    sb.append("    metaData: ").append(toIndentedString(metaData)).append("\n");
     sb.append("    fromTimestamp: ").append(toIndentedString(fromTimestamp)).append("\n");
     sb.append("    toTimestamp: ").append(toIndentedString(toTimestamp)).append("\n");
-    sb.append("    sections: ").append(toIndentedString(sections)).append("\n");
-    sb.append("    resourceVersion: ").append(toIndentedString(resourceVersion)).append("\n");
     sb.append("}");
     return sb.toString();
   }

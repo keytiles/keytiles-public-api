@@ -126,14 +126,14 @@ export type ReportQueryParameters = {
    */
     sortBy?: string[];
     performanceDescendingOrder?: boolean;
-    /** Data filter option. Comma separated list of tile types you want to limit the query for. If you list more values here then they are interpreted with an OR operator.
+    /** Data filter option. List of tile types you want to limit the query for. If you list more values here then they are interpreted with an OR operator.
     
   IMPORTANT! You can not use this together with `tileTypeIsNot` parameter! You can only use this or that but not both.
     
   In the list you can either use: * The name of the type ('frontpage', 'page', 'article', ...), or * The numeric ID of the tile type - returned by `/v2/stat/webhits/{containerId}/idmappings` endpoint - using the format `id:<numeric ID>`, e.g. **"id:123"**
    */
-    tileTypesOnly?: string;
-    /** Data filter option. Comma separated list of matchers (see below) which returns counters only for those Tiles who's tileGroupPath is matching to one of the listed matchers. So if you list more values here then they are interpreted with an OR operator.
+    tileTypesOnly?: string[];
+    /** Data filter option. List of matchers (see below) which returns counters only for those Tiles who's `tileGroupPath` is matching to one of the listed matchers. So if you list more values here then they are interpreted with an OR operator.
     
   note: if you have comma in your matcher (strange, but ok...) you can escape that with `\\` character!
     
@@ -149,7 +149,7 @@ export type ReportQueryParameters = {
     
   Well then you can use the second query value: **"/tech/mobile/\*"**. This would include *"/tech/mobile/android"*, *"/tech/mobile/ios"* but would NOT include *"/tech/mobile-rumours"* anymore - as that is not a match anymore. But we are not done yet! Please note: this would also include Tiles under *"/tech/mobile/"* group itself. Because **"/\*"** means "everything which is under this group"
    */
-    tileGroupPathMatchingOnly?: string;
+    tileGroupPathMatchingOnly?: string[];
     [key: string]: unknown;
 };
 /**
@@ -290,7 +290,7 @@ export interface ReportInstance {
     /** Tells if this report instance is a result of a test generation only or not. */
     isTestOnly: boolean;
     /** Tells if this report instance was generated manually or not. Inheritedly TRUE if `isTestOnly=true`. */
-    wasManuallyGenerated?: boolean;
+    wasManuallyGenerated: boolean;
     /** The title of the report is copied from the ReportSetup metaData when this instance was generated. As well as the description. It is good as Report setup can be changed any time.
   In case the report generation was triggered manually by someone then you find info in the history part of meta data about whom did it.
    */
@@ -323,7 +323,7 @@ export interface ReportInstanceOverview {
     /** Tells if this report instance is marked as 'test only' or not. */
     isTestOnly: boolean;
     /** Tells if this report instance was generated manually or not. Inheritedly TRUE if `isTestOnly=true`. */
-    wasManuallyGenerated?: boolean;
+    wasManuallyGenerated: boolean;
     /** Query range - starting from this timestamp. This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT
    */
     fromTimestamp?: number;

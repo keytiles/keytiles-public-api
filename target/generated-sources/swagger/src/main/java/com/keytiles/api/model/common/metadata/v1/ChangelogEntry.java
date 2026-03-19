@@ -28,32 +28,32 @@ public class ChangelogEntry implements Serializable{
   // @Generator: becomes private - as non-nullable so we need to protect it with setter and null-check 
   private Integer time = null;
 
-  // @Generator: becomes private - as non-nullable so we need to protect it with setter and null-check 
-  private String who = null;
 
-  // @Generator: becomes private - as non-nullable so we need to protect it with setter and null-check 
-  private String comment = null;
+  // @Generator: becomes public - as nullable (no need to null-check) and not readonly 
+  @JsonProperty("userId")
+  public String userId = null;
 
+  // @Generator: becomes public - as nullable (no need to null-check) and not readonly 
+  @JsonProperty("userNick")
+  public String userNick = null;
+
+  // @Generator: becomes public - as nullable (no need to null-check) and not readonly 
+  @JsonProperty("userComment")
+  public String userComment = null;
+
+  // @Generator: becomes public - as nullable (no need to null-check) and not readonly 
+  @JsonProperty("systemComment")
+  public String systemComment = null;
 
   
   // @Generator: arg 'time': mandatory field 
-  // @Generator: arg 'who': mandatory field 
-  // @Generator: arg 'comment': non-nullable and does not have default value - we must enforce a non-null initial value 
   @JsonCreator
-  public ChangelogEntry(@JsonProperty("time") Integer time, @JsonProperty("who") String who, @JsonProperty("comment") String comment) {
+  public ChangelogEntry(@JsonProperty("time") Integer time) {
     super();
     if(time == null) {
       throw new IllegalArgumentException("'time' value can not be NULL");
     }
-    if(who == null) {
-      throw new IllegalArgumentException("'who' value can not be NULL");
-    }
-    if(comment == null) {
-      throw new IllegalArgumentException("'comment' value can not be NULL");
-    }
     this.time = time;
-    this.who = who;
-    this.comment = comment;
   }
   
   
@@ -72,34 +72,6 @@ public class ChangelogEntry implements Serializable{
     this.time = time;
   }
 
-  @JsonProperty("who")
-  public String getWho() {
-    return who;
-  }  
-
-  // @Generator: added to protect field 'who' against null-value assignment 
-  @JsonProperty("who")
-  public void setWho(String who) {
-    if(who == null) {
-      throw new IllegalArgumentException("'who' value can not be NULL");
-    }
-    this.who = who;
-  }
-
-  @JsonProperty("comment")
-  public String getComment() {
-    return comment;
-  }  
-
-  // @Generator: added to protect field 'comment' against null-value assignment 
-  @JsonProperty("comment")
-  public void setComment(String comment) {
-    if(comment == null) {
-      throw new IllegalArgumentException("'comment' value can not be NULL");
-    }
-    this.comment = comment;
-  }
-
 
 
   @Override
@@ -112,13 +84,15 @@ public class ChangelogEntry implements Serializable{
     }
     ChangelogEntry changelogEntry = (ChangelogEntry) o;
     return Objects.equals(this.time, changelogEntry.time) &&
-        Objects.equals(this.who, changelogEntry.who) &&
-        Objects.equals(this.comment, changelogEntry.comment);
+        Objects.equals(this.userId, changelogEntry.userId) &&
+        Objects.equals(this.userNick, changelogEntry.userNick) &&
+        Objects.equals(this.userComment, changelogEntry.userComment) &&
+        Objects.equals(this.systemComment, changelogEntry.systemComment);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(time, who, comment);
+    return Objects.hash(time, userId, userNick, userComment, systemComment);
   }
 
 
@@ -128,8 +102,10 @@ public class ChangelogEntry implements Serializable{
     sb.append("class ChangelogEntry {\n");
     
     sb.append("    time: ").append(toIndentedString(time)).append("\n");
-    sb.append("    who: ").append(toIndentedString(who)).append("\n");
-    sb.append("    comment: ").append(toIndentedString(comment)).append("\n");
+    sb.append("    userId: ").append(toIndentedString(userId)).append("\n");
+    sb.append("    userNick: ").append(toIndentedString(userNick)).append("\n");
+    sb.append("    userComment: ").append(toIndentedString(userComment)).append("\n");
+    sb.append("    systemComment: ").append(toIndentedString(systemComment)).append("\n");
     sb.append("}");
     return sb.toString();
   }

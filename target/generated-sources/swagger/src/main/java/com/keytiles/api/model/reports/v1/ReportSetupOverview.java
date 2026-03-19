@@ -18,10 +18,12 @@ import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import com.keytiles.api.model.common.metadata.v1.MetaData;
+import com.keytiles.api.model.common.schedule.v1.Schedule;
 
 import java.io.Serializable;
 
-public class AvailableReportInstance implements Serializable{
+public class ReportSetupOverview implements Serializable{
   private static final long serialVersionUID = 1L;
 
 
@@ -29,31 +31,44 @@ public class AvailableReportInstance implements Serializable{
   private String id = null;
 
   // @Generator: becomes private - as non-nullable so we need to protect it with setter and null-check 
+  private MetaData metaData = null;
+
+  // @Generator: becomes private - as non-nullable so we need to protect it with setter and null-check 
   private Integer createdAt = null;
 
   // @Generator: becomes private - as non-nullable so we need to protect it with setter and null-check 
-  private Boolean isTestOnly = null;
+  private Boolean isDisabled = null;
 
+
+  // @Generator: field refers to 'Schedule' which is 'nullable=true' so this is inherited into this field 
+  // @Generator: becomes public - as nullable (no need to null-check) and not readonly 
+  @JsonProperty("schedule")
+  public Schedule schedule = null;
 
   
-  // @Generator: arg 'id': non-nullable and does not have default value - we must enforce a non-null initial value 
-  // @Generator: arg 'createdAt': non-nullable and does not have default value - we must enforce a non-null initial value 
-  // @Generator: arg 'isTestOnly': non-nullable and does not have default value - we must enforce a non-null initial value 
+  // @Generator: arg 'id': mandatory field 
+  // @Generator: arg 'metaData': mandatory field 
+  // @Generator: arg 'createdAt': mandatory field 
+  // @Generator: arg 'isDisabled': mandatory field 
   @JsonCreator
-  public AvailableReportInstance(@JsonProperty("id") String id, @JsonProperty("createdAt") Integer createdAt, @JsonProperty("isTestOnly") Boolean isTestOnly) {
+  public ReportSetupOverview(@JsonProperty("id") String id, @JsonProperty("metaData") MetaData metaData, @JsonProperty("createdAt") Integer createdAt, @JsonProperty("isDisabled") Boolean isDisabled) {
     super();
     if(id == null) {
       throw new IllegalArgumentException("'id' value can not be NULL");
     }
+    if(metaData == null) {
+      throw new IllegalArgumentException("'metaData' value can not be NULL");
+    }
     if(createdAt == null) {
       throw new IllegalArgumentException("'createdAt' value can not be NULL");
     }
-    if(isTestOnly == null) {
-      throw new IllegalArgumentException("'isTestOnly' value can not be NULL");
+    if(isDisabled == null) {
+      throw new IllegalArgumentException("'isDisabled' value can not be NULL");
     }
     this.id = id;
+    this.metaData = metaData;
     this.createdAt = createdAt;
-    this.isTestOnly = isTestOnly;
+    this.isDisabled = isDisabled;
   }
   
   
@@ -72,6 +87,20 @@ public class AvailableReportInstance implements Serializable{
     this.id = id;
   }
 
+  @JsonProperty("metaData")
+  public MetaData getMetaData() {
+    return metaData;
+  }  
+
+  // @Generator: added to protect field 'metaData' against null-value assignment 
+  @JsonProperty("metaData")
+  public void setMetaData(MetaData metaData) {
+    if(metaData == null) {
+      throw new IllegalArgumentException("'metaData' value can not be NULL");
+    }
+    this.metaData = metaData;
+  }
+
   @JsonProperty("createdAt")
   public Integer getCreatedAt() {
     return createdAt;
@@ -86,18 +115,18 @@ public class AvailableReportInstance implements Serializable{
     this.createdAt = createdAt;
   }
 
-  @JsonProperty("isTestOnly")
-  public Boolean isIsTestOnly() {
-    return isTestOnly;
+  @JsonProperty("isDisabled")
+  public Boolean isIsDisabled() {
+    return isDisabled;
   }  
 
-  // @Generator: added to protect field 'isTestOnly' against null-value assignment 
-  @JsonProperty("isTestOnly")
-  public void setIsTestOnly(Boolean isTestOnly) {
-    if(isTestOnly == null) {
-      throw new IllegalArgumentException("'isTestOnly' value can not be NULL");
+  // @Generator: added to protect field 'isDisabled' against null-value assignment 
+  @JsonProperty("isDisabled")
+  public void setIsDisabled(Boolean isDisabled) {
+    if(isDisabled == null) {
+      throw new IllegalArgumentException("'isDisabled' value can not be NULL");
     }
-    this.isTestOnly = isTestOnly;
+    this.isDisabled = isDisabled;
   }
 
 
@@ -110,26 +139,30 @@ public class AvailableReportInstance implements Serializable{
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    AvailableReportInstance availableReportInstance = (AvailableReportInstance) o;
-    return Objects.equals(this.id, availableReportInstance.id) &&
-        Objects.equals(this.createdAt, availableReportInstance.createdAt) &&
-        Objects.equals(this.isTestOnly, availableReportInstance.isTestOnly);
+    ReportSetupOverview reportSetupOverview = (ReportSetupOverview) o;
+    return Objects.equals(this.id, reportSetupOverview.id) &&
+        Objects.equals(this.metaData, reportSetupOverview.metaData) &&
+        Objects.equals(this.createdAt, reportSetupOverview.createdAt) &&
+        Objects.equals(this.isDisabled, reportSetupOverview.isDisabled) &&
+        Objects.equals(this.schedule, reportSetupOverview.schedule);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, createdAt, isTestOnly);
+    return Objects.hash(id, metaData, createdAt, isDisabled, schedule);
   }
 
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class AvailableReportInstance {\n");
+    sb.append("class ReportSetupOverview {\n");
     
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("    metaData: ").append(toIndentedString(metaData)).append("\n");
     sb.append("    createdAt: ").append(toIndentedString(createdAt)).append("\n");
-    sb.append("    isTestOnly: ").append(toIndentedString(isTestOnly)).append("\n");
+    sb.append("    isDisabled: ").append(toIndentedString(isDisabled)).append("\n");
+    sb.append("    schedule: ").append(toIndentedString(schedule)).append("\n");
     sb.append("}");
     return sb.toString();
   }

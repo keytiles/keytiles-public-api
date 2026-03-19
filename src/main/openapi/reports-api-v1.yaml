@@ -891,7 +891,7 @@ components:
           items:
             $ref: '#/components/schemas/DataTableRow'
           nullable: false
-          default: []
+          #default: []
 
     ReportInstanceSectionState:
       type: string
@@ -925,7 +925,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/DataTable'
-          default: []
+          #default: []
           nullable: false
         errorMessage:
           type: string

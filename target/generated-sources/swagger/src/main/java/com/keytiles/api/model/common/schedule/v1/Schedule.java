@@ -66,7 +66,7 @@ public class Schedule implements Serializable{
   private OneOfScheduleSetup setup = null;
 
   // @Generator: becomes private - as non-nullable so we need to protect it with setter and null-check 
-  private Integer tzOffset = null;
+  private String timeZoneIANAName = null;
 
   // @Generator: becomes private - as non-nullable so we need to protect it with setter and null-check 
   private Integer majorVersion = null;
@@ -75,10 +75,10 @@ public class Schedule implements Serializable{
   
   // @Generator: arg 'type': mandatory field 
   // @Generator: arg 'setup': mandatory field 
-  // @Generator: arg 'tzOffset': mandatory field 
+  // @Generator: arg 'timeZoneIANAName': mandatory field 
   // @Generator: arg 'majorVersion': mandatory field 
   @JsonCreator
-  public Schedule(@JsonProperty("type") TypeEnum type, @JsonProperty("setup") OneOfScheduleSetup setup, @JsonProperty("tzOffset") Integer tzOffset, @JsonProperty("majorVersion") Integer majorVersion) {
+  public Schedule(@JsonProperty("type") TypeEnum type, @JsonProperty("setup") OneOfScheduleSetup setup, @JsonProperty("timeZoneIANAName") String timeZoneIANAName, @JsonProperty("majorVersion") Integer majorVersion) {
     super();
     if(type == null) {
       throw new IllegalArgumentException("'type' value can not be NULL");
@@ -86,15 +86,15 @@ public class Schedule implements Serializable{
     if(setup == null) {
       throw new IllegalArgumentException("'setup' value can not be NULL");
     }
-    if(tzOffset == null) {
-      throw new IllegalArgumentException("'tzOffset' value can not be NULL");
+    if(timeZoneIANAName == null) {
+      throw new IllegalArgumentException("'timeZoneIANAName' value can not be NULL");
     }
     if(majorVersion == null) {
       throw new IllegalArgumentException("'majorVersion' value can not be NULL");
     }
     this.type = type;
     this.setup = setup;
-    this.tzOffset = tzOffset;
+    this.timeZoneIANAName = timeZoneIANAName;
     this.majorVersion = majorVersion;
   }
   
@@ -128,18 +128,18 @@ public class Schedule implements Serializable{
     this.setup = setup;
   }
 
-  @JsonProperty("tzOffset")
-  public Integer getTzOffset() {
-    return tzOffset;
+  @JsonProperty("timeZoneIANAName")
+  public String getTimeZoneIANAName() {
+    return timeZoneIANAName;
   }  
 
-  // @Generator: added to protect field 'tzOffset' against null-value assignment 
-  @JsonProperty("tzOffset")
-  public void setTzOffset(Integer tzOffset) {
-    if(tzOffset == null) {
-      throw new IllegalArgumentException("'tzOffset' value can not be NULL");
+  // @Generator: added to protect field 'timeZoneIANAName' against null-value assignment 
+  @JsonProperty("timeZoneIANAName")
+  public void setTimeZoneIANAName(String timeZoneIANAName) {
+    if(timeZoneIANAName == null) {
+      throw new IllegalArgumentException("'timeZoneIANAName' value can not be NULL");
     }
-    this.tzOffset = tzOffset;
+    this.timeZoneIANAName = timeZoneIANAName;
   }
 
   @JsonProperty("majorVersion")
@@ -169,13 +169,13 @@ public class Schedule implements Serializable{
     Schedule schedule = (Schedule) o;
     return Objects.equals(this.type, schedule.type) &&
         Objects.equals(this.setup, schedule.setup) &&
-        Objects.equals(this.tzOffset, schedule.tzOffset) &&
+        Objects.equals(this.timeZoneIANAName, schedule.timeZoneIANAName) &&
         Objects.equals(this.majorVersion, schedule.majorVersion);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(type, setup, tzOffset, majorVersion);
+    return Objects.hash(type, setup, timeZoneIANAName, majorVersion);
   }
 
 
@@ -186,7 +186,7 @@ public class Schedule implements Serializable{
     
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
     sb.append("    setup: ").append(toIndentedString(setup)).append("\n");
-    sb.append("    tzOffset: ").append(toIndentedString(tzOffset)).append("\n");
+    sb.append("    timeZoneIANAName: ").append(toIndentedString(timeZoneIANAName)).append("\n");
     sb.append("    majorVersion: ").append(toIndentedString(majorVersion)).append("\n");
     sb.append("}");
     return sb.toString();

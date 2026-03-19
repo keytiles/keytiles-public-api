@@ -12,26 +12,32 @@
 
 package com.keytiles.api.model.common.schedule.v1;
 
+import java.util.Objects;
+import java.util.Arrays;
+
+
+import java.io.Serializable;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
- * Gets or Sets OneOfMonthlyScheduleSetupDayName
+ * Name of days we can use in a monthly setup.   * &#x60;firstDay&#x60; - action is triggered on first day of the month   * &#x60;lastDay&#x60; - action is triggered on last day of the month   * weekday like &#x60;firstMon&#x60; etc - action is triggered on the first Monday of the month 
  *
- * @Generator: Keytiles Codegen generated this as merged Enum - fabricated by Codegen so not something you declared, composed from: ScheduleDayName 
  */
-public enum OneOfMonthlyScheduleSetupDayName {
-  MON("Mon"),
-  TUE("Tue"),
-  WED("Wed"),
-  THU("Thu"),
-  FRI("Fri"),
-  SAT("Sat"),
-  SUN("Sun");
+public enum MonthlyScheduleDayName {
+  FIRSTMON("firstMon"),
+  FIRSTTUE("firstTue"),
+  FIRSTWED("firstWed"),
+  FIRSTTHU("firstThu"),
+  FIRSTFRI("firstFri"),
+  FIRSTSAT("firstSat"),
+  FIRSTSUN("firstSun"),
+  FIRSTDAY("firstDay"),
+  LASTDAY("lastDay");
 
   private String value;
 
-  OneOfMonthlyScheduleSetupDayName(String value) {
+  MonthlyScheduleDayName(String value) {
     this.value = value;
   }
 
@@ -46,8 +52,8 @@ public enum OneOfMonthlyScheduleSetupDayName {
   }
 
   @JsonCreator
-  public static OneOfMonthlyScheduleSetupDayName fromValue(String input) {
-    for (OneOfMonthlyScheduleSetupDayName b : OneOfMonthlyScheduleSetupDayName.values()) {
+  public static MonthlyScheduleDayName fromValue(String input) {
+    for (MonthlyScheduleDayName b : MonthlyScheduleDayName.values()) {
       if (b.value.equals(input)) {
         return b;
       }

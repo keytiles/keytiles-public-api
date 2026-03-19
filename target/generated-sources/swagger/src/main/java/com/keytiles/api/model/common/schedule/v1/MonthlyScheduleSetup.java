@@ -18,6 +18,7 @@ import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import com.keytiles.api.model.common.schedule.v1.MonthlyScheduleDayName;
 
 import java.io.Serializable;
 
@@ -28,24 +29,22 @@ public class MonthlyScheduleSetup implements Serializable, OneOfScheduleSetup {
   // @Generator: becomes private - as non-nullable so we need to protect it with setter and null-check 
   private String triggerTime = null;
 
-  // @Generator: becomes private - as non-nullable so we need to protect it with setter and null-check 
-  private OneOfMonthlyScheduleSetupDayName dayName = null;
 
+  // @Generator: field refers to 'MonthlyScheduleDayName' which is 'nullable=true' so this is inherited into this field 
+  // @Generator: field refers to 'MonthlyScheduleDayName' which is an Enum with default value "firstDay" - this is inherited into this field 
+  // @Generator: becomes public - as nullable (no need to null-check) and not readonly 
+  @JsonProperty("dayName")
+  public MonthlyScheduleDayName dayName = MonthlyScheduleDayName.fromValue("firstDay");
 
   
   // @Generator: arg 'triggerTime': mandatory field 
-  // @Generator: arg 'dayName': non-nullable and does not have default value - we must enforce a non-null initial value 
   @JsonCreator
-  public MonthlyScheduleSetup(@JsonProperty("triggerTime") String triggerTime, @JsonProperty("dayName") OneOfMonthlyScheduleSetupDayName dayName) {
+  public MonthlyScheduleSetup(@JsonProperty("triggerTime") String triggerTime) {
     super();
     if(triggerTime == null) {
       throw new IllegalArgumentException("'triggerTime' value can not be NULL");
     }
-    if(dayName == null) {
-      throw new IllegalArgumentException("'dayName' value can not be NULL");
-    }
     this.triggerTime = triggerTime;
-    this.dayName = dayName;
   }
   
   
@@ -62,20 +61,6 @@ public class MonthlyScheduleSetup implements Serializable, OneOfScheduleSetup {
       throw new IllegalArgumentException("'triggerTime' value can not be NULL");
     }
     this.triggerTime = triggerTime;
-  }
-
-  @JsonProperty("dayName")
-  public OneOfMonthlyScheduleSetupDayName getDayName() {
-    return dayName;
-  }  
-
-  // @Generator: added to protect field 'dayName' against null-value assignment 
-  @JsonProperty("dayName")
-  public void setDayName(OneOfMonthlyScheduleSetupDayName dayName) {
-    if(dayName == null) {
-      throw new IllegalArgumentException("'dayName' value can not be NULL");
-    }
-    this.dayName = dayName;
   }
 
 

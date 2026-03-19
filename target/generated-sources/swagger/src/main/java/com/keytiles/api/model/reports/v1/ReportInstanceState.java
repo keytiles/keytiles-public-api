@@ -21,19 +21,17 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
- * Gets or Sets ReportsEndpointLocalErrorCodes
+ * It takes time for a report instance until it is fully generated. So every report instance is going through a lifecycle. This is maintained by the server. 
  *
  */
-public enum ReportsEndpointLocalErrorCodes {
-  CONTAINERID_MISSING("containerId_missing"),
-  CONTAINERID_INVALID("containerId_invalid"),
-  REPORTSETUPID_INVALID("reportSetupId_invalid"),
-  REPORTINSTANCEID_INVALID("reportInstanceId_invalid"),
-  REPORTSETUP_EXISTS("reportSetup_exists");
+public enum ReportInstanceState {
+  CREATED("created"),
+  GENERATING("generating"),
+  COMPLETE("complete");
 
   private String value;
 
-  ReportsEndpointLocalErrorCodes(String value) {
+  ReportInstanceState(String value) {
     this.value = value;
   }
 
@@ -48,8 +46,8 @@ public enum ReportsEndpointLocalErrorCodes {
   }
 
   @JsonCreator
-  public static ReportsEndpointLocalErrorCodes fromValue(String input) {
-    for (ReportsEndpointLocalErrorCodes b : ReportsEndpointLocalErrorCodes.values()) {
+  public static ReportInstanceState fromValue(String input) {
+    for (ReportInstanceState b : ReportInstanceState.values()) {
       if (b.value.equals(input)) {
         return b;
       }

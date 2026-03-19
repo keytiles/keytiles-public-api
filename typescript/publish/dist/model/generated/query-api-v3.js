@@ -39,7 +39,7 @@ If you have a high traffic website with many many Tiles (content) then you might
 Therefore you have the possibility to limit Keytiles response size by defining "send me only the top X" tiles (as most relevant info) and leave out the rest.
 Please refer to the "limit" and "threshold" parameter descriptions for more details on endpoints supporting this!
 
- * OpenAPI spec version: 3.0
+ * OpenAPI spec version: 3.1
  */
 import axios from 'axios';
 // eslint-disable-next-line @typescript-eslint/no-redeclare

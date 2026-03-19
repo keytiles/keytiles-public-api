@@ -18,7 +18,8 @@ import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import com.keytiles.api.model.reports.v1.DataTableColumn;
+import com.keytiles.api.model.reports.v1.DataTableAxisColumn;
+import com.keytiles.api.model.reports.v1.DataTableDataColumn;
 import com.keytiles.api.model.reports.v1.DataTableRow;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,37 +32,66 @@ public class DataTable implements Serializable{
 
   // @Generator: non-nullable property so Codegen applied a default empty array to it automatically because it is possible with this type 
   // @Generator: becomes private - as non-nullable so we need to protect it with setter and null-check 
-  private List<DataTableColumn> columns = new ArrayList<>();
+  private List<DataTableAxisColumn> axisColumns = new ArrayList<>();
 
+  // @Generator: non-nullable property so Codegen applied a default empty array to it automatically because it is possible with this type 
+  // @Generator: becomes private - as non-nullable so we need to protect it with setter and null-check 
+  private List<DataTableDataColumn> dataColumns = new ArrayList<>();
+
+  // @Generator: non-nullable property so Codegen applied a default empty array to it automatically because it is possible with this type 
   // @Generator: becomes private - as non-nullable so we need to protect it with setter and null-check 
   private List<DataTableRow> rows = new ArrayList<>();
 
 
   
-  // @Generator: arg 'columns': mandatory field 
+  // @Generator: arg 'axisColumns': mandatory field 
+  // @Generator: arg 'dataColumns': mandatory field 
+  // @Generator: arg 'rows': mandatory field 
   @JsonCreator
-  public DataTable(@JsonProperty("columns") List<DataTableColumn> columns) {
+  public DataTable(@JsonProperty("axisColumns") List<DataTableAxisColumn> axisColumns, @JsonProperty("dataColumns") List<DataTableDataColumn> dataColumns, @JsonProperty("rows") List<DataTableRow> rows) {
     super();
-    if(columns == null) {
-      throw new IllegalArgumentException("'columns' value can not be NULL");
+    if(axisColumns == null) {
+      throw new IllegalArgumentException("'axisColumns' value can not be NULL");
     }
-    this.columns = columns;
+    if(dataColumns == null) {
+      throw new IllegalArgumentException("'dataColumns' value can not be NULL");
+    }
+    if(rows == null) {
+      throw new IllegalArgumentException("'rows' value can not be NULL");
+    }
+    this.axisColumns = axisColumns;
+    this.dataColumns = dataColumns;
+    this.rows = rows;
   }
   
   
  
-  @JsonProperty("columns")
-  public List<DataTableColumn> getColumns() {
-    return columns;
+  @JsonProperty("axisColumns")
+  public List<DataTableAxisColumn> getAxisColumns() {
+    return axisColumns;
   }  
 
-  // @Generator: added to protect field 'columns' against null-value assignment 
-  @JsonProperty("columns")
-  public void setColumns(List<DataTableColumn> columns) {
-    if(columns == null) {
-      throw new IllegalArgumentException("'columns' value can not be NULL");
+  // @Generator: added to protect field 'axisColumns' against null-value assignment 
+  @JsonProperty("axisColumns")
+  public void setAxisColumns(List<DataTableAxisColumn> axisColumns) {
+    if(axisColumns == null) {
+      throw new IllegalArgumentException("'axisColumns' value can not be NULL");
     }
-    this.columns = columns;
+    this.axisColumns = axisColumns;
+  }
+
+  @JsonProperty("dataColumns")
+  public List<DataTableDataColumn> getDataColumns() {
+    return dataColumns;
+  }  
+
+  // @Generator: added to protect field 'dataColumns' against null-value assignment 
+  @JsonProperty("dataColumns")
+  public void setDataColumns(List<DataTableDataColumn> dataColumns) {
+    if(dataColumns == null) {
+      throw new IllegalArgumentException("'dataColumns' value can not be NULL");
+    }
+    this.dataColumns = dataColumns;
   }
 
   @JsonProperty("rows")
@@ -81,18 +111,35 @@ public class DataTable implements Serializable{
 
 
   // @Generator: builder style helper method to add values to not-readonly array field
-  public DataTable addColumnsItem(DataTableColumn columnsItem) {
-    if (this.columns == null) {
- 		this.columns = new ArrayList<>();
+  public DataTable addAxisColumnsItem(DataTableAxisColumn axisColumnsItem) {
+    if (this.axisColumns == null) {
+ 		this.axisColumns = new ArrayList<>();
     }
-    this.columns.add(columnsItem);
+    this.axisColumns.add(axisColumnsItem);
     return this;
   }
 
   // @Generator: builder style helper method to remove values from not-readonly array field
-  public DataTable removeColumnsItem(DataTableColumn columnsItem) {
-    if (this.columns != null) {
-    	this.columns.remove(columnsItem);
+  public DataTable removeAxisColumnsItem(DataTableAxisColumn axisColumnsItem) {
+    if (this.axisColumns != null) {
+    	this.axisColumns.remove(axisColumnsItem);
+    }
+    return this;
+  }
+
+  // @Generator: builder style helper method to add values to not-readonly array field
+  public DataTable addDataColumnsItem(DataTableDataColumn dataColumnsItem) {
+    if (this.dataColumns == null) {
+ 		this.dataColumns = new ArrayList<>();
+    }
+    this.dataColumns.add(dataColumnsItem);
+    return this;
+  }
+
+  // @Generator: builder style helper method to remove values from not-readonly array field
+  public DataTable removeDataColumnsItem(DataTableDataColumn dataColumnsItem) {
+    if (this.dataColumns != null) {
+    	this.dataColumns.remove(dataColumnsItem);
     }
     return this;
   }
@@ -123,13 +170,14 @@ public class DataTable implements Serializable{
       return false;
     }
     DataTable dataTable = (DataTable) o;
-    return Objects.equals(this.columns, dataTable.columns) &&
+    return Objects.equals(this.axisColumns, dataTable.axisColumns) &&
+        Objects.equals(this.dataColumns, dataTable.dataColumns) &&
         Objects.equals(this.rows, dataTable.rows);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(columns, rows);
+    return Objects.hash(axisColumns, dataColumns, rows);
   }
 
 
@@ -138,7 +186,8 @@ public class DataTable implements Serializable{
     StringBuilder sb = new StringBuilder();
     sb.append("class DataTable {\n");
     
-    sb.append("    columns: ").append(toIndentedString(columns)).append("\n");
+    sb.append("    axisColumns: ").append(toIndentedString(axisColumns)).append("\n");
+    sb.append("    dataColumns: ").append(toIndentedString(dataColumns)).append("\n");
     sb.append("    rows: ").append(toIndentedString(rows)).append("\n");
     sb.append("}");
     return sb.toString();

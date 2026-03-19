@@ -31,10 +31,11 @@ public class DailyScheduleSetup implements Serializable, OneOfScheduleSetup {
   // @Generator: becomes private - as non-nullable so we need to protect it with setter and null-check 
   private String triggerTime = null;
 
-  // @Generator: non-nullable property so Codegen applied a default empty array to it automatically because it is possible with this type 
-  // @Generator: becomes private - as non-nullable so we need to protect it with setter and null-check 
-  private List<ScheduleDayName> dayNames = new ArrayList<>();
 
+  // @Generator: this array does not have default and nullable - so let's keep it on NULL then 
+  // @Generator: becomes public - as nullable (no need to null-check) and not readonly 
+  @JsonProperty("dayNames")
+  public List<ScheduleDayName> dayNames = null;
 
   
   // @Generator: arg 'triggerTime': mandatory field 
@@ -61,20 +62,6 @@ public class DailyScheduleSetup implements Serializable, OneOfScheduleSetup {
       throw new IllegalArgumentException("'triggerTime' value can not be NULL");
     }
     this.triggerTime = triggerTime;
-  }
-
-  @JsonProperty("dayNames")
-  public List<ScheduleDayName> getDayNames() {
-    return dayNames;
-  }  
-
-  // @Generator: added to protect field 'dayNames' against null-value assignment 
-  @JsonProperty("dayNames")
-  public void setDayNames(List<ScheduleDayName> dayNames) {
-    if(dayNames == null) {
-      throw new IllegalArgumentException("'dayNames' value can not be NULL");
-    }
-    this.dayNames = dayNames;
   }
 
 

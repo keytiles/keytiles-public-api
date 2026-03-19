@@ -37,12 +37,24 @@ public class GenerateReportRequestClass implements Serializable{
   // @Generator: becomes private - as non-nullable so we need to protect it with setter and null-check 
   private Boolean skipNotifications = null;
 
+  // @Generator: becomes private - as non-nullable so we need to protect it with setter and null-check 
+  private String groupByTime = null;
+
+  // @Generator: becomes private - as non-nullable so we need to protect it with setter and null-check 
+  private String fromTimestamp = null;
+
+  // @Generator: becomes private - as non-nullable so we need to protect it with setter and null-check 
+  private String toTimestamp = null;
+
 
   
   // @Generator: arg 'isTestOnly': non-nullable and does not have default value - we must enforce a non-null initial value 
   // @Generator: arg 'skipNotifications': non-nullable and does not have default value - we must enforce a non-null initial value 
+  // @Generator: arg 'groupByTime': non-nullable and does not have default value - we must enforce a non-null initial value 
+  // @Generator: arg 'fromTimestamp': non-nullable and does not have default value - we must enforce a non-null initial value 
+  // @Generator: arg 'toTimestamp': non-nullable and does not have default value - we must enforce a non-null initial value 
   @JsonCreator
-  public GenerateReportRequestClass(@JsonProperty("isTestOnly") Boolean isTestOnly, @JsonProperty("skipNotifications") Boolean skipNotifications) {
+  public GenerateReportRequestClass(@JsonProperty("isTestOnly") Boolean isTestOnly, @JsonProperty("skipNotifications") Boolean skipNotifications, @JsonProperty("groupByTime") String groupByTime, @JsonProperty("fromTimestamp") String fromTimestamp, @JsonProperty("toTimestamp") String toTimestamp) {
     super();
     if(isTestOnly == null) {
       throw new IllegalArgumentException("'isTestOnly' value can not be NULL");
@@ -50,8 +62,20 @@ public class GenerateReportRequestClass implements Serializable{
     if(skipNotifications == null) {
       throw new IllegalArgumentException("'skipNotifications' value can not be NULL");
     }
+    if(groupByTime == null) {
+      throw new IllegalArgumentException("'groupByTime' value can not be NULL");
+    }
+    if(fromTimestamp == null) {
+      throw new IllegalArgumentException("'fromTimestamp' value can not be NULL");
+    }
+    if(toTimestamp == null) {
+      throw new IllegalArgumentException("'toTimestamp' value can not be NULL");
+    }
     this.isTestOnly = isTestOnly;
     this.skipNotifications = skipNotifications;
+    this.groupByTime = groupByTime;
+    this.fromTimestamp = fromTimestamp;
+    this.toTimestamp = toTimestamp;
   }
   
   
@@ -98,6 +122,48 @@ public class GenerateReportRequestClass implements Serializable{
     this.skipNotifications = skipNotifications;
   }
 
+  @JsonProperty("groupByTime")
+  public String getGroupByTime() {
+    return groupByTime;
+  }  
+
+  // @Generator: added to protect field 'groupByTime' against null-value assignment 
+  @JsonProperty("groupByTime")
+  public void setGroupByTime(String groupByTime) {
+    if(groupByTime == null) {
+      throw new IllegalArgumentException("'groupByTime' value can not be NULL");
+    }
+    this.groupByTime = groupByTime;
+  }
+
+  @JsonProperty("fromTimestamp")
+  public String getFromTimestamp() {
+    return fromTimestamp;
+  }  
+
+  // @Generator: added to protect field 'fromTimestamp' against null-value assignment 
+  @JsonProperty("fromTimestamp")
+  public void setFromTimestamp(String fromTimestamp) {
+    if(fromTimestamp == null) {
+      throw new IllegalArgumentException("'fromTimestamp' value can not be NULL");
+    }
+    this.fromTimestamp = fromTimestamp;
+  }
+
+  @JsonProperty("toTimestamp")
+  public String getToTimestamp() {
+    return toTimestamp;
+  }  
+
+  // @Generator: added to protect field 'toTimestamp' against null-value assignment 
+  @JsonProperty("toTimestamp")
+  public void setToTimestamp(String toTimestamp) {
+    if(toTimestamp == null) {
+      throw new IllegalArgumentException("'toTimestamp' value can not be NULL");
+    }
+    this.toTimestamp = toTimestamp;
+  }
+
 
 
   // @Generator: builder style helper method to add values to not-readonly array field
@@ -128,12 +194,15 @@ public class GenerateReportRequestClass implements Serializable{
     GenerateReportRequestClass generateReportRequestClass = (GenerateReportRequestClass) o;
     return Objects.equals(this.isTestOnly, generateReportRequestClass.isTestOnly) &&
         Objects.equals(this.executeQueryIdsOnly, generateReportRequestClass.executeQueryIdsOnly) &&
-        Objects.equals(this.skipNotifications, generateReportRequestClass.skipNotifications);
+        Objects.equals(this.skipNotifications, generateReportRequestClass.skipNotifications) &&
+        Objects.equals(this.groupByTime, generateReportRequestClass.groupByTime) &&
+        Objects.equals(this.fromTimestamp, generateReportRequestClass.fromTimestamp) &&
+        Objects.equals(this.toTimestamp, generateReportRequestClass.toTimestamp);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(isTestOnly, executeQueryIdsOnly, skipNotifications);
+    return Objects.hash(isTestOnly, executeQueryIdsOnly, skipNotifications, groupByTime, fromTimestamp, toTimestamp);
   }
 
 
@@ -145,6 +214,9 @@ public class GenerateReportRequestClass implements Serializable{
     sb.append("    isTestOnly: ").append(toIndentedString(isTestOnly)).append("\n");
     sb.append("    executeQueryIdsOnly: ").append(toIndentedString(executeQueryIdsOnly)).append("\n");
     sb.append("    skipNotifications: ").append(toIndentedString(skipNotifications)).append("\n");
+    sb.append("    groupByTime: ").append(toIndentedString(groupByTime)).append("\n");
+    sb.append("    fromTimestamp: ").append(toIndentedString(fromTimestamp)).append("\n");
+    sb.append("    toTimestamp: ").append(toIndentedString(toTimestamp)).append("\n");
     sb.append("}");
     return sb.toString();
   }

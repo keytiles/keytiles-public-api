@@ -15,65 +15,22 @@ package com.keytiles.api.model.reports.v1;
 import java.util.Objects;
 import java.util.Arrays;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonValue;
-import com.keytiles.api.model.common.types.v3.ContainerResponseV3Class;
-import com.keytiles.api.model.common.types.v3.ResponseContainerInfoV3Class;
+import com.keytiles.api.model.reports.v1.ReportSetupOverview;
 import java.util.ArrayList;
 import java.util.List;
 
 import java.io.Serializable;
 
-public class ListContainerReportSetupsResponseClass extends ContainerResponseV3Class implements Serializable{
+public class ListContainerReportSetupsResponseClass extends ArrayList<ReportSetupOverview> implements Serializable{
   private static final long serialVersionUID = 1L;
 
 
-  // @Generator: non-nullable property so Codegen applied a default empty array to it automatically because it is possible with this type 
-  // @Generator: becomes private - as non-nullable so we need to protect it with setter and null-check 
-  private List<String> reportSetupIds = new ArrayList<>();
-
 
   
-  @JsonCreator
-  public ListContainerReportSetupsResponseClass(@JsonProperty("requestReceivedAt") Integer requestReceivedAt, @JsonProperty("container") ResponseContainerInfoV3Class container) {
-    super(requestReceivedAt, container);
-  }
   
   
  
-  @JsonProperty("reportSetupIds")
-  public List<String> getReportSetupIds() {
-    return reportSetupIds;
-  }  
 
-  // @Generator: added to protect field 'reportSetupIds' against null-value assignment 
-  @JsonProperty("reportSetupIds")
-  public void setReportSetupIds(List<String> reportSetupIds) {
-    if(reportSetupIds == null) {
-      throw new IllegalArgumentException("'reportSetupIds' value can not be NULL");
-    }
-    this.reportSetupIds = reportSetupIds;
-  }
-
-
-
-  // @Generator: builder style helper method to add values to not-readonly array field
-  public ListContainerReportSetupsResponseClass addReportSetupIdsItem(String reportSetupIdsItem) {
-    if (this.reportSetupIds == null) {
- 		this.reportSetupIds = new ArrayList<>();
-    }
-    this.reportSetupIds.add(reportSetupIdsItem);
-    return this;
-  }
-
-  // @Generator: builder style helper method to remove values from not-readonly array field
-  public ListContainerReportSetupsResponseClass removeReportSetupIdsItem(String reportSetupIdsItem) {
-    if (this.reportSetupIds != null) {
-    	this.reportSetupIds.remove(reportSetupIdsItem);
-    }
-    return this;
-  }
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -83,14 +40,12 @@ public class ListContainerReportSetupsResponseClass extends ContainerResponseV3C
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    ListContainerReportSetupsResponseClass listContainerReportSetupsResponseClass = (ListContainerReportSetupsResponseClass) o;
-    return Objects.equals(this.reportSetupIds, listContainerReportSetupsResponseClass.reportSetupIds) &&
-        super.equals(o);
+    return super.equals(o);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(reportSetupIds, super.hashCode());
+    return Objects.hash(super.hashCode());
   }
 
 
@@ -99,7 +54,6 @@ public class ListContainerReportSetupsResponseClass extends ContainerResponseV3C
     StringBuilder sb = new StringBuilder();
     sb.append("class ListContainerReportSetupsResponseClass {\n");
     sb.append("    ").append(toIndentedString(super.toString())).append("\n");
-    sb.append("    reportSetupIds: ").append(toIndentedString(reportSetupIds)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -89,7 +89,8 @@ public enum ManagementEndpointErrorCodes {
   REQUESTDATA_CONTRADICTING("requestData_contradicting"),
   QUERY_LIMIT_REACHED("query_limit_reached"),
   FIELD_DEPRECATED("field_deprecated"),
-  UNDERLYING_RESOURCE_UNAVAILABLE("underlying_resource_unavailable");
+  UNDERLYING_RESOURCE_UNAVAILABLE("underlying_resource_unavailable"),
+  ALREADY_EXISTS("already_exists");
 
   private String value;
 

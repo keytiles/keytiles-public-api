@@ -18,82 +18,80 @@ import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import com.keytiles.api.model.common.types.v3.ContainerResponseV3Class;
-import com.keytiles.api.model.common.types.v3.ResponseContainerInfoV3Class;
-import com.keytiles.api.model.reports.v1.AvailableReportInstance;
+import com.keytiles.api.model.reports.v1.ReportInstanceOverview;
 import java.util.ArrayList;
 import java.util.List;
 
 import java.io.Serializable;
 
-public class ListContainerReportInstancesResponseClass extends ContainerResponseV3Class implements Serializable{
+public class ListContainerReportInstancesResponseClass implements Serializable{
   private static final long serialVersionUID = 1L;
 
 
   // @Generator: becomes private - as non-nullable so we need to protect it with setter and null-check 
-  private String ofReportSetupId = null;
+  private Integer countOfAllInstances = null;
 
   // @Generator: non-nullable property so Codegen applied a default empty array to it automatically because it is possible with this type 
   // @Generator: becomes private - as non-nullable so we need to protect it with setter and null-check 
-  private List<AvailableReportInstance> availableInstances = new ArrayList<>();
+  private List<ReportInstanceOverview> reportInstances = new ArrayList<>();
 
 
   
-  // @Generator: arg 'ofReportSetupId': non-nullable and does not have default value - we must enforce a non-null initial value 
+  // @Generator: arg 'countOfAllInstances': non-nullable and does not have default value - we must enforce a non-null initial value 
   @JsonCreator
-  public ListContainerReportInstancesResponseClass(@JsonProperty("requestReceivedAt") Integer requestReceivedAt, @JsonProperty("container") ResponseContainerInfoV3Class container, @JsonProperty("ofReportSetupId") String ofReportSetupId) {
-    super(requestReceivedAt, container);
-    if(ofReportSetupId == null) {
-      throw new IllegalArgumentException("'ofReportSetupId' value can not be NULL");
+  public ListContainerReportInstancesResponseClass(@JsonProperty("countOfAllInstances") Integer countOfAllInstances) {
+    super();
+    if(countOfAllInstances == null) {
+      throw new IllegalArgumentException("'countOfAllInstances' value can not be NULL");
     }
-    this.ofReportSetupId = ofReportSetupId;
+    this.countOfAllInstances = countOfAllInstances;
   }
   
   
  
-  @JsonProperty("ofReportSetupId")
-  public String getOfReportSetupId() {
-    return ofReportSetupId;
+  @JsonProperty("countOfAllInstances")
+  public Integer getCountOfAllInstances() {
+    return countOfAllInstances;
   }  
 
-  // @Generator: added to protect field 'ofReportSetupId' against null-value assignment 
-  @JsonProperty("ofReportSetupId")
-  public void setOfReportSetupId(String ofReportSetupId) {
-    if(ofReportSetupId == null) {
-      throw new IllegalArgumentException("'ofReportSetupId' value can not be NULL");
+  // @Generator: added to protect field 'countOfAllInstances' against null-value assignment 
+  @JsonProperty("countOfAllInstances")
+  public void setCountOfAllInstances(Integer countOfAllInstances) {
+    if(countOfAllInstances == null) {
+      throw new IllegalArgumentException("'countOfAllInstances' value can not be NULL");
     }
-    this.ofReportSetupId = ofReportSetupId;
+    this.countOfAllInstances = countOfAllInstances;
   }
 
-  @JsonProperty("availableInstances")
-  public List<AvailableReportInstance> getAvailableInstances() {
-    return availableInstances;
+  @JsonProperty("reportInstances")
+  public List<ReportInstanceOverview> getReportInstances() {
+    return reportInstances;
   }  
 
-  // @Generator: added to protect field 'availableInstances' against null-value assignment 
-  @JsonProperty("availableInstances")
-  public void setAvailableInstances(List<AvailableReportInstance> availableInstances) {
-    if(availableInstances == null) {
-      throw new IllegalArgumentException("'availableInstances' value can not be NULL");
+  // @Generator: added to protect field 'reportInstances' against null-value assignment 
+  @JsonProperty("reportInstances")
+  public void setReportInstances(List<ReportInstanceOverview> reportInstances) {
+    if(reportInstances == null) {
+      throw new IllegalArgumentException("'reportInstances' value can not be NULL");
     }
-    this.availableInstances = availableInstances;
+    this.reportInstances = reportInstances;
   }
 
 
 
   // @Generator: builder style helper method to add values to not-readonly array field
-  public ListContainerReportInstancesResponseClass addAvailableInstancesItem(AvailableReportInstance availableInstancesItem) {
-    if (this.availableInstances == null) {
- 		this.availableInstances = new ArrayList<>();
+  public ListContainerReportInstancesResponseClass addReportInstancesItem(ReportInstanceOverview reportInstancesItem) {
+    if (this.reportInstances == null) {
+ 		this.reportInstances = new ArrayList<>();
     }
-    this.availableInstances.add(availableInstancesItem);
+    this.reportInstances.add(reportInstancesItem);
     return this;
   }
 
   // @Generator: builder style helper method to remove values from not-readonly array field
-  public ListContainerReportInstancesResponseClass removeAvailableInstancesItem(AvailableReportInstance availableInstancesItem) {
-    if (this.availableInstances != null) {
-    	this.availableInstances.remove(availableInstancesItem);
+  public ListContainerReportInstancesResponseClass removeReportInstancesItem(ReportInstanceOverview reportInstancesItem) {
+    if (this.reportInstances != null) {
+    	this.reportInstances.remove(reportInstancesItem);
     }
     return this;
   }
@@ -107,14 +105,13 @@ public class ListContainerReportInstancesResponseClass extends ContainerResponse
       return false;
     }
     ListContainerReportInstancesResponseClass listContainerReportInstancesResponseClass = (ListContainerReportInstancesResponseClass) o;
-    return Objects.equals(this.ofReportSetupId, listContainerReportInstancesResponseClass.ofReportSetupId) &&
-        Objects.equals(this.availableInstances, listContainerReportInstancesResponseClass.availableInstances) &&
-        super.equals(o);
+    return Objects.equals(this.countOfAllInstances, listContainerReportInstancesResponseClass.countOfAllInstances) &&
+        Objects.equals(this.reportInstances, listContainerReportInstancesResponseClass.reportInstances);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(ofReportSetupId, availableInstances, super.hashCode());
+    return Objects.hash(countOfAllInstances, reportInstances);
   }
 
 
@@ -122,9 +119,9 @@ public class ListContainerReportInstancesResponseClass extends ContainerResponse
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class ListContainerReportInstancesResponseClass {\n");
-    sb.append("    ").append(toIndentedString(super.toString())).append("\n");
-    sb.append("    ofReportSetupId: ").append(toIndentedString(ofReportSetupId)).append("\n");
-    sb.append("    availableInstances: ").append(toIndentedString(availableInstances)).append("\n");
+    
+    sb.append("    countOfAllInstances: ").append(toIndentedString(countOfAllInstances)).append("\n");
+    sb.append("    reportInstances: ").append(toIndentedString(reportInstances)).append("\n");
     sb.append("}");
     return sb.toString();
   }

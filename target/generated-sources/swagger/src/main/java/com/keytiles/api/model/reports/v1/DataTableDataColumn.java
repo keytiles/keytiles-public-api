@@ -21,7 +21,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 import java.io.Serializable;
 
-public class DataTableDataColumn implements Serializable, OneOfDataTableColumn {
+public class DataTableDataColumn implements Serializable{
   private static final long serialVersionUID = 1L;
 
 
@@ -29,22 +29,30 @@ public class DataTableDataColumn implements Serializable, OneOfDataTableColumn {
   private String label = null;
 
   // @Generator: becomes private - as non-nullable so we need to protect it with setter and null-check 
+  private Integer index = null;
+
+  // @Generator: becomes private - as non-nullable so we need to protect it with setter and null-check 
   private String collapseFunction = null;
 
 
   
-  // @Generator: arg 'label': non-nullable and does not have default value - we must enforce a non-null initial value 
+  // @Generator: arg 'label': mandatory field 
+  // @Generator: arg 'index': mandatory field 
   // @Generator: arg 'collapseFunction': non-nullable and does not have default value - we must enforce a non-null initial value 
   @JsonCreator
-  public DataTableDataColumn(@JsonProperty("label") String label, @JsonProperty("collapseFunction") String collapseFunction) {
+  public DataTableDataColumn(@JsonProperty("label") String label, @JsonProperty("index") Integer index, @JsonProperty("collapseFunction") String collapseFunction) {
     super();
     if(label == null) {
       throw new IllegalArgumentException("'label' value can not be NULL");
+    }
+    if(index == null) {
+      throw new IllegalArgumentException("'index' value can not be NULL");
     }
     if(collapseFunction == null) {
       throw new IllegalArgumentException("'collapseFunction' value can not be NULL");
     }
     this.label = label;
+    this.index = index;
     this.collapseFunction = collapseFunction;
   }
   
@@ -62,6 +70,20 @@ public class DataTableDataColumn implements Serializable, OneOfDataTableColumn {
       throw new IllegalArgumentException("'label' value can not be NULL");
     }
     this.label = label;
+  }
+
+  @JsonProperty("index")
+  public Integer getIndex() {
+    return index;
+  }  
+
+  // @Generator: added to protect field 'index' against null-value assignment 
+  @JsonProperty("index")
+  public void setIndex(Integer index) {
+    if(index == null) {
+      throw new IllegalArgumentException("'index' value can not be NULL");
+    }
+    this.index = index;
   }
 
   @JsonProperty("collapseFunction")
@@ -90,12 +112,13 @@ public class DataTableDataColumn implements Serializable, OneOfDataTableColumn {
     }
     DataTableDataColumn dataTableDataColumn = (DataTableDataColumn) o;
     return Objects.equals(this.label, dataTableDataColumn.label) &&
+        Objects.equals(this.index, dataTableDataColumn.index) &&
         Objects.equals(this.collapseFunction, dataTableDataColumn.collapseFunction);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(label, collapseFunction);
+    return Objects.hash(label, index, collapseFunction);
   }
 
 
@@ -105,6 +128,7 @@ public class DataTableDataColumn implements Serializable, OneOfDataTableColumn {
     sb.append("class DataTableDataColumn {\n");
     
     sb.append("    label: ").append(toIndentedString(label)).append("\n");
+    sb.append("    index: ").append(toIndentedString(index)).append("\n");
     sb.append("    collapseFunction: ").append(toIndentedString(collapseFunction)).append("\n");
     sb.append("}");
     return sb.toString();

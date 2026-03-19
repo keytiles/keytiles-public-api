@@ -31,6 +31,8 @@ public enum ReportsEndpointErrorCodes {
   CONTAINERID_MISSING("containerId_missing"),
   CONTAINERID_INVALID("containerId_invalid"),
   REPORTSETUPID_INVALID("reportSetupId_invalid"),
+  REPORTINSTANCEID_INVALID("reportInstanceId_invalid"),
+  REPORTSETUP_EXISTS("reportSetup_exists"),
   URL_INVALID("url_invalid"),
   ACTIONTOKEN_INTERNALERROR("actionToken_internalError"),
   ACTIONTOKEN_MISSING("actionToken_missing"),
@@ -66,7 +68,8 @@ public enum ReportsEndpointErrorCodes {
   REQUESTDATA_CONTRADICTING("requestData_contradicting"),
   QUERY_LIMIT_REACHED("query_limit_reached"),
   FIELD_DEPRECATED("field_deprecated"),
-  UNDERLYING_RESOURCE_UNAVAILABLE("underlying_resource_unavailable");
+  UNDERLYING_RESOURCE_UNAVAILABLE("underlying_resource_unavailable"),
+  ALREADY_EXISTS("already_exists");
 
   private String value;
 

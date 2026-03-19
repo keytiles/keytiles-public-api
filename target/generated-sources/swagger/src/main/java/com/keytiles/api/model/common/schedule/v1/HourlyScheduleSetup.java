@@ -31,28 +31,25 @@ public class HourlyScheduleSetup implements Serializable, OneOfScheduleSetup {
   // @Generator: becomes private - as non-nullable so we need to protect it with setter and null-check 
   private String firstTime = null;
 
-  // @Generator: becomes private - as non-nullable so we need to protect it with setter and null-check 
-  private String untilTime = null;
 
-  // @Generator: non-nullable property so Codegen applied a default empty array to it automatically because it is possible with this type 
-  // @Generator: becomes private - as non-nullable so we need to protect it with setter and null-check 
-  private List<ScheduleDayName> dayNames = new ArrayList<>();
+  // @Generator: becomes public - as nullable (no need to null-check) and not readonly 
+  @JsonProperty("untilTime")
+  public String untilTime = null;
 
+  // @Generator: this array does not have default and nullable - so let's keep it on NULL then 
+  // @Generator: becomes public - as nullable (no need to null-check) and not readonly 
+  @JsonProperty("dayNames")
+  public List<ScheduleDayName> dayNames = null;
 
   
   // @Generator: arg 'firstTime': mandatory field 
-  // @Generator: arg 'untilTime': non-nullable and does not have default value - we must enforce a non-null initial value 
   @JsonCreator
-  public HourlyScheduleSetup(@JsonProperty("firstTime") String firstTime, @JsonProperty("untilTime") String untilTime) {
+  public HourlyScheduleSetup(@JsonProperty("firstTime") String firstTime) {
     super();
     if(firstTime == null) {
       throw new IllegalArgumentException("'firstTime' value can not be NULL");
     }
-    if(untilTime == null) {
-      throw new IllegalArgumentException("'untilTime' value can not be NULL");
-    }
     this.firstTime = firstTime;
-    this.untilTime = untilTime;
   }
   
   
@@ -69,34 +66,6 @@ public class HourlyScheduleSetup implements Serializable, OneOfScheduleSetup {
       throw new IllegalArgumentException("'firstTime' value can not be NULL");
     }
     this.firstTime = firstTime;
-  }
-
-  @JsonProperty("untilTime")
-  public String getUntilTime() {
-    return untilTime;
-  }  
-
-  // @Generator: added to protect field 'untilTime' against null-value assignment 
-  @JsonProperty("untilTime")
-  public void setUntilTime(String untilTime) {
-    if(untilTime == null) {
-      throw new IllegalArgumentException("'untilTime' value can not be NULL");
-    }
-    this.untilTime = untilTime;
-  }
-
-  @JsonProperty("dayNames")
-  public List<ScheduleDayName> getDayNames() {
-    return dayNames;
-  }  
-
-  // @Generator: added to protect field 'dayNames' against null-value assignment 
-  @JsonProperty("dayNames")
-  public void setDayNames(List<ScheduleDayName> dayNames) {
-    if(dayNames == null) {
-      throw new IllegalArgumentException("'dayNames' value can not be NULL");
-    }
-    this.dayNames = dayNames;
   }
 
 

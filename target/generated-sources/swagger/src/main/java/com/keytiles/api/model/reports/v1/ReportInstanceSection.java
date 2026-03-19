@@ -18,6 +18,7 @@ import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import com.keytiles.api.model.common.metadata.v1.MetaData;
 import com.keytiles.api.model.reports.v1.DataTable;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,59 +30,51 @@ public class ReportInstanceSection implements Serializable{
 
 
   // @Generator: becomes private - as non-nullable so we need to protect it with setter and null-check 
-  private String title = null;
+  private MetaData metaData = null;
 
-  // @Generator: becomes private - as non-nullable so we need to protect it with setter and null-check 
-  private String description = null;
-
+  // @Generator: non-nullable property so Codegen applied a default empty array to it automatically because it is possible with this type 
   // @Generator: becomes private - as non-nullable so we need to protect it with setter and null-check 
   private List<DataTable> dataTables = new ArrayList<>();
 
 
+  // @Generator: becomes public - as nullable (no need to null-check) and not readonly 
+  @JsonProperty("generationTookMillis")
+  public Integer generationTookMillis = null;
+
+  // @Generator: becomes public - as nullable (no need to null-check) and not readonly 
+  @JsonProperty("errorMessage")
+  public String errorMessage = null;
+
   
-  // @Generator: arg 'title': non-nullable and does not have default value - we must enforce a non-null initial value 
-  // @Generator: arg 'description': non-nullable and does not have default value - we must enforce a non-null initial value 
+  // @Generator: arg 'metaData': mandatory field 
+  // @Generator: arg 'dataTables': mandatory field 
   @JsonCreator
-  public ReportInstanceSection(@JsonProperty("title") String title, @JsonProperty("description") String description) {
+  public ReportInstanceSection(@JsonProperty("metaData") MetaData metaData, @JsonProperty("dataTables") List<DataTable> dataTables) {
     super();
-    if(title == null) {
-      throw new IllegalArgumentException("'title' value can not be NULL");
+    if(metaData == null) {
+      throw new IllegalArgumentException("'metaData' value can not be NULL");
     }
-    if(description == null) {
-      throw new IllegalArgumentException("'description' value can not be NULL");
+    if(dataTables == null) {
+      throw new IllegalArgumentException("'dataTables' value can not be NULL");
     }
-    this.title = title;
-    this.description = description;
+    this.metaData = metaData;
+    this.dataTables = dataTables;
   }
   
   
  
-  @JsonProperty("title")
-  public String getTitle() {
-    return title;
+  @JsonProperty("metaData")
+  public MetaData getMetaData() {
+    return metaData;
   }  
 
-  // @Generator: added to protect field 'title' against null-value assignment 
-  @JsonProperty("title")
-  public void setTitle(String title) {
-    if(title == null) {
-      throw new IllegalArgumentException("'title' value can not be NULL");
+  // @Generator: added to protect field 'metaData' against null-value assignment 
+  @JsonProperty("metaData")
+  public void setMetaData(MetaData metaData) {
+    if(metaData == null) {
+      throw new IllegalArgumentException("'metaData' value can not be NULL");
     }
-    this.title = title;
-  }
-
-  @JsonProperty("description")
-  public String getDescription() {
-    return description;
-  }  
-
-  // @Generator: added to protect field 'description' against null-value assignment 
-  @JsonProperty("description")
-  public void setDescription(String description) {
-    if(description == null) {
-      throw new IllegalArgumentException("'description' value can not be NULL");
-    }
-    this.description = description;
+    this.metaData = metaData;
   }
 
   @JsonProperty("dataTables")
@@ -126,14 +119,15 @@ public class ReportInstanceSection implements Serializable{
       return false;
     }
     ReportInstanceSection reportInstanceSection = (ReportInstanceSection) o;
-    return Objects.equals(this.title, reportInstanceSection.title) &&
-        Objects.equals(this.description, reportInstanceSection.description) &&
-        Objects.equals(this.dataTables, reportInstanceSection.dataTables);
+    return Objects.equals(this.metaData, reportInstanceSection.metaData) &&
+        Objects.equals(this.generationTookMillis, reportInstanceSection.generationTookMillis) &&
+        Objects.equals(this.dataTables, reportInstanceSection.dataTables) &&
+        Objects.equals(this.errorMessage, reportInstanceSection.errorMessage);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(title, description, dataTables);
+    return Objects.hash(metaData, generationTookMillis, dataTables, errorMessage);
   }
 
 
@@ -142,9 +136,10 @@ public class ReportInstanceSection implements Serializable{
     StringBuilder sb = new StringBuilder();
     sb.append("class ReportInstanceSection {\n");
     
-    sb.append("    title: ").append(toIndentedString(title)).append("\n");
-    sb.append("    description: ").append(toIndentedString(description)).append("\n");
+    sb.append("    metaData: ").append(toIndentedString(metaData)).append("\n");
+    sb.append("    generationTookMillis: ").append(toIndentedString(generationTookMillis)).append("\n");
     sb.append("    dataTables: ").append(toIndentedString(dataTables)).append("\n");
+    sb.append("    errorMessage: ").append(toIndentedString(errorMessage)).append("\n");
     sb.append("}");
     return sb.toString();
   }

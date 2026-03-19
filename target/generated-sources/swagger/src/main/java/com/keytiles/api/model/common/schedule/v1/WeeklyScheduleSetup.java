@@ -29,24 +29,21 @@ public class WeeklyScheduleSetup implements Serializable, OneOfScheduleSetup {
   // @Generator: becomes private - as non-nullable so we need to protect it with setter and null-check 
   private String triggerTime = null;
 
-  // @Generator: becomes private - as non-nullable so we need to protect it with setter and null-check 
-  private ScheduleDayName dayName = null;
 
+  // @Generator: field refers to 'ScheduleDayName' which is 'nullable=true' so this is inherited into this field 
+  // @Generator: becomes public - as nullable (no need to null-check) and not readonly 
+  @JsonProperty("dayName")
+  public ScheduleDayName dayName = null;
 
   
   // @Generator: arg 'triggerTime': mandatory field 
-  // @Generator: arg 'dayName': non-nullable and does not have default value - we must enforce a non-null initial value 
   @JsonCreator
-  public WeeklyScheduleSetup(@JsonProperty("triggerTime") String triggerTime, @JsonProperty("dayName") ScheduleDayName dayName) {
+  public WeeklyScheduleSetup(@JsonProperty("triggerTime") String triggerTime) {
     super();
     if(triggerTime == null) {
       throw new IllegalArgumentException("'triggerTime' value can not be NULL");
     }
-    if(dayName == null) {
-      throw new IllegalArgumentException("'dayName' value can not be NULL");
-    }
     this.triggerTime = triggerTime;
-    this.dayName = dayName;
   }
   
   
@@ -63,20 +60,6 @@ public class WeeklyScheduleSetup implements Serializable, OneOfScheduleSetup {
       throw new IllegalArgumentException("'triggerTime' value can not be NULL");
     }
     this.triggerTime = triggerTime;
-  }
-
-  @JsonProperty("dayName")
-  public ScheduleDayName getDayName() {
-    return dayName;
-  }  
-
-  // @Generator: added to protect field 'dayName' against null-value assignment 
-  @JsonProperty("dayName")
-  public void setDayName(ScheduleDayName dayName) {
-    if(dayName == null) {
-      throw new IllegalArgumentException("'dayName' value can not be NULL");
-    }
-    this.dayName = dayName;
   }
 
 

@@ -21,23 +21,31 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 import java.io.Serializable;
 
-public class DataTableAxisColumn implements Serializable, OneOfDataTableColumn {
+public class DataTableAxisColumn implements Serializable{
   private static final long serialVersionUID = 1L;
 
 
   // @Generator: becomes private - as non-nullable so we need to protect it with setter and null-check 
   private String label = null;
 
+  // @Generator: becomes private - as non-nullable so we need to protect it with setter and null-check 
+  private Integer index = null;
+
 
   
-  // @Generator: arg 'label': non-nullable and does not have default value - we must enforce a non-null initial value 
+  // @Generator: arg 'label': mandatory field 
+  // @Generator: arg 'index': mandatory field 
   @JsonCreator
-  public DataTableAxisColumn(@JsonProperty("label") String label) {
+  public DataTableAxisColumn(@JsonProperty("label") String label, @JsonProperty("index") Integer index) {
     super();
     if(label == null) {
       throw new IllegalArgumentException("'label' value can not be NULL");
     }
+    if(index == null) {
+      throw new IllegalArgumentException("'index' value can not be NULL");
+    }
     this.label = label;
+    this.index = index;
   }
   
   
@@ -56,6 +64,20 @@ public class DataTableAxisColumn implements Serializable, OneOfDataTableColumn {
     this.label = label;
   }
 
+  @JsonProperty("index")
+  public Integer getIndex() {
+    return index;
+  }  
+
+  // @Generator: added to protect field 'index' against null-value assignment 
+  @JsonProperty("index")
+  public void setIndex(Integer index) {
+    if(index == null) {
+      throw new IllegalArgumentException("'index' value can not be NULL");
+    }
+    this.index = index;
+  }
+
 
 
   @Override
@@ -67,12 +89,13 @@ public class DataTableAxisColumn implements Serializable, OneOfDataTableColumn {
       return false;
     }
     DataTableAxisColumn dataTableAxisColumn = (DataTableAxisColumn) o;
-    return Objects.equals(this.label, dataTableAxisColumn.label);
+    return Objects.equals(this.label, dataTableAxisColumn.label) &&
+        Objects.equals(this.index, dataTableAxisColumn.index);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(label);
+    return Objects.hash(label, index);
   }
 
 
@@ -82,6 +105,7 @@ public class DataTableAxisColumn implements Serializable, OneOfDataTableColumn {
     sb.append("class DataTableAxisColumn {\n");
     
     sb.append("    label: ").append(toIndentedString(label)).append("\n");
+    sb.append("    index: ").append(toIndentedString(index)).append("\n");
     sb.append("}");
     return sb.toString();
   }

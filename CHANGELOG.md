@@ -1,3 +1,9 @@
+# Release 2.1.0
+
+## New fetures
+
+- Extended idmapping related area in `query-api-v3.yaml` - now we have v3.1 there. This is introducing new query param `IncludeNotTileEventTypesAsWell` and extending `MappingRecordClass` with `meta` map.
+
 # Release 2.0.x
 
 Tweaking of "moving target" reports-api v1
