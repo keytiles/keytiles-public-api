@@ -110,6 +110,12 @@ type DataTable struct {
 	// DataColumns List of "Data" columns. The `index` is important as that tells the position in a Row. The row value of Data columns are numbers.
 	DataColumns []DataTableDataColumn `json:"dataColumns" yaml:"dataColumns"`
 
+	// DataFromTimestamp The data in the table is starting from this timestamp. This can be different from the original requested from-to query range... This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT
+	DataFromTimestamp int `json:"dataFromTimestamp" yaml:"dataFromTimestamp"`
+
+	// DataToTimestamp The data in the table is until this timestamp. This can be different from the original requested from-to query range... This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT
+	DataToTimestamp int `json:"dataToTimestamp" yaml:"dataToTimestamp"`
+
 	// Rows List of values. The position corresponds with `axisColumns` and `dataColumns` - `index` property.
 	Rows []DataTableRow `json:"rows" yaml:"rows"`
 }
@@ -222,7 +228,7 @@ type ReportInstance struct {
 	CreationTookMillis *int32 `json:"creationTookMillis,omitempty" yaml:"creationTookMillis,omitempty"`
 
 	// FromTimestamp Query range - starting from this timestamp. This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT
-	FromTimestamp *int `json:"fromTimestamp,omitempty" yaml:"fromTimestamp,omitempty"`
+	FromTimestamp int `json:"fromTimestamp" yaml:"fromTimestamp"`
 
 	// Id The unique ID of this report setup - UUID style
 	Id string `json:"id" yaml:"id"`
@@ -243,7 +249,7 @@ type ReportInstance struct {
 	State *ReportInstanceState `json:"state,omitempty" yaml:"state,omitempty"`
 
 	// ToTimestamp Query range - until this timestamp. This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT
-	ToTimestamp *int `json:"toTimestamp,omitempty" yaml:"toTimestamp,omitempty"`
+	ToTimestamp int `json:"toTimestamp" yaml:"toTimestamp"`
 
 	// WasManuallyGenerated Tells if this report instance was generated manually or not. Inheritedly TRUE if `isTestOnly=true`.
 	WasManuallyGenerated bool `json:"wasManuallyGenerated" yaml:"wasManuallyGenerated"`
@@ -311,6 +317,9 @@ type ReportQuery struct {
 
 // ReportQuery_Parameters The parameters a query plugin needs depends on the plugin. These key-value pairs provide the setup how the query plugin will generate this part of the report.
 type ReportQuery_Parameters struct {
+	// CalculatedColumns To enrich returned DataTable with calculated columns
+	CalculatedColumns *[]ReportQueryCalculatedColumn `json:"calculatedColumns,omitempty" yaml:"calculatedColumns,omitempty"`
+
 	// EventsIncluded Which event counts to include into the report? E.g. "pageview", or custom events e.g. "30 seconds passed". These will be the columns in your report. You can also construct formulas using the pure eventNames.
 	EventsIncluded *[]string `json:"eventsIncluded,omitempty" yaml:"eventsIncluded,omitempty"`
 
@@ -359,6 +368,17 @@ type ReportQuery_Parameters struct {
 	// In the list you can either use: * The name of the type ('frontpage', 'page', 'article', ...), or * The numeric ID of the tile type - returned by `/v2/stat/webhits/{containerId}/idmappings` endpoint - using the format `id:<numeric ID>`, e.g. **"id:123"**
 	TileTypesOnly        *[]string              `json:"tileTypesOnly,omitempty" yaml:"tileTypesOnly,omitempty"`
 	AdditionalProperties map[string]interface{} `json:"-"`
+}
+
+// ReportQueryCalculatedColumn It is possible to add calculated columns to the output (DataTable) using the real columns in expressions.
+type ReportQueryCalculatedColumn struct {
+	CollapseFunction *string `json:"collapseFunction,omitempty" yaml:"collapseFunction,omitempty"`
+
+	// Expression The expression to calculate the value. The returned value must be numerical or string to fit into a `DataTableCell` definition.
+	Expression *string `json:"expression,omitempty" yaml:"expression,omitempty"`
+
+	// Label The displayed name of this virtual column.
+	Label *string `json:"label,omitempty" yaml:"label,omitempty"`
 }
 
 // ReportQueryPlugin defines model for ReportQueryPlugin.
@@ -506,6 +526,14 @@ func (a *ReportQuery_Parameters) UnmarshalJSON(b []byte) error {
 		return err
 	}
 
+	if raw, found := object["calculatedColumns"]; found {
+		err = json.Unmarshal(raw, &a.CalculatedColumns)
+		if err != nil {
+			return fmt.Errorf("error reading 'calculatedColumns': %w", err)
+		}
+		delete(object, "calculatedColumns")
+	}
+
 	if raw, found := object["eventsIncluded"]; found {
 		err = json.Unmarshal(raw, &a.EventsIncluded)
 		if err != nil {
@@ -604,6 +632,13 @@ func (a *ReportQuery_Parameters) UnmarshalJSON(b []byte) error {
 func (a ReportQuery_Parameters) MarshalJSON() ([]byte, error) {
 	var err error
 	object := make(map[string]json.RawMessage)
+
+	if a.CalculatedColumns != nil {
+		object["calculatedColumns"], err = json.Marshal(a.CalculatedColumns)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'calculatedColumns': %w", err)
+		}
+	}
 
 	if a.EventsIncluded != nil {
 		object["eventsIncluded"], err = json.Marshal(a.EventsIncluded)

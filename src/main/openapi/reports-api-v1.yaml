@@ -613,6 +613,19 @@ components:
       - tagsPerformancePlugin
       - visitorBehaviorPlugin
 
+    ReportQueryCalculatedColumn:
+      type: object
+      description: It is possible to add calculated columns to the output (DataTable) using the real columns in expressions.
+      properties:
+        label:
+          type: string
+          description: The displayed name of this virtual column.
+        expression:
+          type: string
+          description: The expression to calculate the value. The returned value must be numerical or string to fit into a `DataTableCell` definition.
+        # let's add this for now - we will use it later as input of DataTableDataColumn 
+        collapseFunction:
+          type: string
 
     ReportQuery:
       description: A report can contain multiple queries. This object describes one query of those.
@@ -659,6 +672,12 @@ components:
               type: array
               items:
                 type: string
+
+            calculatedColumns:
+              description: To enrich returned DataTable with calculated columns
+              type: array
+              items:
+                $ref: "#/components/schemas/ReportQueryCalculatedColumn"
 
             groupByTiles:
               description: >
@@ -872,7 +891,19 @@ components:
         - axisColumns
         - dataColumns
         - rows
+        - dataFromTimestamp
+        - dataToTimestamp
       properties:
+        dataFromTimestamp:
+          type: integer
+          description: >
+                        The data in the table is starting from this timestamp. This can be different from the original requested from-to query range... This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT
+          example: 1657261221
+        dataToTimestamp:
+          type: integer
+          description: >
+                        The data in the table is until this timestamp. This can be different from the original requested from-to query range... This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT  
+          example: 1657261221
         axisColumns:
           type: array
           description: List of "Axis" columns. The `index` is important as that tells the position in a Row. The row value of Axis columns are strings.
@@ -947,6 +978,8 @@ components:
         - state
         - isTestOnly
         - wasManuallyGenerated
+        - fromTimestamp
+        - toTimestamp
       properties:
         id:
           type: string

@@ -132,6 +132,17 @@ export const ReportQueryPlugin = {
 } as const;
 
 /**
+ * It is possible to add calculated columns to the output (DataTable) using the real columns in expressions.
+ */
+export interface ReportQueryCalculatedColumn {
+  /** The displayed name of this virtual column. */
+  label?: string;
+  /** The expression to calculate the value. The returned value must be numerical or string to fit into a `DataTableCell` definition. */
+  expression?: string;
+  collapseFunction?: string;
+}
+
+/**
  * The parameters a query plugin needs depends on the plugin. These key-value pairs provide the setup how the query plugin will generate this part of the report.
  */
 export type ReportQueryParameters = {
@@ -145,6 +156,8 @@ export type ReportQueryParameters = {
   /** Which event counts to include into the report? E.g. "pageview", or custom events e.g. "30 seconds passed". These will be the columns in your report. You can also construct formulas using the pure eventNames.
  */
   eventsIncluded?: string[];
+  /** To enrich returned DataTable with calculated columns */
+  calculatedColumns?: ReportQueryCalculatedColumn[];
   /** If set to TRUE then you get a break-down on Tile level - otherwise just sum of the traffic of all Tiles.
  */
   groupByTiles?: boolean;
@@ -170,9 +183,7 @@ In the list you can either use: * The name of the type ('frontpage', 'page', 'ar
   tileTypesOnly?: string[];
   /** Data filter option. List of matchers (see below) which returns counters only for those Tiles who's `tileGroupPath` is matching to one of the listed matchers. So if you list more values here then they are interpreted with an OR operator.  
   
-note: if you have comma in your matcher (strange, but ok...) you can escape that with `\\` character!  
-  
-You can use the **'\*'** character to match any substring. But where and how you put this Asterisk character matters! Let us show you how through an example!
+You can use the `*` character to match any substring. But where and how you put this Asterisk character matters! Let us show you how through an example!
 Let's assume you have articles and pages (Tiles) in the following content areas:  
   
 * /auto * /tech * /tech/mobile-rumours * /tech/mobile * /tech/mobile/android * /tech/mobile/ios * /politics
@@ -268,15 +279,15 @@ export const ReportInstanceState = {
 } as const;
 
 export interface DataTableDataColumn {
-  label?: string;
+  label: string;
+  index: number;
   collapseFunction?: string;
 }
 
 export interface DataTableAxisColumn {
-  label?: string;
+  label: string;
+  index: number;
 }
-
-export type DataTableColumn = DataTableAxisColumn | DataTableDataColumn;
 
 export type DataTableCell = string | number;
 
@@ -286,12 +297,24 @@ export type DataTableRow = DataTableCell[];
  * DataTable is the output of queries - a self contained table of data with Axis columns (optional) and >1 Data columns. Plus of course the data rows.
  */
 export interface DataTable {
+  /** The data in the table is starting from this timestamp. This can be different from the original requested from-to query range... This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT
+ */
+  dataFromTimestamp: number;
+  /** The data in the table is until this timestamp. This can be different from the original requested from-to query range... This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT  
+ */
+  dataToTimestamp: number;
   /**
-   * List of "Axis" columns. Order in array is important as the index of the entry tells the position.
+   * List of "Axis" columns. The `index` is important as that tells the position in a Row. The row value of Axis columns are strings.
    */
-  columns: DataTableColumn[];
-  /** */
-  rows?: DataTableRow[];
+  axisColumns: DataTableAxisColumn[];
+  /**
+   * List of "Data" columns. The `index` is important as that tells the position in a Row. The row value of Data columns are numbers.
+   */
+  dataColumns: DataTableDataColumn[];
+  /**
+   * List of values. The position corresponds with `axisColumns` and `dataColumns` - `index` property.
+   */
+  rows: DataTableRow[];
 }
 
 /**
@@ -351,10 +374,10 @@ In case the report generation was triggered manually by someone then you find in
   metaData: MetaData;
   /** Query range - starting from this timestamp. This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT
  */
-  fromTimestamp?: number;
+  fromTimestamp: number;
   /** Query range - until this timestamp. This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT  
  */
-  toTimestamp?: number;
+  toTimestamp: number;
   /** */
   sections?: ReportInstanceSection[];
   /**
