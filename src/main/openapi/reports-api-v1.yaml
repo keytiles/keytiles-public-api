@@ -1044,6 +1044,8 @@ components:
         - state
         - isTestOnly
         - wasManuallyGenerated
+        - fromTimestamp
+        - toTimestamp
       properties:
         id:
           type: string

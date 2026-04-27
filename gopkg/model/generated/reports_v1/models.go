@@ -261,7 +261,7 @@ type ReportInstanceOverview struct {
 	CreatedAt int32 `json:"createdAt" yaml:"createdAt"`
 
 	// FromTimestamp Query range - starting from this timestamp. This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT
-	FromTimestamp *int   `json:"fromTimestamp,omitempty" yaml:"fromTimestamp,omitempty"`
+	FromTimestamp int    `json:"fromTimestamp" yaml:"fromTimestamp"`
 	Id            string `json:"id" yaml:"id"`
 
 	// IsTestOnly Tells if this report instance is marked as 'test only' or not.
@@ -276,7 +276,7 @@ type ReportInstanceOverview struct {
 	State *ReportInstanceState `json:"state,omitempty" yaml:"state,omitempty"`
 
 	// ToTimestamp Query range - until this timestamp. This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT
-	ToTimestamp *int `json:"toTimestamp,omitempty" yaml:"toTimestamp,omitempty"`
+	ToTimestamp int `json:"toTimestamp" yaml:"toTimestamp"`
 
 	// WasManuallyGenerated Tells if this report instance was generated manually or not. Inheritedly TRUE if `isTestOnly=true`.
 	WasManuallyGenerated bool `json:"wasManuallyGenerated" yaml:"wasManuallyGenerated"`

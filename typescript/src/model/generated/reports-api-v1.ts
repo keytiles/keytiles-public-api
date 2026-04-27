@@ -404,10 +404,10 @@ export interface ReportInstanceOverview {
   wasManuallyGenerated: boolean;
   /** Query range - starting from this timestamp. This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT  
  */
-  fromTimestamp?: number;
+  fromTimestamp: number;
   /** Query range - until this timestamp. This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT  
  */
-  toTimestamp?: number;
+  toTimestamp: number;
 }
 
 /**
