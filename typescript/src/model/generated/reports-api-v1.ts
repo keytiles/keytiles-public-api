@@ -135,10 +135,13 @@ export const ReportQueryPlugin = {
  * It is possible to add calculated columns to the output (DataTable) using the real columns in expressions.
  */
 export interface ReportQueryCalculatedColumn {
-  /** The displayed name of this virtual column. */
-  label?: string;
+  /** The displayed name of this virtual column.  
+  
+**IMPORTANT!** Labels should be unique within one query, acting like an ID of that column. If labels are not unique in the array that might result in errors. This is not a big restriction though as normally you should not use / have the same label of two different columns right?
+ */
+  label: string;
   /** The expression to calculate the value. The returned value must be numerical or string to fit into a `DataTableCell` definition. */
-  expression?: string;
+  expression: string;
   collapseFunction?: string;
 }
 
@@ -170,7 +173,9 @@ export type ReportQueryParameters = {
   /** Optional param. How many rows you want to display maximum? Only makes sense if 'groupByTiles=true' or 'groupByTileGroupPaths=true'. Using the 'performanceDescendingOrder' basically you can see the top performing ones, or the worst performing ones - up to you.
  */
   limit?: number;
-  /** Sort the list based on these "eventsIncluded"
+  /** Sort the list based on the values of these columns - order matter!  
+  
+The columns could be coming from event names of "eventsIncluded", or from the labels of "calculatedColumns".
  */
   sortBy?: string[];
   performanceDescendingOrder?: boolean;

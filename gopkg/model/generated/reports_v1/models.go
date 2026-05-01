@@ -139,7 +139,7 @@ type DataTableCell1 = float32
 
 // DataTableDataColumn defines model for DataTableDataColumn.
 type DataTableDataColumn struct {
-	CollapseFunction *string `json:"collapseFunction,omitempty" yaml:"collapseFunction,omitempty"`
+	CollapseFunction *string `json:"collapseFunction" yaml:"collapseFunction"`
 	Index            int     `json:"index" yaml:"index"`
 	Label            string  `json:"label" yaml:"label"`
 }
@@ -343,7 +343,9 @@ type ReportQuery_Parameters struct {
 	Limit                      *int  `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PerformanceDescendingOrder *bool `json:"performanceDescendingOrder,omitempty" yaml:"performanceDescendingOrder,omitempty"`
 
-	// SortBy Sort the list based on these "eventsIncluded"
+	// SortBy Sort the list based on the values of these columns - order matter!
+	//
+	// The columns could be coming from event names of "eventsIncluded", or from the labels of "calculatedColumns".
 	SortBy *[]string `json:"sortBy,omitempty" yaml:"sortBy,omitempty"`
 
 	// TileGroupPathMatchingOnly Data filter option. List of matchers (see below) which returns counters only for those Tiles who's `tileGroupPath` is matching to one of the listed matchers. So if you list more values here then they are interpreted with an OR operator.
@@ -372,13 +374,15 @@ type ReportQuery_Parameters struct {
 
 // ReportQueryCalculatedColumn It is possible to add calculated columns to the output (DataTable) using the real columns in expressions.
 type ReportQueryCalculatedColumn struct {
-	CollapseFunction *string `json:"collapseFunction,omitempty" yaml:"collapseFunction,omitempty"`
+	CollapseFunction *string `json:"collapseFunction" yaml:"collapseFunction"`
 
 	// Expression The expression to calculate the value. The returned value must be numerical or string to fit into a `DataTableCell` definition.
-	Expression *string `json:"expression,omitempty" yaml:"expression,omitempty"`
+	Expression string `json:"expression" yaml:"expression"`
 
 	// Label The displayed name of this virtual column.
-	Label *string `json:"label,omitempty" yaml:"label,omitempty"`
+	//
+	// **IMPORTANT!** Labels should be unique within one query, acting like an ID of that column. If labels are not unique in the array that might result in errors. This is not a big restriction though as normally you should not use / have the same label of two different columns right?
+	Label string `json:"label" yaml:"label"`
 }
 
 // ReportQueryPlugin defines model for ReportQueryPlugin.
