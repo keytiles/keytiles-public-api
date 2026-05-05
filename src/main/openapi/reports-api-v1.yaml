@@ -863,12 +863,9 @@ components:
       type: object
       required:
         - label
-        - index
       properties:
         label:
           type: string
-        index:
-          type: integer
         collapseFunction:
           type: string
           nullable: true
@@ -877,12 +874,9 @@ components:
       type: object
       required:
         - label
-        - index
       properties:
         label:
           type: string
-        index:
-          type: integer
 
     DataTableCell:
       type: object
@@ -891,6 +885,7 @@ components:
       - type: number
 
     DataTableRow:
+      description: A "row" of data.
       type: array
       items:
         $ref: '#/components/schemas/DataTableCell'
@@ -915,6 +910,10 @@ components:
           description: >
                         The data in the table is until this timestamp. This can be different from the original requested from-to query range... This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT  
           example: 1657261221
+        comment:
+          description: You can add a textual comment to this table - if this is present we display this on top of the table.
+          type: string
+          nullable: true
         axisColumns:
           type: array
           description: List of "Axis" columns. The `index` is important as that tells the position in a Row. The row value of Axis columns are strings.
@@ -929,7 +928,7 @@ components:
           nullable: false
         rows:
           type: array
-          description: List of values. The position corresponds with `axisColumns` and `dataColumns` - `index` property.
+          description: List of values. The position corresponds with `axisColumns` (in beginning of the row) and `dataColumns` followed.
           items:
             $ref: '#/components/schemas/DataTableRow'
           nullable: false

@@ -107,6 +107,9 @@ type DataTable struct {
 	// AxisColumns List of "Axis" columns. The `index` is important as that tells the position in a Row. The row value of Axis columns are strings.
 	AxisColumns []DataTableAxisColumn `json:"axisColumns" yaml:"axisColumns"`
 
+	// Comment You can add a textual comment to this table - if this is present we display this on top of the table.
+	Comment *string `json:"comment" yaml:"comment"`
+
 	// DataColumns List of "Data" columns. The `index` is important as that tells the position in a Row. The row value of Data columns are numbers.
 	DataColumns []DataTableDataColumn `json:"dataColumns" yaml:"dataColumns"`
 
@@ -116,13 +119,12 @@ type DataTable struct {
 	// DataToTimestamp The data in the table is until this timestamp. This can be different from the original requested from-to query range... This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT
 	DataToTimestamp int `json:"dataToTimestamp" yaml:"dataToTimestamp"`
 
-	// Rows List of values. The position corresponds with `axisColumns` and `dataColumns` - `index` property.
+	// Rows List of values. The position corresponds with `axisColumns` (in beginning of the row) and `dataColumns` followed.
 	Rows []DataTableRow `json:"rows" yaml:"rows"`
 }
 
 // DataTableAxisColumn defines model for DataTableAxisColumn.
 type DataTableAxisColumn struct {
-	Index int    `json:"index" yaml:"index"`
 	Label string `json:"label" yaml:"label"`
 }
 
@@ -140,11 +142,10 @@ type DataTableCell1 = float32
 // DataTableDataColumn defines model for DataTableDataColumn.
 type DataTableDataColumn struct {
 	CollapseFunction *string `json:"collapseFunction" yaml:"collapseFunction"`
-	Index            int     `json:"index" yaml:"index"`
 	Label            string  `json:"label" yaml:"label"`
 }
 
-// DataTableRow defines model for DataTableRow.
+// DataTableRow A "row" of data.
 type DataTableRow = []DataTableCell
 
 // GenerateReportRequestClass defines model for GenerateReportRequestClass.

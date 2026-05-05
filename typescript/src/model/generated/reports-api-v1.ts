@@ -142,7 +142,8 @@ export interface ReportQueryCalculatedColumn {
   label: string;
   /** The expression to calculate the value. The returned value must be numerical or string to fit into a `DataTableCell` definition. */
   expression: string;
-  collapseFunction?: string;
+  /** @nullable */
+  collapseFunction?: string | null;
 }
 
 /**
@@ -285,17 +286,19 @@ export const ReportInstanceState = {
 
 export interface DataTableDataColumn {
   label: string;
-  index: number;
-  collapseFunction?: string;
+  /** @nullable */
+  collapseFunction?: string | null;
 }
 
 export interface DataTableAxisColumn {
   label: string;
-  index: number;
 }
 
 export type DataTableCell = string | number;
 
+/**
+ * A "row" of data.
+ */
 export type DataTableRow = DataTableCell[];
 
 /**
@@ -309,6 +312,11 @@ export interface DataTable {
  */
   dataToTimestamp: number;
   /**
+   * You can add a textual comment to this table - if this is present we display this on top of the table.
+   * @nullable
+   */
+  comment?: string | null;
+  /**
    * List of "Axis" columns. The `index` is important as that tells the position in a Row. The row value of Axis columns are strings.
    */
   axisColumns: DataTableAxisColumn[];
@@ -317,7 +325,7 @@ export interface DataTable {
    */
   dataColumns: DataTableDataColumn[];
   /**
-   * List of values. The position corresponds with `axisColumns` and `dataColumns` - `index` property.
+   * List of values. The position corresponds with `axisColumns` (in beginning of the row) and `dataColumns` followed.
    */
   rows: DataTableRow[];
 }
