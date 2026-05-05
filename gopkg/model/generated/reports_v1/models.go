@@ -114,10 +114,10 @@ type DataTable struct {
 	DataColumns []DataTableDataColumn `json:"dataColumns" yaml:"dataColumns"`
 
 	// DataFromTimestamp The data in the table is starting from this timestamp. This can be different from the original requested from-to query range... This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT
-	DataFromTimestamp int `json:"dataFromTimestamp" yaml:"dataFromTimestamp"`
+	DataFromTimestamp int32 `json:"dataFromTimestamp" yaml:"dataFromTimestamp"`
 
 	// DataToTimestamp The data in the table is until this timestamp. This can be different from the original requested from-to query range... This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT
-	DataToTimestamp int `json:"dataToTimestamp" yaml:"dataToTimestamp"`
+	DataToTimestamp int32 `json:"dataToTimestamp" yaml:"dataToTimestamp"`
 
 	// Rows List of values. The position corresponds with `axisColumns` (in beginning of the row) and `dataColumns` followed.
 	Rows []DataTableRow `json:"rows" yaml:"rows"`
@@ -229,7 +229,7 @@ type ReportInstance struct {
 	CreationTookMillis *int32 `json:"creationTookMillis,omitempty" yaml:"creationTookMillis,omitempty"`
 
 	// FromTimestamp Query range - starting from this timestamp. This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT
-	FromTimestamp int `json:"fromTimestamp" yaml:"fromTimestamp"`
+	FromTimestamp int32 `json:"fromTimestamp" yaml:"fromTimestamp"`
 
 	// Id The unique ID of this report setup - UUID style
 	Id string `json:"id" yaml:"id"`
@@ -250,7 +250,7 @@ type ReportInstance struct {
 	State *ReportInstanceState `json:"state,omitempty" yaml:"state,omitempty"`
 
 	// ToTimestamp Query range - until this timestamp. This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT
-	ToTimestamp int `json:"toTimestamp" yaml:"toTimestamp"`
+	ToTimestamp int32 `json:"toTimestamp" yaml:"toTimestamp"`
 
 	// WasManuallyGenerated Tells if this report instance was generated manually or not. Inheritedly TRUE if `isTestOnly=true`.
 	WasManuallyGenerated bool `json:"wasManuallyGenerated" yaml:"wasManuallyGenerated"`
@@ -262,7 +262,7 @@ type ReportInstanceOverview struct {
 	CreatedAt int32 `json:"createdAt" yaml:"createdAt"`
 
 	// FromTimestamp Query range - starting from this timestamp. This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT
-	FromTimestamp int    `json:"fromTimestamp" yaml:"fromTimestamp"`
+	FromTimestamp int32  `json:"fromTimestamp" yaml:"fromTimestamp"`
 	Id            string `json:"id" yaml:"id"`
 
 	// IsTestOnly Tells if this report instance is marked as 'test only' or not.
@@ -277,7 +277,7 @@ type ReportInstanceOverview struct {
 	State *ReportInstanceState `json:"state,omitempty" yaml:"state,omitempty"`
 
 	// ToTimestamp Query range - until this timestamp. This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT
-	ToTimestamp int `json:"toTimestamp" yaml:"toTimestamp"`
+	ToTimestamp int32 `json:"toTimestamp" yaml:"toTimestamp"`
 
 	// WasManuallyGenerated Tells if this report instance was generated manually or not. Inheritedly TRUE if `isTestOnly=true`.
 	WasManuallyGenerated bool `json:"wasManuallyGenerated" yaml:"wasManuallyGenerated"`

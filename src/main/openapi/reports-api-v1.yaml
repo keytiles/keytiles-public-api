@@ -902,11 +902,13 @@ components:
       properties:
         dataFromTimestamp:
           type: integer
+          format: int32
           description: >
                         The data in the table is starting from this timestamp. This can be different from the original requested from-to query range... This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT
           example: 1657261221
         dataToTimestamp:
           type: integer
+          format: int32
           description: >
                         The data in the table is until this timestamp. This can be different from the original requested from-to query range... This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT  
           example: 1657261221
@@ -1023,11 +1025,13 @@ components:
           $ref: 'common-metadata-v1.yaml#/components/schemas/MetaData'
         fromTimestamp:
           type: integer
+          format: int32
           description: >
                         Query range - starting from this timestamp. This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT
           example: 1657261221
         toTimestamp:
           type: integer
+          format: int32
           description: >
                         Query range - until this timestamp. This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT  
           example: 1657261221
@@ -1081,10 +1085,12 @@ components:
           description: Tells if this report instance was generated manually or not. Inheritedly TRUE if `isTestOnly=true`.
         fromTimestamp:
           type: integer
+          format: int32
           description: >
                         Query range - starting from this timestamp. This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT  
         toTimestamp:
           type: integer
+          format: int32
           description: >
                         Query range - until this timestamp. This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT  
 
