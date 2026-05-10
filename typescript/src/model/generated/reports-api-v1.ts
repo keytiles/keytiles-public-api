@@ -160,6 +160,12 @@ export type ReportQueryParameters = {
   /** Which event counts to include into the report? E.g. "pageview", or custom events e.g. "30 seconds passed". These will be the columns in your report. You can also construct formulas using the pure eventNames.
  */
   eventsIncluded?: string[];
+  /**
+   * Which events of the above `eventsIncluded` you think most important ones? Optionally you can mark those. These can be also marked in returned DataTable.
+
+   * @nullable
+   */
+  importantEvents?: string[] | null;
   /** To enrich returned DataTable with calculated columns */
   calculatedColumns?: ReportQueryCalculatedColumn[];
   /** If set to TRUE then you get a break-down on Tile level - otherwise just sum of the traffic of all Tiles.
@@ -285,12 +291,20 @@ export const ReportInstanceState = {
 } as const;
 
 export interface DataTableDataColumn {
+  /** This identifies from where the column came, which CounterColumn(s) in the response? This field is for machine reading. */
+  id: string;
+  /** The displayed label for the user. */
   label: string;
-  /** @nullable */
-  collapseFunction?: string | null;
+  /** Helps to visually distinguish a few data columns from others by marking them important. */
+  isImportant?: boolean;
+  /** If the column is derived from `ReportQueryCalculatedColumn` then this is set to True - might help to visually distinguish these columns. */
+  isCalculated: boolean;
 }
 
 export interface DataTableAxisColumn {
+  /** This identifies from where the column came, which KeyColumn in the response? This field is for machine reading. */
+  id: string;
+  /** The displayed label for the user. */
   label: string;
 }
 

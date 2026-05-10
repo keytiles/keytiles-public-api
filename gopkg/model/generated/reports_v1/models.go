@@ -125,6 +125,10 @@ type DataTable struct {
 
 // DataTableAxisColumn defines model for DataTableAxisColumn.
 type DataTableAxisColumn struct {
+	// Id This identifies from where the column came, which KeyColumn in the response? This field is for machine reading.
+	Id string `json:"id" yaml:"id"`
+
+	// Label The displayed label for the user.
 	Label string `json:"label" yaml:"label"`
 }
 
@@ -141,8 +145,17 @@ type DataTableCell1 = float32
 
 // DataTableDataColumn defines model for DataTableDataColumn.
 type DataTableDataColumn struct {
-	CollapseFunction *string `json:"collapseFunction" yaml:"collapseFunction"`
-	Label            string  `json:"label" yaml:"label"`
+	// Id This identifies from where the column came, which CounterColumn(s) in the response? This field is for machine reading.
+	Id string `json:"id" yaml:"id"`
+
+	// IsCalculated If the column is derived from `ReportQueryCalculatedColumn` then this is set to True - might help to visually distinguish these columns.
+	IsCalculated bool `json:"isCalculated" yaml:"isCalculated"`
+
+	// IsImportant Helps to visually distinguish a few data columns from others by marking them important.
+	IsImportant *bool `json:"isImportant,omitempty" yaml:"isImportant,omitempty"`
+
+	// Label The displayed label for the user.
+	Label string `json:"label" yaml:"label"`
 }
 
 // DataTableRow A "row" of data.
@@ -339,6 +352,9 @@ type ReportQuery_Parameters struct {
 	//  * Weekly schedule: you get a daily breakdown
 	//  * Monthly schedule: you get a weekly breakdown
 	GroupByTime *bool `json:"groupByTime,omitempty" yaml:"groupByTime,omitempty"`
+
+	// ImportantEvents Which events of the above `eventsIncluded` you think most important ones? Optionally you can mark those. These can be also marked in returned DataTable.
+	ImportantEvents *[]string `json:"importantEvents" yaml:"importantEvents"`
 
 	// Limit Optional param. How many rows you want to display maximum? Only makes sense if 'groupByTiles=true' or 'groupByTileGroupPaths=true'. Using the 'performanceDescendingOrder' basically you can see the top performing ones, or the worst performing ones - up to you.
 	Limit                      *int  `json:"limit,omitempty" yaml:"limit,omitempty"`
@@ -579,6 +595,14 @@ func (a *ReportQuery_Parameters) UnmarshalJSON(b []byte) error {
 		delete(object, "groupByTime")
 	}
 
+	if raw, found := object["importantEvents"]; found {
+		err = json.Unmarshal(raw, &a.ImportantEvents)
+		if err != nil {
+			return fmt.Errorf("error reading 'importantEvents': %w", err)
+		}
+		delete(object, "importantEvents")
+	}
+
 	if raw, found := object["limit"]; found {
 		err = json.Unmarshal(raw, &a.Limit)
 		if err != nil {
@@ -677,6 +701,13 @@ func (a ReportQuery_Parameters) MarshalJSON() ([]byte, error) {
 		object["groupByTime"], err = json.Marshal(a.GroupByTime)
 		if err != nil {
 			return nil, fmt.Errorf("error marshaling 'groupByTime': %w", err)
+		}
+	}
+
+	if a.ImportantEvents != nil {
+		object["importantEvents"], err = json.Marshal(a.ImportantEvents)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'importantEvents': %w", err)
 		}
 	}
 
