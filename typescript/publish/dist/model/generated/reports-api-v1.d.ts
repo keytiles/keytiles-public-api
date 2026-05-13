@@ -97,6 +97,20 @@ export declare const ReportQueryPlugin: {
     readonly visitorBehaviorPlugin: "visitorBehaviorPlugin";
 };
 /**
+ * It is possible to add calculated columns to the output (DataTable) using the real columns in expressions.
+ */
+export interface ReportQueryCalculatedColumn {
+    /** The displayed name of this virtual column.
+    
+  **IMPORTANT!** Labels should be unique within one query, acting like an ID of that column. If labels are not unique in the array that might result in errors. This is not a big restriction though as normally you should not use / have the same label of two different columns right?
+   */
+    label: string;
+    /** The expression to calculate the value. The returned value must be numerical or string to fit into a `DataTableCell` definition. */
+    expression: string;
+    /** @nullable */
+    collapseFunction?: string | null;
+}
+/**
  * The parameters a query plugin needs depends on the plugin. These key-value pairs provide the setup how the query plugin will generate this part of the report.
  */
 export type ReportQueryParameters = {
@@ -110,6 +124,14 @@ export type ReportQueryParameters = {
     /** Which event counts to include into the report? E.g. "pageview", or custom events e.g. "30 seconds passed". These will be the columns in your report. You can also construct formulas using the pure eventNames.
    */
     eventsIncluded?: string[];
+    /**
+     * Which events of the above `eventsIncluded` you think most important ones? Optionally you can mark those. These can be also marked in returned DataTable.
+  
+     * @nullable
+     */
+    importantEvents?: string[] | null;
+    /** To enrich returned DataTable with calculated columns */
+    calculatedColumns?: ReportQueryCalculatedColumn[];
     /** If set to TRUE then you get a break-down on Tile level - otherwise just sum of the traffic of all Tiles.
    */
     groupByTiles?: boolean;
@@ -122,7 +144,9 @@ export type ReportQueryParameters = {
     /** Optional param. How many rows you want to display maximum? Only makes sense if 'groupByTiles=true' or 'groupByTileGroupPaths=true'. Using the 'performanceDescendingOrder' basically you can see the top performing ones, or the worst performing ones - up to you.
    */
     limit?: number;
-    /** Sort the list based on these "eventsIncluded"
+    /** Sort the list based on the values of these columns - order matter!
+    
+  The columns could be coming from event names of "eventsIncluded", or from the labels of "calculatedColumns".
    */
     sortBy?: string[];
     performanceDescendingOrder?: boolean;
@@ -135,9 +159,7 @@ export type ReportQueryParameters = {
     tileTypesOnly?: string[];
     /** Data filter option. List of matchers (see below) which returns counters only for those Tiles who's `tileGroupPath` is matching to one of the listed matchers. So if you list more values here then they are interpreted with an OR operator.
     
-  note: if you have comma in your matcher (strange, but ok...) you can escape that with `\\` character!
-    
-  You can use the **'\*'** character to match any substring. But where and how you put this Asterisk character matters! Let us show you how through an example!
+  You can use the `*` character to match any substring. But where and how you put this Asterisk character matters! Let us show you how through an example!
   Let's assume you have articles and pages (Tiles) in the following content areas:
     
   * /auto * /tech * /tech/mobile-rumours * /tech/mobile * /tech/mobile/android * /tech/mobile/ios * /politics
@@ -225,25 +247,53 @@ export declare const ReportInstanceState: {
     readonly complete: "complete";
 };
 export interface DataTableDataColumn {
-    label?: string;
-    collapseFunction?: string;
+    /** This identifies from where the column came, which CounterColumn(s) in the response? This field is for machine reading. */
+    id: string;
+    /** The displayed label for the user. */
+    label: string;
+    /** Helps to visually distinguish a few data columns from others by marking them important. */
+    isImportant?: boolean;
+    /** If the column is derived from `ReportQueryCalculatedColumn` then this is set to True - might help to visually distinguish these columns. */
+    isCalculated: boolean;
 }
 export interface DataTableAxisColumn {
-    label?: string;
+    /** This identifies from where the column came, which KeyColumn in the response? This field is for machine reading. */
+    id: string;
+    /** The displayed label for the user. */
+    label: string;
 }
-export type DataTableColumn = DataTableAxisColumn | DataTableDataColumn;
 export type DataTableCell = string | number;
+/**
+ * A "row" of data.
+ */
 export type DataTableRow = DataTableCell[];
 /**
  * DataTable is the output of queries - a self contained table of data with Axis columns (optional) and >1 Data columns. Plus of course the data rows.
  */
 export interface DataTable {
+    /** The data in the table is starting from this timestamp. This can be different from the original requested from-to query range... This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT
+   */
+    dataFromTimestamp: number;
+    /** The data in the table is until this timestamp. This can be different from the original requested from-to query range... This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT
+   */
+    dataToTimestamp: number;
     /**
-     * List of "Axis" columns. Order in array is important as the index of the entry tells the position.
+     * You can add a textual comment to this table - if this is present we display this on top of the table.
+     * @nullable
      */
-    columns: DataTableColumn[];
-    /** */
-    rows?: DataTableRow[];
+    comment?: string | null;
+    /**
+     * List of "Axis" columns. The `index` is important as that tells the position in a Row. The row value of Axis columns are strings.
+     */
+    axisColumns: DataTableAxisColumn[];
+    /**
+     * List of "Data" columns. The `index` is important as that tells the position in a Row. The row value of Data columns are numbers.
+     */
+    dataColumns: DataTableDataColumn[];
+    /**
+     * List of values. The position corresponds with `axisColumns` (in beginning of the row) and `dataColumns` followed.
+     */
+    rows: DataTableRow[];
 }
 /**
  * It takes time for a report until it is fully generated. Report sections are going through a lifecycle and these are their states.
@@ -297,10 +347,10 @@ export interface ReportInstance {
     metaData: MetaData;
     /** Query range - starting from this timestamp. This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT
    */
-    fromTimestamp?: number;
+    fromTimestamp: number;
     /** Query range - until this timestamp. This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT
    */
-    toTimestamp?: number;
+    toTimestamp: number;
     /** */
     sections?: ReportInstanceSection[];
     /**
@@ -326,10 +376,10 @@ export interface ReportInstanceOverview {
     wasManuallyGenerated: boolean;
     /** Query range - starting from this timestamp. This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT
    */
-    fromTimestamp?: number;
+    fromTimestamp: number;
     /** Query range - until this timestamp. This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT
    */
-    toTimestamp?: number;
+    toTimestamp: number;
 }
 /**
  * You can fine tune how the list is generated with the attributes of this request. As you see paging is supported too.

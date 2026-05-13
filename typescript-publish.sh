@@ -2,7 +2,10 @@
 
 echo "Publishing TypeScript lib..."
 
-cd typescript/publish
+cd typescript
+npm run build
+
+cd publish
 #npm publish --tag buu
 npm publish
 cd ..
