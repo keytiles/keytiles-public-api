@@ -255,6 +255,8 @@ export interface DataTableDataColumn {
     isImportant?: boolean;
     /** If the column is derived from `ReportQueryCalculatedColumn` then this is set to True - might help to visually distinguish these columns. */
     isCalculated: boolean;
+    /** If this is `isCalculated=true` columns then here is the expression which is used to calculate the value. This is basically a copy of corresponding `ReportQueryCalculatedColumn.expression` value. */
+    expression?: string;
 }
 export interface DataTableAxisColumn {
     /** This identifies from where the column came, which KeyColumn in the response? This field is for machine reading. */

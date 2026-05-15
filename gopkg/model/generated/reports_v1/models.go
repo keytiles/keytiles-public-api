@@ -145,6 +145,9 @@ type DataTableCell1 = float32
 
 // DataTableDataColumn defines model for DataTableDataColumn.
 type DataTableDataColumn struct {
+	// Expression If this is `isCalculated=true` columns then here is the expression which is used to calculate the value. This is basically a copy of corresponding `ReportQueryCalculatedColumn.expression` value.
+	Expression *string `json:"expression,omitempty" yaml:"expression,omitempty"`
+
 	// Id This identifies from where the column came, which CounterColumn(s) in the response? This field is for machine reading.
 	Id string `json:"id" yaml:"id"`
 
