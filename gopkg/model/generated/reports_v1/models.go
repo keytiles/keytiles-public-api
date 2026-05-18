@@ -359,13 +359,15 @@ type ReportQuery_Parameters struct {
 	// ImportantEvents Which events of the above `eventsIncluded` you think most important ones? Optionally you can mark those. These can be also marked in returned DataTable.
 	ImportantEvents *[]string `json:"importantEvents" yaml:"importantEvents"`
 
-	// Limit Optional param. How many rows you want to display maximum? Only makes sense if 'groupByTiles=true' or 'groupByTileGroupPaths=true'. Using the 'performanceDescendingOrder' basically you can see the top performing ones, or the worst performing ones - up to you.
-	Limit                      *int  `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PerformanceDescendingOrder *bool `json:"performanceDescendingOrder,omitempty" yaml:"performanceDescendingOrder,omitempty"`
+	// Limit Optional param. Only makes sense if 'groupByTiles=true' or 'groupByTileGroupPaths=true'. How many top-entries you want to see maximum? Using the 'performanceDescendingOrder' basically you can see the top performing ones, or the worst performing ones - up to you.
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
 
-	// SortBy Sort the list based on the values of these columns - order matter!
+	// PerformanceReverseOrder By default we order the data performance top-down order: best performers first. Unless this flag say actually we want to see worst performers first.
+	PerformanceReverseOrder *bool `json:"performanceReverseOrder,omitempty" yaml:"performanceReverseOrder,omitempty"`
+
+	// SortBy Sort the list based on the values of these columns - order matters!
 	//
-	// The columns could be coming from event names of "eventsIncluded", or from the labels of "calculatedColumns".
+	// Values referring to "eventsIncluded" or to the labels (which are IDs) of "calculatedColumns".
 	SortBy *[]string `json:"sortBy,omitempty" yaml:"sortBy,omitempty"`
 
 	// TileGroupPathMatchingOnly Data filter option. List of matchers (see below) which returns counters only for those Tiles who's `tileGroupPath` is matching to one of the listed matchers. So if you list more values here then they are interpreted with an OR operator.
@@ -614,12 +616,12 @@ func (a *ReportQuery_Parameters) UnmarshalJSON(b []byte) error {
 		delete(object, "limit")
 	}
 
-	if raw, found := object["performanceDescendingOrder"]; found {
-		err = json.Unmarshal(raw, &a.PerformanceDescendingOrder)
+	if raw, found := object["performanceReverseOrder"]; found {
+		err = json.Unmarshal(raw, &a.PerformanceReverseOrder)
 		if err != nil {
-			return fmt.Errorf("error reading 'performanceDescendingOrder': %w", err)
+			return fmt.Errorf("error reading 'performanceReverseOrder': %w", err)
 		}
-		delete(object, "performanceDescendingOrder")
+		delete(object, "performanceReverseOrder")
 	}
 
 	if raw, found := object["sortBy"]; found {
@@ -721,10 +723,10 @@ func (a ReportQuery_Parameters) MarshalJSON() ([]byte, error) {
 		}
 	}
 
-	if a.PerformanceDescendingOrder != nil {
-		object["performanceDescendingOrder"], err = json.Marshal(a.PerformanceDescendingOrder)
+	if a.PerformanceReverseOrder != nil {
+		object["performanceReverseOrder"], err = json.Marshal(a.PerformanceReverseOrder)
 		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'performanceDescendingOrder': %w", err)
+			return nil, fmt.Errorf("error marshaling 'performanceReverseOrder': %w", err)
 		}
 	}
 

@@ -712,20 +712,41 @@ components:
 
             limit:
               description: >
-                          Optional param. How many rows you want to display maximum? Only makes sense if 'groupByTiles=true' or 'groupByTileGroupPaths=true'. Using the 'performanceDescendingOrder' basically you can see the top performing ones, or the worst performing ones - up to you.
+                          Optional param. Only makes sense if 'groupByTiles=true' or 'groupByTileGroupPaths=true'. How many top-entries you want to see maximum? Using the 'performanceDescendingOrder' basically you can see the top performing ones, or the worst performing ones - up to you.
               type: integer
             sortBy:
               description: >
-                          Sort the list based on the values of these columns - order matter!  
+                          Sort the list based on the values of these columns - order matters!  
                             
-                          The columns could be coming from event names of "eventsIncluded", or from the labels of "calculatedColumns".
+                          Values referring to "eventsIncluded" or to the labels (which are IDs) of "calculatedColumns".
               type: array
               items:
                 type: string
-            performanceDescendingOrder:
+            performanceReverseOrder:
               type: boolean
-              default: true
+              default: false
+              description: 'By default we order the data performance top-down order: best performers first. Unless this flag say actually we want to see worst performers first.'
 
+            # # For the future! to decrease 1-3 values noise.
+            # filterOutThreshold:
+            #   type: string
+            #   description: > 
+            #                 It can often happen that we get lots of noise into reports because let's say out of 330 entries 300 entries appear with values of 1-3 - however we
+            #                 are talking about the volume of 100k+ values in top entries. This option helps to clean this. It works similarly like `threshold` defined
+            #                 in QueryAPI.  
+                              
+            #                 You can set
+            #                 * Absolute value like "10" - everything below this value is left out.
+            #                 * Relative percent value like "3.5%" - in this case this is relative to the maximum (or all sum? - to decide!) and if entry falls below
+            #                   this then filtered out.
+                              
+            #                 But how do we apply this? On which DataColumn if we have 5 DataColumns? Good question... This must be decided!
+            #                 Option a) user gives 1 column somehow on which this is applied. (Then we also need to add this field right?)
+            #                 Option b) we apply this on ALL DataColumns and each column votes. To filter out the entry ALL columns must vote for filter it out. But need to
+            #                 think through the consequences... Especially, what if we have calculated DataColumns? who's expression can be any...
+            # filterColumn:
+            #   type: string
+            #   description: The name of the column we apply the filter on - see comment!!
 
             tileTypesOnly:
               description: >

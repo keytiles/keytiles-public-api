@@ -141,15 +141,16 @@ export type ReportQueryParameters = {
     /** You can limit how deep you want the report to go down in the content structure. E.g. if you set it to 1 that means you get a break down only for first level.
    */
     groupByTileGroupPathMaxDepth?: number;
-    /** Optional param. How many rows you want to display maximum? Only makes sense if 'groupByTiles=true' or 'groupByTileGroupPaths=true'. Using the 'performanceDescendingOrder' basically you can see the top performing ones, or the worst performing ones - up to you.
+    /** Optional param. Only makes sense if 'groupByTiles=true' or 'groupByTileGroupPaths=true'. How many top-entries you want to see maximum? Using the 'performanceDescendingOrder' basically you can see the top performing ones, or the worst performing ones - up to you.
    */
     limit?: number;
-    /** Sort the list based on the values of these columns - order matter!
+    /** Sort the list based on the values of these columns - order matters!
     
-  The columns could be coming from event names of "eventsIncluded", or from the labels of "calculatedColumns".
+  Values referring to "eventsIncluded" or to the labels (which are IDs) of "calculatedColumns".
    */
     sortBy?: string[];
-    performanceDescendingOrder?: boolean;
+    /** By default we order the data performance top-down order: best performers first. Unless this flag say actually we want to see worst performers first. */
+    performanceReverseOrder?: boolean;
     /** Data filter option. List of tile types you want to limit the query for. If you list more values here then they are interpreted with an OR operator.
     
   IMPORTANT! You can not use this together with `tileTypeIsNot` parameter! You can only use this or that but not both.
