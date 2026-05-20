@@ -32,12 +32,9 @@ const (
 
 // Defines values for ReportQueryPlugin.
 const (
-	CampaignPerformancePlugin ReportQueryPlugin = "campaignPerformancePlugin"
-	EventCountPlugin          ReportQueryPlugin = "eventCountPlugin"
-	LinksPerformancePlugin    ReportQueryPlugin = "linksPerformancePlugin"
-	SocialPerformancePlugin   ReportQueryPlugin = "socialPerformancePlugin"
-	TagsPerformancePlugin     ReportQueryPlugin = "tagsPerformancePlugin"
-	VisitorBehaviorPlugin     ReportQueryPlugin = "visitorBehaviorPlugin"
+	CampaignPerformancePlugin      ReportQueryPlugin = "campaignPerformancePlugin"
+	EventCountPlugin               ReportQueryPlugin = "eventCountPlugin"
+	TrafficSourcePerformancePlugin ReportQueryPlugin = "trafficSourcePerformancePlugin"
 )
 
 // Defines values for ReportRecipientsRoles.
@@ -367,7 +364,7 @@ type ReportQuery_Parameters struct {
 
 	// SortBy Sort the list based on the values of these columns - order matters!
 	//
-	// Values referring to "eventsIncluded" or to the labels (which are IDs) of "calculatedColumns".
+	// Values can refer to: * "group by" columns like "tileGroupPath", "tileTitle" or "time" - if they are present because above bools are ticked on * to "eventsIncluded" you added above * or to the labels (which are IDs) of "calculatedColumns"
 	SortBy *[]string `json:"sortBy,omitempty" yaml:"sortBy,omitempty"`
 
 	// TileGroupPathMatchingOnly Data filter option. List of matchers (see below) which returns counters only for those Tiles who's `tileGroupPath` is matching to one of the listed matchers. So if you list more values here then they are interpreted with an OR operator.

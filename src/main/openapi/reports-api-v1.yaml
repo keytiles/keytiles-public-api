@@ -608,10 +608,11 @@ components:
       enum: 
       - eventCountPlugin
       - campaignPerformancePlugin
-      - socialPerformancePlugin
-      - linksPerformancePlugin
-      - tagsPerformancePlugin
-      - visitorBehaviorPlugin
+      - trafficSourcePerformancePlugin
+      #- socialPerformancePlugin
+      #- linksPerformancePlugin
+      #- tagsPerformancePlugin
+      #- visitorBehaviorPlugin
 
     ReportQueryCalculatedColumn:
       type: object
@@ -700,6 +701,7 @@ components:
                           If set to TRUE then you get a break-down on Tile level - otherwise just sum of the traffic of all Tiles.
               type: boolean
               default: false
+
             groupByTileGroupPaths:
               description: >
                           If set to TRUE then you get a break-down based on content structure (=tileGroupPath). Can not be used together with 'groupByTiles'!
@@ -718,7 +720,10 @@ components:
               description: >
                           Sort the list based on the values of these columns - order matters!  
                             
-                          Values referring to "eventsIncluded" or to the labels (which are IDs) of "calculatedColumns".
+                          Values can refer to:
+                          * "group by" columns like "tileGroupPath", "tileTitle" or "time" - if they are present because above bools are ticked on
+                          * to "eventsIncluded" you added above
+                          * or to the labels (which are IDs) of "calculatedColumns"
               type: array
               items:
                 type: string

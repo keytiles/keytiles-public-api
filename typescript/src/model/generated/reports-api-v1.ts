@@ -125,10 +125,7 @@ export type ReportQueryPlugin = typeof ReportQueryPlugin[keyof typeof ReportQuer
 export const ReportQueryPlugin = {
   eventCountPlugin: 'eventCountPlugin',
   campaignPerformancePlugin: 'campaignPerformancePlugin',
-  socialPerformancePlugin: 'socialPerformancePlugin',
-  linksPerformancePlugin: 'linksPerformancePlugin',
-  tagsPerformancePlugin: 'tagsPerformancePlugin',
-  visitorBehaviorPlugin: 'visitorBehaviorPlugin',
+  trafficSourcePerformancePlugin: 'trafficSourcePerformancePlugin',
 } as const;
 
 /**
@@ -182,7 +179,7 @@ export type ReportQueryParameters = {
   limit?: number;
   /** Sort the list based on the values of these columns - order matters!  
   
-Values referring to "eventsIncluded" or to the labels (which are IDs) of "calculatedColumns".
+Values can refer to: * "group by" columns like "tileGroupPath", "tileTitle" or "time" - if they are present because above bools are ticked on * to "eventsIncluded" you added above * or to the labels (which are IDs) of "calculatedColumns"
  */
   sortBy?: string[];
   /** By default we order the data performance top-down order: best performers first. Unless this flag say actually we want to see worst performers first. */

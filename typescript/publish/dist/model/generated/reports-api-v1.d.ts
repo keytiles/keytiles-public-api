@@ -91,10 +91,7 @@ export type ReportQueryPlugin = typeof ReportQueryPlugin[keyof typeof ReportQuer
 export declare const ReportQueryPlugin: {
     readonly eventCountPlugin: "eventCountPlugin";
     readonly campaignPerformancePlugin: "campaignPerformancePlugin";
-    readonly socialPerformancePlugin: "socialPerformancePlugin";
-    readonly linksPerformancePlugin: "linksPerformancePlugin";
-    readonly tagsPerformancePlugin: "tagsPerformancePlugin";
-    readonly visitorBehaviorPlugin: "visitorBehaviorPlugin";
+    readonly trafficSourcePerformancePlugin: "trafficSourcePerformancePlugin";
 };
 /**
  * It is possible to add calculated columns to the output (DataTable) using the real columns in expressions.
@@ -146,7 +143,7 @@ export type ReportQueryParameters = {
     limit?: number;
     /** Sort the list based on the values of these columns - order matters!
     
-  Values referring to "eventsIncluded" or to the labels (which are IDs) of "calculatedColumns".
+  Values can refer to: * "group by" columns like "tileGroupPath", "tileTitle" or "time" - if they are present because above bools are ticked on * to "eventsIncluded" you added above * or to the labels (which are IDs) of "calculatedColumns"
    */
     sortBy?: string[];
     /** By default we order the data performance top-down order: best performers first. Unless this flag say actually we want to see worst performers first. */
