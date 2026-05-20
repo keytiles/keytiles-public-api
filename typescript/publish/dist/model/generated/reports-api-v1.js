@@ -25,7 +25,7 @@ export const ReportRecipientsRoles = {
 export const ReportQueryPlugin = {
     eventCountPlugin: 'eventCountPlugin',
     campaignPerformancePlugin: 'campaignPerformancePlugin',
-    trafficSourcePerformancePlugin: 'trafficSourcePerformancePlugin',
+    referrerPerformancePlugin: 'referrerPerformancePlugin',
 };
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const ReportInstanceState = {

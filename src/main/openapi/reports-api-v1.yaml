@@ -608,11 +608,267 @@ components:
       enum: 
       - eventCountPlugin
       - campaignPerformancePlugin
-      - trafficSourcePerformancePlugin
+      - referrerPerformancePlugin
       #- socialPerformancePlugin
       #- linksPerformancePlugin
       #- tagsPerformancePlugin
       #- visitorBehaviorPlugin
+
+    ReportQueryPluginBaseParameters:
+      description: >
+                  These base parameters are needed/supported by all query plugins.  
+                  These key-value pairs provide the setup how the query plugin will generate this part of the report.
+      type: object
+      properties:
+        groupByTime:
+          description: >
+                      If set to TRUE then you get a break-down in time interval. The interval is driven by your schedule.  
+                        * Hourly schedule: you get 15 minutes break-down (or similar)
+                        * Daily schedule: you get an hourly breakdown (or similar)
+                        * Weekly schedule: you get a daily breakdown (or similar)
+                        * Monthly schedule: you get a weekly breakdown (or similar)
+          type: boolean
+        # later!
+        # groupByTimePeriod:
+        #   description: >
+        #               You can override the default period (driven by your schedule) using this option.  
+        #                 
+        #               It must make sense in terms of your schedule! What does it mean? For example if you have an Hourly schedule then you can not set up "2h" period. Does not makes any sense right?
+        #   type: string
+
+        eventsIncluded:
+          description: >
+                      Performance is always measured with events. In this field you define which event counts to include into the report.  
+                      E.g. "pageview", or custom events e.g. "30 seconds passed".  
+                      These will become the columns in your report.  
+                        
+                      **See also:** `calculatedColumns` ;-)
+          type: array
+          items:
+            type: string
+
+        importantEvents:
+          description: >
+                      Which event(s) of the above `eventsIncluded` you think most important ones? Optionally you can mark those.  
+                      DataColumns derived from these events are also marked in returned DataTable - so we can render/present them with highlight.  
+                        
+                      **Please be sane and mark 1-2 only...**
+          type: array
+          items:
+            type: string
+          nullable: true
+
+        calculatedColumns:
+          description: To enrich returned DataTable with calculated columns
+          type: array
+          items:
+            $ref: "#/components/schemas/ReportQueryCalculatedColumn"
+
+        groupByTiles:
+          description: >
+                      If set to TRUE then you get a break-down on Tile level - otherwise just sum of the traffic of all Tiles.
+          type: boolean
+          default: false
+
+        groupByTileGroupPaths:
+          description: >
+                      If set to TRUE then you get a break-down based on content structure (=tileGroupPath). Can not be used together with 'groupByTiles'!
+          type: boolean
+          default: false
+        groupByTileGroupPathMaxDepth:
+          description: >
+                      You can limit how deep you want the report to go down in the content structure. E.g. if you set it to 1 that means you get a break down only for first level.
+          type: integer
+
+        limit:
+          description: >
+                      Optional param. Only makes sense if 'groupByTiles=true' or 'groupByTileGroupPaths=true'. How many top-entries you want to see maximum? Using the 'performanceDescendingOrder' basically you can see the top performing ones, or the worst performing ones - up to you.
+          type: integer
+        sortBy:
+          description: >
+                      Sort the list based on the values of these columns - order matters!  
+                        
+                      Values can refer to:
+                      * "group by" columns like "tileGroupPath", "tileTitle" or "time" - if they are present because above bools are ticked on
+                      * to "eventsIncluded" you added above
+                      * or to the labels (which are IDs) of "calculatedColumns"
+          type: array
+          items:
+            type: string
+        performanceReverseOrder:
+          type: boolean
+          default: false
+          description: 'By default we order the data performance top-down order: best performers first. Unless this flag say actually we want to see worst performers first.'
+
+        # # For the future! to decrease 1-3 values noise.
+        # filterOutThreshold:
+        #   type: string
+        #   description: > 
+        #                 It can often happen that we get lots of noise into reports because let's say out of 330 entries 300 entries appear with values of 1-3 - however we
+        #                 are talking about the volume of 100k+ values in top entries. This option helps to clean this. It works similarly like `threshold` defined
+        #                 in QueryAPI.  
+                          
+        #                 You can set
+        #                 * Absolute value like "10" - everything below this value is left out.
+        #                 * Relative percent value like "3.5%" - in this case this is relative to the maximum (or all sum? - to decide!) and if entry falls below
+        #                   this then filtered out.
+                          
+        #                 But how do we apply this? On which DataColumn if we have 5 DataColumns? Good question... This must be decided!
+        #                 Option a) user gives 1 column somehow on which this is applied. (Then we also need to add this field right?)
+        #                 Option b) we apply this on ALL DataColumns and each column votes. To filter out the entry ALL columns must vote for filter it out. But need to
+        #                 think through the consequences... Especially, what if we have calculated DataColumns? who's expression can be any...
+        # filterColumn:
+        #   type: string
+        #   description: The name of the column we apply the filter on - see comment!!
+
+        tileTypesOnly:
+          description: >
+                        Data filter option. List of tile types you want to limit the query for. If you list more values here then they are interpreted with an OR operator.  
+                          
+                        IMPORTANT! You can not use this together with `tileTypeIsNot` parameter! You can only use this or that but not both.  
+                          
+                        In the list you can either use:
+                        * The name of the type ('frontpage', 'page', 'article', ...), or
+                        * The numeric ID of the tile type - returned by `/v2/stat/webhits/{containerId}/idmappings` endpoint - using the format `id:<numeric ID>`, e.g. **"id:123"**
+          type: array
+          items:
+            type: string
+
+        tileGroupPathMatchingOnly:
+          description: >
+                        Data filter option. List of matchers (see below) which returns counters only for those Tiles who's `tileGroupPath` is matching to one of the listed matchers.
+                        So if you list more values here then they are interpreted with an OR operator.  
+                          
+                        You can use the `*` character to match any substring. But where and how you put this Asterisk character matters! Let us show
+                        you how through an example!
+                        
+                        Let's assume you have articles and pages (Tiles) in the following content areas:  
+                          
+                        * /auto
+                        * /tech
+                        * /tech/mobile-rumours
+                        * /tech/mobile
+                        * /tech/mobile/android
+                        * /tech/mobile/ios
+                        * /politics
+                          
+                        And now you execute queries with two different **tileGroupPathMatchingOnly** settings:
+                        1. **"/tech/mobile\*"** and
+                        1. **"/tech/mobile/\*"**
+                        
+                        In the first query **"/tech/mobile\*"** would match for everything begins with "/tech/mobile" string. So this would include *"/tech/mobile/android"*, *"/tech/mobile/ios"* Tiles but
+                        also would include *"/tech/mobile-rumours"* Tiles. Which are clearly two different areas right?  
+                          
+                        But what if you want to really limit for Tiles under the *"/tech/mobile"* area?  
+                          
+                        Well then you can use the second query value: **"/tech/mobile/\*"**. This would include *"/tech/mobile/android"*, *"/tech/mobile/ios"* but
+                        would NOT include *"/tech/mobile-rumours"* anymore - as that is not a match anymore. But we are not done yet! Please note: this
+                        would also include Tiles under *"/tech/mobile/"* group itself. Because **"/\*"** means "everything which is under this group"
+          type: array
+          items:
+            type: string                            
+          example: ["/tech/mobile/*", "*/errors/*"]
+
+        userAgentTypesOnly:
+          description: Data filter option. List of userAgentTypes (device) you want to limit the query for. If you list more values here then they are interpreted with an OR operator.
+          type: array
+          items:
+            type: string
+        visitorTypesOnly:
+          description: Data filter option. List of visitorTypes you want to limit the query for. If you list more values here then they are interpreted with an OR operator.
+          type: array
+          items:
+            type: string
+        languagesOnly:
+          description: Data filter option. List of ISO-639-2 language codes (e.g. 'en', 'de', ...) you want to limit the query for. If you list more values here then they are interpreted with an OR operator.
+          type: array
+          items:
+            type: string
+        primaryTagsOnly:
+          description: >
+                      Data filter option. List of matching primary custom tags you want to limit the query for. If you list more values here then they are interpreted with an OR operator.  
+                        
+                      To understand it better what these "tags" are doing and how you can use it for your own goals please check our article: [Custom segmentation of traffic](https://keytiles.com/developer-area/custom-segmentation-of-traffic)!
+          type: array
+          items:
+            type: string
+        secondaryTagsOnly:
+          description: >
+                      Data filter option. List of matching secondary custom tags you want to limit the query for. If you list more values here then they are interpreted with an OR operator.  
+                        
+                      To understand it better what these "tags" are doing and how you can use it for your own goals please check our article: [Custom segmentation of traffic](https://keytiles.com/developer-area/custom-segmentation-of-traffic)!
+          type: array
+          items:
+            type: string      
+
+    ReportQueryCampaignPerformancePluginParameters:
+      type: object
+      description: >
+                  On top of `ReportQuery.parameters` these key-value pairs are used by `CampaignPerformancePlugin` to fine tune report query. So only used
+                  if plugin is set to that.
+      properties:
+        campaignsOnly:
+          description: > 
+                      Optional data filter option. List of campaign names you want to limit the query for. If you list more values here then they are interpreted with an OR operator.  
+                        
+                      Campaign tracking in Keytiles works based on Urchin Tracking Module (UTM) parameters specification. For more info visit: [Wikipedia - UTM parameters](https://en.wikipedia.org/wiki/UTM_parameters)
+          type: array
+          items:
+            type: string
+        campaignMediumsOnly:
+          description: > 
+                      Data filter option. List of campaign mediums you want to limit the query for. If you list more values here then they are interpreted with an OR operator.  
+                        
+                      Campaign tracking in Keytiles works based on Urchin Tracking Module (UTM) parameters specification. For more info visit: [Wikipedia - UTM parameters](https://en.wikipedia.org/wiki/UTM_parameters)
+          type: array
+          items:
+            type: string
+        campaignContentsOnly:
+          description: > 
+                      Data filter option. List of campaign contents you want to limit the query for. If you list more values here then they are interpreted with an OR operator.  
+                        
+                      Campaign tracking in Keytiles works based on Urchin Tracking Module (UTM) parameters specification. For more info visit: [Wikipedia - UTM parameters](https://en.wikipedia.org/wiki/UTM_parameters)
+          type: array
+          items:
+            type: string
+
+
+    ReportQueryReferrerPerformancePluginParameters:
+      type: object
+      description: >
+                  On top of `ReportQuery.parameters` these key-value pairs are used by `referrerPerformancePlugin` to fine tune report query. So only used
+                  if plugin is set to that.
+      properties:
+        eventSourceTypesOnly:
+          description: > 
+                      Data filter option. List of "link", "search", "social", "direct" or "internal" strings - indicating from which source the events came. If you list more values here then they are interpreted with an OR operator.
+          type: array
+          items:
+            type: string
+        eventSourceNamesOnly:
+          description: > 
+                      Data filter option. List of external source names - indicating from which exact source the events came. If you list more values here then they are interpreted with an OR operator.  
+                        
+                      Note: the names you specify here are definitely correlating with source type (we mentioned in 'eventSourceTypesOnly' description) "link", "search", "social", "direct" or "internal"!
+
+                      The correlation looks like this:
+                      * "link": then the name is basically the hostname of the website which sent the visitor to your website. Like "abc.com".
+                      * "social": then the name is the name how Keytiles classified it for Social sources - here please take a look at [How does referrer grouping work?](https://www.keytiles.com/docs/how-does-referrer-grouping-work#The-referrer-classifying-configuration)
+                      * "search": then the name is the name how Keytiles classified it for Search sources - here please take a look at [How does referrer grouping work?](https://www.keytiles.com/docs/how-does-referrer-grouping-work#The-referrer-classifying-configuration)
+                      * "direct" or "internal": they do not have a name, name is always NULL for these
+
+                      So be careful when you are using this filter how you set up `eventSourceTypesOnly` if you use it!
+
+                      For example:
+                      * If you are curious about events came from "Facebook" then you can send `eventSourceNamesOnly=Facebook`. (note: this belongs to source type "social" - see 'eventSourceTypesOnly')
+                      * If you are curious about events came from another website "abc.com" which is an external link then you can send `eventSourceNamesOnly=abc.com`. (note: this belongs to source type "link" - see 'eventSourceTypesOnly')
+                      * If you send `eventSourceNamesOnly=Facebook,abc.com` that would give you all events came from "Facebook" OR "abc.com". (note: and then this would belong to source types "link" and "social" - see 'eventSourceTypesOnly')
+                      * If you would send `eventSourceNamesOnly=abc.com & eventSourceTypesOnly=direct` you would receive 0 as a result - because for sure nothing comes in from "abc.com" which events came from a "direct" visit ...
+          type: array
+          items:
+            type: string
+
+
 
     ReportQueryCalculatedColumn:
       type: object
@@ -636,6 +892,7 @@ components:
           type: string
           nullable: true
 
+
     ReportQuery:
       description: A report can contain multiple queries. This object describes one query of those.
       type: object
@@ -656,152 +913,11 @@ components:
           description: Which query plugin to use for this query? Each plugin provides different possibilities.
           $ref: "#/components/schemas/ReportQueryPlugin"
         parameters:
-          description: The parameters a query plugin needs depends on the plugin. These key-value pairs provide the setup how the query plugin will generate this part of the report.
-          type: object
-          properties:
-            groupByTime:
-              description: >
-                          If set to TRUE then you get a break-down in time interval. The interval is driven by your schedule.  
-                           * Hourly schedule: you get 15 minutes break-down
-                           * Daily schedule: you get an hourly breakdown
-                           * Weekly schedule: you get a daily breakdown
-                           * Monthly schedule: you get a weekly breakdown
-              type: boolean
-            # later!
-            # groupByTimePeriod:
-            #   description: >
-            #               You can override the default period (driven by your schedule) using this option.  
-            #                 
-            #               It must make sense in terms of your schedule! What does it mean? For example if you have an Hourly schedule then you can not set up "2h" period. Does not makes any sense right?
-            #   type: string
-
-            eventsIncluded:
-              description: >
-                          Which event counts to include into the report? E.g. "pageview", or custom events e.g. "30 seconds passed". These will be the columns in your report. You can also construct formulas using the pure eventNames.
-              type: array
-              items:
-                type: string
-
-            importantEvents:
-              description: >
-                          Which events of the above `eventsIncluded` you think most important ones? Optionally you can mark those. These can be also marked in returned DataTable.
-              type: array
-              items:
-                type: string
-              nullable: true
-
-            calculatedColumns:
-              description: To enrich returned DataTable with calculated columns
-              type: array
-              items:
-                $ref: "#/components/schemas/ReportQueryCalculatedColumn"
-
-            groupByTiles:
-              description: >
-                          If set to TRUE then you get a break-down on Tile level - otherwise just sum of the traffic of all Tiles.
-              type: boolean
-              default: false
-
-            groupByTileGroupPaths:
-              description: >
-                          If set to TRUE then you get a break-down based on content structure (=tileGroupPath). Can not be used together with 'groupByTiles'!
-              type: boolean
-              default: false
-            groupByTileGroupPathMaxDepth:
-              description: >
-                          You can limit how deep you want the report to go down in the content structure. E.g. if you set it to 1 that means you get a break down only for first level.
-              type: integer
-
-            limit:
-              description: >
-                          Optional param. Only makes sense if 'groupByTiles=true' or 'groupByTileGroupPaths=true'. How many top-entries you want to see maximum? Using the 'performanceDescendingOrder' basically you can see the top performing ones, or the worst performing ones - up to you.
-              type: integer
-            sortBy:
-              description: >
-                          Sort the list based on the values of these columns - order matters!  
-                            
-                          Values can refer to:
-                          * "group by" columns like "tileGroupPath", "tileTitle" or "time" - if they are present because above bools are ticked on
-                          * to "eventsIncluded" you added above
-                          * or to the labels (which are IDs) of "calculatedColumns"
-              type: array
-              items:
-                type: string
-            performanceReverseOrder:
-              type: boolean
-              default: false
-              description: 'By default we order the data performance top-down order: best performers first. Unless this flag say actually we want to see worst performers first.'
-
-            # # For the future! to decrease 1-3 values noise.
-            # filterOutThreshold:
-            #   type: string
-            #   description: > 
-            #                 It can often happen that we get lots of noise into reports because let's say out of 330 entries 300 entries appear with values of 1-3 - however we
-            #                 are talking about the volume of 100k+ values in top entries. This option helps to clean this. It works similarly like `threshold` defined
-            #                 in QueryAPI.  
-                              
-            #                 You can set
-            #                 * Absolute value like "10" - everything below this value is left out.
-            #                 * Relative percent value like "3.5%" - in this case this is relative to the maximum (or all sum? - to decide!) and if entry falls below
-            #                   this then filtered out.
-                              
-            #                 But how do we apply this? On which DataColumn if we have 5 DataColumns? Good question... This must be decided!
-            #                 Option a) user gives 1 column somehow on which this is applied. (Then we also need to add this field right?)
-            #                 Option b) we apply this on ALL DataColumns and each column votes. To filter out the entry ALL columns must vote for filter it out. But need to
-            #                 think through the consequences... Especially, what if we have calculated DataColumns? who's expression can be any...
-            # filterColumn:
-            #   type: string
-            #   description: The name of the column we apply the filter on - see comment!!
-
-            tileTypesOnly:
-              description: >
-                            Data filter option. List of tile types you want to limit the query for. If you list more values here then they are interpreted with an OR operator.  
-                              
-                            IMPORTANT! You can not use this together with `tileTypeIsNot` parameter! You can only use this or that but not both.  
-                              
-                            In the list you can either use:
-                            * The name of the type ('frontpage', 'page', 'article', ...), or
-                            * The numeric ID of the tile type - returned by `/v2/stat/webhits/{containerId}/idmappings` endpoint - using the format `id:<numeric ID>`, e.g. **"id:123"**
-              type: array
-              items:
-                type: string
-
-            tileGroupPathMatchingOnly:
-              description: >
-                            Data filter option. List of matchers (see below) which returns counters only for those Tiles who's `tileGroupPath` is matching to one of the listed matchers.
-                            So if you list more values here then they are interpreted with an OR operator.  
-                              
-                            You can use the `*` character to match any substring. But where and how you put this Asterisk character matters! Let us show
-                            you how through an example!
-                            
-                            Let's assume you have articles and pages (Tiles) in the following content areas:  
-                              
-                            * /auto
-                            * /tech
-                            * /tech/mobile-rumours
-                            * /tech/mobile
-                            * /tech/mobile/android
-                            * /tech/mobile/ios
-                            * /politics
-                              
-                            And now you execute queries with two different **tileGroupPathMatchingOnly** settings:
-                            1. **"/tech/mobile\*"** and
-                            1. **"/tech/mobile/\*"**
-                            
-                            In the first query **"/tech/mobile\*"** would match for everything begins with "/tech/mobile" string. So this would include *"/tech/mobile/android"*, *"/tech/mobile/ios"* Tiles but
-                            also would include *"/tech/mobile-rumours"* Tiles. Which are clearly two different areas right?  
-                              
-                            But what if you want to really limit for Tiles under the *"/tech/mobile"* area?  
-                              
-                            Well then you can use the second query value: **"/tech/mobile/\*"**. This would include *"/tech/mobile/android"*, *"/tech/mobile/ios"* but
-                            would NOT include *"/tech/mobile-rumours"* anymore - as that is not a match anymore. But we are not done yet! Please note: this
-                            would also include Tiles under *"/tech/mobile/"* group itself. Because **"/\*"** means "everything which is under this group"
-              type: array
-              items:
-                type: string                            
-              example: ["/tech/mobile/*", "*/errors/*"]
-
-          additionalProperties: true
+          $ref: "#/components/schemas/ReportQueryPluginBaseParameters"
+        referrerPerformancePluginParameters:
+          $ref: "#/components/schemas/ReportQueryReferrerPerformancePluginParameters"
+        campaignPerformancePluginParameters:
+          $ref: "#/components/schemas/ReportQueryCampaignPerformancePluginParameters"
 
 
     ReportSetupOverview:

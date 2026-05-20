@@ -91,38 +91,29 @@ export type ReportQueryPlugin = typeof ReportQueryPlugin[keyof typeof ReportQuer
 export declare const ReportQueryPlugin: {
     readonly eventCountPlugin: "eventCountPlugin";
     readonly campaignPerformancePlugin: "campaignPerformancePlugin";
-    readonly trafficSourcePerformancePlugin: "trafficSourcePerformancePlugin";
+    readonly referrerPerformancePlugin: "referrerPerformancePlugin";
 };
 /**
- * It is possible to add calculated columns to the output (DataTable) using the real columns in expressions.
+ * These base parameters are needed/supported by all query plugins.   These key-value pairs provide the setup how the query plugin will generate this part of the report.
+
  */
-export interface ReportQueryCalculatedColumn {
-    /** The displayed name of this virtual column.
-    
-  **IMPORTANT!** Labels should be unique within one query, acting like an ID of that column. If labels are not unique in the array that might result in errors. This is not a big restriction though as normally you should not use / have the same label of two different columns right?
-   */
-    label: string;
-    /** The expression to calculate the value. The returned value must be numerical or string to fit into a `DataTableCell` definition. */
-    expression: string;
-    /** @nullable */
-    collapseFunction?: string | null;
-}
-/**
- * The parameters a query plugin needs depends on the plugin. These key-value pairs provide the setup how the query plugin will generate this part of the report.
- */
-export type ReportQueryParameters = {
+export interface ReportQueryPluginBaseParameters {
     /** If set to TRUE then you get a break-down in time interval. The interval is driven by your schedule.
-   * Hourly schedule: you get 15 minutes break-down
-   * Daily schedule: you get an hourly breakdown
-   * Weekly schedule: you get a daily breakdown
-   * Monthly schedule: you get a weekly breakdown
+    * Hourly schedule: you get 15 minutes break-down (or similar)
+    * Daily schedule: you get an hourly breakdown (or similar)
+    * Weekly schedule: you get a daily breakdown (or similar)
+    * Monthly schedule: you get a weekly breakdown (or similar)
    */
     groupByTime?: boolean;
-    /** Which event counts to include into the report? E.g. "pageview", or custom events e.g. "30 seconds passed". These will be the columns in your report. You can also construct formulas using the pure eventNames.
+    /** Performance is always measured with events. In this field you define which event counts to include into the report.   E.g. "pageview", or custom events e.g. "30 seconds passed".   These will become the columns in your report.
+    
+  **See also:** `calculatedColumns` ;-)
    */
     eventsIncluded?: string[];
     /**
-     * Which events of the above `eventsIncluded` you think most important ones? Optionally you can mark those. These can be also marked in returned DataTable.
+     * Which event(s) of the above `eventsIncluded` you think most important ones? Optionally you can mark those.   DataColumns derived from these events are also marked in returned DataTable - so we can render/present them with highlight.
+    
+  **Please be sane and mark 1-2 only...**
   
      * @nullable
      */
@@ -170,8 +161,75 @@ export type ReportQueryParameters = {
   Well then you can use the second query value: **"/tech/mobile/\*"**. This would include *"/tech/mobile/android"*, *"/tech/mobile/ios"* but would NOT include *"/tech/mobile-rumours"* anymore - as that is not a match anymore. But we are not done yet! Please note: this would also include Tiles under *"/tech/mobile/"* group itself. Because **"/\*"** means "everything which is under this group"
    */
     tileGroupPathMatchingOnly?: string[];
-    [key: string]: unknown;
-};
+    /** Data filter option. List of userAgentTypes (device) you want to limit the query for. If you list more values here then they are interpreted with an OR operator. */
+    userAgentTypesOnly?: string[];
+    /** Data filter option. List of visitorTypes you want to limit the query for. If you list more values here then they are interpreted with an OR operator. */
+    visitorTypesOnly?: string[];
+    /** Data filter option. List of ISO-639-2 language codes (e.g. 'en', 'de', ...) you want to limit the query for. If you list more values here then they are interpreted with an OR operator. */
+    languagesOnly?: string[];
+    /** Data filter option. List of matching primary custom tags you want to limit the query for. If you list more values here then they are interpreted with an OR operator.
+    
+  To understand it better what these "tags" are doing and how you can use it for your own goals please check our article: [Custom segmentation of traffic](https://keytiles.com/developer-area/custom-segmentation-of-traffic)!
+   */
+    primaryTagsOnly?: string[];
+    /** Data filter option. List of matching secondary custom tags you want to limit the query for. If you list more values here then they are interpreted with an OR operator.
+    
+  To understand it better what these "tags" are doing and how you can use it for your own goals please check our article: [Custom segmentation of traffic](https://keytiles.com/developer-area/custom-segmentation-of-traffic)!
+   */
+    secondaryTagsOnly?: string[];
+}
+/**
+ * On top of `ReportQuery.parameters` these key-value pairs are used by `CampaignPerformancePlugin` to fine tune report query. So only used if plugin is set to that.
+
+ */
+export interface ReportQueryCampaignPerformancePluginParameters {
+    /** Optional data filter option. List of campaign names you want to limit the query for. If you list more values here then they are interpreted with an OR operator.
+    
+  Campaign tracking in Keytiles works based on Urchin Tracking Module (UTM) parameters specification. For more info visit: [Wikipedia - UTM parameters](https://en.wikipedia.org/wiki/UTM_parameters)
+   */
+    campaignsOnly?: string[];
+    /** Data filter option. List of campaign mediums you want to limit the query for. If you list more values here then they are interpreted with an OR operator.
+    
+  Campaign tracking in Keytiles works based on Urchin Tracking Module (UTM) parameters specification. For more info visit: [Wikipedia - UTM parameters](https://en.wikipedia.org/wiki/UTM_parameters)
+   */
+    campaignMediumsOnly?: string[];
+    /** Data filter option. List of campaign contents you want to limit the query for. If you list more values here then they are interpreted with an OR operator.
+    
+  Campaign tracking in Keytiles works based on Urchin Tracking Module (UTM) parameters specification. For more info visit: [Wikipedia - UTM parameters](https://en.wikipedia.org/wiki/UTM_parameters)
+   */
+    campaignContentsOnly?: string[];
+}
+/**
+ * On top of `ReportQuery.parameters` these key-value pairs are used by `referrerPerformancePlugin` to fine tune report query. So only used if plugin is set to that.
+
+ */
+export interface ReportQueryReferrerPerformancePluginParameters {
+    /** Data filter option. List of "link", "search", "social", "direct" or "internal" strings - indicating from which source the events came. If you list more values here then they are interpreted with an OR operator.
+   */
+    eventSourceTypesOnly?: string[];
+    /** Data filter option. List of external source names - indicating from which exact source the events came. If you list more values here then they are interpreted with an OR operator.
+    
+  Note: the names you specify here are definitely correlating with source type (we mentioned in 'eventSourceTypesOnly' description) "link", "search", "social", "direct" or "internal"!
+  The correlation looks like this: * "link": then the name is basically the hostname of the website which sent the visitor to your website. Like "abc.com". * "social": then the name is the name how Keytiles classified it for Social sources - here please take a look at [How does referrer grouping work?](https://www.keytiles.com/docs/how-does-referrer-grouping-work#The-referrer-classifying-configuration) * "search": then the name is the name how Keytiles classified it for Search sources - here please take a look at [How does referrer grouping work?](https://www.keytiles.com/docs/how-does-referrer-grouping-work#The-referrer-classifying-configuration) * "direct" or "internal": they do not have a name, name is always NULL for these
+  So be careful when you are using this filter how you set up `eventSourceTypesOnly` if you use it!
+  For example: * If you are curious about events came from "Facebook" then you can send `eventSourceNamesOnly=Facebook`. (note: this belongs to source type "social" - see 'eventSourceTypesOnly') * If you are curious about events came from another website "abc.com" which is an external link then you can send `eventSourceNamesOnly=abc.com`. (note: this belongs to source type "link" - see 'eventSourceTypesOnly') * If you send `eventSourceNamesOnly=Facebook,abc.com` that would give you all events came from "Facebook" OR "abc.com". (note: and then this would belong to source types "link" and "social" - see 'eventSourceTypesOnly') * If you would send `eventSourceNamesOnly=abc.com & eventSourceTypesOnly=direct` you would receive 0 as a result - because for sure nothing comes in from "abc.com" which events came from a "direct" visit ...
+   */
+    eventSourceNamesOnly?: string[];
+}
+/**
+ * It is possible to add calculated columns to the output (DataTable) using the real columns in expressions.
+ */
+export interface ReportQueryCalculatedColumn {
+    /** The displayed name of this virtual column.
+    
+  **IMPORTANT!** Labels should be unique within one query, acting like an ID of that column. If labels are not unique in the array that might result in errors. This is not a big restriction though as normally you should not use / have the same label of two different columns right?
+   */
+    label: string;
+    /** The expression to calculate the value. The returned value must be numerical or string to fit into a `DataTableCell` definition. */
+    expression: string;
+    /** @nullable */
+    collapseFunction?: string | null;
+}
 /**
  * A report can contain multiple queries. This object describes one query of those.
  */
@@ -184,8 +242,9 @@ export interface ReportQuery {
     isDisabled?: boolean;
     /** Which query plugin to use for this query? Each plugin provides different possibilities. */
     plugin: ReportQueryPlugin;
-    /** The parameters a query plugin needs depends on the plugin. These key-value pairs provide the setup how the query plugin will generate this part of the report. */
-    parameters?: ReportQueryParameters;
+    parameters?: ReportQueryPluginBaseParameters;
+    referrerPerformancePluginParameters?: ReportQueryReferrerPerformancePluginParameters;
+    campaignPerformancePluginParameters?: ReportQueryCampaignPerformancePluginParameters;
 }
 /**
  * Contains minimalistic information about an existing report setup - like its ID, title, description, creation time, schedule. It is a quick overview.

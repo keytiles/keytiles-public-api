@@ -5,7 +5,6 @@ package kt_pubapi_gen_reportsv1
 
 import (
 	"encoding/json"
-	"fmt"
 
 	externalRef0 "github.com/keytiles/keytiles-public-api/v2/gopkg/model/generated/common/metadata_v1"
 	externalRef1 "github.com/keytiles/keytiles-public-api/v2/gopkg/model/generated/common/schedule_v1"
@@ -32,9 +31,9 @@ const (
 
 // Defines values for ReportQueryPlugin.
 const (
-	CampaignPerformancePlugin      ReportQueryPlugin = "campaignPerformancePlugin"
-	EventCountPlugin               ReportQueryPlugin = "eventCountPlugin"
-	TrafficSourcePerformancePlugin ReportQueryPlugin = "trafficSourcePerformancePlugin"
+	CampaignPerformancePlugin ReportQueryPlugin = "campaignPerformancePlugin"
+	EventCountPlugin          ReportQueryPlugin = "eventCountPlugin"
+	ReferrerPerformancePlugin ReportQueryPlugin = "referrerPerformancePlugin"
 )
 
 // Defines values for ReportRecipientsRoles.
@@ -317,6 +316,9 @@ type ReportInstanceState string
 
 // ReportQuery A report can contain multiple queries. This object describes one query of those.
 type ReportQuery struct {
+	// CampaignPerformancePluginParameters On top of `ReportQuery.parameters` these key-value pairs are used by `CampaignPerformancePlugin` to fine tune report query. So only used if plugin is set to that.
+	CampaignPerformancePluginParameters *ReportQueryCampaignPerformancePluginParameters `json:"campaignPerformancePluginParameters,omitempty" yaml:"campaignPerformancePluginParameters,omitempty"`
+
 	// Id The unique ID (within the report) of this query - UUID style. In concrete report instances this helps to identify the result of this query within the whole report.
 	Id *string `json:"id,omitempty" yaml:"id,omitempty"`
 
@@ -324,17 +326,56 @@ type ReportQuery struct {
 	IsDisabled *bool                 `json:"isDisabled,omitempty" yaml:"isDisabled,omitempty"`
 	MetaData   externalRef0.MetaData `json:"metaData" yaml:"metaData"`
 
-	// Parameters The parameters a query plugin needs depends on the plugin. These key-value pairs provide the setup how the query plugin will generate this part of the report.
-	Parameters *ReportQuery_Parameters `json:"parameters,omitempty" yaml:"parameters,omitempty"`
-	Plugin     ReportQueryPlugin       `json:"plugin" yaml:"plugin"`
+	// Parameters These base parameters are needed/supported by all query plugins.   These key-value pairs provide the setup how the query plugin will generate this part of the report.
+	Parameters *ReportQueryPluginBaseParameters `json:"parameters,omitempty" yaml:"parameters,omitempty"`
+	Plugin     ReportQueryPlugin                `json:"plugin" yaml:"plugin"`
+
+	// ReferrerPerformancePluginParameters On top of `ReportQuery.parameters` these key-value pairs are used by `referrerPerformancePlugin` to fine tune report query. So only used if plugin is set to that.
+	ReferrerPerformancePluginParameters *ReportQueryReferrerPerformancePluginParameters `json:"referrerPerformancePluginParameters,omitempty" yaml:"referrerPerformancePluginParameters,omitempty"`
 }
 
-// ReportQuery_Parameters The parameters a query plugin needs depends on the plugin. These key-value pairs provide the setup how the query plugin will generate this part of the report.
-type ReportQuery_Parameters struct {
+// ReportQueryCalculatedColumn It is possible to add calculated columns to the output (DataTable) using the real columns in expressions.
+type ReportQueryCalculatedColumn struct {
+	CollapseFunction *string `json:"collapseFunction" yaml:"collapseFunction"`
+
+	// Expression The expression to calculate the value. The returned value must be numerical or string to fit into a `DataTableCell` definition.
+	Expression string `json:"expression" yaml:"expression"`
+
+	// Label The displayed name of this virtual column.
+	//
+	// **IMPORTANT!** Labels should be unique within one query, acting like an ID of that column. If labels are not unique in the array that might result in errors. This is not a big restriction though as normally you should not use / have the same label of two different columns right?
+	Label string `json:"label" yaml:"label"`
+}
+
+// ReportQueryCampaignPerformancePluginParameters On top of `ReportQuery.parameters` these key-value pairs are used by `CampaignPerformancePlugin` to fine tune report query. So only used if plugin is set to that.
+type ReportQueryCampaignPerformancePluginParameters struct {
+	// CampaignContentsOnly Data filter option. List of campaign contents you want to limit the query for. If you list more values here then they are interpreted with an OR operator.
+	//
+	// Campaign tracking in Keytiles works based on Urchin Tracking Module (UTM) parameters specification. For more info visit: [Wikipedia - UTM parameters](https://en.wikipedia.org/wiki/UTM_parameters)
+	CampaignContentsOnly *[]string `json:"campaignContentsOnly,omitempty" yaml:"campaignContentsOnly,omitempty"`
+
+	// CampaignMediumsOnly Data filter option. List of campaign mediums you want to limit the query for. If you list more values here then they are interpreted with an OR operator.
+	//
+	// Campaign tracking in Keytiles works based on Urchin Tracking Module (UTM) parameters specification. For more info visit: [Wikipedia - UTM parameters](https://en.wikipedia.org/wiki/UTM_parameters)
+	CampaignMediumsOnly *[]string `json:"campaignMediumsOnly,omitempty" yaml:"campaignMediumsOnly,omitempty"`
+
+	// CampaignsOnly Optional data filter option. List of campaign names you want to limit the query for. If you list more values here then they are interpreted with an OR operator.
+	//
+	// Campaign tracking in Keytiles works based on Urchin Tracking Module (UTM) parameters specification. For more info visit: [Wikipedia - UTM parameters](https://en.wikipedia.org/wiki/UTM_parameters)
+	CampaignsOnly *[]string `json:"campaignsOnly,omitempty" yaml:"campaignsOnly,omitempty"`
+}
+
+// ReportQueryPlugin defines model for ReportQueryPlugin.
+type ReportQueryPlugin string
+
+// ReportQueryPluginBaseParameters These base parameters are needed/supported by all query plugins.   These key-value pairs provide the setup how the query plugin will generate this part of the report.
+type ReportQueryPluginBaseParameters struct {
 	// CalculatedColumns To enrich returned DataTable with calculated columns
 	CalculatedColumns *[]ReportQueryCalculatedColumn `json:"calculatedColumns,omitempty" yaml:"calculatedColumns,omitempty"`
 
-	// EventsIncluded Which event counts to include into the report? E.g. "pageview", or custom events e.g. "30 seconds passed". These will be the columns in your report. You can also construct formulas using the pure eventNames.
+	// EventsIncluded Performance is always measured with events. In this field you define which event counts to include into the report.   E.g. "pageview", or custom events e.g. "30 seconds passed".   These will become the columns in your report.
+	//
+	// **See also:** `calculatedColumns` ;-)
 	EventsIncluded *[]string `json:"eventsIncluded,omitempty" yaml:"eventsIncluded,omitempty"`
 
 	// GroupByTileGroupPathMaxDepth You can limit how deep you want the report to go down in the content structure. E.g. if you set it to 1 that means you get a break down only for first level.
@@ -347,20 +388,35 @@ type ReportQuery_Parameters struct {
 	GroupByTiles *bool `json:"groupByTiles,omitempty" yaml:"groupByTiles,omitempty"`
 
 	// GroupByTime If set to TRUE then you get a break-down in time interval. The interval is driven by your schedule.
-	//  * Hourly schedule: you get 15 minutes break-down
-	//  * Daily schedule: you get an hourly breakdown
-	//  * Weekly schedule: you get a daily breakdown
-	//  * Monthly schedule: you get a weekly breakdown
+	//   * Hourly schedule: you get 15 minutes break-down (or similar)
+	//   * Daily schedule: you get an hourly breakdown (or similar)
+	//   * Weekly schedule: you get a daily breakdown (or similar)
+	//   * Monthly schedule: you get a weekly breakdown (or similar)
 	GroupByTime *bool `json:"groupByTime,omitempty" yaml:"groupByTime,omitempty"`
 
-	// ImportantEvents Which events of the above `eventsIncluded` you think most important ones? Optionally you can mark those. These can be also marked in returned DataTable.
+	// ImportantEvents Which event(s) of the above `eventsIncluded` you think most important ones? Optionally you can mark those.   DataColumns derived from these events are also marked in returned DataTable - so we can render/present them with highlight.
+	//
+	// **Please be sane and mark 1-2 only...**
 	ImportantEvents *[]string `json:"importantEvents" yaml:"importantEvents"`
+
+	// LanguagesOnly Data filter option. List of ISO-639-2 language codes (e.g. 'en', 'de', ...) you want to limit the query for. If you list more values here then they are interpreted with an OR operator.
+	LanguagesOnly *[]string `json:"languagesOnly,omitempty" yaml:"languagesOnly,omitempty"`
 
 	// Limit Optional param. Only makes sense if 'groupByTiles=true' or 'groupByTileGroupPaths=true'. How many top-entries you want to see maximum? Using the 'performanceDescendingOrder' basically you can see the top performing ones, or the worst performing ones - up to you.
 	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
 
 	// PerformanceReverseOrder By default we order the data performance top-down order: best performers first. Unless this flag say actually we want to see worst performers first.
 	PerformanceReverseOrder *bool `json:"performanceReverseOrder,omitempty" yaml:"performanceReverseOrder,omitempty"`
+
+	// PrimaryTagsOnly Data filter option. List of matching primary custom tags you want to limit the query for. If you list more values here then they are interpreted with an OR operator.
+	//
+	// To understand it better what these "tags" are doing and how you can use it for your own goals please check our article: [Custom segmentation of traffic](https://keytiles.com/developer-area/custom-segmentation-of-traffic)!
+	PrimaryTagsOnly *[]string `json:"primaryTagsOnly,omitempty" yaml:"primaryTagsOnly,omitempty"`
+
+	// SecondaryTagsOnly Data filter option. List of matching secondary custom tags you want to limit the query for. If you list more values here then they are interpreted with an OR operator.
+	//
+	// To understand it better what these "tags" are doing and how you can use it for your own goals please check our article: [Custom segmentation of traffic](https://keytiles.com/developer-area/custom-segmentation-of-traffic)!
+	SecondaryTagsOnly *[]string `json:"secondaryTagsOnly,omitempty" yaml:"secondaryTagsOnly,omitempty"`
 
 	// SortBy Sort the list based on the values of these columns - order matters!
 	//
@@ -387,25 +443,28 @@ type ReportQuery_Parameters struct {
 	// IMPORTANT! You can not use this together with `tileTypeIsNot` parameter! You can only use this or that but not both.
 	//
 	// In the list you can either use: * The name of the type ('frontpage', 'page', 'article', ...), or * The numeric ID of the tile type - returned by `/v2/stat/webhits/{containerId}/idmappings` endpoint - using the format `id:<numeric ID>`, e.g. **"id:123"**
-	TileTypesOnly        *[]string              `json:"tileTypesOnly,omitempty" yaml:"tileTypesOnly,omitempty"`
-	AdditionalProperties map[string]interface{} `json:"-"`
+	TileTypesOnly *[]string `json:"tileTypesOnly,omitempty" yaml:"tileTypesOnly,omitempty"`
+
+	// UserAgentTypesOnly Data filter option. List of userAgentTypes (device) you want to limit the query for. If you list more values here then they are interpreted with an OR operator.
+	UserAgentTypesOnly *[]string `json:"userAgentTypesOnly,omitempty" yaml:"userAgentTypesOnly,omitempty"`
+
+	// VisitorTypesOnly Data filter option. List of visitorTypes you want to limit the query for. If you list more values here then they are interpreted with an OR operator.
+	VisitorTypesOnly *[]string `json:"visitorTypesOnly,omitempty" yaml:"visitorTypesOnly,omitempty"`
 }
 
-// ReportQueryCalculatedColumn It is possible to add calculated columns to the output (DataTable) using the real columns in expressions.
-type ReportQueryCalculatedColumn struct {
-	CollapseFunction *string `json:"collapseFunction" yaml:"collapseFunction"`
-
-	// Expression The expression to calculate the value. The returned value must be numerical or string to fit into a `DataTableCell` definition.
-	Expression string `json:"expression" yaml:"expression"`
-
-	// Label The displayed name of this virtual column.
+// ReportQueryReferrerPerformancePluginParameters On top of `ReportQuery.parameters` these key-value pairs are used by `referrerPerformancePlugin` to fine tune report query. So only used if plugin is set to that.
+type ReportQueryReferrerPerformancePluginParameters struct {
+	// EventSourceNamesOnly Data filter option. List of external source names - indicating from which exact source the events came. If you list more values here then they are interpreted with an OR operator.
 	//
-	// **IMPORTANT!** Labels should be unique within one query, acting like an ID of that column. If labels are not unique in the array that might result in errors. This is not a big restriction though as normally you should not use / have the same label of two different columns right?
-	Label string `json:"label" yaml:"label"`
-}
+	// Note: the names you specify here are definitely correlating with source type (we mentioned in 'eventSourceTypesOnly' description) "link", "search", "social", "direct" or "internal"!
+	// The correlation looks like this: * "link": then the name is basically the hostname of the website which sent the visitor to your website. Like "abc.com". * "social": then the name is the name how Keytiles classified it for Social sources - here please take a look at [How does referrer grouping work?](https://www.keytiles.com/docs/how-does-referrer-grouping-work#The-referrer-classifying-configuration) * "search": then the name is the name how Keytiles classified it for Search sources - here please take a look at [How does referrer grouping work?](https://www.keytiles.com/docs/how-does-referrer-grouping-work#The-referrer-classifying-configuration) * "direct" or "internal": they do not have a name, name is always NULL for these
+	// So be careful when you are using this filter how you set up `eventSourceTypesOnly` if you use it!
+	// For example: * If you are curious about events came from "Facebook" then you can send `eventSourceNamesOnly=Facebook`. (note: this belongs to source type "social" - see 'eventSourceTypesOnly') * If you are curious about events came from another website "abc.com" which is an external link then you can send `eventSourceNamesOnly=abc.com`. (note: this belongs to source type "link" - see 'eventSourceTypesOnly') * If you send `eventSourceNamesOnly=Facebook,abc.com` that would give you all events came from "Facebook" OR "abc.com". (note: and then this would belong to source types "link" and "social" - see 'eventSourceTypesOnly') * If you would send `eventSourceNamesOnly=abc.com & eventSourceTypesOnly=direct` you would receive 0 as a result - because for sure nothing comes in from "abc.com" which events came from a "direct" visit ...
+	EventSourceNamesOnly *[]string `json:"eventSourceNamesOnly,omitempty" yaml:"eventSourceNamesOnly,omitempty"`
 
-// ReportQueryPlugin defines model for ReportQueryPlugin.
-type ReportQueryPlugin string
+	// EventSourceTypesOnly Data filter option. List of "link", "search", "social", "direct" or "internal" strings - indicating from which source the events came. If you list more values here then they are interpreted with an OR operator.
+	EventSourceTypesOnly *[]string `json:"eventSourceTypesOnly,omitempty" yaml:"eventSourceTypesOnly,omitempty"`
+}
 
 // ReportRecipients This is an optional setup - controlls who will receive these reports.
 //
@@ -523,239 +582,6 @@ type PostV1ReportsContainersRestContainerIdReportSetupJSONRequestBody = ReportSe
 
 // PutV1ReportsContainersRestContainerIdReportSetupReportSetupIdJSONRequestBody defines body for PutV1ReportsContainersRestContainerIdReportSetupReportSetupId for application/json ContentType.
 type PutV1ReportsContainersRestContainerIdReportSetupReportSetupIdJSONRequestBody = ReportSetup
-
-// Getter for additional properties for ReportQuery_Parameters. Returns the specified
-// element and whether it was found
-func (a ReportQuery_Parameters) Get(fieldName string) (value interface{}, found bool) {
-	if a.AdditionalProperties != nil {
-		value, found = a.AdditionalProperties[fieldName]
-	}
-	return
-}
-
-// Setter for additional properties for ReportQuery_Parameters
-func (a *ReportQuery_Parameters) Set(fieldName string, value interface{}) {
-	if a.AdditionalProperties == nil {
-		a.AdditionalProperties = make(map[string]interface{})
-	}
-	a.AdditionalProperties[fieldName] = value
-}
-
-// Override default JSON handling for ReportQuery_Parameters to handle AdditionalProperties
-func (a *ReportQuery_Parameters) UnmarshalJSON(b []byte) error {
-	object := make(map[string]json.RawMessage)
-	err := json.Unmarshal(b, &object)
-	if err != nil {
-		return err
-	}
-
-	if raw, found := object["calculatedColumns"]; found {
-		err = json.Unmarshal(raw, &a.CalculatedColumns)
-		if err != nil {
-			return fmt.Errorf("error reading 'calculatedColumns': %w", err)
-		}
-		delete(object, "calculatedColumns")
-	}
-
-	if raw, found := object["eventsIncluded"]; found {
-		err = json.Unmarshal(raw, &a.EventsIncluded)
-		if err != nil {
-			return fmt.Errorf("error reading 'eventsIncluded': %w", err)
-		}
-		delete(object, "eventsIncluded")
-	}
-
-	if raw, found := object["groupByTileGroupPathMaxDepth"]; found {
-		err = json.Unmarshal(raw, &a.GroupByTileGroupPathMaxDepth)
-		if err != nil {
-			return fmt.Errorf("error reading 'groupByTileGroupPathMaxDepth': %w", err)
-		}
-		delete(object, "groupByTileGroupPathMaxDepth")
-	}
-
-	if raw, found := object["groupByTileGroupPaths"]; found {
-		err = json.Unmarshal(raw, &a.GroupByTileGroupPaths)
-		if err != nil {
-			return fmt.Errorf("error reading 'groupByTileGroupPaths': %w", err)
-		}
-		delete(object, "groupByTileGroupPaths")
-	}
-
-	if raw, found := object["groupByTiles"]; found {
-		err = json.Unmarshal(raw, &a.GroupByTiles)
-		if err != nil {
-			return fmt.Errorf("error reading 'groupByTiles': %w", err)
-		}
-		delete(object, "groupByTiles")
-	}
-
-	if raw, found := object["groupByTime"]; found {
-		err = json.Unmarshal(raw, &a.GroupByTime)
-		if err != nil {
-			return fmt.Errorf("error reading 'groupByTime': %w", err)
-		}
-		delete(object, "groupByTime")
-	}
-
-	if raw, found := object["importantEvents"]; found {
-		err = json.Unmarshal(raw, &a.ImportantEvents)
-		if err != nil {
-			return fmt.Errorf("error reading 'importantEvents': %w", err)
-		}
-		delete(object, "importantEvents")
-	}
-
-	if raw, found := object["limit"]; found {
-		err = json.Unmarshal(raw, &a.Limit)
-		if err != nil {
-			return fmt.Errorf("error reading 'limit': %w", err)
-		}
-		delete(object, "limit")
-	}
-
-	if raw, found := object["performanceReverseOrder"]; found {
-		err = json.Unmarshal(raw, &a.PerformanceReverseOrder)
-		if err != nil {
-			return fmt.Errorf("error reading 'performanceReverseOrder': %w", err)
-		}
-		delete(object, "performanceReverseOrder")
-	}
-
-	if raw, found := object["sortBy"]; found {
-		err = json.Unmarshal(raw, &a.SortBy)
-		if err != nil {
-			return fmt.Errorf("error reading 'sortBy': %w", err)
-		}
-		delete(object, "sortBy")
-	}
-
-	if raw, found := object["tileGroupPathMatchingOnly"]; found {
-		err = json.Unmarshal(raw, &a.TileGroupPathMatchingOnly)
-		if err != nil {
-			return fmt.Errorf("error reading 'tileGroupPathMatchingOnly': %w", err)
-		}
-		delete(object, "tileGroupPathMatchingOnly")
-	}
-
-	if raw, found := object["tileTypesOnly"]; found {
-		err = json.Unmarshal(raw, &a.TileTypesOnly)
-		if err != nil {
-			return fmt.Errorf("error reading 'tileTypesOnly': %w", err)
-		}
-		delete(object, "tileTypesOnly")
-	}
-
-	if len(object) != 0 {
-		a.AdditionalProperties = make(map[string]interface{})
-		for fieldName, fieldBuf := range object {
-			var fieldVal interface{}
-			err := json.Unmarshal(fieldBuf, &fieldVal)
-			if err != nil {
-				return fmt.Errorf("error unmarshaling field %s: %w", fieldName, err)
-			}
-			a.AdditionalProperties[fieldName] = fieldVal
-		}
-	}
-	return nil
-}
-
-// Override default JSON handling for ReportQuery_Parameters to handle AdditionalProperties
-func (a ReportQuery_Parameters) MarshalJSON() ([]byte, error) {
-	var err error
-	object := make(map[string]json.RawMessage)
-
-	if a.CalculatedColumns != nil {
-		object["calculatedColumns"], err = json.Marshal(a.CalculatedColumns)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'calculatedColumns': %w", err)
-		}
-	}
-
-	if a.EventsIncluded != nil {
-		object["eventsIncluded"], err = json.Marshal(a.EventsIncluded)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'eventsIncluded': %w", err)
-		}
-	}
-
-	if a.GroupByTileGroupPathMaxDepth != nil {
-		object["groupByTileGroupPathMaxDepth"], err = json.Marshal(a.GroupByTileGroupPathMaxDepth)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'groupByTileGroupPathMaxDepth': %w", err)
-		}
-	}
-
-	if a.GroupByTileGroupPaths != nil {
-		object["groupByTileGroupPaths"], err = json.Marshal(a.GroupByTileGroupPaths)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'groupByTileGroupPaths': %w", err)
-		}
-	}
-
-	if a.GroupByTiles != nil {
-		object["groupByTiles"], err = json.Marshal(a.GroupByTiles)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'groupByTiles': %w", err)
-		}
-	}
-
-	if a.GroupByTime != nil {
-		object["groupByTime"], err = json.Marshal(a.GroupByTime)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'groupByTime': %w", err)
-		}
-	}
-
-	if a.ImportantEvents != nil {
-		object["importantEvents"], err = json.Marshal(a.ImportantEvents)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'importantEvents': %w", err)
-		}
-	}
-
-	if a.Limit != nil {
-		object["limit"], err = json.Marshal(a.Limit)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'limit': %w", err)
-		}
-	}
-
-	if a.PerformanceReverseOrder != nil {
-		object["performanceReverseOrder"], err = json.Marshal(a.PerformanceReverseOrder)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'performanceReverseOrder': %w", err)
-		}
-	}
-
-	if a.SortBy != nil {
-		object["sortBy"], err = json.Marshal(a.SortBy)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'sortBy': %w", err)
-		}
-	}
-
-	if a.TileGroupPathMatchingOnly != nil {
-		object["tileGroupPathMatchingOnly"], err = json.Marshal(a.TileGroupPathMatchingOnly)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'tileGroupPathMatchingOnly': %w", err)
-		}
-	}
-
-	if a.TileTypesOnly != nil {
-		object["tileTypesOnly"], err = json.Marshal(a.TileTypesOnly)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'tileTypesOnly': %w", err)
-		}
-	}
-
-	for fieldName, field := range a.AdditionalProperties {
-		object[fieldName], err = json.Marshal(field)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling '%s': %w", fieldName, err)
-		}
-	}
-	return json.Marshal(object)
-}
 
 // AsDataTableCell0 returns the union data inside the DataTableCell as a DataTableCell0
 func (t DataTableCell) AsDataTableCell0() (DataTableCell0, error) {
