@@ -115,8 +115,14 @@ type DataTable struct {
 	// DataToTimestamp The data in the table is until this timestamp. This can be different from the original requested from-to query range... This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT
 	DataToTimestamp int32 `json:"dataToTimestamp" yaml:"dataToTimestamp"`
 
+	// PerformanceReverseOrder Copy of `ReportQuery.parameters.performanceReverseOrder` flag at that time this table was generated.
+	PerformanceReverseOrder *bool `json:"performanceReverseOrder,omitempty" yaml:"performanceReverseOrder,omitempty"`
+
 	// Rows List of values. The position corresponds with `axisColumns` (in beginning of the row) and `dataColumns` followed.
 	Rows []DataTableRow `json:"rows" yaml:"rows"`
+
+	// SortBy Which columns were driving the order of rows? Copy of `ReportQuery.parameters.sortBy` which was active at that time this table was generated.
+	SortBy *[]string `json:"sortBy,omitempty" yaml:"sortBy,omitempty"`
 }
 
 // DataTableAxisColumn defines model for DataTableAxisColumn.
@@ -141,7 +147,7 @@ type DataTableCell1 = float32
 
 // DataTableDataColumn defines model for DataTableDataColumn.
 type DataTableDataColumn struct {
-	// Expression If this is `isCalculated=true` columns then here is the expression which is used to calculate the value. This is basically a copy of corresponding `ReportQueryCalculatedColumn.expression` value.
+	// Expression If this is `isCalculated=true` column then here is the expression which is used to calculate the value. This is basically a copy of corresponding `ReportQueryCalculatedColumn.expression` value.
 	Expression *string `json:"expression,omitempty" yaml:"expression,omitempty"`
 
 	// Id This identifies from where the column came, which CounterColumn(s) in the response? This field is for machine reading.
@@ -393,6 +399,13 @@ type ReportQueryPluginBaseParameters struct {
 	//   * Weekly schedule: you get a daily breakdown (or similar)
 	//   * Monthly schedule: you get a weekly breakdown (or similar)
 	GroupByTime *bool `json:"groupByTime,omitempty" yaml:"groupByTime,omitempty"`
+
+	// GroupByTimePeriod You can override the default "time group by" period (driven by your schedule / query range) using this option. Valid value looks like "X<m|h|d|w>" where X is a >0 integer, "m" = minutes, "h" = hours, "d" = days, "w" = weeks. For example "2h" = two hours, "30m" = 30 minutes, "1w" = one week.
+	//
+	// BUT it must make sense in terms of your schedule! What does it mean? For example if you have an Hourly schedule then you can not set up "2h" period. Does not makes any sense right? It is also overkill to requet "1h" grouping for a long query range (e.g. a month, so Monthly schedule).
+	//
+	// So if you use this option then be prepared for validation errors upon save / re-schedule the report!
+	GroupByTimePeriod *string `json:"groupByTimePeriod,omitempty" yaml:"groupByTimePeriod,omitempty"`
 
 	// ImportantEvents Which event(s) of the above `eventsIncluded` you think most important ones? Optionally you can mark those.   DataColumns derived from these events are also marked in returned DataTable - so we can render/present them with highlight.
 	//

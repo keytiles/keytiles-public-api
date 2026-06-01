@@ -140,6 +140,13 @@ export interface ReportQueryPluginBaseParameters {
   * Monthly schedule: you get a weekly breakdown (or similar)
  */
   groupByTime?: boolean;
+  /** You can override the default "time group by" period (driven by your schedule / query range) using this option. Valid value looks like "X<m|h|d|w>" where X is a >0 integer, "m" = minutes, "h" = hours, "d" = days, "w" = weeks. For example "2h" = two hours, "30m" = 30 minutes, "1w" = one week.
+  
+BUT it must make sense in terms of your schedule! What does it mean? For example if you have an Hourly schedule then you can not set up "2h" period. Does not makes any sense right? It is also overkill to requet "1h" grouping for a long query range (e.g. a month, so Monthly schedule).  
+  
+So if you use this option then be prepared for validation errors upon save / re-schedule the report!
+ */
+  groupByTimePeriod?: string;
   /** Performance is always measured with events. In this field you define which event counts to include into the report.   E.g. "pageview", or custom events e.g. "30 seconds passed".   These will become the columns in your report.  
   
 **See also:** `calculatedColumns` ;-)
@@ -358,7 +365,7 @@ export interface DataTableDataColumn {
   isImportant?: boolean;
   /** If the column is derived from `ReportQueryCalculatedColumn` then this is set to True - might help to visually distinguish these columns. */
   isCalculated: boolean;
-  /** If this is `isCalculated=true` columns then here is the expression which is used to calculate the value. This is basically a copy of corresponding `ReportQueryCalculatedColumn.expression` value. */
+  /** If this is `isCalculated=true` column then here is the expression which is used to calculate the value. This is basically a copy of corresponding `ReportQueryCalculatedColumn.expression` value. */
   expression?: string;
 }
 
@@ -391,6 +398,10 @@ export interface DataTable {
    * @nullable
    */
   comment?: string | null;
+  /** Which columns were driving the order of rows? Copy of `ReportQuery.parameters.sortBy` which was active at that time this table was generated. */
+  sortBy?: string[];
+  /** Copy of `ReportQuery.parameters.performanceReverseOrder` flag at that time this table was generated. */
+  performanceReverseOrder?: boolean;
   /**
    * List of "Axis" columns. The `index` is important as that tells the position in a Row. The row value of Axis columns are strings.
    */
