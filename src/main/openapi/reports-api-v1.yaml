@@ -627,6 +627,8 @@ components:
                         * Daily schedule: you get an hourly breakdown (or similar)
                         * Weekly schedule: you get a daily breakdown (or similar)
                         * Monthly schedule: you get a weekly breakdown (or similar)
+                        
+                      This will produce `AxisColumn` in the generated `DataTable`.
           type: boolean
         groupByTimePeriod:
           description: >
@@ -669,13 +671,13 @@ components:
 
         groupByTiles:
           description: >
-                      If set to TRUE then you get a break-down on Tile level - otherwise just sum of the traffic of all Tiles.
+                      If set to TRUE then you get a break-down on Tile level - otherwise just sum of the traffic of all Tiles. This will produce `AxisColumn` in the generated `DataTable`.
           type: boolean
           default: false
 
         groupByTileGroupPaths:
           description: >
-                      If set to TRUE then you get a break-down based on content structure (=tileGroupPath). Can not be used together with 'groupByTiles'!
+                      If set to TRUE then you get a break-down based on content structure (=tileGroupPath). Can not be used together with 'groupByTiles'! This will produce `AxisColumn` in the generated `DataTable`.
           type: boolean
           default: false
         groupByTileGroupPathMaxDepth:
@@ -835,6 +837,24 @@ components:
           items:
             type: string
 
+        groupByCampaign:
+          description: >
+                      If set to TRUE then you get a break-down on Campaign names. This will produce `AxisColumn` in the generated `DataTable`.
+          type: boolean
+          default: false
+
+        groupByCampaignMedium:
+          description: >
+                      If set to TRUE then you get a break-down on Campaign medium. This will produce `AxisColumn` in the generated `DataTable`.
+          type: boolean
+          default: false
+
+        groupByCampaignContent:
+          description: >
+                      If set to TRUE then you get a break-down on Campaign content. This will produce `AxisColumn` in the generated `DataTable`.
+          type: boolean
+          default: false
+
 
     ReportQueryReferrerPerformancePluginParameters:
       type: object
@@ -870,6 +890,18 @@ components:
           type: array
           items:
             type: string
+
+        groupByEventSourceType:
+          description: >
+                      If set to TRUE then you get a break-down on source type ("link", "search", "social", "direct" or "internal"). This will produce `AxisColumn` in the generated `DataTable`.
+          type: boolean
+          default: false
+
+        groupByEventSourceName:
+          description: >
+                      If set to TRUE then you get a break-down on source name (like "Facebook", "Google" etc). This will produce `AxisColumn` in the generated `DataTable`.
+          type: boolean
+          default: false
 
 
 

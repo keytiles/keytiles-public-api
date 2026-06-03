@@ -138,6 +138,8 @@ export interface ReportQueryPluginBaseParameters {
   * Daily schedule: you get an hourly breakdown (or similar)
   * Weekly schedule: you get a daily breakdown (or similar)
   * Monthly schedule: you get a weekly breakdown (or similar)
+  
+This will produce `AxisColumn` in the generated `DataTable`.
  */
   groupByTime?: boolean;
   /** You can override the default "time group by" period (driven by your schedule / query range) using this option. Valid value looks like "X<m|h|d|w>" where X is a >0 integer, "m" = minutes, "h" = hours, "d" = days, "w" = weeks. For example "2h" = two hours, "30m" = 30 minutes, "1w" = one week.
@@ -162,10 +164,10 @@ So if you use this option then be prepared for validation errors upon save / re-
   importantEvents?: string[] | null;
   /** To enrich returned DataTable with calculated columns */
   calculatedColumns?: ReportQueryCalculatedColumn[];
-  /** If set to TRUE then you get a break-down on Tile level - otherwise just sum of the traffic of all Tiles.
+  /** If set to TRUE then you get a break-down on Tile level - otherwise just sum of the traffic of all Tiles. This will produce `AxisColumn` in the generated `DataTable`.
  */
   groupByTiles?: boolean;
-  /** If set to TRUE then you get a break-down based on content structure (=tileGroupPath). Can not be used together with 'groupByTiles'!
+  /** If set to TRUE then you get a break-down based on content structure (=tileGroupPath). Can not be used together with 'groupByTiles'! This will produce `AxisColumn` in the generated `DataTable`.
  */
   groupByTileGroupPaths?: boolean;
   /** You can limit how deep you want the report to go down in the content structure. E.g. if you set it to 1 that means you get a break down only for first level.
@@ -241,6 +243,15 @@ Campaign tracking in Keytiles works based on Urchin Tracking Module (UTM) parame
 Campaign tracking in Keytiles works based on Urchin Tracking Module (UTM) parameters specification. For more info visit: [Wikipedia - UTM parameters](https://en.wikipedia.org/wiki/UTM_parameters)
  */
   campaignContentsOnly?: string[];
+  /** If set to TRUE then you get a break-down on Campaign names. This will produce `AxisColumn` in the generated `DataTable`.
+ */
+  groupByCampaign?: boolean;
+  /** If set to TRUE then you get a break-down on Campaign medium. This will produce `AxisColumn` in the generated `DataTable`.
+ */
+  groupByCampaignMedium?: boolean;
+  /** If set to TRUE then you get a break-down on Campaign content. This will produce `AxisColumn` in the generated `DataTable`.
+ */
+  groupByCampaignContent?: boolean;
 }
 
 /**
@@ -259,6 +270,12 @@ So be careful when you are using this filter how you set up `eventSourceTypesOnl
 For example: * If you are curious about events came from "Facebook" then you can send `eventSourceNamesOnly=Facebook`. (note: this belongs to source type "social" - see 'eventSourceTypesOnly') * If you are curious about events came from another website "abc.com" which is an external link then you can send `eventSourceNamesOnly=abc.com`. (note: this belongs to source type "link" - see 'eventSourceTypesOnly') * If you send `eventSourceNamesOnly=Facebook,abc.com` that would give you all events came from "Facebook" OR "abc.com". (note: and then this would belong to source types "link" and "social" - see 'eventSourceTypesOnly') * If you would send `eventSourceNamesOnly=abc.com & eventSourceTypesOnly=direct` you would receive 0 as a result - because for sure nothing comes in from "abc.com" which events came from a "direct" visit ...
  */
   eventSourceNamesOnly?: string[];
+  /** If set to TRUE then you get a break-down on source type ("link", "search", "social", "direct" or "internal"). This will produce `AxisColumn` in the generated `DataTable`.
+ */
+  groupByEventSourceType?: boolean;
+  /** If set to TRUE then you get a break-down on source name (like "Facebook", "Google" etc). This will produce `AxisColumn` in the generated `DataTable`.
+ */
+  groupByEventSourceName?: boolean;
 }
 
 /**
