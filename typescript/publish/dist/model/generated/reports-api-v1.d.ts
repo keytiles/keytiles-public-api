@@ -132,12 +132,15 @@ export interface ReportQueryPluginBaseParameters {
     /** If set to TRUE then you get a break-down on Tile level - otherwise just sum of the traffic of all Tiles. This will produce `AxisColumn` in the generated `DataTable`.
    */
     groupByTiles?: boolean;
-    /** If set to TRUE then you get a break-down based on content structure (=tileGroupPath). Can not be used together with 'groupByTiles'! This will produce `AxisColumn` in the generated `DataTable`.
+    /** If set to TRUE then you get a break-down based on content structure (=tileGroupPath). This will produce `AxisColumn` in the generated `DataTable`.
    */
     groupByTileGroupPaths?: boolean;
     /** You can limit how deep you want the report to go down in the content structure. E.g. if you set it to 1 that means you get a break down only for first level.
    */
     groupByTileGroupPathMaxDepth?: number;
+    /** If set to TRUE then you get a break-down based on devices. This will produce `AxisColumn` in the generated `DataTable`.
+   */
+    groupByUserAgentType?: boolean;
     /** Optional param. Only makes sense if 'groupByTiles=true' or 'groupByTileGroupPaths=true'. How many top-entries you want to see maximum? Using the 'performanceDescendingOrder' basically you can see the top performing ones, or the worst performing ones - up to you.
    */
     limit?: number;
@@ -306,6 +309,24 @@ export interface ReportSetup {
     schedule?: Schedule;
     /** Optionally you can fine grain which Data Container users will receive this report when generated. */
     recipients?: ReportRecipients;
+    /** This is a valid https:// URL which will be invoked when a `ReportInstance` was generated. This way you can hook on this event.
+    
+  The request will be a POST request on the specified endpoint and we follow [Standard Webhooks](https://www.standardwebhooks.com/) - but for now without signing the requests... See this specs and http headers etc for more details!
+    
+  If you request `full` hook (default) then in the `/data` section you will receive the generated `ReportInstance` under `/data/reportInstance` entry - otherwise you just receive `/data/reportInstanceId` entry which you can use to query the generated instance by yourself later via our API. For comfort you always get `/data/containerId` which is the ID of the Data Container the report belongs to (and used in our API URLs).
+    
+  **note:** You can (and should!) also set `webhookAuthHeader` to make the call authenticated.
+    
+  During invoking the webhook Keytiles will apply standard retry policy with exponential back-off but will keep trying to invoke the webhook only for a limited amount of time. We will keep trying with delay "1s" and multiplier 5 max 3 times something like: 1s, 5s, 25s - gives ~30s retrtries period. After this Keytiles gives up trying and for now that's it. Later we plan to improve this mechanism with features like you can query / track / capture failed webhooks but for now this is what we have.
+   */
+    webhookUrl?: string;
+    /** You can (and should!) set authentication used when invoking the `webhookUrl`. You have to provide the bare/full content in this field which just simply passed on the webhook in the standard `authorization` header. E.g. if you use username/password so "basic" auth you need to provide `Basic <base64 encoded data>` here. Same for JWT: `Bearer <token data>`.
+    
+  Since this information is highly sensitive Keytiles only returns this value in this field via GET request in case the user can modify Report Setup (currently Data Container admins). Others just get back something like "****" as value.
+    
+  **note:** In case you use JWT (OAuth) - in current version Keytiles does not support automatic token renewal or similar methods. We are very simple for now. But you can implement renewal / rottion processes externally on your side and use `/v1/reports/containers/rest/{containerId}/report-setup/{reportSetupId}/webhookAuthHeader` POST endpoint to efficiently update this data only.
+   */
+    webhookAuthHeader?: string;
     /**
      * Queries of this report.
      * @nullable
@@ -438,6 +459,8 @@ export interface ReportInstance {
     /** Query range - until this timestamp. This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT
    */
     toTimestamp: number;
+    /** We keep generated instances for a limited ttime only - this UNIX timestamp in UTC (seconds since Epoch) tells when the instance will be automatically deleted. */
+    autoDeletionTimestamp?: number;
     /** */
     sections?: ReportInstanceSection[];
     /**
@@ -594,6 +617,12 @@ Only users with "admin" role in Data Container can create a report setup.
  */
 export declare const postV1ReportsContainersRestContainerIdReportSetup: <TData = AxiosResponse<ReportSetup>>(containerId: string, reportSetup: ReportSetup, params?: PostV1ReportsContainersRestContainerIdReportSetupParams, options?: AxiosRequestConfig) => Promise<TData>;
 /**
+ * Only users who can modify a report setup (has "admin" role in the Data Container) can invoke this endpoint.
+
+ * @summary Subresource method to update `webhookAuthHeader` field only of this specific Report Setup.
+ */
+export declare const postV1ReportsContainersRestContainerIdReportSetupReportSetupIdWebhookAuthHeader: <TData = AxiosResponse<MessageResponseV3Class>>(containerId: string, reportSetupId: string, postV1ReportsContainersRestContainerIdReportSetupReportSetupIdWebhookAuthHeaderBody: string, options?: AxiosRequestConfig) => Promise<TData>;
+/**
  * Anyone with "view" or "admin" role in Data Container can query.
 
  * @summary To query a specific report setup of the Container
@@ -645,6 +674,7 @@ export declare const deleteV1ReportsContainersRestContainerIdReportInstanceRepor
 export type GetV1ReportsContainersRestContainerIdReportSetupOverviewResult = AxiosResponse<ListContainerReportSetupsResponseClass>;
 export type GetV1ReportsContainersRestContainerIdReportSetupOverviewReportSetupIdResult = AxiosResponse<ReportSetupOverview>;
 export type PostV1ReportsContainersRestContainerIdReportSetupResult = AxiosResponse<ReportSetup>;
+export type PostV1ReportsContainersRestContainerIdReportSetupReportSetupIdWebhookAuthHeaderResult = AxiosResponse<MessageResponseV3Class>;
 export type GetV1ReportsContainersRestContainerIdReportSetupReportSetupIdResult = AxiosResponse<ReportSetup>;
 export type PutV1ReportsContainersRestContainerIdReportSetupReportSetupIdResult = AxiosResponse<ReportSetup>;
 export type DeleteV1ReportsContainersRestContainerIdReportSetupReportSetupIdResult = AxiosResponse<ReportSetup>;

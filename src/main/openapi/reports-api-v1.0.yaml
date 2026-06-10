@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '1.1'
+  version: '1.0'
   title: Keytiles Reporting API
   description: >
               API endpoints to manage / query / use Keytiles Reporting.
@@ -166,54 +166,7 @@ paths:
             application/json:
               schema:
                 $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
-
-  '/v1/reports/containers/rest/{containerId}/report-setup/{reportSetupId}/webhookAuthHeader':
-
-    post:
-      summary: Subresource method to update `webhookAuthHeader` field only of this specific Report Setup.
-      description: >
-                  Only users who can modify a report setup (has "admin" role in the Data Container) can invoke this endpoint.
-      tags:
-      - Container level Report setup management REST API
-      parameters:
-        - $ref: 'common-types-v3.yaml#/components/parameters/containerId'
-        - $ref: '#/components/parameters/reportSetupId'
-
-      security:
-      - basicAuth: []
-
-      requestBody:
-        content:
-          text/plain:
-            schema:
-              type: string
-      responses:
-        '200':
-          description: "The auth data was changed successfully."
-          content:
-            application/json:
-              schema:
-                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
-        '401':
-          description: "Authentication failed - you provided invalid credentials"
-          content:
-            application/json:
-              schema:
-                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
-        '403':
-          description: "You do not have permission to do this with the given credentials"
-          content:
-            application/json:
-              schema:
-                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
-        '404':
-          description: "You sent something invalid - more details in the response!"
-          content:
-            application/json:
-              schema:
-                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'              
-
-
+    
 
   '/v1/reports/containers/rest/{containerId}/report-setup/{reportSetupId}':
   
@@ -724,19 +677,13 @@ components:
 
         groupByTileGroupPaths:
           description: >
-                      If set to TRUE then you get a break-down based on content structure (=tileGroupPath). This will produce `AxisColumn` in the generated `DataTable`.
+                      If set to TRUE then you get a break-down based on content structure (=tileGroupPath). Can not be used together with 'groupByTiles'! This will produce `AxisColumn` in the generated `DataTable`.
           type: boolean
           default: false
         groupByTileGroupPathMaxDepth:
           description: >
                       You can limit how deep you want the report to go down in the content structure. E.g. if you set it to 1 that means you get a break down only for first level.
           type: integer
-
-        groupByUserAgentType:
-          description: >
-                      If set to TRUE then you get a break-down based on devices. This will produce `AxisColumn` in the generated `DataTable`.
-          type: boolean
-          default: false
 
         limit:
           description: >
@@ -1070,35 +1017,6 @@ components:
         recipients:
           description: Optionally you can fine grain which Data Container users will receive this report when generated.
           $ref: '#/components/schemas/ReportRecipients'
-        webhookUrl:
-          description: >
-                      This is a valid https:// URL which will be invoked when a `ReportInstance` was generated. This way you can hook on this event.  
-                        
-                      The request will be a POST request on the specified endpoint and we follow [Standard Webhooks](https://www.standardwebhooks.com/) - but for now without signing the requests... See
-                      this specs and http headers etc for more details!  
-                        
-                      If you request `full` hook (default) then in the `/data` section you will receive the generated `ReportInstance` under `/data/reportInstance` entry - otherwise you just receive
-                      `/data/reportInstanceId` entry which you can use to query the generated instance by yourself later via our API. For comfort you always get `/data/containerId` which is the ID of
-                      the Data Container the report belongs to (and used in our API URLs).  
-                        
-                      **note:** You can (and should!) also set `webhookAuthHeader` to make the call authenticated.  
-                        
-                      During invoking the webhook Keytiles will apply standard retry policy with exponential back-off but will keep trying to invoke the webhook only for a limited amount of time.
-                      We will keep trying with delay "1s" and multiplier 5 max 3 times something like: 1s, 5s, 25s - gives ~30s retrtries period. After this Keytiles gives up trying and for now that's it.
-                      Later we plan to improve this mechanism with features like you can query / track / capture failed webhooks but for now this is what we have.
-          type: string
-        webhookAuthHeader:
-          type: string
-          description: >
-                      You can (and should!) set authentication used when invoking the `webhookUrl`. You have to provide the bare/full content in this field which just simply passed on the webhook
-                      in the standard `authorization` header. E.g. if you use username/password so "basic" auth you need to provide `Basic <base64 encoded data>` here. Same for JWT: `Bearer <token data>`.  
-                        
-                      Since this information is highly sensitive Keytiles only returns this value in this field via GET request in case the user can modify Report Setup (currently Data Container admins).
-                      Others just get back something like "****" as value.
-                        
-                      **note:** In case you use JWT (OAuth) - in current version Keytiles does not support automatic token renewal or similar methods. We are very simple for now. But you can implement
-                      renewal / rottion processes externally on your side and use `/v1/reports/containers/rest/{containerId}/report-setup/{reportSetupId}/webhookAuthHeader` POST endpoint to efficiently
-                      update this data only.
         queries:
           description: Queries of this report.
           type: array
@@ -1328,10 +1246,6 @@ components:
           description: >
                         Query range - until this timestamp. This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT  
           example: 1657261221
-        autoDeletionTimestamp:
-          type: integer
-          format: int32
-          description: We keep generated instances for a limited ttime only - this UNIX timestamp in UTC (seconds since Epoch) tells when the instance will be automatically deleted.
         sections:
           type: array
           items:

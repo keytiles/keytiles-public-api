@@ -1,6 +1,12 @@
+# Release 2.2.0
+
+## New features
+
+- `reports-api-v1.yaml` went live in "early access" and getting tested with selected customers, current version is v1.1. More parameters coming in as well as Webhook possibility to ease integration once a report instance is generated.
+
 # Release 2.1.x
 
-Tweaking further of "moving target" reports-api v1
+Tweaking further of "moving target" reports-api v1.x
 
 # Release 2.1.0
 

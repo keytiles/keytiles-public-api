@@ -4,7 +4,7 @@
  * Keytiles Reporting API
  * API endpoints to manage / query / use Keytiles Reporting.
 
- * OpenAPI spec version: 1.0
+ * OpenAPI spec version: 1.1
  */
 import axios from 'axios';
 // eslint-disable-next-line @typescript-eslint/no-redeclare
@@ -65,6 +65,14 @@ Only users with "admin" role in Data Container can create a report setup.
  */
 export const postV1ReportsContainersRestContainerIdReportSetup = (containerId, reportSetup, params, options) => {
     return axios.post(`/v1/reports/containers/rest/${containerId}/report-setup`, reportSetup, Object.assign(Object.assign({}, options), { params: Object.assign(Object.assign({}, params), options === null || options === void 0 ? void 0 : options.params) }));
+};
+/**
+ * Only users who can modify a report setup (has "admin" role in the Data Container) can invoke this endpoint.
+
+ * @summary Subresource method to update `webhookAuthHeader` field only of this specific Report Setup.
+ */
+export const postV1ReportsContainersRestContainerIdReportSetupReportSetupIdWebhookAuthHeader = (containerId, reportSetupId, postV1ReportsContainersRestContainerIdReportSetupReportSetupIdWebhookAuthHeaderBody, options) => {
+    return axios.post(`/v1/reports/containers/rest/${containerId}/report-setup/${reportSetupId}/webhookAuthHeader`, postV1ReportsContainersRestContainerIdReportSetupReportSetupIdWebhookAuthHeaderBody, options);
 };
 /**
  * Anyone with "view" or "admin" role in Data Container can query.
