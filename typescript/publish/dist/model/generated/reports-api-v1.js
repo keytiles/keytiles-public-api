@@ -75,7 +75,7 @@ export const postV1ReportsContainersRestContainerIdReportSetupReportSetupIdWebho
     return axios.post(`/v1/reports/containers/rest/${containerId}/report-setup/${reportSetupId}/webhookAuthHeader`, postV1ReportsContainersRestContainerIdReportSetupReportSetupIdWebhookAuthHeaderBody, options);
 };
 /**
- * Anyone with "view" or "admin" role in Data Container can query.
+ * Anyone with "view" / "admin" / "developer" role in Data Container can query.
 
  * @summary To query a specific report setup of the Container
  */
@@ -85,7 +85,7 @@ export const getV1ReportsContainersRestContainerIdReportSetupReportSetupId = (co
 /**
  * The 'resourceVersion' field is very important here - it must match with the version the server currently has otherwise you will get a 409 error. This mechanism helps to detect possible race conditions.
   
-Only users with "admin" role in the Data Container can modify a report setup.
+Only users with "admin" role in the Data Container can fully modify a report setup, "developer" role can only modify Webhook parts.
 
  * @summary To modify an existing report setup.
  */

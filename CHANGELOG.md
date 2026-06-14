@@ -1,3 +1,10 @@
+# Release 2.2.1
+
+## Additions
+
+- Introducing `GenerateReportRequestClass.skipWebhook` in `reports-api-v1.yaml` - we forgot about this practical possibility...
+- Some comment fixes in `reports-api-v1.yaml`.
+
 # Release 2.2.0
 
 ## New features

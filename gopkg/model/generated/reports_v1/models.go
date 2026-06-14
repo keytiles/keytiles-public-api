@@ -190,8 +190,16 @@ type GenerateReportRequestClass struct {
 	IsTestOnly *bool `json:"isTestOnly,omitempty" yaml:"isTestOnly,omitempty"`
 
 	// SkipNotifications If this is set to TRUE then recipients will not receive any notification from Keytiles when this Report Instance is created.
+	//
+	// **Note:** Test runs (`isTestOnly=true`) are skipping notifications anyways by default.
+	//
 	// **IMPORTANT!** Use this with caution! This option was introduced mostly because of internal reasons under certain circumstances.
 	SkipNotifications *bool `json:"skipNotifications,omitempty" yaml:"skipNotifications,omitempty"`
+
+	// SkipWebhook If this is set to TRUE then webhook (see `webhookUrl`) will not be invoked.
+	//
+	// **Note:** unlike `skipNotifications` test runs (`isTestOnly=true`) are not skipping webhooks by default! Maybe goal of the test run is to test webhooks?  ;-)
+	SkipWebhook *bool `json:"skipWebhook,omitempty" yaml:"skipWebhook,omitempty"`
 
 	// ToTimestamp When executed manually (not scheduled way) defines the end of the query range - you are interested in data which time is <= than this timestamp.
 	//
@@ -432,7 +440,9 @@ type ReportQueryPluginBaseParameters struct {
 	// LanguagesOnly Data filter option. List of ISO-639-2 language codes (e.g. 'en', 'de', ...) you want to limit the query for. If you list more values here then they are interpreted with an OR operator.
 	LanguagesOnly *[]string `json:"languagesOnly,omitempty" yaml:"languagesOnly,omitempty"`
 
-	// Limit Optional param. Only makes sense if 'groupByTiles=true' or 'groupByTileGroupPaths=true'. How many top-entries you want to see maximum? Using the 'performanceDescendingOrder' basically you can see the top performing ones, or the worst performing ones - up to you.
+	// Limit Optional param. How many top-entries you want to see maximum?
+	//
+	// Queries can return massive amount of rows if we use "groupByXXX" options in query parameters. More we use more rows we might get. And this is bad for readability. So we have the possibility to shrink the results. If set then only this much top/worst performing (see `performanceReverseOrder`) entries are kept others are cut.
 	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
 
 	// PerformanceReverseOrder By default we order the data performance top-down order: best performers first. Unless this flag say actually we want to see worst performers first.

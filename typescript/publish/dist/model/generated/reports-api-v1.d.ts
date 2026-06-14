@@ -141,7 +141,9 @@ export interface ReportQueryPluginBaseParameters {
     /** If set to TRUE then you get a break-down based on devices. This will produce `AxisColumn` in the generated `DataTable`.
    */
     groupByUserAgentType?: boolean;
-    /** Optional param. Only makes sense if 'groupByTiles=true' or 'groupByTileGroupPaths=true'. How many top-entries you want to see maximum? Using the 'performanceDescendingOrder' basically you can see the top performing ones, or the worst performing ones - up to you.
+    /** Optional param. How many top-entries you want to see maximum?
+    
+  Queries can return massive amount of rows if we use "groupByXXX" options in query parameters. More we use more rows we might get. And this is bad for readability. So we have the possibility to shrink the results. If set then only this much top/worst performing (see `performanceReverseOrder`) entries are kept others are cut.
    */
     limit?: number;
     /** Sort the list based on the values of these columns - order matters!
@@ -527,9 +529,17 @@ export interface GenerateReportRequestClass {
    */
     executeQueryIdsOnly?: string[];
     /** If this is set to TRUE then recipients will not receive any notification from Keytiles when this Report Instance is created.
+    
+  **Note:** Test runs (`isTestOnly=true`) are skipping notifications anyways by default.
+    
   **IMPORTANT!** Use this with caution! This option was introduced mostly because of internal reasons under certain circumstances.
    */
     skipNotifications?: boolean;
+    /** If this is set to TRUE then webhook (see `webhookUrl`) will not be invoked.
+    
+  **Note:** unlike `skipNotifications` test runs (`isTestOnly=true`) are not skipping webhooks by default! Maybe goal of the test run is to test webhooks?  ;-)
+   */
+    skipWebhook?: boolean;
     groupByTime?: string;
     /** When executed manually (not scheduled way) defines the beginning of the query range - you are interested in data which time is >= than this timestamp.
     
@@ -623,7 +633,7 @@ export declare const postV1ReportsContainersRestContainerIdReportSetup: <TData =
  */
 export declare const postV1ReportsContainersRestContainerIdReportSetupReportSetupIdWebhookAuthHeader: <TData = AxiosResponse<MessageResponseV3Class>>(containerId: string, reportSetupId: string, postV1ReportsContainersRestContainerIdReportSetupReportSetupIdWebhookAuthHeaderBody: string, options?: AxiosRequestConfig) => Promise<TData>;
 /**
- * Anyone with "view" or "admin" role in Data Container can query.
+ * Anyone with "view" / "admin" / "developer" role in Data Container can query.
 
  * @summary To query a specific report setup of the Container
  */
@@ -631,7 +641,7 @@ export declare const getV1ReportsContainersRestContainerIdReportSetupReportSetup
 /**
  * The 'resourceVersion' field is very important here - it must match with the version the server currently has otherwise you will get a 409 error. This mechanism helps to detect possible race conditions.
   
-Only users with "admin" role in the Data Container can modify a report setup.
+Only users with "admin" role in the Data Container can fully modify a report setup, "developer" role can only modify Webhook parts.
 
  * @summary To modify an existing report setup.
  */
