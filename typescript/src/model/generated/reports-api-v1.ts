@@ -9,7 +9,7 @@ import { ScheduleDayName, Schedule, HourlyScheduleSetup, DailyScheduleSetup, Wee
  * Keytiles Reporting API
  * API endpoints to manage / query / use Keytiles Reporting.
 
- * OpenAPI spec version: 1.2
+ * OpenAPI spec version: 1.3
  */
 import axios from 'axios';
 import type {
@@ -604,6 +604,19 @@ export interface UserReportSetupNotifBlacklistStatusClass {
   isBlacklisted: boolean;
 }
 
+export interface ExportReportInstanceRequestClass {
+  /** The format to export to. Current supported formats are:
+  * "xlsx" - Excel sheet with multiple sheets for each included sections
+
+In future releases also might come:
+  * "csv" - standard CSV file - can export only one section - see `sectionsOnly`
+  * "csv-pack" - multiple CSV files for each included sections in a .zip file
+ */
+  format: string;
+  /** Optional list of section zero-based indexes (in the array) to include into the export. */
+  sectionsOnly?: number[];
+}
+
 export interface GenerateReportRequestClass {
   /** Set it to TRUE if you just want to test the report generation.
 In this case the recipients (if set in report setup) will not be notified about this report at all. And only the user who generated it will receive a notification when report is ready to view. But apart from this the full report will be generated.
@@ -904,6 +917,24 @@ export const postV1ReportsContainersActionsContainerIdReportSetupReportSetupIdGe
   }
 
 /**
+ * Anyone who can view the report instance ("admin" / "view" role in Data Container) can trigger the export.
+
+ * @summary To export the report instance into a file.
+ */
+export const postV1ReportsContainersActionsContainerIdReportInstanceReportInstanceIdExport = <TData = AxiosResponse<Blob>>(
+    containerId: string,
+    reportInstanceId: string,
+    exportReportInstanceRequestClass: ExportReportInstanceRequestClass, options?: AxiosRequestConfig
+ ): Promise<TData> => {
+    return axios.post(
+      `/v1/reports/containers/actions/${containerId}/report-instance/${reportInstanceId}/export`,
+      exportReportInstanceRequestClass,{
+        responseType: 'blob',
+    ...options,}
+    );
+  }
+
+/**
  * Anyone with "view" or "admin" role in Data Container can query.
 
  * @summary To query a specific report instance with the given ID of the Data Container
@@ -943,5 +974,6 @@ export type PostV1ReportsContainersActionsContainerIdReportSetupReportSetupIdSto
 export type PostV1ReportsContainersActionsContainerIdReportSetupReportSetupIdRestartUserNotificationsResult = AxiosResponse<MessageResponseV3Class>
 export type PostV1ReportsContainersActionsContainerIdReportSetupReportSetupIdCheckUserNotificationStatusResult = AxiosResponse<UserReportSetupNotifBlacklistStatusClass>
 export type PostV1ReportsContainersActionsContainerIdReportSetupReportSetupIdGenerateResult = AxiosResponse<MessageResponseV3Class>
+export type PostV1ReportsContainersActionsContainerIdReportInstanceReportInstanceIdExportResult = AxiosResponse<Blob>
 export type GetV1ReportsContainersRestContainerIdReportInstanceReportInstanceIdResult = AxiosResponse<ReportInstance>
 export type DeleteV1ReportsContainersRestContainerIdReportInstanceReportInstanceIdResult = AxiosResponse<MessageResponseV3Class>

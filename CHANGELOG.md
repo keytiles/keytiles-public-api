@@ -1,3 +1,10 @@
+# Release 2.4.0
+
+## New features
+
+- `reports-api-v1.yaml` - v1.3 release
+  - Introducing repport instance export endpoint
+
 # Release 2.3.0
 
 ## New features

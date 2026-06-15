@@ -166,6 +166,20 @@ type DataTableDataColumn struct {
 // DataTableRow A "row" of data.
 type DataTableRow = []DataTableCell
 
+// ExportReportInstanceRequestClass defines model for ExportReportInstanceRequestClass.
+type ExportReportInstanceRequestClass struct {
+	// Format The format to export to. Current supported formats are:
+	//   * "xlsx" - Excel sheet with multiple sheets for each included sections
+	//
+	// In future releases also might come:
+	//   * "csv" - standard CSV file - can export only one section - see `sectionsOnly`
+	//   * "csv-pack" - multiple CSV files for each included sections in a .zip file
+	Format string `json:"format" yaml:"format"`
+
+	// SectionsOnly Optional list of section zero-based indexes (in the array) to include into the export.
+	SectionsOnly *[]int `json:"sectionsOnly,omitempty" yaml:"sectionsOnly,omitempty"`
+}
+
 // GenerateReportRequestClass defines model for GenerateReportRequestClass.
 type GenerateReportRequestClass struct {
 	// ExecuteQueryIdsOnly A report might contain multiple ReportQuery parts, all of them has its unique ID within the report.
@@ -665,6 +679,9 @@ type PutV1ReportsContainersRestContainerIdReportSetupReportSetupIdParams struct 
 
 // PostV1ReportsContainersRestContainerIdReportSetupReportSetupIdWebhookAuthHeaderTextBody defines parameters for PostV1ReportsContainersRestContainerIdReportSetupReportSetupIdWebhookAuthHeader.
 type PostV1ReportsContainersRestContainerIdReportSetupReportSetupIdWebhookAuthHeaderTextBody = string
+
+// PostV1ReportsContainersActionsContainerIdReportInstanceReportInstanceIdExportJSONRequestBody defines body for PostV1ReportsContainersActionsContainerIdReportInstanceReportInstanceIdExport for application/json ContentType.
+type PostV1ReportsContainersActionsContainerIdReportInstanceReportInstanceIdExportJSONRequestBody = ExportReportInstanceRequestClass
 
 // PostV1ReportsContainersActionsContainerIdReportSetupReportSetupIdCheckUserNotificationStatusJSONRequestBody defines body for PostV1ReportsContainersActionsContainerIdReportSetupReportSetupIdCheckUserNotificationStatus for application/json ContentType.
 type PostV1ReportsContainersActionsContainerIdReportSetupReportSetupIdCheckUserNotificationStatusJSONRequestBody = UserReferenceClass

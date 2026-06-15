@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '1.3'
+  version: '1.2'
   title: Keytiles Reporting API
   description: >
               API endpoints to manage / query / use Keytiles Reporting.
@@ -19,9 +19,6 @@ tags:
   description: Endpoints to execute certain actions related to Container level report setups - like listing available instances or generate a new instance.
 - name: Container level Report instance REST API
   description: Endpoints to query / delete Container level concrete report instances (of setups)
-- name: Container level Report instance related actions
-  description: Endpoints to execute certain actions related to Container level report instances.
-
 
 paths:
 
@@ -644,60 +641,6 @@ paths:
               schema:
                 $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
 
-  '/v1/reports/containers/actions/{containerId}/report-instance/{reportInstanceId}/export':
-   post:
-      summary: "To export the report instance into a file."
-      description: >
-                Anyone who can view the report instance ("admin" / "view" role in Data Container) can trigger the export.
-      tags:
-      - Container level Report instance related actions
-      parameters:
-        - $ref: 'common-types-v3.yaml#/components/parameters/containerId'
-        - $ref: '#/components/parameters/reportInstanceId'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ExportReportInstanceRequestClass'
-
-      security:
-      - basicAuth: []
-
-      responses:
-        '200':
-          description: > 
-                      A file is returned to save - content type strongly depends on the format you requested!
-          content:
-            'application/octet-stream':
-              schema:
-                type: string
-                format: binary
-                description: The exported file byte stream
-              
-        '400':
-          description: "There were problems with the request or the resource you sent on this request - more details you get in the response."
-          content:
-            application/json:
-              schema:
-                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
-        '401':
-          description: "Authentication failed - you provided invalid credentials or not at all"
-          content:
-            application/json:
-              schema:
-                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
-        '403':
-          description: "You do not have permission to do this with the given credentials"
-          content:
-            application/json:
-              schema:
-                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
-        '404':
-          description: "The container does not exist (or disabled) or the requested report instance does not exist - more details in the response!"
-          content:
-            application/json:
-              schema:
-                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
 
   '/v1/reports/containers/rest/{containerId}/report-instance/{reportInstanceId}':
   
@@ -1687,26 +1630,6 @@ components:
         isBlacklisted:
           type: boolean
           description: TRUE if blacklisted - FALSE otherwise
-
-    ExportReportInstanceRequestClass:
-      type: object
-      required:
-        - format
-      properties:
-        format:
-          type: string
-          description: >
-                      The format to export to. Current supported formats are:
-                        * "xlsx" - Excel sheet with multiple sheets for each included sections
-                      
-                      In future releases also might come:
-                        * "csv" - standard CSV file - can export only one section - see `sectionsOnly`
-                        * "csv-pack" - multiple CSV files for each included sections in a .zip file
-        sectionsOnly:
-          type: array
-          items:
-            type: integer
-          description: Optional list of section zero-based indexes (in the array) to include into the export.
 
     GenerateReportRequestClass:
       type: object

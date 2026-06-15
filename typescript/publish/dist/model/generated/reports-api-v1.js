@@ -4,7 +4,7 @@
  * Keytiles Reporting API
  * API endpoints to manage / query / use Keytiles Reporting.
 
- * OpenAPI spec version: 1.2
+ * OpenAPI spec version: 1.3
  */
 import axios from 'axios';
 // eslint-disable-next-line @typescript-eslint/no-redeclare
@@ -147,6 +147,14 @@ Only with "admin" role in Data Container can trigger a generation manually for n
  */
 export const postV1ReportsContainersActionsContainerIdReportSetupReportSetupIdGenerate = (containerId, reportSetupId, generateReportRequestClass, options) => {
     return axios.post(`/v1/reports/containers/actions/${containerId}/report-setup/${reportSetupId}/generate`, generateReportRequestClass, options);
+};
+/**
+ * Anyone who can view the report instance ("admin" / "view" role in Data Container) can trigger the export.
+
+ * @summary To export the report instance into a file.
+ */
+export const postV1ReportsContainersActionsContainerIdReportInstanceReportInstanceIdExport = (containerId, reportInstanceId, exportReportInstanceRequestClass, options) => {
+    return axios.post(`/v1/reports/containers/actions/${containerId}/report-instance/${reportInstanceId}/export`, exportReportInstanceRequestClass, Object.assign({ responseType: 'blob' }, options));
 };
 /**
  * Anyone with "view" or "admin" role in Data Container can query.
