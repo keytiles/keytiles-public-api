@@ -1,3 +1,10 @@
+# Release 2.3.0
+
+## New features
+
+- `reports-api-v1.yaml` - v1.2 release
+  - Introducing notofication blacklist management action endpoints.
+
 # Release 2.2.1
 
 ## Additions

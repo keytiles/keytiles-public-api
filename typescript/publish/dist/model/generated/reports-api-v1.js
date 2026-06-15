@@ -4,7 +4,7 @@
  * Keytiles Reporting API
  * API endpoints to manage / query / use Keytiles Reporting.
 
- * OpenAPI spec version: 1.1
+ * OpenAPI spec version: 1.2
  */
 import axios from 'axios';
 // eslint-disable-next-line @typescript-eslint/no-redeclare
@@ -109,6 +109,33 @@ export const deleteV1ReportsContainersRestContainerIdReportSetupReportSetupId = 
  */
 export const postV1ReportsContainersActionsContainerIdReportSetupReportSetupIdListReportInstanceOverviews = (containerId, reportSetupId, listReportInstancesRequestClass, options) => {
     return axios.post(`/v1/reports/containers/actions/${containerId}/report-setup/${reportSetupId}/list-report-instance-overviews`, listReportInstancesRequestClass, options);
+};
+/**
+ * Users can be blacklisted regarding notifications of report setups. The given users will be added to the blacklist.
+Any user can request this for himself or users who can admin the report can also do this.
+
+ * @summary Blacklist certain users for notifications regarding this report setup.
+ */
+export const postV1ReportsContainersActionsContainerIdReportSetupReportSetupIdStopUserNotifications = (containerId, reportSetupId, userReferenceListClass, options) => {
+    return axios.post(`/v1/reports/containers/actions/${containerId}/report-setup/${reportSetupId}/stop-user-notifications`, userReferenceListClass, options);
+};
+/**
+ * Users can be blacklisted regarding notifications of report setups. The given users will be removed from the blacklist and will start to receive notifications again.
+Any user can request this for himself or users who can admin the report can also do this.
+
+ * @summary Removes potentially notification blacklisted users regarding this report setup.
+ */
+export const postV1ReportsContainersActionsContainerIdReportSetupReportSetupIdRestartUserNotifications = (containerId, reportSetupId, userReferenceListClass, options) => {
+    return axios.post(`/v1/reports/containers/actions/${containerId}/report-setup/${reportSetupId}/restart-user-notifications`, userReferenceListClass, options);
+};
+/**
+ * Users can be blacklisted regarding notifications of report setups. This endpoint checks the status of a specific user if (s)he is blacklisted or not.
+Any user can request this for himself or users who can admin the report can also do this.
+
+ * @summary Checks if the given user is on notification blacklist or not.
+ */
+export const postV1ReportsContainersActionsContainerIdReportSetupReportSetupIdCheckUserNotificationStatus = (containerId, reportSetupId, userReferenceClass, options) => {
+    return axios.post(`/v1/reports/containers/actions/${containerId}/report-setup/${reportSetupId}/check-user-notification-status`, userReferenceClass, options);
 };
 /**
  * When triggered manually then the report generation starts immediately. You can fine tune the report generation (mostly for testing purposes) - see request body!

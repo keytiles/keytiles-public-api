@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '1.2'
+  version: '1.1'
   title: Keytiles Reporting API
   description: >
               API endpoints to manage / query / use Keytiles Reporting.
@@ -411,171 +411,6 @@ paths:
               schema:
                 $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
 
-  '/v1/reports/containers/actions/{containerId}/report-setup/{reportSetupId}/stop-user-notifications':
-
-    post:
-      summary: "Blacklist certain users for notifications regarding this report setup."
-      description: >
-                Users can be blacklisted regarding notifications of report setups. The given users will be added to the blacklist.  
-
-                Any user can request this for himself or users who can admin the report can also do this.
-      tags:
-      - Container level Report setup related actions
-      parameters:
-        - $ref: 'common-types-v3.yaml#/components/parameters/containerId'
-        - $ref: '#/components/parameters/reportSetupId'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UserReferenceListClass'
-
-      security:
-      - basicAuth: []
-
-      responses:
-        '200':
-          description: The users are added to the notification blacklist.
-          content:
-            'application/json':
-              schema:
-                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
-        '400':
-          description: "There were problems with the request or the resource you sent on this request - more details you get in the response."
-          content:
-            application/json:
-              schema:
-                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
-        '401':
-          description: "Authentication failed - you provided invalid credentials or not at all"
-          content:
-            application/json:
-              schema:
-                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
-        '403':
-          description: "You do not have permission to do this with the given credentials"
-          content:
-            application/json:
-              schema:
-                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
-        '404':
-          description: "The container does not exist (or disabled) or the requested report setup does not exist - more details in the response!"
-          content:
-            application/json:
-              schema:
-                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
-
-  '/v1/reports/containers/actions/{containerId}/report-setup/{reportSetupId}/restart-user-notifications':
-
-    post:
-      summary: "Removes potentially notification blacklisted users regarding this report setup."
-      description: >
-                Users can be blacklisted regarding notifications of report setups. The given users will be removed from the blacklist
-                and will start to receive notifications again.  
-
-                Any user can request this for himself or users who can admin the report can also do this.
-      tags:
-      - Container level Report setup related actions
-      parameters:
-        - $ref: 'common-types-v3.yaml#/components/parameters/containerId'
-        - $ref: '#/components/parameters/reportSetupId'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UserReferenceListClass'
-
-      security:
-      - basicAuth: []
-
-      responses:
-        '200':
-          description: The users are removed from the notification blacklist.
-          content:
-            'application/json':
-              schema:
-                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
-        '400':
-          description: "There were problems with the request or the resource you sent on this request - more details you get in the response."
-          content:
-            application/json:
-              schema:
-                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
-        '401':
-          description: "Authentication failed - you provided invalid credentials or not at all"
-          content:
-            application/json:
-              schema:
-                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
-        '403':
-          description: "You do not have permission to do this with the given credentials"
-          content:
-            application/json:
-              schema:
-                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
-        '404':
-          description: "The container does not exist (or disabled) or the requested report setup does not exist - more details in the response!"
-          content:
-            application/json:
-              schema:
-                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
-
-  '/v1/reports/containers/actions/{containerId}/report-setup/{reportSetupId}/check-user-notification-status':
-
-    post:
-      summary: "Checks if the given user is on notification blacklist or not."
-      description: >
-                Users can be blacklisted regarding notifications of report setups. This endpoint checks the status of a specific user
-                if (s)he is blacklisted or not.  
-
-                Any user can request this for himself or users who can admin the report can also do this.
-      tags:
-      - Container level Report setup related actions
-      parameters:
-        - $ref: 'common-types-v3.yaml#/components/parameters/containerId'
-        - $ref: '#/components/parameters/reportSetupId'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UserReferenceClass'
-
-      security:
-      - basicAuth: []
-
-      responses:
-        '200':
-          description: The status of the user is returned.
-          content:
-            'application/json':
-              schema:
-                $ref: '#/components/schemas/UserReportSetupNotifBlacklistStatusClass'
-        '400':
-          description: "There were problems with the request or the resource you sent on this request - more details you get in the response."
-          content:
-            application/json:
-              schema:
-                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
-        '401':
-          description: "Authentication failed - you provided invalid credentials or not at all"
-          content:
-            application/json:
-              schema:
-                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
-        '403':
-          description: "You do not have permission to do this with the given credentials"
-          content:
-            application/json:
-              schema:
-                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
-        '404':
-          description: "The container does not exist (or disabled) or the requested report setup does not exist - more details in the response!"
-          content:
-            application/json:
-              schema:
-                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
-
-
   '/v1/reports/containers/actions/{containerId}/report-setup/{reportSetupId}/generate':
 
     post:
@@ -794,11 +629,9 @@ components:
 
     ReportRecipients:
       description: >
-                  This is an optional setup - controlls who will receive notification about these reports once new instance is available.  
+                  This is an optional setup - controlls who will receive these reports.  
                     
-                  So **please note**: this is NOT controlling who will see the instances but controlling who will be notified!  
-                    
-                  If not given at all then ALL Data Container users will get the notification. Otherwise if given then Keytiles users who are matching to ANY of the given criteria will receive the report.  
+                  If not given at all then ALL Data Container users will get the report. Otherwise if given then Keytiles users who are matching to ANY of the given criteria will receive the report.  
       type: object
       nullable: true
       properties:
@@ -811,7 +644,7 @@ components:
           items:
             type: string
         roles:
-          description: Optional entry. All Data Container users who has ANY of the listed roles will receive the notification.
+          description: Optional entry. All Data Container users who has ANY of the listed roles will receive this report.
           type: array
           items:
             $ref: '#/components/schemas/ReportRecipientsRoles'
@@ -1596,40 +1429,6 @@ components:
             $ref: '#/components/schemas/ReportInstanceOverview'
           nullable: false
           description: 'Returned report instances of the report setup matching the request specs - in creation time descending order.'
-
-    UserReferenceClass:
-      type: object
-      description: Holds a reference to a Keytiles User - either by ID / email or both
-      properties:
-        id:
-          type: string
-          description: The ID of the user in Keytiles
-        email:
-          type: string
-          description: The Email address of the user in Keytiles
-
-    UserReferenceListClass:
-      type: array
-      items:
-        $ref: '#/components/schemas/UserReferenceClass'
-
-    UserReportSetupNotifBlacklistStatusClass:
-      description: Tells if the given Keytiles user is on notification blacklist of the given ReportSetup or not.
-      type: object
-      required:
-        - user
-        - reportSetupId
-        - isBlacklisted
-      properties:
-        user:
-          description: Which User are we talking about?
-          $ref: '#/components/schemas/UserReferenceClass'
-        reportSetupId:
-          type: string
-          description: Which ReportSetup are we talking about?
-        isBlacklisted:
-          type: boolean
-          description: TRUE if blacklisted - FALSE otherwise
 
     GenerateReportRequestClass:
       type: object

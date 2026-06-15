@@ -512,11 +512,13 @@ type ReportQueryReferrerPerformancePluginParameters struct {
 	GroupByEventSourceType *bool `json:"groupByEventSourceType,omitempty" yaml:"groupByEventSourceType,omitempty"`
 }
 
-// ReportRecipients This is an optional setup - controlls who will receive these reports.
+// ReportRecipients This is an optional setup - controlls who will receive notification about these reports once new instance is available.
 //
-// If not given at all then ALL Data Container users will get the report. Otherwise if given then Keytiles users who are matching to ANY of the given criteria will receive the report.
+// So **please note**: this is NOT controlling who will see the instances but controlling who will be notified!
+//
+// If not given at all then ALL Data Container users will get the notification. Otherwise if given then Keytiles users who are matching to ANY of the given criteria will receive the report.
 type ReportRecipients struct {
-	// Roles Optional entry. All Data Container users who has ANY of the listed roles will receive this report.
+	// Roles Optional entry. All Data Container users who has ANY of the listed roles will receive the notification.
 	Roles *[]ReportRecipientsRoles `json:"roles,omitempty" yaml:"roles,omitempty"`
 
 	// Users Optional entry. List of specific Keytiles users (email or ID) to send the reports to. The users who are listed here will get the reports for sure if
@@ -543,9 +545,11 @@ type ReportSetup struct {
 	// Queries Queries of this report.
 	Queries *[]ReportQuery `json:"queries" yaml:"queries"`
 
-	// Recipients This is an optional setup - controlls who will receive these reports.
+	// Recipients This is an optional setup - controlls who will receive notification about these reports once new instance is available.
 	//
-	// If not given at all then ALL Data Container users will get the report. Otherwise if given then Keytiles users who are matching to ANY of the given criteria will receive the report.
+	// So **please note**: this is NOT controlling who will see the instances but controlling who will be notified!
+	//
+	// If not given at all then ALL Data Container users will get the notification. Otherwise if given then Keytiles users who are matching to ANY of the given criteria will receive the report.
 	Recipients *ReportRecipients `json:"recipients" yaml:"recipients"`
 
 	// ResourceVersion This is the resource version (which is automatically incremented by every change). When you do an update (PUT) you need to send it back! The server will check if it is matching with the resource version he has. If not then that means someone else already did an update in the meantime therefore your request can not be accepted - otherwise you may overwrite the changes someone did.
@@ -596,6 +600,30 @@ type ReportsEndpointErrorCodes string
 // ReportsEndpointLocalErrorCodes defines model for ReportsEndpointLocalErrorCodes.
 type ReportsEndpointLocalErrorCodes string
 
+// UserReferenceClass Holds a reference to a Keytiles User - either by ID / email or both
+type UserReferenceClass struct {
+	// Email The Email address of the user in Keytiles
+	Email *string `json:"email,omitempty" yaml:"email,omitempty"`
+
+	// Id The ID of the user in Keytiles
+	Id *string `json:"id,omitempty" yaml:"id,omitempty"`
+}
+
+// UserReferenceListClass defines model for UserReferenceListClass.
+type UserReferenceListClass = []UserReferenceClass
+
+// UserReportSetupNotifBlacklistStatusClass Tells if the given Keytiles user is on notification blacklist of the given ReportSetup or not.
+type UserReportSetupNotifBlacklistStatusClass struct {
+	// IsBlacklisted TRUE if blacklisted - FALSE otherwise
+	IsBlacklisted bool `json:"isBlacklisted" yaml:"isBlacklisted"`
+
+	// ReportSetupId Which ReportSetup are we talking about?
+	ReportSetupId string `json:"reportSetupId" yaml:"reportSetupId"`
+
+	// User Holds a reference to a Keytiles User - either by ID / email or both
+	User UserReferenceClass `json:"user" yaml:"user"`
+}
+
 // ReportInstanceId defines model for reportInstanceId.
 type ReportInstanceId = string
 
@@ -638,11 +666,20 @@ type PutV1ReportsContainersRestContainerIdReportSetupReportSetupIdParams struct 
 // PostV1ReportsContainersRestContainerIdReportSetupReportSetupIdWebhookAuthHeaderTextBody defines parameters for PostV1ReportsContainersRestContainerIdReportSetupReportSetupIdWebhookAuthHeader.
 type PostV1ReportsContainersRestContainerIdReportSetupReportSetupIdWebhookAuthHeaderTextBody = string
 
+// PostV1ReportsContainersActionsContainerIdReportSetupReportSetupIdCheckUserNotificationStatusJSONRequestBody defines body for PostV1ReportsContainersActionsContainerIdReportSetupReportSetupIdCheckUserNotificationStatus for application/json ContentType.
+type PostV1ReportsContainersActionsContainerIdReportSetupReportSetupIdCheckUserNotificationStatusJSONRequestBody = UserReferenceClass
+
 // PostV1ReportsContainersActionsContainerIdReportSetupReportSetupIdGenerateJSONRequestBody defines body for PostV1ReportsContainersActionsContainerIdReportSetupReportSetupIdGenerate for application/json ContentType.
 type PostV1ReportsContainersActionsContainerIdReportSetupReportSetupIdGenerateJSONRequestBody = GenerateReportRequestClass
 
 // PostV1ReportsContainersActionsContainerIdReportSetupReportSetupIdListReportInstanceOverviewsJSONRequestBody defines body for PostV1ReportsContainersActionsContainerIdReportSetupReportSetupIdListReportInstanceOverviews for application/json ContentType.
 type PostV1ReportsContainersActionsContainerIdReportSetupReportSetupIdListReportInstanceOverviewsJSONRequestBody = ListReportInstancesRequestClass
+
+// PostV1ReportsContainersActionsContainerIdReportSetupReportSetupIdRestartUserNotificationsJSONRequestBody defines body for PostV1ReportsContainersActionsContainerIdReportSetupReportSetupIdRestartUserNotifications for application/json ContentType.
+type PostV1ReportsContainersActionsContainerIdReportSetupReportSetupIdRestartUserNotificationsJSONRequestBody = UserReferenceListClass
+
+// PostV1ReportsContainersActionsContainerIdReportSetupReportSetupIdStopUserNotificationsJSONRequestBody defines body for PostV1ReportsContainersActionsContainerIdReportSetupReportSetupIdStopUserNotifications for application/json ContentType.
+type PostV1ReportsContainersActionsContainerIdReportSetupReportSetupIdStopUserNotificationsJSONRequestBody = UserReferenceListClass
 
 // PostV1ReportsContainersRestContainerIdReportSetupJSONRequestBody defines body for PostV1ReportsContainersRestContainerIdReportSetup for application/json ContentType.
 type PostV1ReportsContainersRestContainerIdReportSetupJSONRequestBody = ReportSetup

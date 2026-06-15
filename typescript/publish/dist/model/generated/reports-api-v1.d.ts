@@ -72,9 +72,11 @@ export declare const ReportRecipientsRoles: {
     readonly developer: "developer";
 };
 /**
- * This is an optional setup - controlls who will receive these reports.
+ * This is an optional setup - controlls who will receive notification about these reports once new instance is available.
   
-If not given at all then ALL Data Container users will get the report. Otherwise if given then Keytiles users who are matching to ANY of the given criteria will receive the report.
+So **please note**: this is NOT controlling who will see the instances but controlling who will be notified!
+  
+If not given at all then ALL Data Container users will get the notification. Otherwise if given then Keytiles users who are matching to ANY of the given criteria will receive the report.
 
  * @nullable
  */
@@ -84,7 +86,7 @@ export type ReportRecipients = {
    * they are not associated with the Data Container anyhow
    */
     users?: string[];
-    /** Optional entry. All Data Container users who has ANY of the listed roles will receive this report. */
+    /** Optional entry. All Data Container users who has ANY of the listed roles will receive the notification. */
     roles?: ReportRecipientsRoles[];
 } | null;
 export type ReportQueryPlugin = typeof ReportQueryPlugin[keyof typeof ReportQueryPlugin];
@@ -518,6 +520,27 @@ export interface ListContainerReportInstancesResponseClass {
      */
     reportInstances?: ReportInstanceOverview[];
 }
+/**
+ * Holds a reference to a Keytiles User - either by ID / email or both
+ */
+export interface UserReferenceClass {
+    /** The ID of the user in Keytiles */
+    id?: string;
+    /** The Email address of the user in Keytiles */
+    email?: string;
+}
+export type UserReferenceListClass = UserReferenceClass[];
+/**
+ * Tells if the given Keytiles user is on notification blacklist of the given ReportSetup or not.
+ */
+export interface UserReportSetupNotifBlacklistStatusClass {
+    /** Which User are we talking about? */
+    user: UserReferenceClass;
+    /** Which ReportSetup are we talking about? */
+    reportSetupId: string;
+    /** TRUE if blacklisted - FALSE otherwise */
+    isBlacklisted: boolean;
+}
 export interface GenerateReportRequestClass {
     /** Set it to TRUE if you just want to test the report generation.
   In this case the recipients (if set in report setup) will not be notified about this report at all. And only the user who generated it will receive a notification when report is ready to view. But apart from this the full report will be generated.
@@ -661,6 +684,27 @@ export declare const deleteV1ReportsContainersRestContainerIdReportSetupReportSe
  */
 export declare const postV1ReportsContainersActionsContainerIdReportSetupReportSetupIdListReportInstanceOverviews: <TData = AxiosResponse<ListContainerReportInstancesResponseClass>>(containerId: string, reportSetupId: string, listReportInstancesRequestClass: ListReportInstancesRequestClass, options?: AxiosRequestConfig) => Promise<TData>;
 /**
+ * Users can be blacklisted regarding notifications of report setups. The given users will be added to the blacklist.
+Any user can request this for himself or users who can admin the report can also do this.
+
+ * @summary Blacklist certain users for notifications regarding this report setup.
+ */
+export declare const postV1ReportsContainersActionsContainerIdReportSetupReportSetupIdStopUserNotifications: <TData = AxiosResponse<MessageResponseV3Class>>(containerId: string, reportSetupId: string, userReferenceListClass: UserReferenceListClass, options?: AxiosRequestConfig) => Promise<TData>;
+/**
+ * Users can be blacklisted regarding notifications of report setups. The given users will be removed from the blacklist and will start to receive notifications again.
+Any user can request this for himself or users who can admin the report can also do this.
+
+ * @summary Removes potentially notification blacklisted users regarding this report setup.
+ */
+export declare const postV1ReportsContainersActionsContainerIdReportSetupReportSetupIdRestartUserNotifications: <TData = AxiosResponse<MessageResponseV3Class>>(containerId: string, reportSetupId: string, userReferenceListClass: UserReferenceListClass, options?: AxiosRequestConfig) => Promise<TData>;
+/**
+ * Users can be blacklisted regarding notifications of report setups. This endpoint checks the status of a specific user if (s)he is blacklisted or not.
+Any user can request this for himself or users who can admin the report can also do this.
+
+ * @summary Checks if the given user is on notification blacklist or not.
+ */
+export declare const postV1ReportsContainersActionsContainerIdReportSetupReportSetupIdCheckUserNotificationStatus: <TData = AxiosResponse<UserReportSetupNotifBlacklistStatusClass>>(containerId: string, reportSetupId: string, userReferenceClass: UserReferenceClass, options?: AxiosRequestConfig) => Promise<TData>;
+/**
  * When triggered manually then the report generation starts immediately. You can fine tune the report generation (mostly for testing purposes) - see request body!
 Please note that a report generation might take time.
   
@@ -689,6 +733,9 @@ export type GetV1ReportsContainersRestContainerIdReportSetupReportSetupIdResult 
 export type PutV1ReportsContainersRestContainerIdReportSetupReportSetupIdResult = AxiosResponse<ReportSetup>;
 export type DeleteV1ReportsContainersRestContainerIdReportSetupReportSetupIdResult = AxiosResponse<ReportSetup>;
 export type PostV1ReportsContainersActionsContainerIdReportSetupReportSetupIdListReportInstanceOverviewsResult = AxiosResponse<ListContainerReportInstancesResponseClass>;
+export type PostV1ReportsContainersActionsContainerIdReportSetupReportSetupIdStopUserNotificationsResult = AxiosResponse<MessageResponseV3Class>;
+export type PostV1ReportsContainersActionsContainerIdReportSetupReportSetupIdRestartUserNotificationsResult = AxiosResponse<MessageResponseV3Class>;
+export type PostV1ReportsContainersActionsContainerIdReportSetupReportSetupIdCheckUserNotificationStatusResult = AxiosResponse<UserReportSetupNotifBlacklistStatusClass>;
 export type PostV1ReportsContainersActionsContainerIdReportSetupReportSetupIdGenerateResult = AxiosResponse<MessageResponseV3Class>;
 export type GetV1ReportsContainersRestContainerIdReportInstanceReportInstanceIdResult = AxiosResponse<ReportInstance>;
 export type DeleteV1ReportsContainersRestContainerIdReportInstanceReportInstanceIdResult = AxiosResponse<MessageResponseV3Class>;
