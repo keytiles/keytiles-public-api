@@ -698,6 +698,12 @@ paths:
             application/json:
               schema:
                 $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
+        '409':
+          description: "However the report instance exists already but still not ready for export - as e.g. it is still generating... More exact details in the response!"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
 
   '/v1/reports/containers/rest/{containerId}/report-instance/{reportInstanceId}':
   
