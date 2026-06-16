@@ -615,6 +615,11 @@ In future releases also might come:
   format: string;
   /** Optional list of section zero-based indexes (in the array) to include into the export. */
   sectionsOnly?: number[];
+  /** Report might contain date+time values (in case "group by time" is set on any queries) which are represented in the report with UNIX timestamps (seconds since Epoch - UTC timezone).  
+  
+In this field it is possible (optionally) to send in the name of the Time Zone you want to use during the export to shift these date+time fields into.
+ */
+  timeZoneIANAName?: string;
 }
 
 export interface GenerateReportRequestClass {

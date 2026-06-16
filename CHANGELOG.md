@@ -1,9 +1,16 @@
+# Release 2.4.1
+
+## Additions
+
+- `reports-api-v1.yaml` - v1.3 release addition
+  - Report export now supports `ExportReportInstanceRequestClass.timeZoneIANAName`
+
 # Release 2.4.0
 
 ## New features
 
 - `reports-api-v1.yaml` - v1.3 release
-  - Introducing repport instance export endpoint
+  - Introducing report instance export endpoint
 
 # Release 2.3.0
 
