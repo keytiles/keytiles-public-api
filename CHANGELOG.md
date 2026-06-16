@@ -1,3 +1,12 @@
+# Release 2.5.0
+
+## New features
+
+- `reports-api-v1.yaml` - v1.4 release
+  - Improved docs of `groupByXXX` flags in query plugin parameters - now it tells explicitly AxisColumns which are added to DataTable
+    also documenting their IDs and format/content
+  - Two new "groupBy" added to base query params: `groupByVisitorType` and `groupByTileLanguage` so more break down is possible with reports.
+
 # Release 2.4.1
 
 ## Additions

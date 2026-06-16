@@ -4,7 +4,7 @@
  * Keytiles Reporting API
  * API endpoints to manage / query / use Keytiles Reporting.
 
- * OpenAPI spec version: 1.3
+ * OpenAPI spec version: 1.4
  */
 import axios from 'axios';
 // eslint-disable-next-line @typescript-eslint/no-redeclare

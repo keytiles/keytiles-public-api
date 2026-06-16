@@ -9,7 +9,7 @@ import { ScheduleDayName, Schedule, HourlyScheduleSetup, DailyScheduleSetup, Wee
  * Keytiles Reporting API
  * API endpoints to manage / query / use Keytiles Reporting.
 
- * OpenAPI spec version: 1.3
+ * OpenAPI spec version: 1.4
  */
 import axios from 'axios';
 import type {
@@ -141,7 +141,7 @@ export interface ReportQueryPluginBaseParameters {
   * Weekly schedule: you get a daily breakdown (or similar)
   * Monthly schedule: you get a weekly breakdown (or similar)
   
-This will produce `AxisColumn` in the generated `DataTable`.
+This will produce `AxisColumn` with `id="time"` in the generated `DataTable`. In which you will find a string value "1780956000-1781042400". These are two UNIX timestamps encoding the time range values in `DataColumn`s belong to.
  */
   groupByTime?: boolean;
   /** You can override the default "time group by" period (driven by your schedule / query range) using this option. Valid value looks like "X<m|h|d|w>" where X is a >0 integer, "m" = minutes, "h" = hours, "d" = days, "w" = weeks. For example "2h" = two hours, "30m" = 30 minutes, "1w" = one week.
@@ -166,18 +166,38 @@ So if you use this option then be prepared for validation errors upon save / re-
   importantEvents?: string[] | null;
   /** To enrich returned DataTable with calculated columns */
   calculatedColumns?: ReportQueryCalculatedColumn[];
-  /** If set to TRUE then you get a break-down on Tile level - otherwise just sum of the traffic of all Tiles. This will produce `AxisColumn` in the generated `DataTable`.
+  /** If set to TRUE then you get a break-down on Tile level - otherwise just sum of the traffic of all Tiles.  
+  
+This will produce several `AxisColumn`s in the generated `DataTable`:
+ * `id="tileId"`: the string based unique ID of the content
+ * `id="tileTitle"`: the current title (same as TileView shows)
+ * `id="tileUrl"`: the URL which points to the content
+ * `id="tileCatalogType"`: the current type ("article", "page" etc) of the content
  */
   groupByTiles?: boolean;
-  /** If set to TRUE then you get a break-down based on content structure (=tileGroupPath). This will produce `AxisColumn` in the generated `DataTable`.
+  /** If set to TRUE then you get a break-down based on content structure (=tileGroupPath).  
+  
+This will produce `AxisColumn` with `id="tileGroupPath"` in the generated `DataTable`.
  */
   groupByTileGroupPaths?: boolean;
   /** You can limit how deep you want the report to go down in the content structure. E.g. if you set it to 1 that means you get a break down only for first level.
  */
   groupByTileGroupPathMaxDepth?: number;
-  /** If set to TRUE then you get a break-down based on devices. This will produce `AxisColumn` in the generated `DataTable`.
+  /** If set to TRUE then you get a break-down based on devices.  
+  
+This will produce `AxisColumn` with `id="userAgentType"` in the generated `DataTable`.
  */
   groupByUserAgentType?: boolean;
+  /** If set to TRUE then you get a break-down based on type of visitors.  
+  
+This will produce `AxisColumn` with `id="visitorType"` in the generated `DataTable`.
+ */
+  groupByVisitorType?: boolean;
+  /** If set to TRUE then you get a break-down based on type of content language code.  
+  
+This will produce `AxisColumn` with `id="tileLanguage"` in the generated `DataTable`.
+ */
+  groupByTileLanguage?: boolean;
   /** Optional param. How many top-entries you want to see maximum?  
   
 Queries can return massive amount of rows if we use "groupByXXX" options in query parameters. More we use more rows we might get. And this is bad for readability. So we have the possibility to shrink the results. If set then only this much top/worst performing (see `performanceReverseOrder`) entries are kept others are cut.
@@ -250,13 +270,19 @@ Campaign tracking in Keytiles works based on Urchin Tracking Module (UTM) parame
 Campaign tracking in Keytiles works based on Urchin Tracking Module (UTM) parameters specification. For more info visit: [Wikipedia - UTM parameters](https://en.wikipedia.org/wiki/UTM_parameters)
  */
   campaignContentsOnly?: string[];
-  /** If set to TRUE then you get a break-down on Campaign names. This will produce `AxisColumn` in the generated `DataTable`.
+  /** If set to TRUE then you get a break-down on Campaign names.  
+  
+This will produce `AxisColumn` with `id="campaign"` in the generated `DataTable`.
  */
   groupByCampaign?: boolean;
-  /** If set to TRUE then you get a break-down on Campaign medium. This will produce `AxisColumn` in the generated `DataTable`.
+  /** If set to TRUE then you get a break-down on Campaign medium.  
+  
+This will produce `AxisColumn` with `id="campaignMedium"` in the generated `DataTable`.
  */
   groupByCampaignMedium?: boolean;
-  /** If set to TRUE then you get a break-down on Campaign content. This will produce `AxisColumn` in the generated `DataTable`.
+  /** If set to TRUE then you get a break-down on Campaign content.  
+  
+This will produce `AxisColumn` with `id="campaignContent"` in the generated `DataTable`.
  */
   groupByCampaignContent?: boolean;
 }
@@ -277,10 +303,14 @@ So be careful when you are using this filter how you set up `eventSourceTypesOnl
 For example: * If you are curious about events came from "Facebook" then you can send `eventSourceNamesOnly=Facebook`. (note: this belongs to source type "social" - see 'eventSourceTypesOnly') * If you are curious about events came from another website "abc.com" which is an external link then you can send `eventSourceNamesOnly=abc.com`. (note: this belongs to source type "link" - see 'eventSourceTypesOnly') * If you send `eventSourceNamesOnly=Facebook,abc.com` that would give you all events came from "Facebook" OR "abc.com". (note: and then this would belong to source types "link" and "social" - see 'eventSourceTypesOnly') * If you would send `eventSourceNamesOnly=abc.com & eventSourceTypesOnly=direct` you would receive 0 as a result - because for sure nothing comes in from "abc.com" which events came from a "direct" visit ...
  */
   eventSourceNamesOnly?: string[];
-  /** If set to TRUE then you get a break-down on source type ("link", "search", "social", "direct" or "internal"). This will produce `AxisColumn` in the generated `DataTable`.
+  /** If set to TRUE then you get a break-down on source type ("link", "search", "social", "direct" or "internal").  
+  
+This will produce `AxisColumn` with `id="eventSourceType"` in the generated `DataTable`.
  */
   groupByEventSourceType?: boolean;
-  /** If set to TRUE then you get a break-down on source name (like "Facebook", "Google" etc). This will produce `AxisColumn` in the generated `DataTable`.
+  /** If set to TRUE then you get a break-down on source name (like "Facebook", "Google" etc).  
+  
+This will produce `AxisColumn` with `id="eventSourceName"` in the generated `DataTable`.
  */
   groupByEventSourceName?: boolean;
 }

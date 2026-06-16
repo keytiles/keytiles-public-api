@@ -400,13 +400,19 @@ type ReportQueryCampaignPerformancePluginParameters struct {
 	// Campaign tracking in Keytiles works based on Urchin Tracking Module (UTM) parameters specification. For more info visit: [Wikipedia - UTM parameters](https://en.wikipedia.org/wiki/UTM_parameters)
 	CampaignsOnly *[]string `json:"campaignsOnly,omitempty" yaml:"campaignsOnly,omitempty"`
 
-	// GroupByCampaign If set to TRUE then you get a break-down on Campaign names. This will produce `AxisColumn` in the generated `DataTable`.
+	// GroupByCampaign If set to TRUE then you get a break-down on Campaign names.
+	//
+	// This will produce `AxisColumn` with `id="campaign"` in the generated `DataTable`.
 	GroupByCampaign *bool `json:"groupByCampaign,omitempty" yaml:"groupByCampaign,omitempty"`
 
-	// GroupByCampaignContent If set to TRUE then you get a break-down on Campaign content. This will produce `AxisColumn` in the generated `DataTable`.
+	// GroupByCampaignContent If set to TRUE then you get a break-down on Campaign content.
+	//
+	// This will produce `AxisColumn` with `id="campaignContent"` in the generated `DataTable`.
 	GroupByCampaignContent *bool `json:"groupByCampaignContent,omitempty" yaml:"groupByCampaignContent,omitempty"`
 
-	// GroupByCampaignMedium If set to TRUE then you get a break-down on Campaign medium. This will produce `AxisColumn` in the generated `DataTable`.
+	// GroupByCampaignMedium If set to TRUE then you get a break-down on Campaign medium.
+	//
+	// This will produce `AxisColumn` with `id="campaignMedium"` in the generated `DataTable`.
 	GroupByCampaignMedium *bool `json:"groupByCampaignMedium,omitempty" yaml:"groupByCampaignMedium,omitempty"`
 }
 
@@ -426,10 +432,23 @@ type ReportQueryPluginBaseParameters struct {
 	// GroupByTileGroupPathMaxDepth You can limit how deep you want the report to go down in the content structure. E.g. if you set it to 1 that means you get a break down only for first level.
 	GroupByTileGroupPathMaxDepth *int `json:"groupByTileGroupPathMaxDepth,omitempty" yaml:"groupByTileGroupPathMaxDepth,omitempty"`
 
-	// GroupByTileGroupPaths If set to TRUE then you get a break-down based on content structure (=tileGroupPath). This will produce `AxisColumn` in the generated `DataTable`.
+	// GroupByTileGroupPaths If set to TRUE then you get a break-down based on content structure (=tileGroupPath).
+	//
+	// This will produce `AxisColumn` with `id="tileGroupPath"` in the generated `DataTable`.
 	GroupByTileGroupPaths *bool `json:"groupByTileGroupPaths,omitempty" yaml:"groupByTileGroupPaths,omitempty"`
 
-	// GroupByTiles If set to TRUE then you get a break-down on Tile level - otherwise just sum of the traffic of all Tiles. This will produce `AxisColumn` in the generated `DataTable`.
+	// GroupByTileLanguage If set to TRUE then you get a break-down based on type of content language code.
+	//
+	// This will produce `AxisColumn` with `id="tileLanguage"` in the generated `DataTable`.
+	GroupByTileLanguage *bool `json:"groupByTileLanguage,omitempty" yaml:"groupByTileLanguage,omitempty"`
+
+	// GroupByTiles If set to TRUE then you get a break-down on Tile level - otherwise just sum of the traffic of all Tiles.
+	//
+	// This will produce several `AxisColumn`s in the generated `DataTable`:
+	//  * `id="tileId"`: the string based unique ID of the content
+	//  * `id="tileTitle"`: the current title (same as TileView shows)
+	//  * `id="tileUrl"`: the URL which points to the content
+	//  * `id="tileCatalogType"`: the current type ("article", "page" etc) of the content
 	GroupByTiles *bool `json:"groupByTiles,omitempty" yaml:"groupByTiles,omitempty"`
 
 	// GroupByTime If set to TRUE then you get a break-down in time interval. The interval is driven by your schedule.
@@ -438,7 +457,7 @@ type ReportQueryPluginBaseParameters struct {
 	//   * Weekly schedule: you get a daily breakdown (or similar)
 	//   * Monthly schedule: you get a weekly breakdown (or similar)
 	//
-	// This will produce `AxisColumn` in the generated `DataTable`.
+	// This will produce `AxisColumn` with `id="time"` in the generated `DataTable`. In which you will find a string value "1780956000-1781042400". These are two UNIX timestamps encoding the time range values in `DataColumn`s belong to.
 	GroupByTime *bool `json:"groupByTime,omitempty" yaml:"groupByTime,omitempty"`
 
 	// GroupByTimePeriod You can override the default "time group by" period (driven by your schedule / query range) using this option. Valid value looks like "X<m|h|d|w>" where X is a >0 integer, "m" = minutes, "h" = hours, "d" = days, "w" = weeks. For example "2h" = two hours, "30m" = 30 minutes, "1w" = one week.
@@ -448,8 +467,15 @@ type ReportQueryPluginBaseParameters struct {
 	// So if you use this option then be prepared for validation errors upon save / re-schedule the report!
 	GroupByTimePeriod *string `json:"groupByTimePeriod,omitempty" yaml:"groupByTimePeriod,omitempty"`
 
-	// GroupByUserAgentType If set to TRUE then you get a break-down based on devices. This will produce `AxisColumn` in the generated `DataTable`.
+	// GroupByUserAgentType If set to TRUE then you get a break-down based on devices.
+	//
+	// This will produce `AxisColumn` with `id="userAgentType"` in the generated `DataTable`.
 	GroupByUserAgentType *bool `json:"groupByUserAgentType,omitempty" yaml:"groupByUserAgentType,omitempty"`
+
+	// GroupByVisitorType If set to TRUE then you get a break-down based on type of visitors.
+	//
+	// This will produce `AxisColumn` with `id="visitorType"` in the generated `DataTable`.
+	GroupByVisitorType *bool `json:"groupByVisitorType,omitempty" yaml:"groupByVisitorType,omitempty"`
 
 	// ImportantEvents Which event(s) of the above `eventsIncluded` you think most important ones? Optionally you can mark those.   DataColumns derived from these events are also marked in returned DataTable - so we can render/present them with highlight.
 	//
@@ -524,10 +550,14 @@ type ReportQueryReferrerPerformancePluginParameters struct {
 	// EventSourceTypesOnly Data filter option. List of "link", "search", "social", "direct" or "internal" strings - indicating from which source the events came. If you list more values here then they are interpreted with an OR operator.
 	EventSourceTypesOnly *[]string `json:"eventSourceTypesOnly,omitempty" yaml:"eventSourceTypesOnly,omitempty"`
 
-	// GroupByEventSourceName If set to TRUE then you get a break-down on source name (like "Facebook", "Google" etc). This will produce `AxisColumn` in the generated `DataTable`.
+	// GroupByEventSourceName If set to TRUE then you get a break-down on source name (like "Facebook", "Google" etc).
+	//
+	// This will produce `AxisColumn` with `id="eventSourceName"` in the generated `DataTable`.
 	GroupByEventSourceName *bool `json:"groupByEventSourceName,omitempty" yaml:"groupByEventSourceName,omitempty"`
 
-	// GroupByEventSourceType If set to TRUE then you get a break-down on source type ("link", "search", "social", "direct" or "internal"). This will produce `AxisColumn` in the generated `DataTable`.
+	// GroupByEventSourceType If set to TRUE then you get a break-down on source type ("link", "search", "social", "direct" or "internal").
+	//
+	// This will produce `AxisColumn` with `id="eventSourceType"` in the generated `DataTable`.
 	GroupByEventSourceType *bool `json:"groupByEventSourceType,omitempty" yaml:"groupByEventSourceType,omitempty"`
 }
 
