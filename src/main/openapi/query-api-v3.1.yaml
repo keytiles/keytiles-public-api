@@ -1,7 +1,7 @@
 openapi: 3.0.1
 
 info:
-  version: '3.2'
+  version: '3.1'
   title: Keytiles Statistics query API
   description: >
             
@@ -920,8 +920,7 @@ components:
                      * visitorType
                      * tileType
                      * tileGroupPath
-                     * trafficSourceType (or 'referrerType', 'eventSourceType', 'visitSourceType' - to maintain terminology with query endpoints)
-                     * trafficSourceName (or 'referrerName' for backward compatibility also 'eventSourceName', 'visitSourceName' - to maintain terminology with query endpoints)
+                     * referrerName
                      * campaign
                      * campaignMedium
                      * campaignContent
@@ -1346,7 +1345,6 @@ components:
           - tileLanguages
           - tileTypes
           - tileGroupPaths
-          - trafficSourceTypes
           - trafficSourceNames
           - campaigns
           - campaignMediums
@@ -1385,11 +1383,6 @@ components:
               items:
                 $ref: '#/components/schemas/MappingRecordClass'
             trafficSourceNames:
-              type: array
-              nullable: true
-              items:
-                $ref: '#/components/schemas/MappingRecordClass'
-            trafficSourceTypes:
               type: array
               nullable: true
               items:

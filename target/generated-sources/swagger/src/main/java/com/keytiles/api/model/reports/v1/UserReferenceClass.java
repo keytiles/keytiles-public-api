@@ -21,7 +21,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 import java.io.Serializable;
 
-public class DataTableAxisColumn implements Serializable{
+public class UserReferenceClass implements Serializable{
   private static final long serialVersionUID = 1L;
 
 
@@ -29,23 +29,23 @@ public class DataTableAxisColumn implements Serializable{
   private String id = null;
 
   // @Generator: becomes private - as non-nullable so we need to protect it with setter and null-check 
-  private String label = null;
+  private String email = null;
 
 
   
-  // @Generator: arg 'id': mandatory field 
-  // @Generator: arg 'label': mandatory field 
+  // @Generator: arg 'id': non-nullable and does not have default value - we must enforce a non-null initial value 
+  // @Generator: arg 'email': non-nullable and does not have default value - we must enforce a non-null initial value 
   @JsonCreator
-  public DataTableAxisColumn(@JsonProperty("id") String id, @JsonProperty("label") String label) {
+  public UserReferenceClass(@JsonProperty("id") String id, @JsonProperty("email") String email) {
     super();
     if(id == null) {
       throw new IllegalArgumentException("'id' value can not be NULL");
     }
-    if(label == null) {
-      throw new IllegalArgumentException("'label' value can not be NULL");
+    if(email == null) {
+      throw new IllegalArgumentException("'email' value can not be NULL");
     }
     this.id = id;
-    this.label = label;
+    this.email = email;
   }
   
   
@@ -64,18 +64,18 @@ public class DataTableAxisColumn implements Serializable{
     this.id = id;
   }
 
-  @JsonProperty("label")
-  public String getLabel() {
-    return label;
+  @JsonProperty("email")
+  public String getEmail() {
+    return email;
   }  
 
-  // @Generator: added to protect field 'label' against null-value assignment 
-  @JsonProperty("label")
-  public void setLabel(String label) {
-    if(label == null) {
-      throw new IllegalArgumentException("'label' value can not be NULL");
+  // @Generator: added to protect field 'email' against null-value assignment 
+  @JsonProperty("email")
+  public void setEmail(String email) {
+    if(email == null) {
+      throw new IllegalArgumentException("'email' value can not be NULL");
     }
-    this.label = label;
+    this.email = email;
   }
 
 
@@ -88,24 +88,24 @@ public class DataTableAxisColumn implements Serializable{
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    DataTableAxisColumn dataTableAxisColumn = (DataTableAxisColumn) o;
-    return Objects.equals(this.id, dataTableAxisColumn.id) &&
-        Objects.equals(this.label, dataTableAxisColumn.label);
+    UserReferenceClass userReferenceClass = (UserReferenceClass) o;
+    return Objects.equals(this.id, userReferenceClass.id) &&
+        Objects.equals(this.email, userReferenceClass.email);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, label);
+    return Objects.hash(id, email);
   }
 
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class DataTableAxisColumn {\n");
+    sb.append("class UserReferenceClass {\n");
     
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
-    sb.append("    label: ").append(toIndentedString(label)).append("\n");
+    sb.append("    email: ").append(toIndentedString(email)).append("\n");
     sb.append("}");
     return sb.toString();
   }

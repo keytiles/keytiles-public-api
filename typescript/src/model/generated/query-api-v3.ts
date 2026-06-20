@@ -42,7 +42,7 @@ If you have a high traffic website with many many Tiles (content) then you might
 Therefore you have the possibility to limit Keytiles response size by defining "send me only the top X" tiles (as most relevant info) and leave out the rest.
 Please refer to the "limit" and "threshold" parameter descriptions for more details on endpoints supporting this!
 
- * OpenAPI spec version: 3.1
+ * OpenAPI spec version: 3.2
  */
 import axios from 'axios';
 import type {
@@ -398,6 +398,8 @@ export type GetIdMappingsResponseClassAllOf = {
   tileGroupPaths?: MappingRecordClass[] | null;
   /** @nullable */
   trafficSourceNames?: MappingRecordClass[] | null;
+  /** @nullable */
+  trafficSourceTypes?: MappingRecordClass[] | null;
   /** @nullable */
   campaigns?: MappingRecordClass[] | null;
   /** @nullable */
@@ -796,7 +798,8 @@ export type SortByParameter = string;
  * visitorType
  * tileType
  * tileGroupPath
- * referrerName
+ * trafficSourceType (or 'referrerType', 'eventSourceType', 'visitSourceType' - to maintain terminology with query endpoints)
+ * trafficSourceName (or 'referrerName' for backward compatibility also 'eventSourceName', 'visitSourceName' - to maintain terminology with query endpoints)
  * campaign
  * campaignMedium
  * campaignContent
@@ -864,7 +867,8 @@ toTimestamp?: ToTimestampParameter;
  * visitorType
  * tileType
  * tileGroupPath
- * referrerName
+ * trafficSourceType (or 'referrerType', 'eventSourceType', 'visitSourceType' - to maintain terminology with query endpoints)
+ * trafficSourceName (or 'referrerName' for backward compatibility also 'eventSourceName', 'visitSourceName' - to maintain terminology with query endpoints)
  * campaign
  * campaignMedium
  * campaignContent

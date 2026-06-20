@@ -15,13 +15,13 @@ package com.keytiles.api.model.reports.v1;
 import java.util.Objects;
 import java.util.Arrays;
 
-import com.keytiles.api.model.reports.v1.ReportSetupOverview;
+import com.keytiles.api.model.reports.v1.UserReferenceClass;
 import java.util.ArrayList;
 import java.util.List;
 
 import java.io.Serializable;
 
-public class ListContainerReportSetupsResponseClass extends ArrayList<ReportSetupOverview> implements Serializable{
+public class UserReferenceListClass extends ArrayList<UserReferenceClass> implements Serializable{
   private static final long serialVersionUID = 1L;
 
 
@@ -52,7 +52,7 @@ public class ListContainerReportSetupsResponseClass extends ArrayList<ReportSetu
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class ListContainerReportSetupsResponseClass {\n");
+    sb.append("class UserReferenceListClass {\n");
     sb.append("    ").append(toIndentedString(super.toString())).append("\n");
     sb.append("}");
     return sb.toString();

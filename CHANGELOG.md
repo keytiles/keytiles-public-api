@@ -1,3 +1,16 @@
+# Release 2.6.0
+
+## New features
+
+- `query-api-v3.yaml` - v3.2 release
+  - '/v2/stat/webhits/{containerId}/idmappings' endpoint
+    - `mappingTypes=referrerName` (earlier) was synchronized with response structure too and now main naming is `mapppingTypes=trafficSourceName` but
+      accepts aliases `mappingTypes=referrerName` (backward compatibility), `mappingTypes=eventSourceName` and `mappingTypes=visitSourceName` to
+      maintain terminology with query endpoints
+    - Now accepts `mappingTypes=trafficSourceType` value (new) and returns the mapping of "direct", "search",
+      "social", "link" and "internal" too - our built in types - for standardization reasons and at the same time open the possibility to start to add
+      custom ones in the future. Also accepts aliases: `mappingTypes=referrerType` (backward compatibility logic), `mappingTypes=eventSourceType` and `mappingTypes=visitSourceType` to maintain terminology with query endpoints.
+
 # Release 2.5.0
 
 ## New features

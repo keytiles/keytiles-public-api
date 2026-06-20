@@ -187,6 +187,7 @@ type GetIdMappingsResponseClass struct {
 	TileLanguages        *[]MappingRecordClass `json:"tileLanguages" yaml:"tileLanguages"`
 	TileTypes            *[]MappingRecordClass `json:"tileTypes" yaml:"tileTypes"`
 	TrafficSourceNames   *[]MappingRecordClass `json:"trafficSourceNames" yaml:"trafficSourceNames"`
+	TrafficSourceTypes   *[]MappingRecordClass `json:"trafficSourceTypes" yaml:"trafficSourceTypes"`
 	UserAgentTypes       *[]MappingRecordClass `json:"userAgentTypes" yaml:"userAgentTypes"`
 
 	// Vars Extra data (variables) the endpoint wants to return for programmatic processing.
@@ -1140,7 +1141,8 @@ type GetV2StatWebhitsContainerIdIdmappingsParams struct {
 	//  * visitorType
 	//  * tileType
 	//  * tileGroupPath
-	//  * referrerName
+	//  * trafficSourceType (or 'referrerType', 'eventSourceType', 'visitSourceType' - to maintain terminology with query endpoints)
+	//  * trafficSourceName (or 'referrerName' for backward compatibility also 'eventSourceName', 'visitSourceName' - to maintain terminology with query endpoints)
 	//  * campaign
 	//  * campaignMedium
 	//  * campaignContent

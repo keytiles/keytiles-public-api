@@ -21,49 +21,39 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 import java.io.Serializable;
 
-public class DataTableAxisColumn implements Serializable{
+public class ReportQueryCalculatedColumn implements Serializable{
   private static final long serialVersionUID = 1L;
 
 
   // @Generator: becomes private - as non-nullable so we need to protect it with setter and null-check 
-  private String id = null;
-
-  // @Generator: becomes private - as non-nullable so we need to protect it with setter and null-check 
   private String label = null;
 
+  // @Generator: becomes private - as non-nullable so we need to protect it with setter and null-check 
+  private String expression = null;
+
+
+  // @Generator: becomes public - as nullable (no need to null-check) and not readonly 
+  @JsonProperty("collapseFunction")
+  public String collapseFunction = null;
 
   
-  // @Generator: arg 'id': mandatory field 
   // @Generator: arg 'label': mandatory field 
+  // @Generator: arg 'expression': mandatory field 
   @JsonCreator
-  public DataTableAxisColumn(@JsonProperty("id") String id, @JsonProperty("label") String label) {
+  public ReportQueryCalculatedColumn(@JsonProperty("label") String label, @JsonProperty("expression") String expression) {
     super();
-    if(id == null) {
-      throw new IllegalArgumentException("'id' value can not be NULL");
-    }
     if(label == null) {
       throw new IllegalArgumentException("'label' value can not be NULL");
     }
-    this.id = id;
+    if(expression == null) {
+      throw new IllegalArgumentException("'expression' value can not be NULL");
+    }
     this.label = label;
+    this.expression = expression;
   }
   
   
  
-  @JsonProperty("id")
-  public String getId() {
-    return id;
-  }  
-
-  // @Generator: added to protect field 'id' against null-value assignment 
-  @JsonProperty("id")
-  public void setId(String id) {
-    if(id == null) {
-      throw new IllegalArgumentException("'id' value can not be NULL");
-    }
-    this.id = id;
-  }
-
   @JsonProperty("label")
   public String getLabel() {
     return label;
@@ -78,6 +68,20 @@ public class DataTableAxisColumn implements Serializable{
     this.label = label;
   }
 
+  @JsonProperty("expression")
+  public String getExpression() {
+    return expression;
+  }  
+
+  // @Generator: added to protect field 'expression' against null-value assignment 
+  @JsonProperty("expression")
+  public void setExpression(String expression) {
+    if(expression == null) {
+      throw new IllegalArgumentException("'expression' value can not be NULL");
+    }
+    this.expression = expression;
+  }
+
 
 
   @Override
@@ -88,24 +92,26 @@ public class DataTableAxisColumn implements Serializable{
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    DataTableAxisColumn dataTableAxisColumn = (DataTableAxisColumn) o;
-    return Objects.equals(this.id, dataTableAxisColumn.id) &&
-        Objects.equals(this.label, dataTableAxisColumn.label);
+    ReportQueryCalculatedColumn reportQueryCalculatedColumn = (ReportQueryCalculatedColumn) o;
+    return Objects.equals(this.label, reportQueryCalculatedColumn.label) &&
+        Objects.equals(this.expression, reportQueryCalculatedColumn.expression) &&
+        Objects.equals(this.collapseFunction, reportQueryCalculatedColumn.collapseFunction);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, label);
+    return Objects.hash(label, expression, collapseFunction);
   }
 
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class DataTableAxisColumn {\n");
+    sb.append("class ReportQueryCalculatedColumn {\n");
     
-    sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    label: ").append(toIndentedString(label)).append("\n");
+    sb.append("    expression: ").append(toIndentedString(expression)).append("\n");
+    sb.append("    collapseFunction: ").append(toIndentedString(collapseFunction)).append("\n");
     sb.append("}");
     return sb.toString();
   }
