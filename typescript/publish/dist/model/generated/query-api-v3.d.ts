@@ -332,6 +332,8 @@ export type GetIdMappingsResponseClassAllOf = {
     /** @nullable */
     trafficSourceNames?: MappingRecordClass[] | null;
     /** @nullable */
+    trafficSourceTypes?: MappingRecordClass[] | null;
+    /** @nullable */
     campaigns?: MappingRecordClass[] | null;
     /** @nullable */
     campaignMediums?: MappingRecordClass[] | null;
@@ -702,7 +704,8 @@ export type SortByParameter = string;
  * visitorType
  * tileType
  * tileGroupPath
- * referrerName
+ * trafficSourceType (or 'referrerType', 'eventSourceType', 'visitSourceType' - to maintain terminology with query endpoints)
+ * trafficSourceName (or 'referrerName' for backward compatibility also 'eventSourceName', 'visitSourceName' - to maintain terminology with query endpoints)
  * campaign
  * campaignMedium
  * campaignContent
@@ -767,7 +770,8 @@ export type GetV2StatWebhitsContainerIdIdmappingsParams = {
      * visitorType
      * tileType
      * tileGroupPath
-     * referrerName
+     * trafficSourceType (or 'referrerType', 'eventSourceType', 'visitSourceType' - to maintain terminology with query endpoints)
+     * trafficSourceName (or 'referrerName' for backward compatibility also 'eventSourceName', 'visitSourceName' - to maintain terminology with query endpoints)
      * campaign
      * campaignMedium
      * campaignContent
