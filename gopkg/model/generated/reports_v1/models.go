@@ -306,6 +306,9 @@ type ReportInstance struct {
 
 // ReportInstanceOverview Contains minimalistic information about an existing instance of a report setup - like its ID, creation time, parent report setup ID, etc. It is a quick overview.
 type ReportInstanceOverview struct {
+	// AutoDeletionTimestamp We keep generated instances for a limited ttime only - this UNIX timestamp in UTC (seconds since Epoch) tells when the instance will be automatically deleted.
+	AutoDeletionTimestamp *int32 `json:"autoDeletionTimestamp,omitempty" yaml:"autoDeletionTimestamp,omitempty"`
+
 	// CreatedAt The server time in UNIX timestamp in UTC (seconds since Epoch) when this instance was created
 	CreatedAt int32 `json:"createdAt" yaml:"createdAt"`
 

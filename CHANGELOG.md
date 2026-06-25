@@ -1,3 +1,7 @@
+# Release 2.6.1
+
+- `reports-api-v1.yaml` - quick patch. We forgot to add `autoDeletionTimestamp` to ReportInstanceOverview - now we have it.
+
 # Release 2.6.0
 
 ## New features

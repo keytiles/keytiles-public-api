@@ -1659,7 +1659,11 @@ components:
           type: integer
           format: int32
           description: >
-                        Query range - until this timestamp. This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT  
+                        Query range - until this timestamp. This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT
+        autoDeletionTimestamp:
+          type: integer
+          format: int32
+          description: We keep generated instances for a limited ttime only - this UNIX timestamp in UTC (seconds since Epoch) tells when the instance will be automatically deleted.
 
     ListReportInstancesRequestClass:
       type: object

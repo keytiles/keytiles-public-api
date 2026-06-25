@@ -578,9 +578,11 @@ export interface ReportInstanceOverview {
   /** Query range - starting from this timestamp. This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT  
  */
   fromTimestamp: number;
-  /** Query range - until this timestamp. This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT  
+  /** Query range - until this timestamp. This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT
  */
   toTimestamp: number;
+  /** We keep generated instances for a limited ttime only - this UNIX timestamp in UTC (seconds since Epoch) tells when the instance will be automatically deleted. */
+  autoDeletionTimestamp?: number;
 }
 
 /**
