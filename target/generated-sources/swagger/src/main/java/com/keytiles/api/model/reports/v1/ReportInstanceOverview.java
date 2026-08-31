@@ -54,6 +54,9 @@ public class ReportInstanceOverview implements Serializable{
   // @Generator: becomes private - as non-nullable so we need to protect it with setter and null-check 
   private Integer toTimestamp = null;
 
+  // @Generator: becomes private - as non-nullable so we need to protect it with setter and null-check 
+  private Integer autoDeletionTimestamp = null;
+
 
   
   // @Generator: arg 'id': mandatory field 
@@ -65,8 +68,9 @@ public class ReportInstanceOverview implements Serializable{
   // @Generator: arg 'wasManuallyGenerated': mandatory field 
   // @Generator: arg 'fromTimestamp': mandatory field 
   // @Generator: arg 'toTimestamp': mandatory field 
+  // @Generator: arg 'autoDeletionTimestamp': non-nullable and does not have default value - we must enforce a non-null initial value 
   @JsonCreator
-  public ReportInstanceOverview(@JsonProperty("state") ReportInstanceState state, @JsonProperty("id") String id, @JsonProperty("parentReportSetupId") String parentReportSetupId, @JsonProperty("metaData") MetaData metaData, @JsonProperty("createdAt") Integer createdAt, @JsonProperty("isTestOnly") Boolean isTestOnly, @JsonProperty("wasManuallyGenerated") Boolean wasManuallyGenerated, @JsonProperty("fromTimestamp") Integer fromTimestamp, @JsonProperty("toTimestamp") Integer toTimestamp) {
+  public ReportInstanceOverview(@JsonProperty("state") ReportInstanceState state, @JsonProperty("id") String id, @JsonProperty("parentReportSetupId") String parentReportSetupId, @JsonProperty("metaData") MetaData metaData, @JsonProperty("createdAt") Integer createdAt, @JsonProperty("isTestOnly") Boolean isTestOnly, @JsonProperty("wasManuallyGenerated") Boolean wasManuallyGenerated, @JsonProperty("fromTimestamp") Integer fromTimestamp, @JsonProperty("toTimestamp") Integer toTimestamp, @JsonProperty("autoDeletionTimestamp") Integer autoDeletionTimestamp) {
     super();
     if(id == null) {
       throw new IllegalArgumentException("'id' value can not be NULL");
@@ -95,6 +99,9 @@ public class ReportInstanceOverview implements Serializable{
     if(toTimestamp == null) {
       throw new IllegalArgumentException("'toTimestamp' value can not be NULL");
     }
+    if(autoDeletionTimestamp == null) {
+      throw new IllegalArgumentException("'autoDeletionTimestamp' value can not be NULL");
+    }
     this.state = state;
     this.id = id;
     this.parentReportSetupId = parentReportSetupId;
@@ -104,6 +111,7 @@ public class ReportInstanceOverview implements Serializable{
     this.wasManuallyGenerated = wasManuallyGenerated;
     this.fromTimestamp = fromTimestamp;
     this.toTimestamp = toTimestamp;
+    this.autoDeletionTimestamp = autoDeletionTimestamp;
   }
   
   
@@ -224,6 +232,20 @@ public class ReportInstanceOverview implements Serializable{
     this.toTimestamp = toTimestamp;
   }
 
+  @JsonProperty("autoDeletionTimestamp")
+  public Integer getAutoDeletionTimestamp() {
+    return autoDeletionTimestamp;
+  }  
+
+  // @Generator: added to protect field 'autoDeletionTimestamp' against null-value assignment 
+  @JsonProperty("autoDeletionTimestamp")
+  public void setAutoDeletionTimestamp(Integer autoDeletionTimestamp) {
+    if(autoDeletionTimestamp == null) {
+      throw new IllegalArgumentException("'autoDeletionTimestamp' value can not be NULL");
+    }
+    this.autoDeletionTimestamp = autoDeletionTimestamp;
+  }
+
 
 
   @Override
@@ -243,12 +265,13 @@ public class ReportInstanceOverview implements Serializable{
         Objects.equals(this.isTestOnly, reportInstanceOverview.isTestOnly) &&
         Objects.equals(this.wasManuallyGenerated, reportInstanceOverview.wasManuallyGenerated) &&
         Objects.equals(this.fromTimestamp, reportInstanceOverview.fromTimestamp) &&
-        Objects.equals(this.toTimestamp, reportInstanceOverview.toTimestamp);
+        Objects.equals(this.toTimestamp, reportInstanceOverview.toTimestamp) &&
+        Objects.equals(this.autoDeletionTimestamp, reportInstanceOverview.autoDeletionTimestamp);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, parentReportSetupId, metaData, createdAt, state, isTestOnly, wasManuallyGenerated, fromTimestamp, toTimestamp);
+    return Objects.hash(id, parentReportSetupId, metaData, createdAt, state, isTestOnly, wasManuallyGenerated, fromTimestamp, toTimestamp, autoDeletionTimestamp);
   }
 
 
@@ -266,6 +289,7 @@ public class ReportInstanceOverview implements Serializable{
     sb.append("    wasManuallyGenerated: ").append(toIndentedString(wasManuallyGenerated)).append("\n");
     sb.append("    fromTimestamp: ").append(toIndentedString(fromTimestamp)).append("\n");
     sb.append("    toTimestamp: ").append(toIndentedString(toTimestamp)).append("\n");
+    sb.append("    autoDeletionTimestamp: ").append(toIndentedString(autoDeletionTimestamp)).append("\n");
     sb.append("}");
     return sb.toString();
   }

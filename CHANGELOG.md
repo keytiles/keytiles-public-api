@@ -1,3 +1,19 @@
+# Release 2.7.0
+
+## New features
+
+- `query-api-v3.yaml` - v3.3 release
+  - '/v2/stat/webhits/{containerId}/eventcounts' and '/v2/stat/webhits/{containerId}/eventcounts/tiles' endpoints
+    - New optional `queryTuning` parameter: `strict` / `extend` / `adaptive`. Controls whether Keytiles may adjust
+      the time range (and in `adaptive`, also clean up timestamps / grouping) when the request does not line up with
+      stored counter buckets. Default is `extend` (same behaviour as today if the parameter is omitted). Adjustments
+      are reported as warnings; compare `requestedFromTimestamp` / `requestedToTimestamp` with `dataFromTimestamp` /
+      `dataToTimestamp`.
+    - New optional `clientTimezone` parameter (IANA name, e.g. `Asia/Kolkata`). Hint for the timezone the client used
+      when computing `fromTimestamp` / `toTimestamp`. Used with `queryTuning=adaptive` (ignored for `extend` / `strict`).
+      Needed when local midnight is not a whole UTC hour; whole-hour zones do not need it. Omit = Keytiles only uses
+      the UTC timestamps already sent.
+
 # Release 2.6.1
 
 - `reports-api-v1.yaml` - quick patch. We forgot to add `autoDeletionTimestamp` to ReportInstanceOverview - now we have it.

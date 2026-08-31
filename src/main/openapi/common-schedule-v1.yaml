@@ -1,24 +1,22 @@
 openapi: 3.0.1
 
 info:
-  version: '1.0'
+  version: "1.0"
   title: Common object definitions - regarding scheduled actions.
   description: "These object definitions are shared among multiple contracts. Suitable to describe anything which runs on a scheduled basis - in a very intuitive, human-friendly way. (Unlike chrontab format... :-P)"
 
 paths: {}
 
 components:
-
   schemas:
-
     ScheduleDayName:
       type: string
-      enum: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+      enum: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
       description: Name of the days we use in day masks.
       nullable: true
 
     Schedule:
-      description: 'Describes a Schedule of something. As of now you have basically 4 types: hourly, daily, weekly and Monthly schedules.'
+      description: "Describes a Schedule of something. As of now you have basically 4 types: hourly, daily, weekly and Monthly schedules."
       type: object
       nullable: true
       required:
@@ -32,25 +30,25 @@ components:
           type: string
           # we voted against it - let's keep the Nil possibility...
           # x-go-type-skip-optional-pointer: true
-          enum: ['hourly', 'daily', 'weekly', 'monthly']
+          enum: ["hourly", "daily", "weekly", "monthly"]
         setup:
           type: object
           oneOf:
-          - $ref: '#/components/schemas/HourlyScheduleSetup'
-          - $ref: '#/components/schemas/DailyScheduleSetup'
-          - $ref: '#/components/schemas/WeeklyScheduleSetup'
-          - $ref: '#/components/schemas/MonthlyScheduleSetup'
+            - $ref: "#/components/schemas/HourlyScheduleSetup"
+            - $ref: "#/components/schemas/DailyScheduleSetup"
+            - $ref: "#/components/schemas/WeeklyScheduleSetup"
+            - $ref: "#/components/schemas/MonthlyScheduleSetup"
         timeZoneIANAName:
           type: string
           description: >
-                      The IANA name of the time zone - e.g. "Europe/Berlin" in which time zone we should interpret this schedule.  
-                      or  
-                      You can also simply put `UTC` here - which will be recognized too.
-                        
-                      All things - like `firstTime="09:00"` (hourly setup) or `triggerTime="10:00"` (daily, weekly, monthly setup) - and even the days(!)
-                      will be interpreted in this time zone.  
-                        
-                      For more info check: [https://www.iana.org/time-zones](https://www.iana.org/time-zones) or [https://en.wikipedia.org/wiki/List_of_tz_database_time_zones](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)
+            The IANA name of the time zone - e.g. "Europe/Berlin" in which time zone we should interpret this schedule.  
+            or  
+            You can also simply put `UTC` here - which will be recognized too.
+              
+            All things - like `firstTime="09:00"` (hourly setup) or `triggerTime="10:00"` (daily, weekly, monthly setup) - and even the days(!)
+            will be interpreted in this time zone.  
+              
+            For more info check: [https://www.iana.org/time-zones](https://www.iana.org/time-zones) or [https://en.wikipedia.org/wiki/List_of_tz_database_time_zones](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)
         majorVersion:
           type: integer
           # we voted against it - let's keep the Nil possibility...
@@ -69,29 +67,30 @@ components:
           # x-go-type-skip-optional-pointer: true
           nullable: false
           description: >
-                      Mandatory element. This is an "HH:MM" formatted time descriptor. Means: within a day what time should we trigger the execution first? From this time the action is shcheduled every hour.  
-                        
-                      For example if you set it to "09:15" then first execution happens at 09:15, the next one at 10:15 then 11:15 and so on.
-          example: '09:15'
+            Mandatory element (but can be set to "00:00"). This is an "HH:MM" formatted time descriptor. Means: within a day what time should we trigger the execution first? From this time the action is shcheduled every hour.  
+              
+            For example if you set it to "09:15" then first execution happens at 09:15, the next one at 10:15 then 11:15 and so on.
+          example: "09:15"
         untilTime:
           type: string
           # we voted against it - let's keep the Nil possibility...
           # x-go-type-skip-optional-pointer: true
           description: >
-                      Optional setting. This is an "HH:MM" formatted time descriptor. Means: within a day triggering will happen only if the current time is <= than this time.  
-                        
-                      For example, if `firstTime="09:15"` then actually the last execution of the action will happen at "17:15".  
-                        
-                      In case not given then scheduling will happen within the day every hour starting from `firstTime`.
+            Optional setting. This is an "HH:MM" formatted time descriptor. Means: within a day triggering will happen only if the current time is <= than this time.
+            It must be greater than `firstTime`!  
+              
+            For example, if `firstTime="09:15"` then actually the last execution of the action will happen at "17:15".  
+              
+            In case not given then scheduling will happen within the day every hour starting from `firstTime`.
           nullable: true
-          example: '18:00'
+          example: "18:00"
         dayNames:
           type: array
           # we voted against it - let's keep the Nil possibility...
           # x-go-type-skip-optional-pointer: true
           description: Optional setting. If given then scheduling will happen only on these days. This is a day mask basically.
           items:
-            $ref: '#/components/schemas/ScheduleDayName'
+            $ref: "#/components/schemas/ScheduleDayName"
           nullable: true
 
     DailyScheduleSetup:
@@ -106,15 +105,15 @@ components:
           # x-go-type-skip-optional-pointer: true
           nullable: false
           description: >
-                      Mandatory element. This is an "HH:MM" formatted time descriptor. Means: within a day what time should we trigger the execution?
-          example: '09:00'
+            Mandatory element. This is an "HH:MM" formatted time descriptor. Means: within a day what time should we trigger the execution?
+          example: "09:00"
         dayNames:
           type: array
           # we voted against it - let's keep the Nil possibility...
           # x-go-type-skip-optional-pointer: true
           description: Optional setting. If given then scheduling will happen only on these days. This is a day mask basically.
           items:
-            $ref: '#/components/schemas/ScheduleDayName'
+            $ref: "#/components/schemas/ScheduleDayName"
           nullable: true
 
     WeeklyScheduleSetup:
@@ -129,27 +128,38 @@ components:
           # x-go-type-skip-optional-pointer: true
           nullable: false
           description: >
-                      Mandatory element. This is an "HH:MM" formatted time descriptor. Means: within a day what time should we trigger the execution?
-          example: '09:00'
+            Mandatory element. This is an "HH:MM" formatted time descriptor. Means: within a day what time should we trigger the execution?
+          example: "09:00"
         dayName:
           # we voted against it - let's keep the Nil possibility...
           # x-go-type-skip-optional-pointer: true
-          default: 'Mon'
+          default: "Mon"
           description: >
-                      Optional. If given then the action will run on this day of the week - otherwise default is Monday.
-          $ref: '#/components/schemas/ScheduleDayName'
+            Optional. If given then the action will run on this day of the week - otherwise default is Monday.
+          $ref: "#/components/schemas/ScheduleDayName"
           nullable: true
 
     MonthlyScheduleDayName:
       type: string
-      enum: ['firstMon', 'firstTue', 'firstWed', 'firstThu', 'firstFri', 'firstSat', 'firstSun','firstDay', 'lastDay']
+      enum:
+        [
+          "firstMon",
+          "firstTue",
+          "firstWed",
+          "firstThu",
+          "firstFri",
+          "firstSat",
+          "firstSun",
+          "firstDay",
+          "lastDay",
+        ]
       description: >
-                  Name of days we can use in a monthly setup.
-                    * `firstDay` - action is triggered on first day of the month
-                    * `lastDay` - action is triggered on last day of the month
-                    * weekday like `firstMon` etc - action is triggered on the first Monday of the month
+        Name of days we can use in a monthly setup.
+          * `firstDay` - action is triggered on first day of the month
+          * `lastDay` - action is triggered on last day of the month
+          * weekday like `firstMon` etc - action is triggered on the first Monday of the month
       nullable: true
-      default: 'firstDay'
+      default: "firstDay"
 
     MonthlyScheduleSetup:
       description: Encodes scheduling tailored for monthly execution.
@@ -163,20 +173,20 @@ components:
           # x-go-type-skip-optional-pointer: true
           nullable: false
           description: >
-                      Mandatory element. This is an "HH:MM" formatted time descriptor. Means: within a day what time should we trigger the execution?
-          example: '09:00'
+            Mandatory element. This is an "HH:MM" formatted time descriptor. Means: within a day what time should we trigger the execution?
+          example: "09:00"
         dayName:
           description: >
-                      Optional element. To pick up the day when the action is triggered you have a few options.  
-                        
-                      You can put
-                       * `firstDay` - action is triggered on first day of the month
-                       * `lastDay` - action is triggered on last day of the month
-                       * weekday like `Mon` etc - action is triggered on the first Monday of the month
-                        
-                      **default value**: If not given then simply it will be 'firstDay'.
+            Optional element. To pick up the day when the action is triggered you have a few options.  
+              
+            You can put
+             * `firstDay` - action is triggered on first day of the month
+             * `lastDay` - action is triggered on last day of the month
+             * weekday like `Mon` etc - action is triggered on the first Monday of the month
+              
+            **default value**: If not given then simply it will be 'firstDay'.
           # we voted against it - let's keep the Nil possibility...
           # x-go-type-skip-optional-pointer: true
-          $ref: '#/components/schemas/MonthlyScheduleDayName'
-          default: 'firstDay'
+          $ref: "#/components/schemas/MonthlyScheduleDayName"
+          default: "firstDay"
           nullable: true
