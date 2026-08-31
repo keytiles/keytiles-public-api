@@ -42,7 +42,7 @@ If you have a high traffic website with many many Tiles (content) then you might
 Therefore you have the possibility to limit Keytiles response size by defining "send me only the top X" tiles (as most relevant info) and leave out the rest.
 Please refer to the "limit" and "threshold" parameter descriptions for more details on endpoints supporting this!
 
- * OpenAPI spec version: 3.2
+ * OpenAPI spec version: 3.3
  */
 import axios from 'axios';
 import type {
@@ -270,7 +270,7 @@ export interface TimeIntervalClass {
 }
 
 /**
- * To save lots of space Keytiles maps Strings to unique Integers (acting as IDs) - this way can return counter rows  as just Integer arrays. Of course to make it readable again you need the reverse mapping: which Integer encodes which Strings? This is this mapping.  
+ * To save lots of space Keytiles maps Strings to unique Integers (acting as IDs) - this way can return counter rows  as just Integer arrays. Of course to make it readable again you need the reverse mapping: which Integer encodes which Strings? This is this mapping.
 
  * @nullable
  */
@@ -317,7 +317,7 @@ export type KeyColumnsIntIdMappingsClassAllOf = {
 } | null;
 
 /**
- * This object gives you concrete values for "groupBy" criteria if you requested data groups using the `groupBy` parameter. 
+ * This object gives you concrete values for "groupBy" criteria if you requested data groups using the `groupBy` parameter.
 
  * @nullable
  */
@@ -422,7 +422,7 @@ export interface SystemClockResponseClass {
 /**
  * Data filter option. Comma separated list of event types you want to limit the query for. If you list more values here then they are interpreted with an OR operator.
   
-note: if you have comma in your event names (strange, but ok...) you can escape that with `\\` character!  
+note: if you have comma in your event names (strange, but ok...) you can escape that with `\\` character!
 
  */
 export type EventTypesOnlyParameter = string;
@@ -430,7 +430,7 @@ export type EventTypesOnlyParameter = string;
 /**
  * Data filter option. Comma separated list of tileIds you want to limit the query for - of course in this case only the counters of these tiles are returned.  If you list more values here then they are interpreted with an OR operator. 
   
-note: if you have comma in your tileIds (strange, but ok...) you can escape that with `\\` character!  
+note: if you have comma in your tileIds (strange, but ok...) you can escape that with `\\` character!
 
  */
 export type TileIdsOnlyParameter = string;
@@ -484,7 +484,6 @@ In the first query **"/tech/mobile\*"** would match for everything begins with "
 But what if you want to really limit for Tiles under the *"/tech/mobile"* area?  
   
 Well then you can use the second query value: **"/tech/mobile/\*"**. This would include *"/tech/mobile/android"*, *"/tech/mobile/ios"* but would NOT include *"/tech/mobile-rumours"* anymore - as that is not a match anymore. But we are not done yet! Please note: this would also include Tiles under *"/tech/mobile/"* group itself. Because **"/\*"** means "everything which is under this group"
- 
 
  */
 export type TileGroupPathMatchingOnlyParameter = string;
@@ -505,10 +504,20 @@ The built-in values are the following:
  * **unknown** - if during hit-collection (see Hit Collection API!) *userAgentType* was not given or was NULL
 then Keytiles system will fall back to this value  
   
-tip: see [/v2/stat/webhits/{containerId}/idmappings](#/WebHits%20-%20Event%20counters/get_v2_stat_webhits__containerId__eventcounts) endpoint docs! With that you can query which userAgentTypes Keytiles have seen. 
+tip: see [/v2/stat/webhits/{containerId}/idmappings](#/WebHits%20-%20Event%20counters/get_v2_stat_webhits__containerId__eventcounts) endpoint docs! With that you can query which userAgentTypes Keytiles have seen.
 
  */
 export type UserAgentTypesOnlyParameter = string;
+
+/**
+ * Data filter option. Comma separated list of *userAgentType*s you want you want the query to be excluded from. If you list more values here then they are interpreted with an OR operator.  
+  
+In terms of rules and values this is the same as `userAgentTypesOnly` but basically negated list.
+  
+IMPORTANT! You can not use this together with `userAgentTypesOnly` parameter! You can only use this or that but not both.
+
+ */
+export type UserAgentTypeIsNotParameter = string;
 
 /**
  * Data filter option. Comma separated list of *visitorType*s you want to limit the query for. If you list more values here then they are interpreted with an OR operator.
@@ -566,7 +575,6 @@ For example:
  * If you are curious about events came from another website "abc.com" which is an external link then you can send `eventSourceNamesOnly=abc.com`. (note: this belongs to source type "link" - see 'eventSourceTypesOnly')
  * If you send `eventSourceNamesOnly=Facebook,abc.com` that would give you all events came from "Facebook" OR "abc.com". (note: and then this would belong to source types "link" and "social" - see 'eventSourceTypesOnly')
  * If you would send `eventSourceNamesOnly=abc.com & eventSourceTypesOnly=direct` you would receive 0 as a result - because for sure nothing comes in from "abc.com" which events came from a "direct" visit ...
-  
 
  */
 export type EventSourceNamesOnlyParameter = string;
@@ -598,7 +606,7 @@ In the comma separated list you can either use:
  * The name of the Campaign, or
  * The numeric ID of the Campaign - returned by `/v2/stat/webhits/{containerId}/idmappings` endpoint - using the format `id:<numeric ID>`, e.g. **"id:123"**
   
-Campaign tracking in Keytiles works based on Urchin Tracking Module (UTM) parameters specification. For more info visit: [Wikipedia - UTM parameters](https://en.wikipedia.org/wiki/UTM_parameters)  
+Campaign tracking in Keytiles works based on Urchin Tracking Module (UTM) parameters specification. For more info visit: [Wikipedia - UTM parameters](https://en.wikipedia.org/wiki/UTM_parameters)
 
  */
 export type CampaignsOnlyParameter = string;
@@ -680,7 +688,7 @@ export type InterestParameter = string;
   
 When you query the tile counters apart from the counters in the response Keytiles also returns information about the tiles like `firstSeen`, `lastSeen` (see: *TileClass*) and `titles` and `urls` (see: *TileGroupPathClass*). The fact is that due to server side storage logic returning this information happens in an extra step making the query more expensive and slower.  
   
-However there are scenarios when you do not really need this data (you might know these from an earlier query) so to speed up the query you can tell Keytiles to save this effort.   
+However there are scenarios when you do not really need this data (you might know these from an earlier query) so to speed up the query you can tell Keytiles to save this effort.
 
  */
 export type IncludeTileDetailsParameter = string;
@@ -749,7 +757,7 @@ The possible values are the following:
 export type GroupByParameter = string;
 
 /**
- * Maximum number of tiles in the response. By saying `limit=100` you will get back the top 100 tiles only who received the most event counts alltogether during the query range.   
+ * Maximum number of tiles in the response. By saying `limit=100` you will get back the top 100 tiles only who received the most event counts alltogether during the query range.
 
  */
 export type LimitParameter = number;
@@ -761,7 +769,7 @@ If you use
  * absolute value, like `threshold=10` then you will get back only those tiles and their details who received at least 10 hits
    during the query range
  * percentage value, like `threshold=3.5%` then you will get back only those tiles and their details who received at least 3.5% of the
-   hits got by the tile which received the most hits during the query range                      
+   hits got by the tile which received the most hits during the query range
 
  */
 export type ThresholdParameter = string;
@@ -786,7 +794,6 @@ In some cases you also have extra options here which are the following:
      query will fail.
      * In the event type list instead of name of the event type you can also use its numeric ID - returned by `/v2/stat/webhits/{containerId}/idmappings`
      endpoint - using the format `id:<numeric ID>`, e.g. **"id:123"**. So alltogether you send in something looks like this: `eventCountTotal:id:123,id:456`
-  
 
  */
 export type SortByParameter = string;
@@ -826,6 +833,48 @@ In Keytiles there are certain event types (generated by goal-tracking) which do 
 
  */
 export type IncludeNotTileEventTypesAsWellParameter = string;
+
+/**
+ * Controls whether Keytiles may slightly adjust your query so it can actually return data.  
+  
+**Default value:** `extend` if you do not specify this parameter.  
+  
+You send a time range (`fromTimestamp` / `toTimestamp`) and often a time grouping (`groupBy=time:1h`, `time:1d`, ...). Keytiles does not store a continuous stream - it stores counters in buckets (per minute, per hour, per day). If your timestamps do not line up with those buckets, the exact window you asked for cannot always be served.  
+  
+This parameter says what Keytiles is allowed to do in that situation. It is a single value, not a list.  
+  
+If Keytiles changes anything, it is never silent: the response contains a warning, and you can compare `requestedFromTimestamp` / `requestedToTimestamp` (what you asked) with `dataFromTimestamp` / `dataToTimestamp` (the window the data actually covers).  
+  
+The possible values are the following:
+ * **strict** - do not change the query. Keytiles either returns exactly the range and grouping you sent, or the
+request fails (HTTP 400). Use this when a chart or export must not cover a wider window than you asked for.   Example: you send `fromTimestamp` at 16:48 and `groupBy=time:1h`. If Keytiles cannot start hourly points at 16:48, you get an error instead of data that starts at 16:00.
+ * **extend** - **(default)** keep your grouping; Keytiles may only widen the time range a little so it matches
+stored buckets (for example start a few minutes earlier, or end a few minutes later, to hit a full hour or day). This is the behaviour you already get today without this parameter. Typical warning codes: `queryRange_from_extended`, `queryRange_to_extended`.   Example: same request as above (`fromTimestamp` at 16:48, `groupBy=time:1h`). Keytiles starts the series at 16:00, returns the extra minutes, and tells you in a warning. Your hourly grouping is unchanged.
+ * **adaptive** - Keytiles may also clean up the query when that is what you most likely wanted, and may use a
+cheaper grouping if it still answers a similar question. Typical cases: leftover minutes on timestamps that came from "now" while you asked for hourly or daily points; a day series that starts at 22:00 UTC because that is midnight in your timezone (that hour is kept - it is not forced to UTC midnight). For a live query ending at `now`, the current hour is still filling in and is not rounded into the future. If anything is rewritten, the warning lists the parameters Keytiles actually used.   Example: a 30-day report with `groupBy=time:1d` and `fromTimestamp`/`toTimestamp` taken from the clock, so they still have minutes (e.g. 08:12). Keytiles rounds those minutes away so you get clean daily points, and tells you the timestamps it used. If it also changes the grouping, that new `groupBy` value is in the same warning.   See also: `clientTimezone` if midnight in your timezone is not a whole UTC hour.
+
+ */
+export type QueryTuningParameter = string;
+
+/**
+ * Optional hint: the timezone **you used** when you computed `fromTimestamp` / `toTimestamp`.  
+  
+**Default value:** omitted. If you do not send this, Keytiles only looks at the UTC timestamps you already sent.  
+  
+Timestamps on this API are always UTC (unix seconds or `now-…`). You convert local midnights in your app (or browser) and send those instants. For many timezones that is enough: Berlin midnight in summer is `22:00` UTC, and that hour is already in `fromTimestamp`. Keytiles does not need the zone name to keep that as "start of the local day" - it will not pull it to UTC midnight.  
+  
+Send `clientTimezone` when local midnight is **not** a whole UTC hour. Then leftover minutes on the timestamp are ambiguous: they might be clock noise, or they might be the `:30` offset of the timezone. Without the zone, `queryTuning=adaptive` could round to the wrong hour.  
+  
+This does **not** change how Keytiles stores data. It is not a "query in this timezone" switch. Use the same IANA name you used on the client (for example the browser zone). A wrong value is worse than omitting the parameter.  
+  
+Format: IANA timezone name, e.g. `Europe/Berlin`, `Asia/Kolkata`, or `UTC`.   See [IANA time zones](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones).  
+  
+This hint is used when `queryTuning=adaptive`. With `extend` (default) or `strict` it is ignored.  
+  
+Example: a daily chart for a user in India (`Asia/Kolkata`, UTC+5:30). Local midnight is `18:30` UTC. You send `fromTimestamp` around that instant with a few extra seconds from the clock, `groupBy=time:1d`, and `clientTimezone=Asia/Kolkata`. Adaptive rounding can snap to `18:30` UTC. Without this parameter the same leftover seconds could be rounded to `18:00` UTC, which is not midnight in India.
+
+ */
+export type ClientTimezoneParameter = string;
 
 export type GetV2StatWebhitsContainerIdIdmappingsParams = {
 /**
@@ -899,7 +948,7 @@ export type GetV2StatWebhitsContainerIdTilesParams = {
 /**
  * Comma separated list of tileIds you want to limit the query for.  
   
-note: if you have comma in your tileIds (strange, but ok...) you can escape that with `\\` character!  
+note: if you have comma in your tileIds (strange, but ok...) you can escape that with `\\` character!
 
  */
 tileIdsOnly: string;
@@ -1031,7 +1080,7 @@ groupBy?: GroupByParameter;
 /**
  * Data filter option. Comma separated list of event types you want to limit the query for. If you list more values here then they are interpreted with an OR operator.
   
-note: if you have comma in your event names (strange, but ok...) you can escape that with `\\` character!  
+note: if you have comma in your event names (strange, but ok...) you can escape that with `\\` character!
 
  */
 eventTypesOnly?: EventTypesOnlyParameter;
@@ -1073,10 +1122,19 @@ The built-in values are the following:
  * **unknown** - if during hit-collection (see Hit Collection API!) *userAgentType* was not given or was NULL
 then Keytiles system will fall back to this value  
   
-tip: see [/v2/stat/webhits/{containerId}/idmappings](#/WebHits%20-%20Event%20counters/get_v2_stat_webhits__containerId__eventcounts) endpoint docs! With that you can query which userAgentTypes Keytiles have seen. 
+tip: see [/v2/stat/webhits/{containerId}/idmappings](#/WebHits%20-%20Event%20counters/get_v2_stat_webhits__containerId__eventcounts) endpoint docs! With that you can query which userAgentTypes Keytiles have seen.
 
  */
 userAgentTypesOnly?: UserAgentTypesOnlyParameter;
+/**
+ * Data filter option. Comma separated list of *userAgentType*s you want you want the query to be excluded from. If you list more values here then they are interpreted with an OR operator.  
+  
+In terms of rules and values this is the same as `userAgentTypesOnly` but basically negated list.
+  
+IMPORTANT! You can not use this together with `userAgentTypesOnly` parameter! You can only use this or that but not both.
+
+ */
+userAgentTypeIsNot?: UserAgentTypeIsNotParameter;
 /**
  * Data filter option. Comma separated list of matchers (see below) which returns counters only for those Tiles who's tileGroupPath is matching to one of the listed matchers. So if you list more values here then they are interpreted with an OR operator.  
   
@@ -1102,7 +1160,6 @@ In the first query **"/tech/mobile\*"** would match for everything begins with "
 But what if you want to really limit for Tiles under the *"/tech/mobile"* area?  
   
 Well then you can use the second query value: **"/tech/mobile/\*"**. This would include *"/tech/mobile/android"*, *"/tech/mobile/ios"* but would NOT include *"/tech/mobile-rumours"* anymore - as that is not a match anymore. But we are not done yet! Please note: this would also include Tiles under *"/tech/mobile/"* group itself. Because **"/\*"** means "everything which is under this group"
- 
 
  */
 tileGroupPathMatchingOnly?: TileGroupPathMatchingOnlyParameter;
@@ -1170,7 +1227,6 @@ For example:
  * If you are curious about events came from another website "abc.com" which is an external link then you can send `eventSourceNamesOnly=abc.com`. (note: this belongs to source type "link" - see 'eventSourceTypesOnly')
  * If you send `eventSourceNamesOnly=Facebook,abc.com` that would give you all events came from "Facebook" OR "abc.com". (note: and then this would belong to source types "link" and "social" - see 'eventSourceTypesOnly')
  * If you would send `eventSourceNamesOnly=abc.com & eventSourceTypesOnly=direct` you would receive 0 as a result - because for sure nothing comes in from "abc.com" which events came from a "direct" visit ...
-  
 
  */
 eventSourceNamesOnly?: EventSourceNamesOnlyParameter;
@@ -1197,7 +1253,7 @@ In the comma separated list you can either use:
  * The name of the Campaign, or
  * The numeric ID of the Campaign - returned by `/v2/stat/webhits/{containerId}/idmappings` endpoint - using the format `id:<numeric ID>`, e.g. **"id:123"**
   
-Campaign tracking in Keytiles works based on Urchin Tracking Module (UTM) parameters specification. For more info visit: [Wikipedia - UTM parameters](https://en.wikipedia.org/wiki/UTM_parameters)  
+Campaign tracking in Keytiles works based on Urchin Tracking Module (UTM) parameters specification. For more info visit: [Wikipedia - UTM parameters](https://en.wikipedia.org/wiki/UTM_parameters)
 
  */
 campaignsOnly?: CampaignsOnlyParameter;
@@ -1223,6 +1279,46 @@ Campaign tracking in Keytiles works based on Urchin Tracking Module (UTM) parame
 
  */
 campaignContentsOnly?: CampaignContentsOnlyParameter;
+/**
+ * Controls whether Keytiles may slightly adjust your query so it can actually return data.  
+  
+**Default value:** `extend` if you do not specify this parameter.  
+  
+You send a time range (`fromTimestamp` / `toTimestamp`) and often a time grouping (`groupBy=time:1h`, `time:1d`, ...). Keytiles does not store a continuous stream - it stores counters in buckets (per minute, per hour, per day). If your timestamps do not line up with those buckets, the exact window you asked for cannot always be served.  
+  
+This parameter says what Keytiles is allowed to do in that situation. It is a single value, not a list.  
+  
+If Keytiles changes anything, it is never silent: the response contains a warning, and you can compare `requestedFromTimestamp` / `requestedToTimestamp` (what you asked) with `dataFromTimestamp` / `dataToTimestamp` (the window the data actually covers).  
+  
+The possible values are the following:
+ * **strict** - do not change the query. Keytiles either returns exactly the range and grouping you sent, or the
+request fails (HTTP 400). Use this when a chart or export must not cover a wider window than you asked for.   Example: you send `fromTimestamp` at 16:48 and `groupBy=time:1h`. If Keytiles cannot start hourly points at 16:48, you get an error instead of data that starts at 16:00.
+ * **extend** - **(default)** keep your grouping; Keytiles may only widen the time range a little so it matches
+stored buckets (for example start a few minutes earlier, or end a few minutes later, to hit a full hour or day). This is the behaviour you already get today without this parameter. Typical warning codes: `queryRange_from_extended`, `queryRange_to_extended`.   Example: same request as above (`fromTimestamp` at 16:48, `groupBy=time:1h`). Keytiles starts the series at 16:00, returns the extra minutes, and tells you in a warning. Your hourly grouping is unchanged.
+ * **adaptive** - Keytiles may also clean up the query when that is what you most likely wanted, and may use a
+cheaper grouping if it still answers a similar question. Typical cases: leftover minutes on timestamps that came from "now" while you asked for hourly or daily points; a day series that starts at 22:00 UTC because that is midnight in your timezone (that hour is kept - it is not forced to UTC midnight). For a live query ending at `now`, the current hour is still filling in and is not rounded into the future. If anything is rewritten, the warning lists the parameters Keytiles actually used.   Example: a 30-day report with `groupBy=time:1d` and `fromTimestamp`/`toTimestamp` taken from the clock, so they still have minutes (e.g. 08:12). Keytiles rounds those minutes away so you get clean daily points, and tells you the timestamps it used. If it also changes the grouping, that new `groupBy` value is in the same warning.   See also: `clientTimezone` if midnight in your timezone is not a whole UTC hour.
+
+ */
+queryTuning?: QueryTuningParameter;
+/**
+ * Optional hint: the timezone **you used** when you computed `fromTimestamp` / `toTimestamp`.  
+  
+**Default value:** omitted. If you do not send this, Keytiles only looks at the UTC timestamps you already sent.  
+  
+Timestamps on this API are always UTC (unix seconds or `now-…`). You convert local midnights in your app (or browser) and send those instants. For many timezones that is enough: Berlin midnight in summer is `22:00` UTC, and that hour is already in `fromTimestamp`. Keytiles does not need the zone name to keep that as "start of the local day" - it will not pull it to UTC midnight.  
+  
+Send `clientTimezone` when local midnight is **not** a whole UTC hour. Then leftover minutes on the timestamp are ambiguous: they might be clock noise, or they might be the `:30` offset of the timezone. Without the zone, `queryTuning=adaptive` could round to the wrong hour.  
+  
+This does **not** change how Keytiles stores data. It is not a "query in this timezone" switch. Use the same IANA name you used on the client (for example the browser zone). A wrong value is worse than omitting the parameter.  
+  
+Format: IANA timezone name, e.g. `Europe/Berlin`, `Asia/Kolkata`, or `UTC`.   See [IANA time zones](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones).  
+  
+This hint is used when `queryTuning=adaptive`. With `extend` (default) or `strict` it is ignored.  
+  
+Example: a daily chart for a user in India (`Asia/Kolkata`, UTC+5:30). Local midnight is `18:30` UTC. You send `fromTimestamp` around that instant with a few extra seconds from the clock, `groupBy=time:1d`, and `clientTimezone=Asia/Kolkata`. Adaptive rounding can snap to `18:30` UTC. Without this parameter the same leftover seconds could be rounded to `18:00` UTC, which is not midnight in India.
+
+ */
+clientTimezone?: ClientTimezoneParameter;
 };
 
 export type GetV2StatWebhitsContainerIdEventcountsTilesParams = {
@@ -1353,12 +1449,12 @@ groupBy?: GroupByParameter;
   
 When you query the tile counters apart from the counters in the response Keytiles also returns information about the tiles like `firstSeen`, `lastSeen` (see: *TileClass*) and `titles` and `urls` (see: *TileGroupPathClass*). The fact is that due to server side storage logic returning this information happens in an extra step making the query more expensive and slower.  
   
-However there are scenarios when you do not really need this data (you might know these from an earlier query) so to speed up the query you can tell Keytiles to save this effort.   
+However there are scenarios when you do not really need this data (you might know these from an earlier query) so to speed up the query you can tell Keytiles to save this effort.
 
  */
 includeTileDetails?: IncludeTileDetailsParameter;
 /**
- * Maximum number of tiles in the response. By saying `limit=100` you will get back the top 100 tiles only who received the most event counts alltogether during the query range.   
+ * Maximum number of tiles in the response. By saying `limit=100` you will get back the top 100 tiles only who received the most event counts alltogether during the query range.
 
  */
 limit?: LimitParameter;
@@ -1369,7 +1465,7 @@ If you use
  * absolute value, like `threshold=10` then you will get back only those tiles and their details who received at least 10 hits
    during the query range
  * percentage value, like `threshold=3.5%` then you will get back only those tiles and their details who received at least 3.5% of the
-   hits got by the tile which received the most hits during the query range                      
+   hits got by the tile which received the most hits during the query range
 
  */
 threshold?: ThresholdParameter;
@@ -1393,21 +1489,20 @@ In some cases you also have extra options here which are the following:
      query will fail.
      * In the event type list instead of name of the event type you can also use its numeric ID - returned by `/v2/stat/webhits/{containerId}/idmappings`
      endpoint - using the format `id:<numeric ID>`, e.g. **"id:123"**. So alltogether you send in something looks like this: `eventCountTotal:id:123,id:456`
-  
 
  */
 sortBy?: SortByParameter;
 /**
  * Data filter option. Comma separated list of event types you want to limit the query for. If you list more values here then they are interpreted with an OR operator.
   
-note: if you have comma in your event names (strange, but ok...) you can escape that with `\\` character!  
+note: if you have comma in your event names (strange, but ok...) you can escape that with `\\` character!
 
  */
 eventTypesOnly?: EventTypesOnlyParameter;
 /**
  * Data filter option. Comma separated list of tileIds you want to limit the query for - of course in this case only the counters of these tiles are returned.  If you list more values here then they are interpreted with an OR operator. 
   
-note: if you have comma in your tileIds (strange, but ok...) you can escape that with `\\` character!  
+note: if you have comma in your tileIds (strange, but ok...) you can escape that with `\\` character!
 
  */
 tileIdsOnly?: TileIdsOnlyParameter;
@@ -1449,10 +1544,19 @@ The built-in values are the following:
  * **unknown** - if during hit-collection (see Hit Collection API!) *userAgentType* was not given or was NULL
 then Keytiles system will fall back to this value  
   
-tip: see [/v2/stat/webhits/{containerId}/idmappings](#/WebHits%20-%20Event%20counters/get_v2_stat_webhits__containerId__eventcounts) endpoint docs! With that you can query which userAgentTypes Keytiles have seen. 
+tip: see [/v2/stat/webhits/{containerId}/idmappings](#/WebHits%20-%20Event%20counters/get_v2_stat_webhits__containerId__eventcounts) endpoint docs! With that you can query which userAgentTypes Keytiles have seen.
 
  */
 userAgentTypesOnly?: UserAgentTypesOnlyParameter;
+/**
+ * Data filter option. Comma separated list of *userAgentType*s you want you want the query to be excluded from. If you list more values here then they are interpreted with an OR operator.  
+  
+In terms of rules and values this is the same as `userAgentTypesOnly` but basically negated list.
+  
+IMPORTANT! You can not use this together with `userAgentTypesOnly` parameter! You can only use this or that but not both.
+
+ */
+userAgentTypeIsNot?: UserAgentTypeIsNotParameter;
 /**
  * Data filter option. Comma separated list of matchers (see below) which returns counters only for those Tiles who's tileGroupPath is matching to one of the listed matchers. So if you list more values here then they are interpreted with an OR operator.  
   
@@ -1478,7 +1582,6 @@ In the first query **"/tech/mobile\*"** would match for everything begins with "
 But what if you want to really limit for Tiles under the *"/tech/mobile"* area?  
   
 Well then you can use the second query value: **"/tech/mobile/\*"**. This would include *"/tech/mobile/android"*, *"/tech/mobile/ios"* but would NOT include *"/tech/mobile-rumours"* anymore - as that is not a match anymore. But we are not done yet! Please note: this would also include Tiles under *"/tech/mobile/"* group itself. Because **"/\*"** means "everything which is under this group"
- 
 
  */
 tileGroupPathMatchingOnly?: TileGroupPathMatchingOnlyParameter;
@@ -1546,7 +1649,6 @@ For example:
  * If you are curious about events came from another website "abc.com" which is an external link then you can send `eventSourceNamesOnly=abc.com`. (note: this belongs to source type "link" - see 'eventSourceTypesOnly')
  * If you send `eventSourceNamesOnly=Facebook,abc.com` that would give you all events came from "Facebook" OR "abc.com". (note: and then this would belong to source types "link" and "social" - see 'eventSourceTypesOnly')
  * If you would send `eventSourceNamesOnly=abc.com & eventSourceTypesOnly=direct` you would receive 0 as a result - because for sure nothing comes in from "abc.com" which events came from a "direct" visit ...
-  
 
  */
 eventSourceNamesOnly?: EventSourceNamesOnlyParameter;
@@ -1573,7 +1675,7 @@ In the comma separated list you can either use:
  * The name of the Campaign, or
  * The numeric ID of the Campaign - returned by `/v2/stat/webhits/{containerId}/idmappings` endpoint - using the format `id:<numeric ID>`, e.g. **"id:123"**
   
-Campaign tracking in Keytiles works based on Urchin Tracking Module (UTM) parameters specification. For more info visit: [Wikipedia - UTM parameters](https://en.wikipedia.org/wiki/UTM_parameters)  
+Campaign tracking in Keytiles works based on Urchin Tracking Module (UTM) parameters specification. For more info visit: [Wikipedia - UTM parameters](https://en.wikipedia.org/wiki/UTM_parameters)
 
  */
 campaignsOnly?: CampaignsOnlyParameter;
@@ -1599,6 +1701,46 @@ Campaign tracking in Keytiles works based on Urchin Tracking Module (UTM) parame
 
  */
 campaignContentsOnly?: CampaignContentsOnlyParameter;
+/**
+ * Controls whether Keytiles may slightly adjust your query so it can actually return data.  
+  
+**Default value:** `extend` if you do not specify this parameter.  
+  
+You send a time range (`fromTimestamp` / `toTimestamp`) and often a time grouping (`groupBy=time:1h`, `time:1d`, ...). Keytiles does not store a continuous stream - it stores counters in buckets (per minute, per hour, per day). If your timestamps do not line up with those buckets, the exact window you asked for cannot always be served.  
+  
+This parameter says what Keytiles is allowed to do in that situation. It is a single value, not a list.  
+  
+If Keytiles changes anything, it is never silent: the response contains a warning, and you can compare `requestedFromTimestamp` / `requestedToTimestamp` (what you asked) with `dataFromTimestamp` / `dataToTimestamp` (the window the data actually covers).  
+  
+The possible values are the following:
+ * **strict** - do not change the query. Keytiles either returns exactly the range and grouping you sent, or the
+request fails (HTTP 400). Use this when a chart or export must not cover a wider window than you asked for.   Example: you send `fromTimestamp` at 16:48 and `groupBy=time:1h`. If Keytiles cannot start hourly points at 16:48, you get an error instead of data that starts at 16:00.
+ * **extend** - **(default)** keep your grouping; Keytiles may only widen the time range a little so it matches
+stored buckets (for example start a few minutes earlier, or end a few minutes later, to hit a full hour or day). This is the behaviour you already get today without this parameter. Typical warning codes: `queryRange_from_extended`, `queryRange_to_extended`.   Example: same request as above (`fromTimestamp` at 16:48, `groupBy=time:1h`). Keytiles starts the series at 16:00, returns the extra minutes, and tells you in a warning. Your hourly grouping is unchanged.
+ * **adaptive** - Keytiles may also clean up the query when that is what you most likely wanted, and may use a
+cheaper grouping if it still answers a similar question. Typical cases: leftover minutes on timestamps that came from "now" while you asked for hourly or daily points; a day series that starts at 22:00 UTC because that is midnight in your timezone (that hour is kept - it is not forced to UTC midnight). For a live query ending at `now`, the current hour is still filling in and is not rounded into the future. If anything is rewritten, the warning lists the parameters Keytiles actually used.   Example: a 30-day report with `groupBy=time:1d` and `fromTimestamp`/`toTimestamp` taken from the clock, so they still have minutes (e.g. 08:12). Keytiles rounds those minutes away so you get clean daily points, and tells you the timestamps it used. If it also changes the grouping, that new `groupBy` value is in the same warning.   See also: `clientTimezone` if midnight in your timezone is not a whole UTC hour.
+
+ */
+queryTuning?: QueryTuningParameter;
+/**
+ * Optional hint: the timezone **you used** when you computed `fromTimestamp` / `toTimestamp`.  
+  
+**Default value:** omitted. If you do not send this, Keytiles only looks at the UTC timestamps you already sent.  
+  
+Timestamps on this API are always UTC (unix seconds or `now-…`). You convert local midnights in your app (or browser) and send those instants. For many timezones that is enough: Berlin midnight in summer is `22:00` UTC, and that hour is already in `fromTimestamp`. Keytiles does not need the zone name to keep that as "start of the local day" - it will not pull it to UTC midnight.  
+  
+Send `clientTimezone` when local midnight is **not** a whole UTC hour. Then leftover minutes on the timestamp are ambiguous: they might be clock noise, or they might be the `:30` offset of the timezone. Without the zone, `queryTuning=adaptive` could round to the wrong hour.  
+  
+This does **not** change how Keytiles stores data. It is not a "query in this timezone" switch. Use the same IANA name you used on the client (for example the browser zone). A wrong value is worse than omitting the parameter.  
+  
+Format: IANA timezone name, e.g. `Europe/Berlin`, `Asia/Kolkata`, or `UTC`.   See [IANA time zones](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones).  
+  
+This hint is used when `queryTuning=adaptive`. With `extend` (default) or `strict` it is ignored.  
+  
+Example: a daily chart for a user in India (`Asia/Kolkata`, UTC+5:30). Local midnight is `18:30` UTC. You send `fromTimestamp` around that instant with a few extra seconds from the clock, `groupBy=time:1d`, and `clientTimezone=Asia/Kolkata`. Adaptive rounding can snap to `18:30` UTC. Without this parameter the same leftover seconds could be rounded to `18:00` UTC, which is not midnight in India.
+
+ */
+clientTimezone?: ClientTimezoneParameter;
 };
 
 /**
@@ -1641,7 +1783,7 @@ export const getV2StatWebhitsContainerIdTiles = <TData = AxiosResponse<GetTilesR
   
 Ideal to display global graphs.
   
-You might fine tune the query with the parameters.  
+You might fine tune the query with the parameters.
 
  * @summary To query aggregated event counts measured by the Container
  */
@@ -1661,7 +1803,7 @@ export const getV2StatWebhitsContainerIdEventcounts = <TData = AxiosResponse<Eve
   
 Although you also receive the aggregated counts in the response for comfort you should not use this endpoint if you are not interested in tile level segregation! Then simply use the `/eventcounts` one! This query is more expensive and thus can be significantly slower too.  
   
-You might fine tune the query with the parameters.  
+You might fine tune the query with the parameters.
 
  * @summary To query event counts measure on a tile level basis
  */

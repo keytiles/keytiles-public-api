@@ -433,6 +433,9 @@ type CampaignMediumsOnly = string
 // CampaignsOnly defines model for campaignsOnly.
 type CampaignsOnly = string
 
+// ClientTimezone defines model for clientTimezone.
+type ClientTimezone = string
+
 // EventSourceNamesOnly defines model for eventSourceNamesOnly.
 type EventSourceNamesOnly = string
 
@@ -466,6 +469,9 @@ type MappingTypes = string
 // PrimaryTagsOnly defines model for primaryTagsOnly.
 type PrimaryTagsOnly = string
 
+// QueryTuning defines model for queryTuning.
+type QueryTuning = string
+
 // SecondaryTagsOnly defines model for secondaryTagsOnly.
 type SecondaryTagsOnly = string
 
@@ -498,6 +504,9 @@ type TrafficSourceNamesOnly = string
 
 // TrafficSourceTypesOnly defines model for trafficSourceTypesOnly.
 type TrafficSourceTypesOnly = string
+
+// UserAgentTypeIsNot defines model for userAgentTypeIsNot.
+type UserAgentTypeIsNot = string
 
 // UserAgentTypesOnly defines model for userAgentTypesOnly.
 type UserAgentTypesOnly = string
@@ -660,6 +669,13 @@ type GetV2StatWebhitsContainerIdEventcountsParams struct {
 	// tip: see [/v2/stat/webhits/{containerId}/idmappings](#/WebHits%20-%20Event%20counters/get_v2_stat_webhits__containerId__eventcounts) endpoint docs! With that you can query which userAgentTypes Keytiles have seen.
 	UserAgentTypesOnly *UserAgentTypesOnly `form:"userAgentTypesOnly,omitempty" json:"userAgentTypesOnly,omitempty" yaml:"userAgentTypesOnly,omitempty"`
 
+	// UserAgentTypeIsNot Data filter option. Comma separated list of *userAgentType*s you want you want the query to be excluded from. If you list more values here then they are interpreted with an OR operator.
+	//
+	// In terms of rules and values this is the same as `userAgentTypesOnly` but basically negated list.
+	//
+	// IMPORTANT! You can not use this together with `userAgentTypesOnly` parameter! You can only use this or that but not both.
+	UserAgentTypeIsNot *UserAgentTypeIsNot `form:"userAgentTypeIsNot,omitempty" json:"userAgentTypeIsNot,omitempty" yaml:"userAgentTypeIsNot,omitempty"`
+
 	// TileGroupPathMatchingOnly Data filter option. Comma separated list of matchers (see below) which returns counters only for those Tiles who's tileGroupPath is matching to one of the listed matchers. So if you list more values here then they are interpreted with an OR operator.
 	//
 	// note: if you have comma in your matcher (strange, but ok...) you can escape that with `\\` character!
@@ -684,7 +700,6 @@ type GetV2StatWebhitsContainerIdEventcountsParams struct {
 	// But what if you want to really limit for Tiles under the *"/tech/mobile"* area?
 	//
 	// Well then you can use the second query value: **"/tech/mobile/\*"**. This would include *"/tech/mobile/android"*, *"/tech/mobile/ios"* but would NOT include *"/tech/mobile-rumours"* anymore - as that is not a match anymore. But we are not done yet! Please note: this would also include Tiles under *"/tech/mobile/"* group itself. Because **"/\*"** means "everything which is under this group"
-	//
 	TileGroupPathMatchingOnly *TileGroupPathMatchingOnly `form:"tileGroupPathMatchingOnly,omitempty" json:"tileGroupPathMatchingOnly,omitempty" yaml:"tileGroupPathMatchingOnly,omitempty"`
 
 	// VisitorTypesOnly Data filter option. Comma separated list of *visitorType*s you want to limit the query for. If you list more values here then they are interpreted with an OR operator.
@@ -740,7 +755,6 @@ type GetV2StatWebhitsContainerIdEventcountsParams struct {
 	//  * If you are curious about events came from another website "abc.com" which is an external link then you can send `eventSourceNamesOnly=abc.com`. (note: this belongs to source type "link" - see 'eventSourceTypesOnly')
 	//  * If you send `eventSourceNamesOnly=Facebook,abc.com` that would give you all events came from "Facebook" OR "abc.com". (note: and then this would belong to source types "link" and "social" - see 'eventSourceTypesOnly')
 	//  * If you would send `eventSourceNamesOnly=abc.com & eventSourceTypesOnly=direct` you would receive 0 as a result - because for sure nothing comes in from "abc.com" which events came from a "direct" visit ...
-	//
 	EventSourceNamesOnly *EventSourceNamesOnly `form:"eventSourceNamesOnly,omitempty" json:"eventSourceNamesOnly,omitempty" yaml:"eventSourceNamesOnly,omitempty"`
 
 	// TrafficSourceTypesOnly This is **deprecated!** Please use `eventSourceTypesOnly` or `visitSourceTypesOnly` instead to specify your interest precisely!
@@ -781,6 +795,42 @@ type GetV2StatWebhitsContainerIdEventcountsParams struct {
 	//
 	// Campaign tracking in Keytiles works based on Urchin Tracking Module (UTM) parameters specification. For more info visit: [Wikipedia - UTM parameters](https://en.wikipedia.org/wiki/UTM_parameters)
 	CampaignContentsOnly *CampaignContentsOnly `form:"campaignContentsOnly,omitempty" json:"campaignContentsOnly,omitempty" yaml:"campaignContentsOnly,omitempty"`
+
+	// QueryTuning Controls whether Keytiles may slightly adjust your query so it can actually return data.
+	//
+	// **Default value:** `extend` if you do not specify this parameter.
+	//
+	// You send a time range (`fromTimestamp` / `toTimestamp`) and often a time grouping (`groupBy=time:1h`, `time:1d`, ...). Keytiles does not store a continuous stream - it stores counters in buckets (per minute, per hour, per day). If your timestamps do not line up with those buckets, the exact window you asked for cannot always be served.
+	//
+	// This parameter says what Keytiles is allowed to do in that situation. It is a single value, not a list.
+	//
+	// If Keytiles changes anything, it is never silent: the response contains a warning, and you can compare `requestedFromTimestamp` / `requestedToTimestamp` (what you asked) with `dataFromTimestamp` / `dataToTimestamp` (the window the data actually covers).
+	//
+	// The possible values are the following:
+	//  * **strict** - do not change the query. Keytiles either returns exactly the range and grouping you sent, or the
+	// request fails (HTTP 400). Use this when a chart or export must not cover a wider window than you asked for.   Example: you send `fromTimestamp` at 16:48 and `groupBy=time:1h`. If Keytiles cannot start hourly points at 16:48, you get an error instead of data that starts at 16:00.
+	//  * **extend** - **(default)** keep your grouping; Keytiles may only widen the time range a little so it matches
+	// stored buckets (for example start a few minutes earlier, or end a few minutes later, to hit a full hour or day). This is the behaviour you already get today without this parameter. Typical warning codes: `queryRange_from_extended`, `queryRange_to_extended`.   Example: same request as above (`fromTimestamp` at 16:48, `groupBy=time:1h`). Keytiles starts the series at 16:00, returns the extra minutes, and tells you in a warning. Your hourly grouping is unchanged.
+	//  * **adaptive** - Keytiles may also clean up the query when that is what you most likely wanted, and may use a
+	// cheaper grouping if it still answers a similar question. Typical cases: leftover minutes on timestamps that came from "now" while you asked for hourly or daily points; a day series that starts at 22:00 UTC because that is midnight in your timezone (that hour is kept - it is not forced to UTC midnight). For a live query ending at `now`, the current hour is still filling in and is not rounded into the future. If anything is rewritten, the warning lists the parameters Keytiles actually used.   Example: a 30-day report with `groupBy=time:1d` and `fromTimestamp`/`toTimestamp` taken from the clock, so they still have minutes (e.g. 08:12). Keytiles rounds those minutes away so you get clean daily points, and tells you the timestamps it used. If it also changes the grouping, that new `groupBy` value is in the same warning.   See also: `clientTimezone` if midnight in your timezone is not a whole UTC hour.
+	QueryTuning *QueryTuning `form:"queryTuning,omitempty" json:"queryTuning,omitempty" yaml:"queryTuning,omitempty"`
+
+	// ClientTimezone Optional hint: the timezone **you used** when you computed `fromTimestamp` / `toTimestamp`.
+	//
+	// **Default value:** omitted. If you do not send this, Keytiles only looks at the UTC timestamps you already sent.
+	//
+	// Timestamps on this API are always UTC (unix seconds or `now-…`). You convert local midnights in your app (or browser) and send those instants. For many timezones that is enough: Berlin midnight in summer is `22:00` UTC, and that hour is already in `fromTimestamp`. Keytiles does not need the zone name to keep that as "start of the local day" - it will not pull it to UTC midnight.
+	//
+	// Send `clientTimezone` when local midnight is **not** a whole UTC hour. Then leftover minutes on the timestamp are ambiguous: they might be clock noise, or they might be the `:30` offset of the timezone. Without the zone, `queryTuning=adaptive` could round to the wrong hour.
+	//
+	// This does **not** change how Keytiles stores data. It is not a "query in this timezone" switch. Use the same IANA name you used on the client (for example the browser zone). A wrong value is worse than omitting the parameter.
+	//
+	// Format: IANA timezone name, e.g. `Europe/Berlin`, `Asia/Kolkata`, or `UTC`.   See [IANA time zones](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones).
+	//
+	// This hint is used when `queryTuning=adaptive`. With `extend` (default) or `strict` it is ignored.
+	//
+	// Example: a daily chart for a user in India (`Asia/Kolkata`, UTC+5:30). Local midnight is `18:30` UTC. You send `fromTimestamp` around that instant with a few extra seconds from the clock, `groupBy=time:1d`, and `clientTimezone=Asia/Kolkata`. Adaptive rounding can snap to `18:30` UTC. Without this parameter the same leftover seconds could be rounded to `18:00` UTC, which is not midnight in India.
+	ClientTimezone *ClientTimezone `form:"clientTimezone,omitempty" json:"clientTimezone,omitempty" yaml:"clientTimezone,omitempty"`
 }
 
 // GetV2StatWebhitsContainerIdEventcountsTilesParams defines parameters for GetV2StatWebhitsContainerIdEventcountsTiles.
@@ -935,7 +985,6 @@ type GetV2StatWebhitsContainerIdEventcountsTilesParams struct {
 	//      query will fail.
 	//      * In the event type list instead of name of the event type you can also use its numeric ID - returned by `/v2/stat/webhits/{containerId}/idmappings`
 	//      endpoint - using the format `id:<numeric ID>`, e.g. **"id:123"**. So alltogether you send in something looks like this: `eventCountTotal:id:123,id:456`
-	//
 	SortBy *SortBy `form:"sortBy,omitempty" json:"sortBy,omitempty" yaml:"sortBy,omitempty"`
 
 	// EventTypesOnly Data filter option. Comma separated list of event types you want to limit the query for. If you list more values here then they are interpreted with an OR operator.
@@ -984,6 +1033,13 @@ type GetV2StatWebhitsContainerIdEventcountsTilesParams struct {
 	// tip: see [/v2/stat/webhits/{containerId}/idmappings](#/WebHits%20-%20Event%20counters/get_v2_stat_webhits__containerId__eventcounts) endpoint docs! With that you can query which userAgentTypes Keytiles have seen.
 	UserAgentTypesOnly *UserAgentTypesOnly `form:"userAgentTypesOnly,omitempty" json:"userAgentTypesOnly,omitempty" yaml:"userAgentTypesOnly,omitempty"`
 
+	// UserAgentTypeIsNot Data filter option. Comma separated list of *userAgentType*s you want you want the query to be excluded from. If you list more values here then they are interpreted with an OR operator.
+	//
+	// In terms of rules and values this is the same as `userAgentTypesOnly` but basically negated list.
+	//
+	// IMPORTANT! You can not use this together with `userAgentTypesOnly` parameter! You can only use this or that but not both.
+	UserAgentTypeIsNot *UserAgentTypeIsNot `form:"userAgentTypeIsNot,omitempty" json:"userAgentTypeIsNot,omitempty" yaml:"userAgentTypeIsNot,omitempty"`
+
 	// TileGroupPathMatchingOnly Data filter option. Comma separated list of matchers (see below) which returns counters only for those Tiles who's tileGroupPath is matching to one of the listed matchers. So if you list more values here then they are interpreted with an OR operator.
 	//
 	// note: if you have comma in your matcher (strange, but ok...) you can escape that with `\\` character!
@@ -1008,7 +1064,6 @@ type GetV2StatWebhitsContainerIdEventcountsTilesParams struct {
 	// But what if you want to really limit for Tiles under the *"/tech/mobile"* area?
 	//
 	// Well then you can use the second query value: **"/tech/mobile/\*"**. This would include *"/tech/mobile/android"*, *"/tech/mobile/ios"* but would NOT include *"/tech/mobile-rumours"* anymore - as that is not a match anymore. But we are not done yet! Please note: this would also include Tiles under *"/tech/mobile/"* group itself. Because **"/\*"** means "everything which is under this group"
-	//
 	TileGroupPathMatchingOnly *TileGroupPathMatchingOnly `form:"tileGroupPathMatchingOnly,omitempty" json:"tileGroupPathMatchingOnly,omitempty" yaml:"tileGroupPathMatchingOnly,omitempty"`
 
 	// VisitorTypesOnly Data filter option. Comma separated list of *visitorType*s you want to limit the query for. If you list more values here then they are interpreted with an OR operator.
@@ -1064,7 +1119,6 @@ type GetV2StatWebhitsContainerIdEventcountsTilesParams struct {
 	//  * If you are curious about events came from another website "abc.com" which is an external link then you can send `eventSourceNamesOnly=abc.com`. (note: this belongs to source type "link" - see 'eventSourceTypesOnly')
 	//  * If you send `eventSourceNamesOnly=Facebook,abc.com` that would give you all events came from "Facebook" OR "abc.com". (note: and then this would belong to source types "link" and "social" - see 'eventSourceTypesOnly')
 	//  * If you would send `eventSourceNamesOnly=abc.com & eventSourceTypesOnly=direct` you would receive 0 as a result - because for sure nothing comes in from "abc.com" which events came from a "direct" visit ...
-	//
 	EventSourceNamesOnly *EventSourceNamesOnly `form:"eventSourceNamesOnly,omitempty" json:"eventSourceNamesOnly,omitempty" yaml:"eventSourceNamesOnly,omitempty"`
 
 	// TrafficSourceTypesOnly This is **deprecated!** Please use `eventSourceTypesOnly` or `visitSourceTypesOnly` instead to specify your interest precisely!
@@ -1105,6 +1159,42 @@ type GetV2StatWebhitsContainerIdEventcountsTilesParams struct {
 	//
 	// Campaign tracking in Keytiles works based on Urchin Tracking Module (UTM) parameters specification. For more info visit: [Wikipedia - UTM parameters](https://en.wikipedia.org/wiki/UTM_parameters)
 	CampaignContentsOnly *CampaignContentsOnly `form:"campaignContentsOnly,omitempty" json:"campaignContentsOnly,omitempty" yaml:"campaignContentsOnly,omitempty"`
+
+	// QueryTuning Controls whether Keytiles may slightly adjust your query so it can actually return data.
+	//
+	// **Default value:** `extend` if you do not specify this parameter.
+	//
+	// You send a time range (`fromTimestamp` / `toTimestamp`) and often a time grouping (`groupBy=time:1h`, `time:1d`, ...). Keytiles does not store a continuous stream - it stores counters in buckets (per minute, per hour, per day). If your timestamps do not line up with those buckets, the exact window you asked for cannot always be served.
+	//
+	// This parameter says what Keytiles is allowed to do in that situation. It is a single value, not a list.
+	//
+	// If Keytiles changes anything, it is never silent: the response contains a warning, and you can compare `requestedFromTimestamp` / `requestedToTimestamp` (what you asked) with `dataFromTimestamp` / `dataToTimestamp` (the window the data actually covers).
+	//
+	// The possible values are the following:
+	//  * **strict** - do not change the query. Keytiles either returns exactly the range and grouping you sent, or the
+	// request fails (HTTP 400). Use this when a chart or export must not cover a wider window than you asked for.   Example: you send `fromTimestamp` at 16:48 and `groupBy=time:1h`. If Keytiles cannot start hourly points at 16:48, you get an error instead of data that starts at 16:00.
+	//  * **extend** - **(default)** keep your grouping; Keytiles may only widen the time range a little so it matches
+	// stored buckets (for example start a few minutes earlier, or end a few minutes later, to hit a full hour or day). This is the behaviour you already get today without this parameter. Typical warning codes: `queryRange_from_extended`, `queryRange_to_extended`.   Example: same request as above (`fromTimestamp` at 16:48, `groupBy=time:1h`). Keytiles starts the series at 16:00, returns the extra minutes, and tells you in a warning. Your hourly grouping is unchanged.
+	//  * **adaptive** - Keytiles may also clean up the query when that is what you most likely wanted, and may use a
+	// cheaper grouping if it still answers a similar question. Typical cases: leftover minutes on timestamps that came from "now" while you asked for hourly or daily points; a day series that starts at 22:00 UTC because that is midnight in your timezone (that hour is kept - it is not forced to UTC midnight). For a live query ending at `now`, the current hour is still filling in and is not rounded into the future. If anything is rewritten, the warning lists the parameters Keytiles actually used.   Example: a 30-day report with `groupBy=time:1d` and `fromTimestamp`/`toTimestamp` taken from the clock, so they still have minutes (e.g. 08:12). Keytiles rounds those minutes away so you get clean daily points, and tells you the timestamps it used. If it also changes the grouping, that new `groupBy` value is in the same warning.   See also: `clientTimezone` if midnight in your timezone is not a whole UTC hour.
+	QueryTuning *QueryTuning `form:"queryTuning,omitempty" json:"queryTuning,omitempty" yaml:"queryTuning,omitempty"`
+
+	// ClientTimezone Optional hint: the timezone **you used** when you computed `fromTimestamp` / `toTimestamp`.
+	//
+	// **Default value:** omitted. If you do not send this, Keytiles only looks at the UTC timestamps you already sent.
+	//
+	// Timestamps on this API are always UTC (unix seconds or `now-…`). You convert local midnights in your app (or browser) and send those instants. For many timezones that is enough: Berlin midnight in summer is `22:00` UTC, and that hour is already in `fromTimestamp`. Keytiles does not need the zone name to keep that as "start of the local day" - it will not pull it to UTC midnight.
+	//
+	// Send `clientTimezone` when local midnight is **not** a whole UTC hour. Then leftover minutes on the timestamp are ambiguous: they might be clock noise, or they might be the `:30` offset of the timezone. Without the zone, `queryTuning=adaptive` could round to the wrong hour.
+	//
+	// This does **not** change how Keytiles stores data. It is not a "query in this timezone" switch. Use the same IANA name you used on the client (for example the browser zone). A wrong value is worse than omitting the parameter.
+	//
+	// Format: IANA timezone name, e.g. `Europe/Berlin`, `Asia/Kolkata`, or `UTC`.   See [IANA time zones](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones).
+	//
+	// This hint is used when `queryTuning=adaptive`. With `extend` (default) or `strict` it is ignored.
+	//
+	// Example: a daily chart for a user in India (`Asia/Kolkata`, UTC+5:30). Local midnight is `18:30` UTC. You send `fromTimestamp` around that instant with a few extra seconds from the clock, `groupBy=time:1d`, and `clientTimezone=Asia/Kolkata`. Adaptive rounding can snap to `18:30` UTC. Without this parameter the same leftover seconds could be rounded to `18:00` UTC, which is not midnight in India.
+	ClientTimezone *ClientTimezone `form:"clientTimezone,omitempty" json:"clientTimezone,omitempty" yaml:"clientTimezone,omitempty"`
 }
 
 // GetV2StatWebhitsContainerIdIdmappingsParams defines parameters for GetV2StatWebhitsContainerIdIdmappings.
