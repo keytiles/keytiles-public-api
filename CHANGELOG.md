@@ -1,3 +1,10 @@
+# Release 2.7.2
+
+## Enhancements / Fixes
+- `query-api-v3.yaml` - v3.4 release (in place as just comments)
+  - `queryTuning=adaptive` got a way better cleaner explanation2.7.2
+
+
 # Release 2.7.1
 
 ## Enhancements / Fixes
