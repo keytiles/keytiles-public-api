@@ -1,3 +1,11 @@
+# Release 2.7.1
+
+## Enhancements / Fixes
+- `query-api-v3.yaml` - v3.4 release
+  - `groupByTime_corrected` error code added which might come back in a Warning when `queryTuning=adaptive` and server corrected that value
+    in order to server the request instead of failing it due to missing data granularity. Earlier wrong `queryRange_corrected` error code
+    was used for this due to lack of this new one which is not accurate.
+
 # Release 2.7.0
 
 ## New features

@@ -1,7 +1,7 @@
 openapi: 3.0.1
 
 info:
-  version: "3.4"
+  version: "3.3"
   title: Keytiles Statistics query API
   description: >
 
@@ -522,10 +522,9 @@ components:
       schema:
         type: string
       description: >
-        Data filter option. Comma separated list of *userAgentType*s you want the query to be excluded from. If you list more values here then they are interpreted with an OR operator.  
+        Data filter option. Comma separated list of *userAgentType*s you want you want the query to be excluded from. If you list more values here then they are interpreted with an OR operator.  
           
-        In terms of rules and values this is the same as `userAgentTypesOnly` but basically negated list. Main motivation is that often you want to exclude
-        **bot** (and optionally also **unknown**) traffic from queries while keeping everything else in place.
+        In terms of rules and values this is the same as `userAgentTypesOnly` but basically negated list.
           
         IMPORTANT! You can not use this together with `userAgentTypesOnly` parameter! You can only use this or that but not both.
 
@@ -1051,15 +1050,13 @@ components:
         - queryRange_corrected
         - queryRange_from_corrected
         - queryRange_to_corrected
-        # When queryTuning=adaptive then server might modify the groupBy=time:X value in order being able to serve the request and not fail it
-        # because we do not have necessary data granularity. If this happens then you might get back this as a code in a Warning.
-        - groupByTime_corrected
         # The ID of the container was not provided - it is missing
         - containerId_missing
         # The ID of the Container is not valid - there is no Container with this ID
         - containerId_invalid
         - containerSetup_invalid
         # This happens on 400 "Bad request" if user sends in *Only filter parameter however this filter can not be supported
+        # by that query endpoint. In this case user must remove that filter which is named
         - filter_not_supported
         # If 'sortBy' is pointing to a column which is not available due to 'interest' parameter this error is raised
         - sorting_column_not_in_interest

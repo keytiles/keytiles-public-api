@@ -42,7 +42,7 @@ If you have a high traffic website with many many Tiles (content) then you might
 Therefore you have the possibility to limit Keytiles response size by defining "send me only the top X" tiles (as most relevant info) and leave out the rest.
 Please refer to the "limit" and "threshold" parameter descriptions for more details on endpoints supporting this!
 
- * OpenAPI spec version: 3.3
+ * OpenAPI spec version: 3.4
  */
 import axios from 'axios';
 import type {
@@ -109,6 +109,7 @@ export const StatApiEndpointLocalErrorCodes = {
   queryRange_corrected: 'queryRange_corrected',
   queryRange_from_corrected: 'queryRange_from_corrected',
   queryRange_to_corrected: 'queryRange_to_corrected',
+  groupByTime_corrected: 'groupByTime_corrected',
   containerId_missing: 'containerId_missing',
   containerId_invalid: 'containerId_invalid',
   containerSetup_invalid: 'containerSetup_invalid',
@@ -510,9 +511,9 @@ tip: see [/v2/stat/webhits/{containerId}/idmappings](#/WebHits%20-%20Event%20cou
 export type UserAgentTypesOnlyParameter = string;
 
 /**
- * Data filter option. Comma separated list of *userAgentType*s you want you want the query to be excluded from. If you list more values here then they are interpreted with an OR operator.  
+ * Data filter option. Comma separated list of *userAgentType*s you want the query to be excluded from. If you list more values here then they are interpreted with an OR operator.  
   
-In terms of rules and values this is the same as `userAgentTypesOnly` but basically negated list.
+In terms of rules and values this is the same as `userAgentTypesOnly` but basically negated list. Main motivation is that often you want to exclude **bot** (and optionally also **unknown**) traffic from queries while keeping everything else in place.
   
 IMPORTANT! You can not use this together with `userAgentTypesOnly` parameter! You can only use this or that but not both.
 
@@ -1127,9 +1128,9 @@ tip: see [/v2/stat/webhits/{containerId}/idmappings](#/WebHits%20-%20Event%20cou
  */
 userAgentTypesOnly?: UserAgentTypesOnlyParameter;
 /**
- * Data filter option. Comma separated list of *userAgentType*s you want you want the query to be excluded from. If you list more values here then they are interpreted with an OR operator.  
+ * Data filter option. Comma separated list of *userAgentType*s you want the query to be excluded from. If you list more values here then they are interpreted with an OR operator.  
   
-In terms of rules and values this is the same as `userAgentTypesOnly` but basically negated list.
+In terms of rules and values this is the same as `userAgentTypesOnly` but basically negated list. Main motivation is that often you want to exclude **bot** (and optionally also **unknown**) traffic from queries while keeping everything else in place.
   
 IMPORTANT! You can not use this together with `userAgentTypesOnly` parameter! You can only use this or that but not both.
 
@@ -1549,9 +1550,9 @@ tip: see [/v2/stat/webhits/{containerId}/idmappings](#/WebHits%20-%20Event%20cou
  */
 userAgentTypesOnly?: UserAgentTypesOnlyParameter;
 /**
- * Data filter option. Comma separated list of *userAgentType*s you want you want the query to be excluded from. If you list more values here then they are interpreted with an OR operator.  
+ * Data filter option. Comma separated list of *userAgentType*s you want the query to be excluded from. If you list more values here then they are interpreted with an OR operator.  
   
-In terms of rules and values this is the same as `userAgentTypesOnly` but basically negated list.
+In terms of rules and values this is the same as `userAgentTypesOnly` but basically negated list. Main motivation is that often you want to exclude **bot** (and optionally also **unknown**) traffic from queries while keeping everything else in place.
   
 IMPORTANT! You can not use this together with `userAgentTypesOnly` parameter! You can only use this or that but not both.
 

@@ -52,6 +52,7 @@ export declare const StatApiEndpointLocalErrorCodes: {
     readonly queryRange_corrected: "queryRange_corrected";
     readonly queryRange_from_corrected: "queryRange_from_corrected";
     readonly queryRange_to_corrected: "queryRange_to_corrected";
+    readonly groupByTime_corrected: "groupByTime_corrected";
     readonly containerId_missing: "containerId_missing";
     readonly containerId_invalid: "containerId_invalid";
     readonly containerSetup_invalid: "containerSetup_invalid";
@@ -434,9 +435,9 @@ tip: see [/v2/stat/webhits/{containerId}/idmappings](#/WebHits%20-%20Event%20cou
  */
 export type UserAgentTypesOnlyParameter = string;
 /**
- * Data filter option. Comma separated list of *userAgentType*s you want you want the query to be excluded from. If you list more values here then they are interpreted with an OR operator.
+ * Data filter option. Comma separated list of *userAgentType*s you want the query to be excluded from. If you list more values here then they are interpreted with an OR operator.
   
-In terms of rules and values this is the same as `userAgentTypesOnly` but basically negated list.
+In terms of rules and values this is the same as `userAgentTypesOnly` but basically negated list. Main motivation is that often you want to exclude **bot** (and optionally also **unknown**) traffic from queries while keeping everything else in place.
   
 IMPORTANT! You can not use this together with `userAgentTypesOnly` parameter! You can only use this or that but not both.
 
@@ -1025,9 +1026,9 @@ export type GetV2StatWebhitsContainerIdEventcountsParams = {
      */
     userAgentTypesOnly?: UserAgentTypesOnlyParameter;
     /**
-     * Data filter option. Comma separated list of *userAgentType*s you want you want the query to be excluded from. If you list more values here then they are interpreted with an OR operator.
+     * Data filter option. Comma separated list of *userAgentType*s you want the query to be excluded from. If you list more values here then they are interpreted with an OR operator.
       
-    In terms of rules and values this is the same as `userAgentTypesOnly` but basically negated list.
+    In terms of rules and values this is the same as `userAgentTypesOnly` but basically negated list. Main motivation is that often you want to exclude **bot** (and optionally also **unknown**) traffic from queries while keeping everything else in place.
       
     IMPORTANT! You can not use this together with `userAgentTypesOnly` parameter! You can only use this or that but not both.
     
@@ -1446,9 +1447,9 @@ export type GetV2StatWebhitsContainerIdEventcountsTilesParams = {
      */
     userAgentTypesOnly?: UserAgentTypesOnlyParameter;
     /**
-     * Data filter option. Comma separated list of *userAgentType*s you want you want the query to be excluded from. If you list more values here then they are interpreted with an OR operator.
+     * Data filter option. Comma separated list of *userAgentType*s you want the query to be excluded from. If you list more values here then they are interpreted with an OR operator.
       
-    In terms of rules and values this is the same as `userAgentTypesOnly` but basically negated list.
+    In terms of rules and values this is the same as `userAgentTypesOnly` but basically negated list. Main motivation is that often you want to exclude **bot** (and optionally also **unknown**) traffic from queries while keeping everything else in place.
       
     IMPORTANT! You can not use this together with `userAgentTypesOnly` parameter! You can only use this or that but not both.
     
