@@ -1011,6 +1011,9 @@ components:
         Examples: `time:7h` → `8h`; `time:14h` → `12h`; `time:110m` → `2h`; `time:23h` → `1d`.
         * If `clientTimezone` is set, half-hour zones like India are handled on the same grid (local midnight is e.g. `18:30` UTC, not forced to a whole UTC hour).
 
+        When any value is changed by **adaptive** apart from the warning you get back in the response you also get back that value was changed to in `vars`
+        section of the reponse.
+
     clientTimezone:
       name: clientTimezone
       in: query
