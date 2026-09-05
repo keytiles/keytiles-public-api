@@ -989,7 +989,7 @@ components:
         when client sends in a request `fromTimestamp=now-7d`, `toTimestamp=now` and `groupBy=time:1d` it is very very unlikely user meant
         he wants to get data from 1 week ago 16:48 up until now... Since he provided `groupBy=time:1d` user is probably curious about a daily
         graph of last 1 week. Basically clients often trying to say: “last 30 days, daily chart”, “last 4 hours, 15-minute line”.
-        Adaptive is recognizing this and turns that intent into aligned timestamps and a sensible time step!  
+        Adaptive is recognizing this and turns that intent into aligned timestamps and a sensible time step.  
         What it would do is to return data starting from 1 week ago, but realizing the intention instead of starting the data from 16:48 it floors
         down fromTimestamp to midnight. So the user gets back really daily data points.  
           
@@ -1005,11 +1005,11 @@ components:
         and if needed widen the step so the query can still run. Changes show up as warnings.  
           
         This means **adaptive** can:
-        * Change fromTimestamp even drastically - flooring it down to midnight. (If user wants whole days). `clientTimezone` matters here!
-        * Change groupBy time value if the original value does not split a day evenly. This means we would have a remainder when splitting the day with it.
+         * Change fromTimestamp even drastically - flooring it down to midnight. (If user wants whole days). `clientTimezone` matters here!
+         * Change groupBy time value if the original value does not split a day evenly. This means we would have a remainder when splitting the day with it.
         This is corrected to the nearest neighbour of a correct value which splits the day evenly.  
         Examples: `time:7h` → `8h`; `time:14h` → `12h`; `time:110m` → `2h`; `time:23h` → `1d`.
-        * If `clientTimezone` is set, half-hour zones like India are handled on the same grid (local midnight is e.g. `18:30` UTC, not forced to a whole UTC hour).
+         * If `clientTimezone` is set, half-hour zones like India are handled on the same grid (local midnight is e.g. `18:30` UTC, not forced to a whole UTC hour).
 
         When any value is changed by **adaptive** apart from the warning you get back in the response you also get back that value was changed to in `vars`
         section of the reponse.
