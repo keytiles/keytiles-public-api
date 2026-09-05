@@ -1,8 +1,14 @@
+# Release 2.7.3
+
+## Enhancements / Fixes
+- `query-api-v3.yaml` - since API description was reworked to be concise and better understandable and generated code like Golang and Typescript
+   contains those as comments we re-release those. So comments are in line with the most recent API descriptions.
+
 # Release 2.7.2
 
 ## Enhancements / Fixes
 - `query-api-v3.yaml` - v3.4 release (in place as just comments)
-  - `queryTuning=adaptive` got a way better cleaner explanation2.7.2
+  - `queryTuning=adaptive` and `clientTimezone` got a way better / cleaner explanation
 
 
 # Release 2.7.1

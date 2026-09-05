@@ -709,7 +709,7 @@ There are more criteria not just `eventType` or `time` and you can combine them.
    
 The possible values are the following:
  * **time:x<m|h|d|w>** - time buckets in the response (`m` minutes, `h` hours, `d` days, `w` weeks), e.g.
-`2h`, `1d`. For smooth line charts, prefer steps that fit a 24-hour day (`15m`, `1h`, `4h`, `12h`, `1d`, `2d`, `1w`, …). With **`queryTuning=adaptive`**, unusual steps (`7h`, `23h`, …) may be adjusted and timestamps aligned — see `queryTuning` and `clientTimezone`.
+`2h`, `1d`. For smooth line charts, prefer steps that fit a 24-hour day (`15m`, `1h`, `4h`, `12h`, `1d`, `2d`, `1w`, …). With **`queryTuning=adaptive`**, unusual steps (`7h`, `23h`, …) may be adjusted and timestamps snapped to a midnight grid — see `queryTuning` and `clientTimezone`.
  * **eventType** - you get the counters aggregated per event types in the response  
  See also: `eventTypesOnly` filter option!
  * **userAgentType** - you get the counters aggregated per userAgent types in the response  
@@ -847,60 +847,35 @@ Nothing is changed silently: compare `requestedFromTimestamp` / `requestedToTime
   
 **Values:**
  * **strict** — No rewriting. Keytiles returns exactly your range and grouping, or HTTP 400. Use when a chart
-or export must not include any time outside what you asked for.   Example: `fromTimestamp` at 16:48 and `groupBy=time:1h`. If hourly points cannot start at 16:48, you get an error instead of a series that starts at 16:00.
+or export must not include any time outside what you asked for.   Example: `fromTimestamp` at 16:48 and `groupBy=time:1h`. Since hourly points cannot start at 16:48, you get an error instead of a series that starts at 16:00.
  * **extend** — **(default)** Keep your `groupBy` value. Keytiles may only **widen** the time range a little at
 the edges (start slightly earlier or end slightly later) so each bucket is complete. This matches behaviour before `queryTuning` existed. Warnings: `queryRange_from_extended`, `queryRange_to_extended`.   Example: 16:48 with `groupBy=time:1h` → data from 16:00, still hourly, warning explains the wider window.
- * **adaptive** — **Reports and line charts.** Most clients are not trying to express precise bucket
-arithmetic on midnight boundaries and timezone offsets. They are trying to say: “last 30 days, daily chart”, “last 4 hours, 15-minute line”, or “Berlin business days”. Adaptive turns that intent into aligned timestamps and a sensible time step. **`extend`** stays the precision default; **`strict`** is the contract for exports. Three modes, three mental models.   Odd groupings like `time:7h` stay as sent with `extend` or `strict`; only adaptive may adjust them.   **No `groupBy=time:…`?** If you only want a total or a breakdown without a time series (for example `groupBy=eventType` or no `groupBy` at all), adaptive does not change timestamps or grouping — same result as **extend**. Send `queryTuning=adaptive` when your request includes a time breakdown (`groupBy=time:1h`, `time:1d`, …).  
+ * **adaptive** — **Reports and line charts.** scenario. Easier to understand through an example: when it is - let's say - 16:48
+when client sends in a request `fromTimestamp=now-7d`, `toTimestamp=now` and `groupBy=time:1d` it is very very unlikely user meant he wants to get data from 1 week ago 16:48 up until now... Since he provided `groupBy=time:1d` user is probably curious about a daily graph of last 1 week. Basically clients often trying to say: “last 30 days, daily chart”, “last 4 hours, 15-minute line”. Adaptive is recognizing this and turns that intent into aligned timestamps and a sensible time step.   What it would do is to return data starting from 1 week ago, but realizing the intention instead of starting the data from 16:48 it floors down fromTimestamp to midnight. So the user gets back really daily data points.  
   
-**What adaptive may change (only when `groupBy=time:…` is set; each change has its own warning):**
- 1. **`groupBy=time:…`** — Pick a step size that fits naturally into a 24-hour day: `15m`, `1h`, `4h`, `12h`
-for sub-day charts; `2d`, `48h`, `1w` for multi-day. Awkward values (`7h`, `23h`, `36h`, `110m`) are replaced by the nearest sensible step (if two steps are equally close, the slightly wider one wins). Warning: `groupByTime_corrected`.  
- 2. **`fromTimestamp`** — Move **earlier** to the start of the current time bucket (you may get a bit more data
-on the left). Example: `time:15m` and 16:48 → 16:45; `time:1d` → midnight of that calendar day. Warning: `queryRange_from_corrected`.  
- 3. **`toTimestamp`** — When the end is **not** “live” `now` (or within about a minute of now), move **later**
-to the next bucket boundary, without going past now. Live dashboards keep the current partial hour or minute. Warning: `queryRange_to_corrected`.  
- 4. **Wider time grouping** — If the range is very long for a fine step (for example a week with `30m`), adaptive
-may switch to a wider step (`1h` or `1d`) so the query can succeed. Same warning code `groupByTime_corrected`; the message tells you the effective grouping.  
+IMPORTANT! It is **strongly recommended** to send `clientTimezone` when you use **adaptive**! It matters! Without it, “midnight” means **UTC**. With e.g. `Europe/Berlin`, midnight is **local** (in summer that is `22:00` UTC). Same `now-7d` request then starts on a different day boundary — and may even read a different counter table. See `clientTimezone`.  
   
-**Daily rhythm and timezone:** Chart lines are anchored at **midnight** each calendar day, then repeat every `groupBy` step (`15m` → :00, :15, :30, …; `12h` → midnight and noon; `1d` → each midnight).  
- * **No `clientTimezone`** — that rhythm is **UTC**. `16:48Z` with `time:4h` → `16:00Z`; `time:1d` →
-`00:00Z` on that UTC date.  
- * **With `clientTimezone`** — midnight means **local** midnight in that zone. Berlin summer: `time:1d` with
-`fromTimestamp` at local midnight as `22:00Z` stays `22:00Z` (not moved to UTC midnight). India (`Asia/Kolkata`): days start at `18:30Z`; `time:12h` points at `18:30Z` and `06:30Z`.  
+**adaptive** is sensitive to `groupBy=time:<value>`! It only rewrites the query when you ask for a time series (`groupBy=time:1h`, `time:1d`, …). No time grouping (totals, `groupBy=eventType`, …) → same as **extend**. With a time grouping it may: tidy awkward steps, snap timestamps to the midnight grid in your zone (or UTC), and if needed widen the step so the query can still run. Changes show up as warnings.  
   
-**Adaptive examples (see also `clientTimezone`):**
- * Monthly report: `fromTimestamp=now-30d`, `toTimestamp=now`, `groupBy=time:1d`,
-`clientTimezone=Europe/Berlin` → one point per Berlin calendar day; `from` may move to local midnight that morning; `to` stays at now.  
- * Line chart: `groupBy=time:15m`, `fromTimestamp` at 16:48 → 16:45 (UTC or local, per zone).  
- * Odd step: `groupBy=time:7h` → `8h`, then timestamps aligned to 8-hour boundaries.  
- * Fixed end date: `toTimestamp` yesterday 16:48 with `time:1h` → end moves to 17:00 (not when `to=now`).  
-  
-**Quick pick:** `extend` = keep grouping, soft edges. `strict` = exact or error. `adaptive` = “draw a sensible time series” — only matters with `groupBy=time:…`; without it, same as `extend`. Send `clientTimezone` when viewers care about local calendar days or zones with half-hour offsets (India, Berlin summer midnights).
+This means **adaptive** can:
+ * Change fromTimestamp even drastically - flooring it down to midnight. (If user wants whole days). `clientTimezone` matters here!
+ * Change groupBy time value if the original value does not split a day evenly. This means we would have a remainder when splitting the day with it.
+This is corrected to the nearest neighbour of a correct value which splits the day evenly.   Examples: `time:7h` → `8h`; `time:14h` → `12h`; `time:110m` → `2h`; `time:23h` → `1d`.
+ * If `clientTimezone` is set, half-hour zones like India are handled on the same grid (local midnight is e.g. `18:30` UTC, not forced to a whole UTC hour).
+
+When any value is changed by **adaptive** apart from the warning you get back in the response you also get back that value was changed to in `vars` section of the reponse.
 
  */
 export type QueryTuningParameter = string;
 
 /**
- * Optional hint: the timezone your **users** think in when they picked dates (browser locale, report settings). You still send UTC unix seconds (or `now-…`); this tells Keytiles how to interpret “start of day” when smoothing a chart.  
+ * Optional IANA timezone of the client who picked the dates (browser / report locale), e.g. `Europe/Berlin`, `Asia/Kolkata`.
+**Default:** omitted (= UTC calendar for adaptive snap). Invalid IANA → HTTP 400. With `extend` / `strict` the value is ignored for snapping (invalid still 400). Wrong zone is worse than omitting.  
+**Why send it:** The contract for `fromTimestamp` and `toTimestamp` is clear, both are in UTC. And we expect clients to do the conversion to UTC this is clear. However with `queryTuning=adaptive` and a daily (`groupBy=time:1d`) chart, Keytiles floors to calendar midnight server side. If Keytiles at this point does not know the client time zone this flooring will happen in UTC time zone which is not the correct flooring. Send your zone → that zone’s local midnight (Berlin summer: `22:00` UTC; India: `18:30` UTC). So without it, a `now-7d` daily chart often starts on the wrong day for the client.  
   
-**Default:** omitted.  
+**When to send:** Strongly recommended whenever you use **adaptive** and care about local calendar days. Especially important for half-hour offsets (India). Whole-hour zones still benefit for `now-…` leftovers.  
   
-**Validation:** If you send this parameter (non-blank), it must be a valid IANA name (`Europe/Berlin`, `Asia/Kolkata`, `UTC`, …). Invalid values → HTTP 400. Wrong spelling is worse than omitting the parameter.  
-  
-**When it matters:** Mainly with **`queryTuning=adaptive`**. Adaptive lines up `fromTimestamp`, historical `toTimestamp`, and `groupBy=time:…` on a daily rhythm starting at **midnight**, then every step of your grouping. Without this hint, “midnight” means **UTC**. With it, midnight is **local** in that zone.  
- * UTC: `16:48Z` + `time:15m` → `16:45Z`; `time:1d` → `00:00Z` on that UTC date.  
- * Berlin: `clientTimezone=Europe/Berlin` + `time:1d` → calendar days in Berlin; local midnight in summer is
-`22:00Z` and stays `22:00Z`.  
- * Kolkata: `Asia/Kolkata` → days start at `18:30Z`; `time:12h` points at `18:30Z` and `06:30Z`.  
-  
-Send it for daily or weekly reports tied to a region; when local midnight is not a whole UTC hour; or when extra seconds on a timestamp might be clock noise vs a half-hour zone offset.  
-  
-With `extend` (default) or `strict`, adaptive rounding does not use this hint (invalid IANA still returns 400 if sent). It does not re-label statistics in another timezone — only how adaptive aligns your request. Use the same zone you used when building `fromTimestamp` / `toTimestamp`.  
-  
-Format: [IANA time zone](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones), e.g. `Europe/Berlin`, `Asia/Kolkata`.  
-  
-Example: Grafana panel, `fromTimestamp=now-30d`, `toTimestamp=now`, `groupBy=time:1d`, `queryTuning=adaptive`, `clientTimezone=Europe/Berlin` → one point per Berlin calendar day; warning if `from` was moved to local midnight.
+Format: [IANA time zones](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones).
 
  */
 export type ClientTimezoneParameter = string;
@@ -1017,33 +992,47 @@ Can not point to the future!   (note: server validates according to his own cloc
  */
 toTimestamp?: ToTimestampParameter;
 /**
- * Comma separated list of your extra interest.  
+ * Controls what Keytiles may change when your timestamps or time grouping do not line up with neat chart boundaries.  
   
-It is "extra interest" because by default only the `eventCountTotal` counter is returned. But with extending your interest you can get more counters.  
+**Default value:** `extend` if you omit this parameter.  
   
-The possible values are the following:
- * **newVisitors**  
-   You will get the `eventCountUnknownNewVsRetVisitor` and `eventCountNewVisitor` counters additionally. You can compute the number of
-   "returning" visitors with the formula `eventCountTotal - eventCountUnknownNewVsRetVisitor - eventCountNewVisitor`.  
- * **bounceVisitors**  
-   You will get the `eventCountNoSession` and `eventCountBounceVisitor` counters additionally. You can compute the number of "non-bounce" visitors
-   with the formula `eventCountTotal - eventCountNoSession - eventCountBounceVisitor`.
- * **newVisitors,bounceVisitors**  
-   If you request both together then you do not simply get union of counters but actually a few more too. You would get `eventCountNoSession`, `eventCountUnknownNewVsRetVisitor`, 
-   `eventCountNewVisitor`, `eventCountBounceVisitor`, `eventCountBounceNewVisitor` and `eventCountBounceUnknownNewVsRetVisitor`.  
-   We *really recommend* to check and read our article (see below) explaining things!
- * **referrerCounts**  
-   You will get the `eventCountDirect`, `eventCountSearchReferrer`, `eventCountSocialReferrer`, `eventCountLinkReferrer` 
-   and `eventCountCampaignReferrer` counters additionally. If you are curious about how many internal (visitor is visiting a certain article coming
-   from another page on your website already) click happened you can compute this with formula `eventCountTotal - eventCountDirect - eventCountSearchReferrer - eventCountSocialReferrer - eventCountLinkReferrer` easily. 
- * **visitSession**  
-   You will get the `eventCountNoSession`, `visitSessionStartedCount` and `visitSessionEventFirstOfTypeCount` counters additionally.
-   
- You can find more information about the available event counters in our website Developer Area here: 
- [Returned event counters and their meaning](https://www.keytiles.com/developer-area/query-api-v3/webhits-event-counter-queries#event-counters-reference)
+You send a time range (`fromTimestamp` / `toTimestamp`) and often a breakdown by time (`groupBy=time:1h`, `time:1d`, …). Real-world inputs often carry extra minutes from `now()`, a date picker, or Grafana. This parameter says whether Keytiles should keep your exact numbers or smooth them into a sensible series.  
+  
+Nothing is changed silently: compare `requestedFromTimestamp` / `requestedToTimestamp` (what you sent) with `dataFromTimestamp` / `dataToTimestamp` (what the rows actually cover), and read warnings in the response.  
+  
+**Values:**
+ * **strict** — No rewriting. Keytiles returns exactly your range and grouping, or HTTP 400. Use when a chart
+or export must not include any time outside what you asked for.   Example: `fromTimestamp` at 16:48 and `groupBy=time:1h`. Since hourly points cannot start at 16:48, you get an error instead of a series that starts at 16:00.
+ * **extend** — **(default)** Keep your `groupBy` value. Keytiles may only **widen** the time range a little at
+the edges (start slightly earlier or end slightly later) so each bucket is complete. This matches behaviour before `queryTuning` existed. Warnings: `queryRange_from_extended`, `queryRange_to_extended`.   Example: 16:48 with `groupBy=time:1h` → data from 16:00, still hourly, warning explains the wider window.
+ * **adaptive** — **Reports and line charts.** scenario. Easier to understand through an example: when it is - let's say - 16:48
+when client sends in a request `fromTimestamp=now-7d`, `toTimestamp=now` and `groupBy=time:1d` it is very very unlikely user meant he wants to get data from 1 week ago 16:48 up until now... Since he provided `groupBy=time:1d` user is probably curious about a daily graph of last 1 week. Basically clients often trying to say: “last 30 days, daily chart”, “last 4 hours, 15-minute line”. Adaptive is recognizing this and turns that intent into aligned timestamps and a sensible time step.   What it would do is to return data starting from 1 week ago, but realizing the intention instead of starting the data from 16:48 it floors down fromTimestamp to midnight. So the user gets back really daily data points.  
+  
+IMPORTANT! It is **strongly recommended** to send `clientTimezone` when you use **adaptive**! It matters! Without it, “midnight” means **UTC**. With e.g. `Europe/Berlin`, midnight is **local** (in summer that is `22:00` UTC). Same `now-7d` request then starts on a different day boundary — and may even read a different counter table. See `clientTimezone`.  
+  
+**adaptive** is sensitive to `groupBy=time:<value>`! It only rewrites the query when you ask for a time series (`groupBy=time:1h`, `time:1d`, …). No time grouping (totals, `groupBy=eventType`, …) → same as **extend**. With a time grouping it may: tidy awkward steps, snap timestamps to the midnight grid in your zone (or UTC), and if needed widen the step so the query can still run. Changes show up as warnings.  
+  
+This means **adaptive** can:
+ * Change fromTimestamp even drastically - flooring it down to midnight. (If user wants whole days). `clientTimezone` matters here!
+ * Change groupBy time value if the original value does not split a day evenly. This means we would have a remainder when splitting the day with it.
+This is corrected to the nearest neighbour of a correct value which splits the day evenly.   Examples: `time:7h` → `8h`; `time:14h` → `12h`; `time:110m` → `2h`; `time:23h` → `1d`.
+ * If `clientTimezone` is set, half-hour zones like India are handled on the same grid (local midnight is e.g. `18:30` UTC, not forced to a whole UTC hour).
+
+When any value is changed by **adaptive** apart from the warning you get back in the response you also get back that value was changed to in `vars` section of the reponse.
 
  */
-interest?: InterestParameter;
+queryTuning?: QueryTuningParameter;
+/**
+ * Optional IANA timezone of the client who picked the dates (browser / report locale), e.g. `Europe/Berlin`, `Asia/Kolkata`.
+**Default:** omitted (= UTC calendar for adaptive snap). Invalid IANA → HTTP 400. With `extend` / `strict` the value is ignored for snapping (invalid still 400). Wrong zone is worse than omitting.  
+**Why send it:** The contract for `fromTimestamp` and `toTimestamp` is clear, both are in UTC. And we expect clients to do the conversion to UTC this is clear. However with `queryTuning=adaptive` and a daily (`groupBy=time:1d`) chart, Keytiles floors to calendar midnight server side. If Keytiles at this point does not know the client time zone this flooring will happen in UTC time zone which is not the correct flooring. Send your zone → that zone’s local midnight (Berlin summer: `22:00` UTC; India: `18:30` UTC). So without it, a `now-7d` daily chart often starts on the wrong day for the client.  
+  
+**When to send:** Strongly recommended whenever you use **adaptive** and care about local calendar days. Especially important for half-hour offsets (India). Whole-hour zones still benefit for `now-…` leftovers.  
+  
+Format: [IANA time zones](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones).
+
+ */
+clientTimezone?: ClientTimezoneParameter;
 /**
  * Comma separated list of criteria you want to have the data grouped by.  
   
@@ -1059,7 +1048,7 @@ There are more criteria not just `eventType` or `time` and you can combine them.
    
 The possible values are the following:
  * **time:x<m|h|d|w>** - time buckets in the response (`m` minutes, `h` hours, `d` days, `w` weeks), e.g.
-`2h`, `1d`. For smooth line charts, prefer steps that fit a 24-hour day (`15m`, `1h`, `4h`, `12h`, `1d`, `2d`, `1w`, …). With **`queryTuning=adaptive`**, unusual steps (`7h`, `23h`, …) may be adjusted and timestamps aligned — see `queryTuning` and `clientTimezone`.
+`2h`, `1d`. For smooth line charts, prefer steps that fit a 24-hour day (`15m`, `1h`, `4h`, `12h`, `1d`, `2d`, `1w`, …). With **`queryTuning=adaptive`**, unusual steps (`7h`, `23h`, …) may be adjusted and timestamps snapped to a midnight grid — see `queryTuning` and `clientTimezone`.
  * **eventType** - you get the counters aggregated per event types in the response  
  See also: `eventTypesOnly` filter option!
  * **userAgentType** - you get the counters aggregated per userAgent types in the response  
@@ -1107,6 +1096,34 @@ The possible values are the following:
 
  */
 groupBy?: GroupByParameter;
+/**
+ * Comma separated list of your extra interest.  
+  
+It is "extra interest" because by default only the `eventCountTotal` counter is returned. But with extending your interest you can get more counters.  
+  
+The possible values are the following:
+ * **newVisitors**  
+   You will get the `eventCountUnknownNewVsRetVisitor` and `eventCountNewVisitor` counters additionally. You can compute the number of
+   "returning" visitors with the formula `eventCountTotal - eventCountUnknownNewVsRetVisitor - eventCountNewVisitor`.  
+ * **bounceVisitors**  
+   You will get the `eventCountNoSession` and `eventCountBounceVisitor` counters additionally. You can compute the number of "non-bounce" visitors
+   with the formula `eventCountTotal - eventCountNoSession - eventCountBounceVisitor`.
+ * **newVisitors,bounceVisitors**  
+   If you request both together then you do not simply get union of counters but actually a few more too. You would get `eventCountNoSession`, `eventCountUnknownNewVsRetVisitor`, 
+   `eventCountNewVisitor`, `eventCountBounceVisitor`, `eventCountBounceNewVisitor` and `eventCountBounceUnknownNewVsRetVisitor`.  
+   We *really recommend* to check and read our article (see below) explaining things!
+ * **referrerCounts**  
+   You will get the `eventCountDirect`, `eventCountSearchReferrer`, `eventCountSocialReferrer`, `eventCountLinkReferrer` 
+   and `eventCountCampaignReferrer` counters additionally. If you are curious about how many internal (visitor is visiting a certain article coming
+   from another page on your website already) click happened you can compute this with formula `eventCountTotal - eventCountDirect - eventCountSearchReferrer - eventCountSocialReferrer - eventCountLinkReferrer` easily. 
+ * **visitSession**  
+   You will get the `eventCountNoSession`, `visitSessionStartedCount` and `visitSessionEventFirstOfTypeCount` counters additionally.
+   
+ You can find more information about the available event counters in our website Developer Area here: 
+ [Returned event counters and their meaning](https://www.keytiles.com/developer-area/query-api-v3/webhits-event-counter-queries#event-counters-reference)
+
+ */
+interest?: InterestParameter;
 /**
  * Data filter option. Comma separated list of event types you want to limit the query for. If you list more values here then they are interpreted with an OR operator.
   
@@ -1309,73 +1326,6 @@ Campaign tracking in Keytiles works based on Urchin Tracking Module (UTM) parame
 
  */
 campaignContentsOnly?: CampaignContentsOnlyParameter;
-/**
- * Controls what Keytiles may change when your timestamps or time grouping do not line up with neat chart boundaries.  
-  
-**Default value:** `extend` if you omit this parameter.  
-  
-You send a time range (`fromTimestamp` / `toTimestamp`) and often a breakdown by time (`groupBy=time:1h`, `time:1d`, …). Real-world inputs often carry extra minutes from `now()`, a date picker, or Grafana. This parameter says whether Keytiles should keep your exact numbers or smooth them into a sensible series.  
-  
-Nothing is changed silently: compare `requestedFromTimestamp` / `requestedToTimestamp` (what you sent) with `dataFromTimestamp` / `dataToTimestamp` (what the rows actually cover), and read warnings in the response.  
-  
-**Values:**
- * **strict** — No rewriting. Keytiles returns exactly your range and grouping, or HTTP 400. Use when a chart
-or export must not include any time outside what you asked for.   Example: `fromTimestamp` at 16:48 and `groupBy=time:1h`. If hourly points cannot start at 16:48, you get an error instead of a series that starts at 16:00.
- * **extend** — **(default)** Keep your `groupBy` value. Keytiles may only **widen** the time range a little at
-the edges (start slightly earlier or end slightly later) so each bucket is complete. This matches behaviour before `queryTuning` existed. Warnings: `queryRange_from_extended`, `queryRange_to_extended`.   Example: 16:48 with `groupBy=time:1h` → data from 16:00, still hourly, warning explains the wider window.
- * **adaptive** — **Reports and line charts.** Most clients are not trying to express precise bucket
-arithmetic on midnight boundaries and timezone offsets. They are trying to say: “last 30 days, daily chart”, “last 4 hours, 15-minute line”, or “Berlin business days”. Adaptive turns that intent into aligned timestamps and a sensible time step. **`extend`** stays the precision default; **`strict`** is the contract for exports. Three modes, three mental models.   Odd groupings like `time:7h` stay as sent with `extend` or `strict`; only adaptive may adjust them.   **No `groupBy=time:…`?** If you only want a total or a breakdown without a time series (for example `groupBy=eventType` or no `groupBy` at all), adaptive does not change timestamps or grouping — same result as **extend**. Send `queryTuning=adaptive` when your request includes a time breakdown (`groupBy=time:1h`, `time:1d`, …).  
-  
-**What adaptive may change (only when `groupBy=time:…` is set; each change has its own warning):**
- 1. **`groupBy=time:…`** — Pick a step size that fits naturally into a 24-hour day: `15m`, `1h`, `4h`, `12h`
-for sub-day charts; `2d`, `48h`, `1w` for multi-day. Awkward values (`7h`, `23h`, `36h`, `110m`) are replaced by the nearest sensible step (if two steps are equally close, the slightly wider one wins). Warning: `groupByTime_corrected`.  
- 2. **`fromTimestamp`** — Move **earlier** to the start of the current time bucket (you may get a bit more data
-on the left). Example: `time:15m` and 16:48 → 16:45; `time:1d` → midnight of that calendar day. Warning: `queryRange_from_corrected`.  
- 3. **`toTimestamp`** — When the end is **not** “live” `now` (or within about a minute of now), move **later**
-to the next bucket boundary, without going past now. Live dashboards keep the current partial hour or minute. Warning: `queryRange_to_corrected`.  
- 4. **Wider time grouping** — If the range is very long for a fine step (for example a week with `30m`), adaptive
-may switch to a wider step (`1h` or `1d`) so the query can succeed. Same warning code `groupByTime_corrected`; the message tells you the effective grouping.  
-  
-**Daily rhythm and timezone:** Chart lines are anchored at **midnight** each calendar day, then repeat every `groupBy` step (`15m` → :00, :15, :30, …; `12h` → midnight and noon; `1d` → each midnight).  
- * **No `clientTimezone`** — that rhythm is **UTC**. `16:48Z` with `time:4h` → `16:00Z`; `time:1d` →
-`00:00Z` on that UTC date.  
- * **With `clientTimezone`** — midnight means **local** midnight in that zone. Berlin summer: `time:1d` with
-`fromTimestamp` at local midnight as `22:00Z` stays `22:00Z` (not moved to UTC midnight). India (`Asia/Kolkata`): days start at `18:30Z`; `time:12h` points at `18:30Z` and `06:30Z`.  
-  
-**Adaptive examples (see also `clientTimezone`):**
- * Monthly report: `fromTimestamp=now-30d`, `toTimestamp=now`, `groupBy=time:1d`,
-`clientTimezone=Europe/Berlin` → one point per Berlin calendar day; `from` may move to local midnight that morning; `to` stays at now.  
- * Line chart: `groupBy=time:15m`, `fromTimestamp` at 16:48 → 16:45 (UTC or local, per zone).  
- * Odd step: `groupBy=time:7h` → `8h`, then timestamps aligned to 8-hour boundaries.  
- * Fixed end date: `toTimestamp` yesterday 16:48 with `time:1h` → end moves to 17:00 (not when `to=now`).  
-  
-**Quick pick:** `extend` = keep grouping, soft edges. `strict` = exact or error. `adaptive` = “draw a sensible time series” — only matters with `groupBy=time:…`; without it, same as `extend`. Send `clientTimezone` when viewers care about local calendar days or zones with half-hour offsets (India, Berlin summer midnights).
-
- */
-queryTuning?: QueryTuningParameter;
-/**
- * Optional hint: the timezone your **users** think in when they picked dates (browser locale, report settings). You still send UTC unix seconds (or `now-…`); this tells Keytiles how to interpret “start of day” when smoothing a chart.  
-  
-**Default:** omitted.  
-  
-**Validation:** If you send this parameter (non-blank), it must be a valid IANA name (`Europe/Berlin`, `Asia/Kolkata`, `UTC`, …). Invalid values → HTTP 400. Wrong spelling is worse than omitting the parameter.  
-  
-**When it matters:** Mainly with **`queryTuning=adaptive`**. Adaptive lines up `fromTimestamp`, historical `toTimestamp`, and `groupBy=time:…` on a daily rhythm starting at **midnight**, then every step of your grouping. Without this hint, “midnight” means **UTC**. With it, midnight is **local** in that zone.  
- * UTC: `16:48Z` + `time:15m` → `16:45Z`; `time:1d` → `00:00Z` on that UTC date.  
- * Berlin: `clientTimezone=Europe/Berlin` + `time:1d` → calendar days in Berlin; local midnight in summer is
-`22:00Z` and stays `22:00Z`.  
- * Kolkata: `Asia/Kolkata` → days start at `18:30Z`; `time:12h` points at `18:30Z` and `06:30Z`.  
-  
-Send it for daily or weekly reports tied to a region; when local midnight is not a whole UTC hour; or when extra seconds on a timestamp might be clock noise vs a half-hour zone offset.  
-  
-With `extend` (default) or `strict`, adaptive rounding does not use this hint (invalid IANA still returns 400 if sent). It does not re-label statistics in another timezone — only how adaptive aligns your request. Use the same zone you used when building `fromTimestamp` / `toTimestamp`.  
-  
-Format: [IANA time zone](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones), e.g. `Europe/Berlin`, `Asia/Kolkata`.  
-  
-Example: Grafana panel, `fromTimestamp=now-30d`, `toTimestamp=now`, `groupBy=time:1d`, `queryTuning=adaptive`, `clientTimezone=Europe/Berlin` → one point per Berlin calendar day; warning if `from` was moved to local midnight.
-
- */
-clientTimezone?: ClientTimezoneParameter;
 };
 
 export type GetV2StatWebhitsContainerIdEventcountsTilesParams = {
@@ -1412,33 +1362,47 @@ Can not point to the future!   (note: server validates according to his own cloc
  */
 toTimestamp?: ToTimestampParameter;
 /**
- * Comma separated list of your extra interest.  
+ * Controls what Keytiles may change when your timestamps or time grouping do not line up with neat chart boundaries.  
   
-It is "extra interest" because by default only the `eventCountTotal` counter is returned. But with extending your interest you can get more counters.  
+**Default value:** `extend` if you omit this parameter.  
   
-The possible values are the following:
- * **newVisitors**  
-   You will get the `eventCountUnknownNewVsRetVisitor` and `eventCountNewVisitor` counters additionally. You can compute the number of
-   "returning" visitors with the formula `eventCountTotal - eventCountUnknownNewVsRetVisitor - eventCountNewVisitor`.  
- * **bounceVisitors**  
-   You will get the `eventCountNoSession` and `eventCountBounceVisitor` counters additionally. You can compute the number of "non-bounce" visitors
-   with the formula `eventCountTotal - eventCountNoSession - eventCountBounceVisitor`.
- * **newVisitors,bounceVisitors**  
-   If you request both together then you do not simply get union of counters but actually a few more too. You would get `eventCountNoSession`, `eventCountUnknownNewVsRetVisitor`, 
-   `eventCountNewVisitor`, `eventCountBounceVisitor`, `eventCountBounceNewVisitor` and `eventCountBounceUnknownNewVsRetVisitor`.  
-   We *really recommend* to check and read our article (see below) explaining things!
- * **referrerCounts**  
-   You will get the `eventCountDirect`, `eventCountSearchReferrer`, `eventCountSocialReferrer`, `eventCountLinkReferrer` 
-   and `eventCountCampaignReferrer` counters additionally. If you are curious about how many internal (visitor is visiting a certain article coming
-   from another page on your website already) click happened you can compute this with formula `eventCountTotal - eventCountDirect - eventCountSearchReferrer - eventCountSocialReferrer - eventCountLinkReferrer` easily. 
- * **visitSession**  
-   You will get the `eventCountNoSession`, `visitSessionStartedCount` and `visitSessionEventFirstOfTypeCount` counters additionally.
-   
- You can find more information about the available event counters in our website Developer Area here: 
- [Returned event counters and their meaning](https://www.keytiles.com/developer-area/query-api-v3/webhits-event-counter-queries#event-counters-reference)
+You send a time range (`fromTimestamp` / `toTimestamp`) and often a breakdown by time (`groupBy=time:1h`, `time:1d`, …). Real-world inputs often carry extra minutes from `now()`, a date picker, or Grafana. This parameter says whether Keytiles should keep your exact numbers or smooth them into a sensible series.  
+  
+Nothing is changed silently: compare `requestedFromTimestamp` / `requestedToTimestamp` (what you sent) with `dataFromTimestamp` / `dataToTimestamp` (what the rows actually cover), and read warnings in the response.  
+  
+**Values:**
+ * **strict** — No rewriting. Keytiles returns exactly your range and grouping, or HTTP 400. Use when a chart
+or export must not include any time outside what you asked for.   Example: `fromTimestamp` at 16:48 and `groupBy=time:1h`. Since hourly points cannot start at 16:48, you get an error instead of a series that starts at 16:00.
+ * **extend** — **(default)** Keep your `groupBy` value. Keytiles may only **widen** the time range a little at
+the edges (start slightly earlier or end slightly later) so each bucket is complete. This matches behaviour before `queryTuning` existed. Warnings: `queryRange_from_extended`, `queryRange_to_extended`.   Example: 16:48 with `groupBy=time:1h` → data from 16:00, still hourly, warning explains the wider window.
+ * **adaptive** — **Reports and line charts.** scenario. Easier to understand through an example: when it is - let's say - 16:48
+when client sends in a request `fromTimestamp=now-7d`, `toTimestamp=now` and `groupBy=time:1d` it is very very unlikely user meant he wants to get data from 1 week ago 16:48 up until now... Since he provided `groupBy=time:1d` user is probably curious about a daily graph of last 1 week. Basically clients often trying to say: “last 30 days, daily chart”, “last 4 hours, 15-minute line”. Adaptive is recognizing this and turns that intent into aligned timestamps and a sensible time step.   What it would do is to return data starting from 1 week ago, but realizing the intention instead of starting the data from 16:48 it floors down fromTimestamp to midnight. So the user gets back really daily data points.  
+  
+IMPORTANT! It is **strongly recommended** to send `clientTimezone` when you use **adaptive**! It matters! Without it, “midnight” means **UTC**. With e.g. `Europe/Berlin`, midnight is **local** (in summer that is `22:00` UTC). Same `now-7d` request then starts on a different day boundary — and may even read a different counter table. See `clientTimezone`.  
+  
+**adaptive** is sensitive to `groupBy=time:<value>`! It only rewrites the query when you ask for a time series (`groupBy=time:1h`, `time:1d`, …). No time grouping (totals, `groupBy=eventType`, …) → same as **extend**. With a time grouping it may: tidy awkward steps, snap timestamps to the midnight grid in your zone (or UTC), and if needed widen the step so the query can still run. Changes show up as warnings.  
+  
+This means **adaptive** can:
+ * Change fromTimestamp even drastically - flooring it down to midnight. (If user wants whole days). `clientTimezone` matters here!
+ * Change groupBy time value if the original value does not split a day evenly. This means we would have a remainder when splitting the day with it.
+This is corrected to the nearest neighbour of a correct value which splits the day evenly.   Examples: `time:7h` → `8h`; `time:14h` → `12h`; `time:110m` → `2h`; `time:23h` → `1d`.
+ * If `clientTimezone` is set, half-hour zones like India are handled on the same grid (local midnight is e.g. `18:30` UTC, not forced to a whole UTC hour).
+
+When any value is changed by **adaptive** apart from the warning you get back in the response you also get back that value was changed to in `vars` section of the reponse.
 
  */
-interest?: InterestParameter;
+queryTuning?: QueryTuningParameter;
+/**
+ * Optional IANA timezone of the client who picked the dates (browser / report locale), e.g. `Europe/Berlin`, `Asia/Kolkata`.
+**Default:** omitted (= UTC calendar for adaptive snap). Invalid IANA → HTTP 400. With `extend` / `strict` the value is ignored for snapping (invalid still 400). Wrong zone is worse than omitting.  
+**Why send it:** The contract for `fromTimestamp` and `toTimestamp` is clear, both are in UTC. And we expect clients to do the conversion to UTC this is clear. However with `queryTuning=adaptive` and a daily (`groupBy=time:1d`) chart, Keytiles floors to calendar midnight server side. If Keytiles at this point does not know the client time zone this flooring will happen in UTC time zone which is not the correct flooring. Send your zone → that zone’s local midnight (Berlin summer: `22:00` UTC; India: `18:30` UTC). So without it, a `now-7d` daily chart often starts on the wrong day for the client.  
+  
+**When to send:** Strongly recommended whenever you use **adaptive** and care about local calendar days. Especially important for half-hour offsets (India). Whole-hour zones still benefit for `now-…` leftovers.  
+  
+Format: [IANA time zones](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones).
+
+ */
+clientTimezone?: ClientTimezoneParameter;
 /**
  * Comma separated list of criteria you want to have the data grouped by.  
   
@@ -1454,7 +1418,7 @@ There are more criteria not just `eventType` or `time` and you can combine them.
    
 The possible values are the following:
  * **time:x<m|h|d|w>** - time buckets in the response (`m` minutes, `h` hours, `d` days, `w` weeks), e.g.
-`2h`, `1d`. For smooth line charts, prefer steps that fit a 24-hour day (`15m`, `1h`, `4h`, `12h`, `1d`, `2d`, `1w`, …). With **`queryTuning=adaptive`**, unusual steps (`7h`, `23h`, …) may be adjusted and timestamps aligned — see `queryTuning` and `clientTimezone`.
+`2h`, `1d`. For smooth line charts, prefer steps that fit a 24-hour day (`15m`, `1h`, `4h`, `12h`, `1d`, `2d`, `1w`, …). With **`queryTuning=adaptive`**, unusual steps (`7h`, `23h`, …) may be adjusted and timestamps snapped to a midnight grid — see `queryTuning` and `clientTimezone`.
  * **eventType** - you get the counters aggregated per event types in the response  
  See also: `eventTypesOnly` filter option!
  * **userAgentType** - you get the counters aggregated per userAgent types in the response  
@@ -1502,6 +1466,34 @@ The possible values are the following:
 
  */
 groupBy?: GroupByParameter;
+/**
+ * Comma separated list of your extra interest.  
+  
+It is "extra interest" because by default only the `eventCountTotal` counter is returned. But with extending your interest you can get more counters.  
+  
+The possible values are the following:
+ * **newVisitors**  
+   You will get the `eventCountUnknownNewVsRetVisitor` and `eventCountNewVisitor` counters additionally. You can compute the number of
+   "returning" visitors with the formula `eventCountTotal - eventCountUnknownNewVsRetVisitor - eventCountNewVisitor`.  
+ * **bounceVisitors**  
+   You will get the `eventCountNoSession` and `eventCountBounceVisitor` counters additionally. You can compute the number of "non-bounce" visitors
+   with the formula `eventCountTotal - eventCountNoSession - eventCountBounceVisitor`.
+ * **newVisitors,bounceVisitors**  
+   If you request both together then you do not simply get union of counters but actually a few more too. You would get `eventCountNoSession`, `eventCountUnknownNewVsRetVisitor`, 
+   `eventCountNewVisitor`, `eventCountBounceVisitor`, `eventCountBounceNewVisitor` and `eventCountBounceUnknownNewVsRetVisitor`.  
+   We *really recommend* to check and read our article (see below) explaining things!
+ * **referrerCounts**  
+   You will get the `eventCountDirect`, `eventCountSearchReferrer`, `eventCountSocialReferrer`, `eventCountLinkReferrer` 
+   and `eventCountCampaignReferrer` counters additionally. If you are curious about how many internal (visitor is visiting a certain article coming
+   from another page on your website already) click happened you can compute this with formula `eventCountTotal - eventCountDirect - eventCountSearchReferrer - eventCountSocialReferrer - eventCountLinkReferrer` easily. 
+ * **visitSession**  
+   You will get the `eventCountNoSession`, `visitSessionStartedCount` and `visitSessionEventFirstOfTypeCount` counters additionally.
+   
+ You can find more information about the available event counters in our website Developer Area here: 
+ [Returned event counters and their meaning](https://www.keytiles.com/developer-area/query-api-v3/webhits-event-counter-queries#event-counters-reference)
+
+ */
+interest?: InterestParameter;
 /**
  * This is a boolean parameter so you can send `true` or `false` here as a value. By default the value is `true`.  
   
@@ -1759,73 +1751,6 @@ Campaign tracking in Keytiles works based on Urchin Tracking Module (UTM) parame
 
  */
 campaignContentsOnly?: CampaignContentsOnlyParameter;
-/**
- * Controls what Keytiles may change when your timestamps or time grouping do not line up with neat chart boundaries.  
-  
-**Default value:** `extend` if you omit this parameter.  
-  
-You send a time range (`fromTimestamp` / `toTimestamp`) and often a breakdown by time (`groupBy=time:1h`, `time:1d`, …). Real-world inputs often carry extra minutes from `now()`, a date picker, or Grafana. This parameter says whether Keytiles should keep your exact numbers or smooth them into a sensible series.  
-  
-Nothing is changed silently: compare `requestedFromTimestamp` / `requestedToTimestamp` (what you sent) with `dataFromTimestamp` / `dataToTimestamp` (what the rows actually cover), and read warnings in the response.  
-  
-**Values:**
- * **strict** — No rewriting. Keytiles returns exactly your range and grouping, or HTTP 400. Use when a chart
-or export must not include any time outside what you asked for.   Example: `fromTimestamp` at 16:48 and `groupBy=time:1h`. If hourly points cannot start at 16:48, you get an error instead of a series that starts at 16:00.
- * **extend** — **(default)** Keep your `groupBy` value. Keytiles may only **widen** the time range a little at
-the edges (start slightly earlier or end slightly later) so each bucket is complete. This matches behaviour before `queryTuning` existed. Warnings: `queryRange_from_extended`, `queryRange_to_extended`.   Example: 16:48 with `groupBy=time:1h` → data from 16:00, still hourly, warning explains the wider window.
- * **adaptive** — **Reports and line charts.** Most clients are not trying to express precise bucket
-arithmetic on midnight boundaries and timezone offsets. They are trying to say: “last 30 days, daily chart”, “last 4 hours, 15-minute line”, or “Berlin business days”. Adaptive turns that intent into aligned timestamps and a sensible time step. **`extend`** stays the precision default; **`strict`** is the contract for exports. Three modes, three mental models.   Odd groupings like `time:7h` stay as sent with `extend` or `strict`; only adaptive may adjust them.   **No `groupBy=time:…`?** If you only want a total or a breakdown without a time series (for example `groupBy=eventType` or no `groupBy` at all), adaptive does not change timestamps or grouping — same result as **extend**. Send `queryTuning=adaptive` when your request includes a time breakdown (`groupBy=time:1h`, `time:1d`, …).  
-  
-**What adaptive may change (only when `groupBy=time:…` is set; each change has its own warning):**
- 1. **`groupBy=time:…`** — Pick a step size that fits naturally into a 24-hour day: `15m`, `1h`, `4h`, `12h`
-for sub-day charts; `2d`, `48h`, `1w` for multi-day. Awkward values (`7h`, `23h`, `36h`, `110m`) are replaced by the nearest sensible step (if two steps are equally close, the slightly wider one wins). Warning: `groupByTime_corrected`.  
- 2. **`fromTimestamp`** — Move **earlier** to the start of the current time bucket (you may get a bit more data
-on the left). Example: `time:15m` and 16:48 → 16:45; `time:1d` → midnight of that calendar day. Warning: `queryRange_from_corrected`.  
- 3. **`toTimestamp`** — When the end is **not** “live” `now` (or within about a minute of now), move **later**
-to the next bucket boundary, without going past now. Live dashboards keep the current partial hour or minute. Warning: `queryRange_to_corrected`.  
- 4. **Wider time grouping** — If the range is very long for a fine step (for example a week with `30m`), adaptive
-may switch to a wider step (`1h` or `1d`) so the query can succeed. Same warning code `groupByTime_corrected`; the message tells you the effective grouping.  
-  
-**Daily rhythm and timezone:** Chart lines are anchored at **midnight** each calendar day, then repeat every `groupBy` step (`15m` → :00, :15, :30, …; `12h` → midnight and noon; `1d` → each midnight).  
- * **No `clientTimezone`** — that rhythm is **UTC**. `16:48Z` with `time:4h` → `16:00Z`; `time:1d` →
-`00:00Z` on that UTC date.  
- * **With `clientTimezone`** — midnight means **local** midnight in that zone. Berlin summer: `time:1d` with
-`fromTimestamp` at local midnight as `22:00Z` stays `22:00Z` (not moved to UTC midnight). India (`Asia/Kolkata`): days start at `18:30Z`; `time:12h` points at `18:30Z` and `06:30Z`.  
-  
-**Adaptive examples (see also `clientTimezone`):**
- * Monthly report: `fromTimestamp=now-30d`, `toTimestamp=now`, `groupBy=time:1d`,
-`clientTimezone=Europe/Berlin` → one point per Berlin calendar day; `from` may move to local midnight that morning; `to` stays at now.  
- * Line chart: `groupBy=time:15m`, `fromTimestamp` at 16:48 → 16:45 (UTC or local, per zone).  
- * Odd step: `groupBy=time:7h` → `8h`, then timestamps aligned to 8-hour boundaries.  
- * Fixed end date: `toTimestamp` yesterday 16:48 with `time:1h` → end moves to 17:00 (not when `to=now`).  
-  
-**Quick pick:** `extend` = keep grouping, soft edges. `strict` = exact or error. `adaptive` = “draw a sensible time series” — only matters with `groupBy=time:…`; without it, same as `extend`. Send `clientTimezone` when viewers care about local calendar days or zones with half-hour offsets (India, Berlin summer midnights).
-
- */
-queryTuning?: QueryTuningParameter;
-/**
- * Optional hint: the timezone your **users** think in when they picked dates (browser locale, report settings). You still send UTC unix seconds (or `now-…`); this tells Keytiles how to interpret “start of day” when smoothing a chart.  
-  
-**Default:** omitted.  
-  
-**Validation:** If you send this parameter (non-blank), it must be a valid IANA name (`Europe/Berlin`, `Asia/Kolkata`, `UTC`, …). Invalid values → HTTP 400. Wrong spelling is worse than omitting the parameter.  
-  
-**When it matters:** Mainly with **`queryTuning=adaptive`**. Adaptive lines up `fromTimestamp`, historical `toTimestamp`, and `groupBy=time:…` on a daily rhythm starting at **midnight**, then every step of your grouping. Without this hint, “midnight” means **UTC**. With it, midnight is **local** in that zone.  
- * UTC: `16:48Z` + `time:15m` → `16:45Z`; `time:1d` → `00:00Z` on that UTC date.  
- * Berlin: `clientTimezone=Europe/Berlin` + `time:1d` → calendar days in Berlin; local midnight in summer is
-`22:00Z` and stays `22:00Z`.  
- * Kolkata: `Asia/Kolkata` → days start at `18:30Z`; `time:12h` points at `18:30Z` and `06:30Z`.  
-  
-Send it for daily or weekly reports tied to a region; when local midnight is not a whole UTC hour; or when extra seconds on a timestamp might be clock noise vs a half-hour zone offset.  
-  
-With `extend` (default) or `strict`, adaptive rounding does not use this hint (invalid IANA still returns 400 if sent). It does not re-label statistics in another timezone — only how adaptive aligns your request. Use the same zone you used when building `fromTimestamp` / `toTimestamp`.  
-  
-Format: [IANA time zone](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones), e.g. `Europe/Berlin`, `Asia/Kolkata`.  
-  
-Example: Grafana panel, `fromTimestamp=now-30d`, `toTimestamp=now`, `groupBy=time:1d`, `queryTuning=adaptive`, `clientTimezone=Europe/Berlin` → one point per Berlin calendar day; warning if `from` was moved to local midnight.
-
- */
-clientTimezone?: ClientTimezoneParameter;
 };
 
 /**
