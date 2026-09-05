@@ -210,8 +210,10 @@ paths:
         - $ref: "common-types-v3.yaml#/components/parameters/containerId"
         - $ref: "common-types-v3.yaml#/components/parameters/fromTimestamp"
         - $ref: "common-types-v3.yaml#/components/parameters/toTimestamp"
-        - $ref: "#/components/parameters/interest"
+        - $ref: "#/components/parameters/queryTuning"
+        - $ref: "#/components/parameters/clientTimezone"
         - $ref: "#/components/parameters/groupBy"
+        - $ref: "#/components/parameters/interest"
         - $ref: "#/components/parameters/eventTypesOnly"
         - $ref: "#/components/parameters/tileTypesOnly"
         - $ref: "#/components/parameters/tileTypeIsNot"
@@ -229,8 +231,6 @@ paths:
         - $ref: "#/components/parameters/campaignsOnly"
         - $ref: "#/components/parameters/campaignMediumsOnly"
         - $ref: "#/components/parameters/campaignContentsOnly"
-        - $ref: "#/components/parameters/queryTuning"
-        - $ref: "#/components/parameters/clientTimezone"
 
       security:
         - basicAuth: []
@@ -284,8 +284,10 @@ paths:
         - $ref: "common-types-v3.yaml#/components/parameters/containerId"
         - $ref: "common-types-v3.yaml#/components/parameters/fromTimestamp"
         - $ref: "common-types-v3.yaml#/components/parameters/toTimestamp"
-        - $ref: "#/components/parameters/interest"
+        - $ref: "#/components/parameters/queryTuning"
+        - $ref: "#/components/parameters/clientTimezone"
         - $ref: "#/components/parameters/groupBy"
+        - $ref: "#/components/parameters/interest"
         - $ref: "#/components/parameters/includeTileDetails"
         - $ref: "#/components/parameters/limit"
         - $ref: "#/components/parameters/threshold"
@@ -308,8 +310,6 @@ paths:
         - $ref: "#/components/parameters/campaignsOnly"
         - $ref: "#/components/parameters/campaignMediumsOnly"
         - $ref: "#/components/parameters/campaignContentsOnly"
-        - $ref: "#/components/parameters/queryTuning"
-        - $ref: "#/components/parameters/clientTimezone"
 
       security:
         - basicAuth: []
@@ -1019,18 +1019,20 @@ components:
         type: string
       example: "Asia/Kolkata"
       description: >
-        Optional IANA timezone of the user who picked the dates (browser / report locale), e.g. `Europe/Berlin`,
-        `Asia/Kolkata`. Timestamps stay UTC unix (or `now-…`); this only tells adaptive **which midnight** to use.  
-          
-        **Why send it:** With `queryTuning=adaptive` and a daily (or similar) chart, Keytiles floors to calendar
-        midnight. Omit → UTC midnight. Send your zone → that zone’s local midnight (Berlin summer: `22:00` UTC;
-        India: `18:30` UTC). Without it, a `now-7d` daily chart often starts on the wrong day for your users.  
+        Optional IANA timezone of the client who picked the dates (browser / report locale), e.g. `Europe/Berlin`,
+        `Asia/Kolkata`.
+
+        **Default:** omitted (= UTC calendar for adaptive snap). Invalid IANA → HTTP 400. With `extend` / `strict`
+        the value is ignored for snapping (invalid still 400). Wrong zone is worse than omitting.  
+
+        **Why send it:** The contract for `fromTimestamp` and `toTimestamp` is clear, both are in UTC. And we expect clients to do the conversion
+        to UTC this is clear. However with `queryTuning=adaptive` and a daily (`groupBy=time:1d`) chart, Keytiles floors to calendar
+        midnight server side. If Keytiles at this point does not know the client time zone this flooring will happen in UTC time zone which
+        is not the correct flooring. Send your zone → that zone’s local midnight (Berlin summer: `22:00` UTC;
+        India: `18:30` UTC). So without it, a `now-7d` daily chart often starts on the wrong day for the client.  
           
         **When to send:** Strongly recommended whenever you use **adaptive** and care about local calendar days.
         Especially important for half-hour offsets (India). Whole-hour zones still benefit for `now-…` leftovers.  
-          
-        **Default:** omitted (= UTC calendar for adaptive snap). Invalid IANA → HTTP 400. With `extend` / `strict`
-        the value is ignored for snapping (invalid still 400). Wrong zone is worse than omitting.  
           
         Format: [IANA time zones](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones).
 
