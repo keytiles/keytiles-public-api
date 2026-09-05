@@ -1232,13 +1232,24 @@ components:
       properties:
         urls:
           type: array
-          description: "The list of (cleaned, means: removed query arguments, anchors) URLs we captured for this tile under this tileGroupPath"
+          description: >
+            The list of (cleaned, means: removed query arguments, anchors) URLs we captured for this tile under this tileGroupPath.  
+              
+            It is absolutely possible you get back multiple items as Keytiles is tracking all URLs we seen for this Tile. The list is ordered - index 0 item is the most recent one. Rest are let's say historical.
+            So if you just need a URL (basically any) just grab item 0 that's it.
           items:
             type: string
             example: "https://mywebsite.com/politics/ausland"
         titles:
           type: array
-          description: "The list of titles we captured for this tile under this tileGroupPath. Please note: normally this should just be one title! If you see more than it is against our recommended best practices and you should take actions!"
+          description: >
+            The list of titles we captured for this tile under this tileGroupPath.  
+              
+            **Please note:** normally this should just return one title. If you see more than something is fishy and it goes against our recommended best practices so you should take some actions!
+            You should check the so called "hit faults" - see [checking-and-troubleshooting/hit-faults](https://www.keytiles.com/developer-area/checking-and-troubleshooting/hit-faults) article!  
+              
+            But anyways the list is ordered - index 0 item is the most recent one. Rest are let's say historical.
+            So if you just need a Title (basically any) just grab item 0 that's it.
           items:
             type: string
             example: "My tile title"
