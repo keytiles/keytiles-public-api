@@ -9,7 +9,7 @@ import { ScheduleDayName, Schedule, HourlyScheduleSetup, DailyScheduleSetup, Wee
  * Keytiles Reporting API
  * API endpoints to manage / query / use Keytiles Reporting.
 
- * OpenAPI spec version: 1.4
+ * OpenAPI spec version: 1.5
  */
 import axios from 'axios';
 import type {
@@ -106,7 +106,7 @@ export const ReportRecipientsRoles = {
   
 So **please note**: this is NOT controlling who will see the instances but controlling who will be notified!  
   
-If not given at all then ALL Data Container users will get the notification. Otherwise if given then Keytiles users who are matching to ANY of the given criteria will receive the report.  
+If not given at all then ALL Data Container users will get the notification. Otherwise if given then Keytiles users who are matching to ANY of the given criteria will receive the report.
 
  * @nullable
  */
@@ -135,20 +135,21 @@ export const ReportQueryPlugin = {
 
  */
 export interface ReportQueryPluginBaseParameters {
-  /** If set to TRUE then you get a break-down in time interval. The interval is driven by your schedule.  
-  * Hourly schedule: you get 15 minutes break-down (or similar)
-  * Daily schedule: you get an hourly breakdown (or similar)
-  * Weekly schedule: you get a daily breakdown (or similar)
-  * Monthly schedule: you get a weekly breakdown (or similar)
-  
-This will produce `AxisColumn` with `id="time"` in the generated `DataTable`. In which you will find a string value "1780956000-1781042400". These are two UNIX timestamps encoding the time range values in `DataColumn`s belong to.
+  /** If set to TRUE then you get a break-down by time. The default interval is chosen from the query range (and typically matches your schedule length when the report is scheduled), e.g.:
+  * ~hourly-sized range → ~15 minutes break-down (or similar)
+  * ~daily-sized range → hourly breakdown (or similar)
+  * ~weekly-sized range → daily breakdown (or similar)
+  * ~monthly-sized range → weekly breakdown (or similar)
+
+Override the concrete period with `groupByTimePeriod` when you need an exact step.
+This will produce `AxisColumn` with `id="time"` in the generated `DataTable`. Cell values look like `"1780956000-1781042400"` — two UNIX timestamps (UTC seconds) encoding the bucket from/to.
+**Note (Core Query API):** Reports generate with `queryTuning=adaptive`. When a time grouping is used, Core may align awkward periods and snap the range to a local-midnight grid (see `clientTimezone` / generate `clientTimeZoneIANAName` / `schedule.timeZoneIANAName`). Feasibility rescue may coarsen the period; compare `DataTable.dataFromTimestamp` / `dataToTimestamp` with the requested range.
  */
   groupByTime?: boolean;
-  /** You can override the default "time group by" period (driven by your schedule / query range) using this option. Valid value looks like "X<m|h|d|w>" where X is a >0 integer, "m" = minutes, "h" = hours, "d" = days, "w" = weeks. For example "2h" = two hours, "30m" = 30 minutes, "1w" = one week.
-  
-BUT it must make sense in terms of your schedule! What does it mean? For example if you have an Hourly schedule then you can not set up "2h" period. Does not makes any sense right? It is also overkill to requet "1h" grouping for a long query range (e.g. a month, so Monthly schedule).  
-  
-So if you use this option then be prepared for validation errors upon save / re-schedule the report!
+  /** Optional explicit time bucket size when `groupByTime=true`. Format: `X<m|h|d|w>` where X is a >0 integer (`m` = minutes, `h` = hours, `d` = days, `w` = weeks). Examples: `30m`, `2h`, `1d`, `1w`.
+If omitted, Keytiles picks a best-effort period from the query range (see `groupByTime`).
+It should still make sense for the range / schedule (e.g. do not set `2h` on an hourly report). Overly fine periods on long ranges may be rejected or adjusted by Core (`queryTuning=adaptive`).
+Invalid format → validation error on save / generate.
  */
   groupByTimePeriod?: string;
   /** Performance is always measured with events. In this field you define which event counts to include into the report.   E.g. "pageview", or custom events e.g. "30 seconds passed".   These will become the columns in your report.  
@@ -462,7 +463,7 @@ export interface DataTable {
   /** The data in the table is starting from this timestamp. This can be different from the original requested from-to query range... This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT
  */
   dataFromTimestamp: number;
-  /** The data in the table is until this timestamp. This can be different from the original requested from-to query range... This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT  
+  /** The data in the table is until this timestamp. This can be different from the original requested from-to query range... This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT
  */
   dataToTimestamp: number;
   /**
@@ -546,7 +547,7 @@ In case the report generation was triggered manually by someone then you find in
   /** Query range - starting from this timestamp. This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT
  */
   fromTimestamp: number;
-  /** Query range - until this timestamp. This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT  
+  /** Query range - until this timestamp. This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT
  */
   toTimestamp: number;
   /** We keep generated instances for a limited ttime only - this UNIX timestamp in UTC (seconds since Epoch) tells when the instance will be automatically deleted. */
@@ -575,7 +576,7 @@ export interface ReportInstanceOverview {
   isTestOnly: boolean;
   /** Tells if this report instance was generated manually or not. Inheritedly TRUE if `isTestOnly=true`. */
   wasManuallyGenerated: boolean;
-  /** Query range - starting from this timestamp. This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT  
+  /** Query range - starting from this timestamp. This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT
  */
   fromTimestamp: number;
   /** Query range - until this timestamp. This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT
@@ -647,36 +648,54 @@ In future releases also might come:
   format: string;
   /** Optional list of section zero-based indexes (in the array) to include into the export. */
   sectionsOnly?: number[];
-  /** Report might contain date+time values (in case "group by time" is set on any queries) which are represented in the report with UNIX timestamps (seconds since Epoch - UTC timezone).  
-  
-In this field it is possible (optionally) to send in the name of the Time Zone you want to use during the export to shift these date+time fields into.
+  /** Optional IANA timezone used **only for export presentation** (e.g. Excel datetime cells and metadata), e.g. `Europe/Berlin`. Report data stores time buckets as UTC UNIX timestamps; this field shifts how those instants are shown in the exported file. Omit → UTC wall clock in the file.
+**Not the same as** `GenerateReportRequestClass.clientTimeZoneIANAName` (that one is forwarded to Core Query API as `clientTimezone` for `queryTuning=adaptive` snap during **generation**). Export timezone does not re-query Core and does not change stored report data.
  */
   timeZoneIANAName?: string;
 }
 
 export interface GenerateReportRequestClass {
-  /** Set it to TRUE if you just want to test the report generation.
+  /**
+   * Set it to TRUE if you just want to test the report generation.
 In this case the recipients (if set in report setup) will not be notified about this report at all. And only the user who generated it will receive a notification when report is ready to view. But apart from this the full report will be generated.
- */
-  isTestOnly?: boolean;
-  /** A report might contain multiple ReportQuery parts, all of them has its unique ID within the report.
+
+   * @nullable
+   */
+  isTestOnly?: boolean | null;
+  /**
+   * A report might contain multiple ReportQuery parts, all of them has its unique ID within the report.
 It is possible to generate only specific queries instead of the full report - by providing a list of those ReportQuery IDs here.
 **BUT** if you do this, then this also sets 'isTestOnly' to TRUE! So the generated ReportInstance considered to be a test only.
- */
-  executeQueryIdsOnly?: string[];
-  /** If this is set to TRUE then recipients will not receive any notification from Keytiles when this Report Instance is created.  
+
+   * @nullable
+   */
+  executeQueryIdsOnly?: string[] | null;
+  /**
+   * If this is set to TRUE then recipients will not receive any notification from Keytiles when this Report Instance is created.  
   
 **Note:** Test runs (`isTestOnly=true`) are skipping notifications anyways by default.  
   
 **IMPORTANT!** Use this with caution! This option was introduced mostly because of internal reasons under certain circumstances.
- */
-  skipNotifications?: boolean;
-  /** If this is set to TRUE then webhook (see `webhookUrl`) will not be invoked.  
+
+   * @nullable
+   */
+  skipNotifications?: boolean | null;
+  /**
+   * If this is set to TRUE then webhook (see `webhookUrl`) will not be invoked.  
   
 **Note:** unlike `skipNotifications` test runs (`isTestOnly=true`) are not skipping webhooks by default! Maybe goal of the test run is to test webhooks?  ;-)
- */
-  skipWebhook?: boolean;
-  groupByTime?: string;
+
+   * @nullable
+   */
+  skipWebhook?: boolean | null;
+  /**
+   * Optional per-run override of the time grouping period for this generation (manual / test). Same format as `ReportQueryPluginBaseParameters.groupByTimePeriod`: `X<m|h|d|w>` (e.g. `15m`, `1h`, `1d`, `1w`).
+When set, this period is used for queries that have time grouping enabled on the report setup (`groupByTime=true`), instead of the setup's `groupByTimePeriod` or the best-effort period derived from the query range.
+Omit to keep the periods defined on the `ReportSetup` queries. Invalid format → HTTP 400.
+
+   * @nullable
+   */
+  groupByTime?: string | null;
   /** When executed manually (not scheduled way) defines the beginning of the query range - you are interested in data which time is >= than this timestamp.  
   
 Format is mixed. It can be * a UNIX timestamp in UTC (seconds since Epoch) e.g.: `1657261221` - means 2022-07-08 6:20:21 GMT  
@@ -687,8 +706,9 @@ Format is mixed. It can be * a UNIX timestamp in UTC (seconds since Epoch) e.g.:
   
 This must point to the past!   (note: server validates according to his own clock!)
  */
-  fromTimestamp?: string;
-  /** When executed manually (not scheduled way) defines the end of the query range - you are interested in data which time is <= than this timestamp.
+  fromTimestamp: string;
+  /**
+   * When executed manually (not scheduled way) defines the end of the query range - you are interested in data which time is <= than this timestamp.
   
 **Default value:** the current timestamp, so 'now' if you do not specify this parameter.
   
@@ -699,8 +719,26 @@ Format is mixed. It can be * a UNIX timestamp in UTC (seconds since Epoch) e.g.:
   `now-2h` means 2 hours earlier and so on
   
 Can not point to the future!   (note: server validates according to his own clock!)
- */
-  toTimestamp?: string;
+
+   * @nullable
+   */
+  toTimestamp?: string | null;
+  /**
+   * Optional IANA timezone of the client who picked the query range (browser / UI locale), e.g. `Europe/Berlin`, `Asia/Kolkata`.
+`fromTimestamp` / `toTimestamp` are always UTC. This field does **not** reinterpret those values. It is forwarded to Keytiles Core Query API as `clientTimezone` so that `queryTuning=adaptive` can snap time groupings to the client's local calendar (e.g. local midnight for daily charts).
+**Precedence for Core `clientTimezone` on generate:**
+  * If this field is set → use it (manual generate **overrides** `schedule.timeZoneIANAName`).
+  * Else if the report setup has a `schedule` → use `schedule.timeZoneIANAName`.
+  * Else → omit (= UTC calendar snap).
+
+Invalid IANA name → HTTP 400. Providing this is **strongly recommended** for manual generation when queries use group-by-time (especially daily charts and half-hour offsets such as India).
+Tip: browsers can send `Intl.DateTimeFormat().resolvedOptions().timeZone`.
+**Not the same as** `ExportReportInstanceRequestClass.timeZoneIANAName` (export presentation only).
+Format: [IANA time zones](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones).
+
+   * @nullable
+   */
+  clientTimeZoneIANAName?: string | null;
 }
 
 export type GetV1ReportsContainersRestContainerIdReportSetupOverviewParams = {
@@ -748,7 +786,7 @@ returnFullChangelog?: ReturnFullChangelogParameter;
 
 /**
  * Anyone with "view" or "admin" role in Data Container can query.
-By default `changelog` in 
+By default `changelog` in
 
  * @summary To query (list) the overview of all existing report setups belong to the Container
  */

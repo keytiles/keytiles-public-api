@@ -1,0 +1,1834 @@
+openapi: 3.0.0
+
+info:
+  version: '1.4'
+  title: Keytiles Reporting API
+  description: >
+              API endpoints to manage / query / use Keytiles Reporting.
+
+servers:
+- url: https://api.keytiles.com/api
+  description: PROD server
+- url: https://api-test.keytiles.com/api
+  description: TEST server
+   
+tags:
+- name: Container level Report setup management REST API
+  description: Endpoints to create / modify / delete / query Container level report setups.
+- name: Container level Report setup related actions
+  description: Endpoints to execute certain actions related to Container level report setups - like listing available instances or generate a new instance.
+- name: Container level Report instance REST API
+  description: Endpoints to query / delete Container level concrete report instances (of setups)
+- name: Container level Report instance related actions
+  description: Endpoints to execute certain actions related to Container level report instances.
+
+
+paths:
+
+  '/v1/reports/containers/rest/{containerId}/report-setup-overview':
+  
+    get:
+      summary: "To query (list) the overview of all existing report setups belong to the Container"
+      tags:
+      - Container level Report setup management REST API
+      description: >
+                Anyone with "view" or "admin" role in Data Container can query.
+
+                By default `changelog` in 
+      parameters:
+        - $ref: 'common-types-v3.yaml#/components/parameters/containerId'
+        - $ref: 'common-types-v3.yaml#/components/parameters/returnFullChangelog'
+
+      security:
+      - basicAuth: []
+
+      responses:
+        '200':
+          description: "You receive the list of all setups."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListContainerReportSetupsResponseClass'
+        '401':
+          description: "Authentication failed - you provided invalid credentials or not at all"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
+        '403':
+          description: "You do not have permission to do this with the given credentials"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
+        '404':
+          description: "The container does not exist (or disabled)"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
+
+  '/v1/reports/containers/rest/{containerId}/report-setup-overview/{reportSetupId}':
+  
+    get:
+      summary: "To query the overview of a specific existing report setup belongs to the Container"
+      tags:
+      - Container level Report setup management REST API
+      description: >
+                Anyone with "view" or "admin" role in Data Container can query.
+      parameters:
+        - $ref: 'common-types-v3.yaml#/components/parameters/containerId'
+        - $ref: '#/components/parameters/reportSetupId'
+
+      security:
+      - basicAuth: []
+
+      responses:
+        '200':
+          description: "You get the overview of the requested report setup."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportSetupOverview'
+        '401':
+          description: "Authentication failed - you provided invalid credentials or not at all"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
+        '403':
+          description: "You do not have permission to do this with the given credentials"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
+        '404':
+          description: "The container does not exist (or disabled)"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
+
+
+  '/v1/reports/containers/rest/{containerId}/report-setup':
+
+    post:
+      summary: "To create a new report setup belongs to the Container"
+      description: >
+                You can assign an ID for this setup on client side as well but if you don't then a new ID will be generated (and returned in response header).  
+                  
+                Only users with "admin" role in Data Container can create a report setup.
+      tags:
+      - Container level Report setup management REST API
+      parameters:
+        - $ref: 'common-types-v3.yaml#/components/parameters/containerId'
+        - $ref: 'common-types-v3.yaml#/components/parameters/changelogComment'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReportSetup'
+
+      security:
+      - basicAuth: []
+
+      responses:
+        '201':
+          description: The report setup resouce is created successfully. You receive back the newly created ReportSetup in the response with enriched fields like ID, changelog etc.
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/ReportSetup'
+        '400':
+          description: "There were problems with the request or the resource you sent on this request - more details you get in the response."
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
+        '401':
+          description: "Authentication failed - you provided invalid credentials or not at all"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
+        '403':
+          description: "You do not have permission to do this with the given credentials"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
+        '404':
+          description: "The container does not exist (or disabled)"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
+        '409':
+          description: "Some preconditions are not OK. For example, you assigned an ID on client side but that ID is already taken. More details you find in the response."
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
+
+  '/v1/reports/containers/rest/{containerId}/report-setup/{reportSetupId}/webhookAuthHeader':
+
+    post:
+      summary: Subresource method to update `webhookAuthHeader` field only of this specific Report Setup.
+      description: >
+                  Only users who can modify a report setup (has "admin" role in the Data Container) can invoke this endpoint.
+      tags:
+      - Container level Report setup management REST API
+      parameters:
+        - $ref: 'common-types-v3.yaml#/components/parameters/containerId'
+        - $ref: '#/components/parameters/reportSetupId'
+
+      security:
+      - basicAuth: []
+
+      requestBody:
+        content:
+          text/plain:
+            schema:
+              type: string
+      responses:
+        '200':
+          description: "The auth data was changed successfully."
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
+        '401':
+          description: "Authentication failed - you provided invalid credentials"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
+        '403':
+          description: "You do not have permission to do this with the given credentials"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
+        '404':
+          description: "You sent something invalid - more details in the response!"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'              
+
+
+
+  '/v1/reports/containers/rest/{containerId}/report-setup/{reportSetupId}':
+  
+    get:
+      summary: "To query a specific report setup of the Container"
+      description: >
+                Anyone with "view" / "admin" / "developer" role in Data Container can query.
+      tags:
+      - Container level Report setup management REST API
+      parameters:
+        - $ref: 'common-types-v3.yaml#/components/parameters/containerId'
+        - $ref: '#/components/parameters/reportSetupId'
+        - $ref: 'common-types-v3.yaml#/components/parameters/returnFullChangelog'
+
+      security:
+      - basicAuth: []
+
+      responses:
+        '200':
+          description: "The report setup was found and returned to you."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportSetup'
+        '401':
+          description: "Authentication failed - you provided invalid credentials"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
+        '403':
+          description: "You do not have permission to do this with the given credentials"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
+        '404':
+          description: "The container does not exist (or disabled) or the requested report setup does not exist - more details in the response!"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
+
+    put:
+      summary: "To modify an existing report setup."
+      description: >
+                The 'resourceVersion' field is very important here - it must match with the version the server currently has otherwise you will get a 409 error.
+                This mechanism helps to detect possible race conditions.  
+                  
+                Only users with "admin" role in the Data Container can fully modify a report setup, "developer" role can only modify Webhook parts.
+      tags:
+      - Container level Report setup management REST API
+      parameters:
+        - $ref: 'common-types-v3.yaml#/components/parameters/containerId'
+        - $ref: '#/components/parameters/reportSetupId'
+        - $ref: 'common-types-v3.yaml#/components/parameters/changelogComment'
+        - $ref: 'common-types-v3.yaml#/components/parameters/returnFullChangelog'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReportSetup'
+
+      security:
+      - basicAuth: []
+
+      responses:
+        '200':
+          description: >
+                      The report setup was modified successfully. This means that the 'resourceVersion' was incremented by one on server side.  
+                        
+                      In the response you get back the modified resource - including updated resourceVersion and also changelog.
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/ReportSetup'
+        '400':
+          description: "There were problems with the request or the resource you sent on this request - more details you get in the response."
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
+        '401':
+          description: "Authentication failed - you provided invalid credentials or not at all"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
+        '403':
+          description: "You do not have permission to do this with the given credentials"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
+        '404':
+          description: "The container does not exist (or disabled) or the requested report setup does not exist - more details in the response!"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
+        '409':
+          description: "Some preconditions are not OK. Most likely the 'resourceVersion' did not match because there was a race condition. More details you find in the response."
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
+
+    delete:
+      summary: "To delete a specific report setup of the Container as well as all previously generated report instances."
+      description: >
+                In case you do not want to lose all previous instances consider simply just remove the 'schedule' of the report instead of deleting it! If you do so then the report will not run automatically anymore.  
+                  
+                Only users with "admin" role in the Data Container can delete a report setup.
+      tags:
+      - Container level Report setup management REST API
+      parameters:
+        - $ref: 'common-types-v3.yaml#/components/parameters/containerId'
+        - $ref: '#/components/parameters/reportSetupId'
+
+      security:
+      - basicAuth: []
+
+      responses:
+        '200':
+          description: "The report setup and all report instances were deleted successfully."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportSetup'
+        '401':
+          description: "Authentication failed - you provided invalid credentials"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
+        '403':
+          description: "You do not have permission to do this with the given credentials"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
+        '404':
+          description: "The container does not exist (or disabled) or the requested report setup does not exist - more details in the response!"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
+
+
+
+
+  '/v1/reports/containers/actions/{containerId}/report-setup/{reportSetupId}/list-report-instance-overviews':
+  
+    post:
+      summary: "To query (list) all availale report instances of a given ReportSetup - available in the Data Container"
+      description: >
+                Anyone with "view" or "admin" role in Data Container can list.
+      tags:
+      - Container level Report setup related actions
+      parameters:
+        - $ref: 'common-types-v3.yaml#/components/parameters/containerId'
+        - $ref: '#/components/parameters/reportSetupId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ListReportInstancesRequestClass'
+
+      security:
+      - basicAuth: []
+
+      responses:
+        '200':
+          description: "You receive the list of all report instances matching the query."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListContainerReportInstancesResponseClass'
+        '401':
+          description: "Authentication failed - you provided invalid credentials"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
+        '403':
+          description: "You do not have permission to do this with the given credentials"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
+        '404':
+          description: "The container does not exist (or disabled) or the requested report setup does not exist - more details in the response!"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
+
+  '/v1/reports/containers/actions/{containerId}/report-setup/{reportSetupId}/stop-user-notifications':
+
+    post:
+      summary: "Blacklist certain users for notifications regarding this report setup."
+      description: >
+                Users can be blacklisted regarding notifications of report setups. The given users will be added to the blacklist.  
+
+                Any user can request this for himself or users who can admin the report can also do this.
+      tags:
+      - Container level Report setup related actions
+      parameters:
+        - $ref: 'common-types-v3.yaml#/components/parameters/containerId'
+        - $ref: '#/components/parameters/reportSetupId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserReferenceListClass'
+
+      security:
+      - basicAuth: []
+
+      responses:
+        '200':
+          description: The users are added to the notification blacklist.
+          content:
+            'application/json':
+              schema:
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
+        '400':
+          description: "There were problems with the request or the resource you sent on this request - more details you get in the response."
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
+        '401':
+          description: "Authentication failed - you provided invalid credentials or not at all"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
+        '403':
+          description: "You do not have permission to do this with the given credentials"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
+        '404':
+          description: "The container does not exist (or disabled) or the requested report setup does not exist - more details in the response!"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
+
+  '/v1/reports/containers/actions/{containerId}/report-setup/{reportSetupId}/restart-user-notifications':
+
+    post:
+      summary: "Removes potentially notification blacklisted users regarding this report setup."
+      description: >
+                Users can be blacklisted regarding notifications of report setups. The given users will be removed from the blacklist
+                and will start to receive notifications again.  
+
+                Any user can request this for himself or users who can admin the report can also do this.
+      tags:
+      - Container level Report setup related actions
+      parameters:
+        - $ref: 'common-types-v3.yaml#/components/parameters/containerId'
+        - $ref: '#/components/parameters/reportSetupId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserReferenceListClass'
+
+      security:
+      - basicAuth: []
+
+      responses:
+        '200':
+          description: The users are removed from the notification blacklist.
+          content:
+            'application/json':
+              schema:
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
+        '400':
+          description: "There were problems with the request or the resource you sent on this request - more details you get in the response."
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
+        '401':
+          description: "Authentication failed - you provided invalid credentials or not at all"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
+        '403':
+          description: "You do not have permission to do this with the given credentials"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
+        '404':
+          description: "The container does not exist (or disabled) or the requested report setup does not exist - more details in the response!"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
+
+  '/v1/reports/containers/actions/{containerId}/report-setup/{reportSetupId}/check-user-notification-status':
+
+    post:
+      summary: "Checks if the given user is on notification blacklist or not."
+      description: >
+                Users can be blacklisted regarding notifications of report setups. This endpoint checks the status of a specific user
+                if (s)he is blacklisted or not.  
+
+                Any user can request this for himself or users who can admin the report can also do this.
+      tags:
+      - Container level Report setup related actions
+      parameters:
+        - $ref: 'common-types-v3.yaml#/components/parameters/containerId'
+        - $ref: '#/components/parameters/reportSetupId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserReferenceClass'
+
+      security:
+      - basicAuth: []
+
+      responses:
+        '200':
+          description: The status of the user is returned.
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/UserReportSetupNotifBlacklistStatusClass'
+        '400':
+          description: "There were problems with the request or the resource you sent on this request - more details you get in the response."
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
+        '401':
+          description: "Authentication failed - you provided invalid credentials or not at all"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
+        '403':
+          description: "You do not have permission to do this with the given credentials"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
+        '404':
+          description: "The container does not exist (or disabled) or the requested report setup does not exist - more details in the response!"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
+
+
+  '/v1/reports/containers/actions/{containerId}/report-setup/{reportSetupId}/generate':
+
+    post:
+      summary: "To generate (create) a new report instance of a report setup manually."
+      description: >
+                When triggered manually then the report generation starts immediately. You can fine tune the report generation (mostly for testing purposes) - see request body!
+
+                Please note that a report generation might take time.  
+                  
+                Only with "admin" role in Data Container can trigger a generation manually for now.
+      tags:
+      - Container level Report setup related actions
+      parameters:
+        - $ref: 'common-types-v3.yaml#/components/parameters/containerId'
+        - $ref: '#/components/parameters/reportSetupId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenerateReportRequestClass'
+
+      security:
+      - basicAuth: []
+
+      responses:
+        '202':
+          description: > 
+                      The report generation is accepted and will take place soon. This might take for a while...
+                      
+                      **note:** The ID of the new report instance is immediately generated and returned in `X-ReportInstanceId` response header!
+                      By knowing the ID you can query this report instance later.
+          headers:
+             'X-ReportInstanceId':
+              schema:
+                type: string
+              description: The ID of this new report instance
+          content:
+            'application/json':
+              schema:
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
+        '400':
+          description: "There were problems with the request or the resource you sent on this request - more details you get in the response."
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
+        '401':
+          description: "Authentication failed - you provided invalid credentials or not at all"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
+        '403':
+          description: "You do not have permission to do this with the given credentials"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
+        '404':
+          description: "The container does not exist (or disabled) or the requested report setup does not exist - more details in the response!"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
+
+  '/v1/reports/containers/actions/{containerId}/report-instance/{reportInstanceId}/export':
+   post:
+      summary: "To export the report instance into a file."
+      description: >
+                Anyone who can view the report instance ("admin" / "view" role in Data Container) can trigger the export.
+      tags:
+      - Container level Report instance related actions
+      parameters:
+        - $ref: 'common-types-v3.yaml#/components/parameters/containerId'
+        - $ref: '#/components/parameters/reportInstanceId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExportReportInstanceRequestClass'
+
+      security:
+      - basicAuth: []
+
+      responses:
+        '200':
+          description: > 
+                      A file is returned to save - content type strongly depends on the format you requested!
+          content:
+            'application/octet-stream':
+              schema:
+                type: string
+                format: binary
+                description: The exported file byte stream
+              
+        '400':
+          description: "There were problems with the request or the resource you sent on this request - more details you get in the response."
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
+        '401':
+          description: "Authentication failed - you provided invalid credentials or not at all"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
+        '403':
+          description: "You do not have permission to do this with the given credentials"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
+        '404':
+          description: "The container does not exist (or disabled) or the requested report instance does not exist - more details in the response!"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
+        '409':
+          description: "However the report instance exists already but still not ready for export - as e.g. it is still generating... More exact details in the response!"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
+
+  '/v1/reports/containers/rest/{containerId}/report-instance/{reportInstanceId}':
+  
+    get:
+      summary: "To query a specific report instance with the given ID of the Data Container"
+      description: >
+                Anyone with "view" or "admin" role in Data Container can query.
+      tags:
+      - Container level Report instance REST API
+      parameters:
+        - $ref: 'common-types-v3.yaml#/components/parameters/containerId'
+        - $ref: '#/components/parameters/reportInstanceId'
+
+      security:
+      - basicAuth: []
+
+      responses:
+        '200':
+          description: "Returns the generated report instance."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportInstance'
+        '401':
+          description: "Authentication failed - you provided invalid credentials"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
+        '403':
+          description: "You do not have permission to do this with the given credentials"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
+        '404':
+          description: "The container does not exist (or disabled) or the requested report instance does not exist - more details in the response!"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
+
+    delete:
+      summary: "To permanently delete a specific report instance - after this this report is not available anymore."
+      description: >
+                Only users with "admin" role in Data Container can do this.
+      tags:
+      - Container level Report instance REST API
+      parameters:
+        - $ref: 'common-types-v3.yaml#/components/parameters/containerId'
+        - $ref: '#/components/parameters/reportInstanceId'
+
+      security:
+      - basicAuth: []
+
+      responses:
+        '200':
+          description: "The report instance was deleted successfully"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
+        '401':
+          description: "Authentication failed - you provided invalid credentials"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
+        '403':
+          description: "You do not have permission to do this with the given credentials"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'
+        '404':
+          description: "The container does not exist (or disabled) or the requested report instance does not exist - more details in the response!"
+          content:
+            application/json:
+              schema:
+                $ref: 'common-types-v3.yaml#/components/schemas/MessageResponseV3Class'                
+
+
+
+components:
+
+  parameters:
+    reportSetupId:
+      name: reportSetupId
+      in: path
+      required: true
+      description: 'ID of the report setup belongs to the Data Container'
+      schema:
+        type: string
+    reportInstanceId:
+      name: reportInstanceId
+      in: path
+      required: true
+      description: 'ID of a specific (generated) report instance belongs to the Data Container'
+      schema:
+        type: string
+
+     
+
+  schemas:
+
+    # This enum defines error codes belong to management endpoints specifically
+    # note: no support in OpenApi for now how to document values so we just add the description as comments for now.
+    #       see: https://github.com/OAI/OpenAPI-Specification/issues/348 
+    ReportsEndpointLocalErrorCodes:
+      type: string
+      enum:
+      # The ID of the container was not provided - it is missing
+      - containerId_missing
+      # The ID of the Container is not valid - there is no Container with this ID
+      - containerId_invalid
+      # The ID of the ReportSetup is not valid - there is no setup with this ID or format of ID is not valid
+      - reportSetupId_invalid
+      # The ID of the ReportInstance is not valid - there is no setup with this ID or format of ID is not valid
+      - reportInstanceId_invalid
+      # ReportSetup with this ID already exists
+      - reportSetup_exists
+      
+
+    # Let's merge the "local" error codes with the "global" ones in this enum
+    # Reports API endpoints can return the union of them
+    ReportsEndpointErrorCodes:
+      description: NOTE! Error codes is an Enum. Unfortunately in OpenApi (so far) there is no possibility to provide description for Enum values. But we have detailed description of each error codes! Please check the OpenApi file in our Github repo - you find them as comments for each Enum values! 
+      allOf:
+      - $ref: "#/components/schemas/ReportsEndpointLocalErrorCodes"
+      - $ref: "common-types-v3.yaml#/components/schemas/CommonErrorCodesV3"
+
+    ListContainerReportSetupsResponseClass:
+      type: array
+      items:
+        $ref: "#/components/schemas/ReportSetupOverview"
+      description: 'Overview of all avaiable report setups.'
+
+    GetContainerReportSetupResponseClass:
+      allOf:
+      - $ref: "common-types-v3.yaml#/components/schemas/ContainerResponseV3Class"
+      type: object
+      properties:
+        reportSetup:
+          $ref: '#/components/schemas/ReportSetup'
+
+
+    ReportRecipientsRoles:
+      type: string
+      enum: [view, admin, developer]
+
+
+    ReportRecipients:
+      description: >
+                  This is an optional setup - controlls who will receive notification about these reports once new instance is available.  
+                    
+                  So **please note**: this is NOT controlling who will see the instances but controlling who will be notified!  
+                    
+                  If not given at all then ALL Data Container users will get the notification. Otherwise if given then Keytiles users who are matching to ANY of the given criteria will receive the report.  
+      type: object
+      nullable: true
+      properties:
+        users:
+          description: > 
+                      Optional entry. List of specific Keytiles users (email or ID) to send the reports to. The users who are listed here will get the reports for sure if
+                       * they are not disabled in Keytiles (can not log in)
+                       * they are not associated with the Data Container anyhow
+          type: array
+          items:
+            type: string
+        roles:
+          description: Optional entry. All Data Container users who has ANY of the listed roles will receive the notification.
+          type: array
+          items:
+            $ref: '#/components/schemas/ReportRecipientsRoles'
+
+
+    ReportQueryPlugin:
+      type: string
+      enum: 
+      - eventCountPlugin
+      - campaignPerformancePlugin
+      - referrerPerformancePlugin
+      #- socialPerformancePlugin
+      #- linksPerformancePlugin
+      #- tagsPerformancePlugin
+      #- visitorBehaviorPlugin
+
+    ReportQueryPluginBaseParameters:
+      description: >
+                  These base parameters are needed/supported by all query plugins.  
+                  These key-value pairs provide the setup how the query plugin will generate this part of the report.
+      type: object
+      properties:
+        groupByTime:
+          description: >
+                      If set to TRUE then you get a break-down in time interval. The interval is driven by your schedule.  
+                        * Hourly schedule: you get 15 minutes break-down (or similar)
+                        * Daily schedule: you get an hourly breakdown (or similar)
+                        * Weekly schedule: you get a daily breakdown (or similar)
+                        * Monthly schedule: you get a weekly breakdown (or similar)
+                        
+                      This will produce `AxisColumn` with `id="time"` in the generated `DataTable`. In which you will find a string value
+                      "1780956000-1781042400". These are two UNIX timestamps encoding the time range values in `DataColumn`s belong to.
+          type: boolean
+        groupByTimePeriod:
+          description: >
+                      You can override the default "time group by" period (driven by your schedule / query range) using this option. Valid value looks like "X<m|h|d|w>" where X is a >0 integer,
+                      "m" = minutes, "h" = hours, "d" = days, "w" = weeks. For example "2h" = two hours, "30m" = 30 minutes, "1w" = one week.
+                        
+                      BUT it must make sense in terms of your schedule! What does it mean? For example if you have an Hourly schedule then you can not set up "2h" period. Does not makes any sense right?
+                      It is also overkill to requet "1h" grouping for a long query range (e.g. a month, so Monthly schedule).  
+                        
+                      So if you use this option then be prepared for validation errors upon save / re-schedule the report!
+          type: string
+
+        eventsIncluded:
+          description: >
+                      Performance is always measured with events. In this field you define which event counts to include into the report.  
+                      E.g. "pageview", or custom events e.g. "30 seconds passed".  
+                      These will become the columns in your report.  
+                        
+                      **See also:** `calculatedColumns` ;-)
+          type: array
+          items:
+            type: string
+
+        importantEvents:
+          description: >
+                      Which event(s) of the above `eventsIncluded` you think most important ones? Optionally you can mark those.  
+                      DataColumns derived from these events are also marked in returned DataTable - so we can render/present them with highlight.  
+                        
+                      **Please be sane and mark 1-2 only...**
+          type: array
+          items:
+            type: string
+          nullable: true
+
+        calculatedColumns:
+          description: To enrich returned DataTable with calculated columns
+          type: array
+          items:
+            $ref: "#/components/schemas/ReportQueryCalculatedColumn"
+
+        groupByTiles:
+          description: >
+                      If set to TRUE then you get a break-down on Tile level - otherwise just sum of the traffic of all Tiles.  
+                        
+                      This will produce several `AxisColumn`s in the generated `DataTable`:
+                       * `id="tileId"`: the string based unique ID of the content
+                       * `id="tileTitle"`: the current title (same as TileView shows)
+                       * `id="tileUrl"`: the URL which points to the content
+                       * `id="tileCatalogType"`: the current type ("article", "page" etc) of the content
+          type: boolean
+          default: false
+
+        groupByTileGroupPaths:
+          description: >
+                      If set to TRUE then you get a break-down based on content structure (=tileGroupPath).  
+                        
+                      This will produce `AxisColumn` with `id="tileGroupPath"` in the generated `DataTable`.
+          type: boolean
+          default: false
+        groupByTileGroupPathMaxDepth:
+          description: >
+                      You can limit how deep you want the report to go down in the content structure. E.g. if you set it to 1 that means you get a break down only for first level.
+          type: integer
+
+        groupByUserAgentType:
+          description: >
+                      If set to TRUE then you get a break-down based on devices.  
+                        
+                      This will produce `AxisColumn` with `id="userAgentType"` in the generated `DataTable`.
+          type: boolean
+          default: false
+
+        groupByVisitorType:
+          description: >
+                      If set to TRUE then you get a break-down based on type of visitors.  
+                        
+                      This will produce `AxisColumn` with `id="visitorType"` in the generated `DataTable`.
+          type: boolean
+          default: false
+
+        groupByTileLanguage:
+          description: >
+                      If set to TRUE then you get a break-down based on type of content language code.  
+                        
+                      This will produce `AxisColumn` with `id="tileLanguage"` in the generated `DataTable`.
+          type: boolean
+          default: false
+
+        limit:
+          description: >
+                      Optional param. How many top-entries you want to see maximum?  
+                        
+                      Queries can return massive amount of rows if we use "groupByXXX" options in query parameters. More we use more rows we might get. And this is bad for readability. So we have the possibility to shrink the results. If set
+                      then only this much top/worst performing (see `performanceReverseOrder`) entries are kept others are cut.
+          type: integer
+        sortBy:
+          description: >
+                      Sort the list based on the values of these columns - order matters!  
+                        
+                      Values can refer to:
+                      * "group by" columns like "tileGroupPath", "tileTitle" or "time" - if they are present because above bools are ticked on
+                      * to "eventsIncluded" you added above
+                      * or to the labels (which are IDs) of "calculatedColumns"
+          type: array
+          items:
+            type: string
+        performanceReverseOrder:
+          type: boolean
+          default: false
+          description: 'By default we order the data performance top-down order: best performers first. Unless this flag say actually we want to see worst performers first.'
+
+        # # For the future! to decrease 1-3 values noise.
+        # filterOutThreshold:
+        #   type: string
+        #   description: > 
+        #                 It can often happen that we get lots of noise into reports because let's say out of 330 entries 300 entries appear with values of 1-3 - however we
+        #                 are talking about the volume of 100k+ values in top entries. This option helps to clean this. It works similarly like `threshold` defined
+        #                 in QueryAPI.  
+                          
+        #                 You can set
+        #                 * Absolute value like "10" - everything below this value is left out.
+        #                 * Relative percent value like "3.5%" - in this case this is relative to the maximum (or all sum? - to decide!) and if entry falls below
+        #                   this then filtered out.
+                          
+        #                 But how do we apply this? On which DataColumn if we have 5 DataColumns? Good question... This must be decided!
+        #                 Option a) user gives 1 column somehow on which this is applied. (Then we also need to add this field right?)
+        #                 Option b) we apply this on ALL DataColumns and each column votes. To filter out the entry ALL columns must vote for filter it out. But need to
+        #                 think through the consequences... Especially, what if we have calculated DataColumns? who's expression can be any...
+        # filterColumn:
+        #   type: string
+        #   description: The name of the column we apply the filter on - see comment!!
+
+        tileTypesOnly:
+          description: >
+                        Data filter option. List of tile types you want to limit the query for. If you list more values here then they are interpreted with an OR operator.  
+                          
+                        IMPORTANT! You can not use this together with `tileTypeIsNot` parameter! You can only use this or that but not both.  
+                          
+                        In the list you can either use:
+                        * The name of the type ('frontpage', 'page', 'article', ...), or
+                        * The numeric ID of the tile type - returned by `/v2/stat/webhits/{containerId}/idmappings` endpoint - using the format `id:<numeric ID>`, e.g. **"id:123"**
+          type: array
+          items:
+            type: string
+
+        tileGroupPathMatchingOnly:
+          description: >
+                        Data filter option. List of matchers (see below) which returns counters only for those Tiles who's `tileGroupPath` is matching to one of the listed matchers.
+                        So if you list more values here then they are interpreted with an OR operator.  
+                          
+                        You can use the `*` character to match any substring. But where and how you put this Asterisk character matters! Let us show
+                        you how through an example!
+                        
+                        Let's assume you have articles and pages (Tiles) in the following content areas:  
+                          
+                        * /auto
+                        * /tech
+                        * /tech/mobile-rumours
+                        * /tech/mobile
+                        * /tech/mobile/android
+                        * /tech/mobile/ios
+                        * /politics
+                          
+                        And now you execute queries with two different **tileGroupPathMatchingOnly** settings:
+                        1. **"/tech/mobile\*"** and
+                        1. **"/tech/mobile/\*"**
+                        
+                        In the first query **"/tech/mobile\*"** would match for everything begins with "/tech/mobile" string. So this would include *"/tech/mobile/android"*, *"/tech/mobile/ios"* Tiles but
+                        also would include *"/tech/mobile-rumours"* Tiles. Which are clearly two different areas right?  
+                          
+                        But what if you want to really limit for Tiles under the *"/tech/mobile"* area?  
+                          
+                        Well then you can use the second query value: **"/tech/mobile/\*"**. This would include *"/tech/mobile/android"*, *"/tech/mobile/ios"* but
+                        would NOT include *"/tech/mobile-rumours"* anymore - as that is not a match anymore. But we are not done yet! Please note: this
+                        would also include Tiles under *"/tech/mobile/"* group itself. Because **"/\*"** means "everything which is under this group"
+          type: array
+          items:
+            type: string                            
+          example: ["/tech/mobile/*", "*/errors/*"]
+
+        userAgentTypesOnly:
+          description: Data filter option. List of userAgentTypes (device) you want to limit the query for. If you list more values here then they are interpreted with an OR operator.
+          type: array
+          items:
+            type: string
+        visitorTypesOnly:
+          description: Data filter option. List of visitorTypes you want to limit the query for. If you list more values here then they are interpreted with an OR operator.
+          type: array
+          items:
+            type: string
+        languagesOnly:
+          description: Data filter option. List of ISO-639-2 language codes (e.g. 'en', 'de', ...) you want to limit the query for. If you list more values here then they are interpreted with an OR operator.
+          type: array
+          items:
+            type: string
+        primaryTagsOnly:
+          description: >
+                      Data filter option. List of matching primary custom tags you want to limit the query for. If you list more values here then they are interpreted with an OR operator.  
+                        
+                      To understand it better what these "tags" are doing and how you can use it for your own goals please check our article: [Custom segmentation of traffic](https://keytiles.com/developer-area/custom-segmentation-of-traffic)!
+          type: array
+          items:
+            type: string
+        secondaryTagsOnly:
+          description: >
+                      Data filter option. List of matching secondary custom tags you want to limit the query for. If you list more values here then they are interpreted with an OR operator.  
+                        
+                      To understand it better what these "tags" are doing and how you can use it for your own goals please check our article: [Custom segmentation of traffic](https://keytiles.com/developer-area/custom-segmentation-of-traffic)!
+          type: array
+          items:
+            type: string      
+
+    ReportQueryCampaignPerformancePluginParameters:
+      type: object
+      description: >
+                  On top of `ReportQuery.parameters` these key-value pairs are used by `CampaignPerformancePlugin` to fine tune report query. So only used
+                  if plugin is set to that.
+      properties:
+        campaignsOnly:
+          description: > 
+                      Optional data filter option. List of campaign names you want to limit the query for. If you list more values here then they are interpreted with an OR operator.  
+                        
+                      Campaign tracking in Keytiles works based on Urchin Tracking Module (UTM) parameters specification. For more info visit: [Wikipedia - UTM parameters](https://en.wikipedia.org/wiki/UTM_parameters)
+          type: array
+          items:
+            type: string
+        campaignMediumsOnly:
+          description: > 
+                      Data filter option. List of campaign mediums you want to limit the query for. If you list more values here then they are interpreted with an OR operator.  
+                        
+                      Campaign tracking in Keytiles works based on Urchin Tracking Module (UTM) parameters specification. For more info visit: [Wikipedia - UTM parameters](https://en.wikipedia.org/wiki/UTM_parameters)
+          type: array
+          items:
+            type: string
+        campaignContentsOnly:
+          description: > 
+                      Data filter option. List of campaign contents you want to limit the query for. If you list more values here then they are interpreted with an OR operator.  
+                        
+                      Campaign tracking in Keytiles works based on Urchin Tracking Module (UTM) parameters specification. For more info visit: [Wikipedia - UTM parameters](https://en.wikipedia.org/wiki/UTM_parameters)
+          type: array
+          items:
+            type: string
+
+        groupByCampaign:
+          description: >
+                      If set to TRUE then you get a break-down on Campaign names.  
+                        
+                      This will produce `AxisColumn` with `id="campaign"` in the generated `DataTable`.
+          type: boolean
+          default: false
+
+        groupByCampaignMedium:
+          description: >
+                      If set to TRUE then you get a break-down on Campaign medium.  
+                        
+                      This will produce `AxisColumn` with `id="campaignMedium"` in the generated `DataTable`.
+          type: boolean
+          default: false
+
+        groupByCampaignContent:
+          description: >
+                      If set to TRUE then you get a break-down on Campaign content.  
+                        
+                      This will produce `AxisColumn` with `id="campaignContent"` in the generated `DataTable`.
+          type: boolean
+          default: false
+
+
+    ReportQueryReferrerPerformancePluginParameters:
+      type: object
+      description: >
+                  On top of `ReportQuery.parameters` these key-value pairs are used by `referrerPerformancePlugin` to fine tune report query. So only used
+                  if plugin is set to that.
+      properties:
+        eventSourceTypesOnly:
+          description: > 
+                      Data filter option. List of "link", "search", "social", "direct" or "internal" strings - indicating from which source the events came. If you list more values here then they are interpreted with an OR operator.
+          type: array
+          items:
+            type: string
+        eventSourceNamesOnly:
+          description: > 
+                      Data filter option. List of external source names - indicating from which exact source the events came. If you list more values here then they are interpreted with an OR operator.  
+                        
+                      Note: the names you specify here are definitely correlating with source type (we mentioned in 'eventSourceTypesOnly' description) "link", "search", "social", "direct" or "internal"!
+
+                      The correlation looks like this:
+                      * "link": then the name is basically the hostname of the website which sent the visitor to your website. Like "abc.com".
+                      * "social": then the name is the name how Keytiles classified it for Social sources - here please take a look at [How does referrer grouping work?](https://www.keytiles.com/docs/how-does-referrer-grouping-work#The-referrer-classifying-configuration)
+                      * "search": then the name is the name how Keytiles classified it for Search sources - here please take a look at [How does referrer grouping work?](https://www.keytiles.com/docs/how-does-referrer-grouping-work#The-referrer-classifying-configuration)
+                      * "direct" or "internal": they do not have a name, name is always NULL for these
+
+                      So be careful when you are using this filter how you set up `eventSourceTypesOnly` if you use it!
+
+                      For example:
+                      * If you are curious about events came from "Facebook" then you can send `eventSourceNamesOnly=Facebook`. (note: this belongs to source type "social" - see 'eventSourceTypesOnly')
+                      * If you are curious about events came from another website "abc.com" which is an external link then you can send `eventSourceNamesOnly=abc.com`. (note: this belongs to source type "link" - see 'eventSourceTypesOnly')
+                      * If you send `eventSourceNamesOnly=Facebook,abc.com` that would give you all events came from "Facebook" OR "abc.com". (note: and then this would belong to source types "link" and "social" - see 'eventSourceTypesOnly')
+                      * If you would send `eventSourceNamesOnly=abc.com & eventSourceTypesOnly=direct` you would receive 0 as a result - because for sure nothing comes in from "abc.com" which events came from a "direct" visit ...
+          type: array
+          items:
+            type: string
+
+        groupByEventSourceType:
+          description: >
+                      If set to TRUE then you get a break-down on source type ("link", "search", "social", "direct" or "internal").  
+                        
+                      This will produce `AxisColumn` with `id="eventSourceType"` in the generated `DataTable`.
+          type: boolean
+          default: false
+
+        groupByEventSourceName:
+          description: >
+                      If set to TRUE then you get a break-down on source name (like "Facebook", "Google" etc).  
+                        
+                      This will produce `AxisColumn` with `id="eventSourceName"` in the generated `DataTable`.
+          type: boolean
+          default: false
+
+
+
+    ReportQueryCalculatedColumn:
+      type: object
+      description: It is possible to add calculated columns to the output (DataTable) using the real columns in expressions.
+      required:
+        - label
+        - expression
+      properties:
+        label:
+          type: string
+          description: >
+                      The displayed name of this virtual column.  
+                        
+                      **IMPORTANT!** Labels should be unique within one query, acting like an ID of that column. If labels are not unique in the array that might result in errors.
+                      This is not a big restriction though as normally you should not use / have the same label of two different columns right?
+        expression:
+          type: string
+          description: The expression to calculate the value. The returned value must be numerical or string to fit into a `DataTableCell` definition.
+        # let's add this for now - we will use it later as input of DataTableDataColumn 
+        collapseFunction:
+          type: string
+          nullable: true
+
+
+    ReportQuery:
+      description: A report can contain multiple queries. This object describes one query of those.
+      type: object
+      required:
+        - metaData
+        - plugin
+      properties:
+        id:
+          type: string
+          description: The unique ID (within the report) of this query - UUID style. In concrete report instances this helps to identify the result of this query within the whole report.
+        metaData:
+          description: Title, description - of this query of the report.
+          $ref: 'common-metadata-v1.yaml#/components/schemas/MetaData'
+        isDisabled:
+          type: boolean
+          description: It is possible to temporarily disable a query. This way you do not lose its setup, so you can re-enable it later again.
+        plugin:
+          description: Which query plugin to use for this query? Each plugin provides different possibilities.
+          $ref: "#/components/schemas/ReportQueryPlugin"
+        parameters:
+          $ref: "#/components/schemas/ReportQueryPluginBaseParameters"
+        referrerPerformancePluginParameters:
+          $ref: "#/components/schemas/ReportQueryReferrerPerformancePluginParameters"
+        campaignPerformancePluginParameters:
+          $ref: "#/components/schemas/ReportQueryCampaignPerformancePluginParameters"
+
+
+    ReportSetupOverview:
+      type: object
+      description: >
+                  Contains minimalistic information about an existing report setup - like its ID, title, description, creation time, schedule. It is a quick overview.
+
+                  By default the `changelog` within `metaData` only contains the first and very last item. You might request more - see request parameters!
+      required:
+        - id
+        - metaData
+        - createdAt
+        - isDisabled
+      properties:
+        id:
+          type: string
+          description: The unique ID of this report setup - UUID style
+        metaData:
+          description: Title, description and changelog - of this report.
+          $ref: 'common-metadata-v1.yaml#/components/schemas/MetaData'
+        createdAt:
+          type: integer
+          format: int32
+          description: "The server time in UNIX timestamp in UTC (seconds since Epoch) when this instance was created"
+          example: 1543355710
+        isDisabled:
+          type: boolean
+          description: It is possible to temporarily disable a report. The report is still generatable manually but automatic schedules will not be executed.
+        schedule:
+          description: Controlls when will the report run automatically. If you do not schedule the report then the report is only generated when you manually trigger it.
+          $ref: 'common-schedule-v1.yaml#/components/schemas/Schedule'
+          nullable: true
+
+
+    ReportSetup:
+      type: object
+      required:
+        - id
+        - metaData
+        - resourceVersion
+        - createdAt
+        - isDisabled
+      properties:
+        id:
+          type: string
+          description: The unique ID of this report setup - UUID style
+        metaData:
+          description: Title, description and changelog - of this report.
+          $ref: 'common-metadata-v1.yaml#/components/schemas/MetaData'
+        createdAt:
+          type: integer
+          format: int32
+          description: "The server time in UNIX timestamp in UTC (seconds since Epoch) when this setup was created"
+          example: 1543355710
+        isDisabled:
+          type: boolean
+          description: It is possible to temporarily disable a report. The report is still generatable manually but automatic schedules will not be executed.
+        schedule:
+          description: Controlls when will the report run automatically. If you do not schedule the report then the report is only generated when you manually trigger it.
+          $ref: 'common-schedule-v1.yaml#/components/schemas/Schedule'
+          nullable: true
+        recipients:
+          description: Optionally you can fine grain which Data Container users will receive this report when generated.
+          $ref: '#/components/schemas/ReportRecipients'
+        webhookUrl:
+          description: >
+                      This is a valid https:// URL which will be invoked when a `ReportInstance` was generated. This way you can hook on this event.  
+                        
+                      The request will be a POST request on the specified endpoint and we follow [Standard Webhooks](https://www.standardwebhooks.com/) - but for now without signing the requests... See
+                      this specs and http headers etc for more details!  
+                        
+                      If you request `full` hook (default) then in the `/data` section you will receive the generated `ReportInstance` under `/data/reportInstance` entry - otherwise you just receive
+                      `/data/reportInstanceId` entry which you can use to query the generated instance by yourself later via our API. For comfort you always get `/data/containerId` which is the ID of
+                      the Data Container the report belongs to (and used in our API URLs).  
+                        
+                      **note:** You can (and should!) also set `webhookAuthHeader` to make the call authenticated.  
+                        
+                      During invoking the webhook Keytiles will apply standard retry policy with exponential back-off but will keep trying to invoke the webhook only for a limited amount of time.
+                      We will keep trying with delay "1s" and multiplier 5 max 3 times something like: 1s, 5s, 25s - gives ~30s retrtries period. After this Keytiles gives up trying and for now that's it.
+                      Later we plan to improve this mechanism with features like you can query / track / capture failed webhooks but for now this is what we have.
+          type: string
+        webhookAuthHeader:
+          type: string
+          description: >
+                      You can (and should!) set authentication used when invoking the `webhookUrl`. You have to provide the bare/full content in this field which just simply passed on the webhook
+                      in the standard `authorization` header. E.g. if you use username/password so "basic" auth you need to provide `Basic <base64 encoded data>` here. Same for JWT: `Bearer <token data>`.  
+                        
+                      Since this information is highly sensitive Keytiles only returns this value in this field via GET request in case the user can modify Report Setup (currently Data Container admins).
+                      Others just get back something like "****" as value.
+                        
+                      **note:** In case you use JWT (OAuth) - in current version Keytiles does not support automatic token renewal or similar methods. We are very simple for now. But you can implement
+                      renewal / rottion processes externally on your side and use `/v1/reports/containers/rest/{containerId}/report-setup/{reportSetupId}/webhookAuthHeader` POST endpoint to efficiently
+                      update this data only.
+        queries:
+          description: Queries of this report.
+          type: array
+          items:
+            $ref: '#/components/schemas/ReportQuery'
+          nullable: true
+          #default: []
+        resourceVersion:
+          type: integer
+          description: This is the resource version (which is automatically incremented by every change). When you do an update (PUT) you need to send it back! The server will check if it is matching with the resource version he has. If not then that means someone else already did an update in the meantime therefore your request can not be accepted - otherwise you may overwrite the changes someone did.
+          nullable: false
+
+    ReportInstanceState:
+      type: string
+      description: >
+                  It takes time for a report instance until it is fully generated. So every report instance is going through a lifecycle.
+
+                  This is maintained by the server.
+      readOnly: true
+      enum:
+      # The instance is created but no data in it yet
+      - created
+      # The queries are getting executed and data is under generation now
+      - generating
+      # All queries are done and data is complete
+      - complete
+
+    DataTableDataColumn:
+      type: object
+      required:
+        - id
+        - label
+        - isCalculated
+      properties:
+        id:
+          type: string
+          description: This identifies from where the column came, which CounterColumn(s) in the response? This field is for machine reading.
+        label:
+          type: string
+          description: The displayed label for the user.
+        isImportant:
+          type: boolean
+          description: Helps to visually distinguish a few data columns from others by marking them important.
+        isCalculated:
+          type: boolean
+          description: If the column is derived from `ReportQueryCalculatedColumn` then this is set to True - might help to visually distinguish these columns.
+        expression:
+          type: string
+          description: If this is `isCalculated=true` column then here is the expression which is used to calculate the value. This is basically a copy of corresponding `ReportQueryCalculatedColumn.expression` value.
+
+    DataTableAxisColumn:
+      type: object
+      required:
+        - id
+        - label
+      properties:
+        id:
+          type: string
+          description: This identifies from where the column came, which KeyColumn in the response? This field is for machine reading.
+        label:
+          type: string
+          description: The displayed label for the user.
+
+    DataTableCell:
+      type: object
+      oneOf:
+      - type: string
+      - type: number
+
+    DataTableRow:
+      description: A "row" of data.
+      type: array
+      items:
+        $ref: '#/components/schemas/DataTableCell'
+
+    DataTable:
+      type: object
+      description: DataTable is the output of queries - a self contained table of data with Axis columns (optional) and >1 Data columns. Plus of course the data rows.
+      required:
+        - axisColumns
+        - dataColumns
+        - rows
+        - dataFromTimestamp
+        - dataToTimestamp
+      properties:
+        dataFromTimestamp:
+          type: integer
+          format: int32
+          description: >
+                        The data in the table is starting from this timestamp. This can be different from the original requested from-to query range... This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT
+          example: 1657261221
+        dataToTimestamp:
+          type: integer
+          format: int32
+          description: >
+                        The data in the table is until this timestamp. This can be different from the original requested from-to query range... This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT  
+          example: 1657261221
+        comment:
+          description: You can add a textual comment to this table - if this is present we display this on top of the table.
+          type: string
+          nullable: true
+        sortBy:
+          description: Which columns were driving the order of rows? Copy of `ReportQuery.parameters.sortBy` which was active at that time this table was generated.
+          type: array
+          items:
+            type: string
+        performanceReverseOrder:
+          type: boolean
+          default: false
+          description: Copy of `ReportQuery.parameters.performanceReverseOrder` flag at that time this table was generated.
+        axisColumns:
+          type: array
+          description: List of "Axis" columns. The `index` is important as that tells the position in a Row. The row value of Axis columns are strings.
+          items:
+            $ref: '#/components/schemas/DataTableAxisColumn'
+          nullable: false
+        dataColumns:
+          type: array
+          description: List of "Data" columns. The `index` is important as that tells the position in a Row. The row value of Data columns are numbers.
+          items:
+            $ref: '#/components/schemas/DataTableDataColumn'
+          nullable: false
+        rows:
+          type: array
+          description: List of values. The position corresponds with `axisColumns` (in beginning of the row) and `dataColumns` followed.
+          items:
+            $ref: '#/components/schemas/DataTableRow'
+          nullable: false
+          #default: []
+
+    ReportInstanceSectionState:
+      type: string
+      description: >
+                  It takes time for a report until it is fully generated. Report sections are going through a lifecycle and these are their states.
+      enum:
+      # The instance is created but no data in it yet
+      - created
+      # The queries are getting executed and data is under generation now
+      - generating
+      # All queries are done and data is complete
+      - complete
+      readOnly: true
+
+    ReportInstanceSection:
+      type: object
+      required:
+        - metaData
+        - dataTables
+      properties:
+        metaData:
+          description: >
+                      The title and description of this section. This is copied from the corresponding Query of the ReportSetup this section represents.
+          $ref: 'common-metadata-v1.yaml#/components/schemas/MetaData'
+        generationTookMillis:
+          type: integer
+          format: int32
+          nullable: true
+          description: "Number of milliseconds the processing took on server side"
+        dataTables:
+          type: array
+          items:
+            $ref: '#/components/schemas/DataTable'
+          #default: []
+          nullable: false
+        errorMessage:
+          type: string
+          description: 'In case the generation failed for any reason here is the human readable error message. This can be a multi-line text as well.'
+          nullable: true
+
+    ReportInstance:
+      type: object
+      description: >
+                  This is a specific instance of a ReportSetup which was generated at a certain point in time. Keytiles stores these reports for a while.
+
+                  A report instance consists of sections - each section is generated by a query.
+      required:
+        - id
+        - parentReportSetupId
+        - metaData
+        - resourceVersion
+        - createdAt
+        - state
+        - isTestOnly
+        - wasManuallyGenerated
+        - fromTimestamp
+        - toTimestamp
+      properties:
+        id:
+          type: string
+          description: The unique ID of this report setup - UUID style
+        parentReportSetupId:
+          type: string
+          description: The ID of the ReportSetup this instance belongs to.
+        createdAt:
+          type: integer
+          format: int32
+          description: "The server time in UNIX timestamp in UTC (seconds since Epoch) when this instance was created"
+          example: 1543355710
+        creationTookMillis:
+          type: integer
+          format: int32
+          description: "Number of milliseconds took to generate this report instance."
+        state:
+          $ref: '#/components/schemas/ReportInstanceState'
+        isTestOnly:
+          type: boolean
+          description: Tells if this report instance is a result of a test generation only or not.
+        wasManuallyGenerated:
+          type: boolean
+          description: Tells if this report instance was generated manually or not. Inheritedly TRUE if `isTestOnly=true`.
+        metaData:
+          description: >
+                      The title of the report is copied from the ReportSetup metaData when this instance was generated.
+                      As well as the description. It is good as Report setup can be changed any time.
+
+                      In case the report generation was triggered manually by someone then you find info in the history part of meta data about whom did it.
+          $ref: 'common-metadata-v1.yaml#/components/schemas/MetaData'
+        fromTimestamp:
+          type: integer
+          format: int32
+          description: >
+                        Query range - starting from this timestamp. This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT
+          example: 1657261221
+        toTimestamp:
+          type: integer
+          format: int32
+          description: >
+                        Query range - until this timestamp. This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT  
+          example: 1657261221
+        autoDeletionTimestamp:
+          type: integer
+          format: int32
+          description: We keep generated instances for a limited ttime only - this UNIX timestamp in UTC (seconds since Epoch) tells when the instance will be automatically deleted.
+        sections:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReportInstanceSection'
+          default: []
+          nullable: false
+        resourceVersion:
+          type: integer
+          description: This is the resource version (which is automatically incremented by every change). When you do an update (PUT) you need to send it back! The server will check if it is matching with the resource version he has. If not then that means someone else already did an update in the meantime therefore your request can not be accepted - otherwise you may overwrite the changes someone did.
+          nullable: false
+
+
+    ReportInstanceOverview:
+      type: object
+      description: Contains minimalistic information about an existing instance of a report setup - like its ID, creation time, parent report setup ID, etc. It is a quick overview.
+      required:
+        - id
+        - parentReportSetupId
+        - metaData
+        - createdAt
+        - state
+        - isTestOnly
+        - wasManuallyGenerated
+        - fromTimestamp
+        - toTimestamp
+      properties:
+        id:
+          type: string
+          #example: "reportInstanceId"
+        parentReportSetupId:
+          type: string
+          description: The ID of the report setup this instance belongs to
+        metaData:
+          description: Title, description and changelog - of this report.
+          $ref: 'common-metadata-v1.yaml#/components/schemas/MetaData'
+        createdAt:
+          type: integer
+          format: int32
+          description: "The server time in UNIX timestamp in UTC (seconds since Epoch) when this instance was created"
+          example: 1543355710
+        state:
+          $ref: '#/components/schemas/ReportInstanceState'
+        isTestOnly:
+          type: boolean
+          description: "Tells if this report instance is marked as 'test only' or not."
+        wasManuallyGenerated:
+          type: boolean
+          description: Tells if this report instance was generated manually or not. Inheritedly TRUE if `isTestOnly=true`.
+        fromTimestamp:
+          type: integer
+          format: int32
+          description: >
+                        Query range - starting from this timestamp. This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT  
+        toTimestamp:
+          type: integer
+          format: int32
+          description: >
+                        Query range - until this timestamp. This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT
+        autoDeletionTimestamp:
+          type: integer
+          format: int32
+          description: We keep generated instances for a limited ttime only - this UNIX timestamp in UTC (seconds since Epoch) tells when the instance will be automatically deleted.
+
+    ListReportInstancesRequestClass:
+      type: object
+      description: >
+                  You can fine tune how the list is generated with the attributes of this request. As you see paging is supported too.
+      properties:
+        includeTestOnlyInstances:
+          type: boolean
+          description: By default the request excludes the "test only" instances - unless you request here to include them
+          default: false
+        excludeNotTestOnlyInstances:
+          type: boolean
+          description: By default the request includes normal (not "test only") instances - unless you request here to exclude them
+          default: false
+        limit:
+          type: integer
+          nullable: true
+          description: 'For paging - you can limit the number of returned instances.'
+        untilCreationTimestamp:
+          type: integer
+          format: int32
+          description: "For paging - you can specify UNIX timestamp in UTC (seconds since Epoch). We return instances in creation time descending order and if you specify this then only those instances returned who's creation time is smaller than this timestamp."
+          example: 1543355710
+
+    ListContainerReportInstancesResponseClass:
+      type: object
+      properties:
+        countOfAllInstances:
+          type: integer
+          description: 'The number of all instances matching the request specs.'
+        reportInstances:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReportInstanceOverview'
+          nullable: false
+          description: 'Returned report instances of the report setup matching the request specs - in creation time descending order.'
+
+    UserReferenceClass:
+      type: object
+      description: Holds a reference to a Keytiles User - either by ID / email or both
+      properties:
+        id:
+          type: string
+          description: The ID of the user in Keytiles
+        email:
+          type: string
+          description: The Email address of the user in Keytiles
+
+    UserReferenceListClass:
+      type: array
+      items:
+        $ref: '#/components/schemas/UserReferenceClass'
+
+    UserReportSetupNotifBlacklistStatusClass:
+      description: Tells if the given Keytiles user is on notification blacklist of the given ReportSetup or not.
+      type: object
+      required:
+        - user
+        - reportSetupId
+        - isBlacklisted
+      properties:
+        user:
+          description: Which User are we talking about?
+          $ref: '#/components/schemas/UserReferenceClass'
+        reportSetupId:
+          type: string
+          description: Which ReportSetup are we talking about?
+        isBlacklisted:
+          type: boolean
+          description: TRUE if blacklisted - FALSE otherwise
+
+    ExportReportInstanceRequestClass:
+      type: object
+      required:
+        - format
+      properties:
+        format:
+          type: string
+          description: >
+                      The format to export to. Current supported formats are:
+                        * "xlsx" - Excel sheet with multiple sheets for each included sections
+                      
+                      In future releases also might come:
+                        * "csv" - standard CSV file - can export only one section - see `sectionsOnly`
+                        * "csv-pack" - multiple CSV files for each included sections in a .zip file
+        sectionsOnly:
+          type: array
+          items:
+            type: integer
+          description: Optional list of section zero-based indexes (in the array) to include into the export.
+        timeZoneIANAName:
+          type: string
+          description: >
+                      Report might contain date+time values (in case "group by time" is set on any queries) which are represented in the report
+                      with UNIX timestamps (seconds since Epoch - UTC timezone).  
+                        
+                      In this field it is possible (optionally) to send in the name of the Time Zone you want to use during the export to
+                      shift these date+time fields into.
+
+    GenerateReportRequestClass:
+      type: object
+      properties:
+        isTestOnly:
+          type: boolean
+          description: >
+                      Set it to TRUE if you just want to test the report generation.
+                      
+                      In this case the recipients (if set in report setup) will not be notified about this report at all. And only the user who generated it will receive a notification when
+                      report is ready to view. But apart from this the full report will be generated.
+        executeQueryIdsOnly:
+          type: array
+          items:
+            type: string
+          description: >
+                      A report might contain multiple ReportQuery parts, all of them has its unique ID within the report.
+                      
+                      It is possible to generate only specific queries instead of the full report - by providing a list of those ReportQuery IDs here.
+
+                      **BUT** if you do this, then this also sets 'isTestOnly' to TRUE! So the generated ReportInstance considered to be a test only.
+        skipNotifications:
+          type: boolean
+          description: > 
+                      If this is set to TRUE then recipients will not receive any notification from Keytiles when this Report Instance is created.  
+                        
+                      **Note:** Test runs (`isTestOnly=true`) are skipping notifications anyways by default.  
+                        
+                      **IMPORTANT!** Use this with caution! This option was introduced mostly because of internal reasons under certain circumstances.
+        skipWebhook:
+          type: boolean
+          description: > 
+                      If this is set to TRUE then webhook (see `webhookUrl`) will not be invoked.  
+                        
+                      **Note:** unlike `skipNotifications` test runs (`isTestOnly=true`) are not skipping webhooks by default! Maybe goal of the test run is to test webhooks?  ;-)
+        groupByTime:
+          type: string
+        fromTimestamp:
+          type: string
+          description: >
+                        When executed manually (not scheduled way) defines the beginning of the query range - you are interested in data which time is >= than this timestamp.  
+                          
+                        Format is mixed. It can be
+                        * a UNIX timestamp in UTC (seconds since Epoch) e.g.: `1657261221` - means 2022-07-08 6:20:21 GMT  
+                          (note: server and client clock might be different! see: /v2/system/clock endpoint to query server time)
+                        * a relative time spec compared to current time in form of 'now[-X<m|h|d>]' where 'm' means minutes, 'h' means hours and 'd' means days,
+                          e.g.: `now-10m` means 10 minutes earlier compared to current time,
+                          `now-2h` means 2 hours earlier and so on
+                          
+                        This must point to the past!  
+                        (note: server validates according to his own clock!)
+          example: now-2h
+        toTimestamp:
+          type: string
+          description: >
+                        When executed manually (not scheduled way) defines the end of the query range - you are interested in data which time is <= than this timestamp.
+                          
+                        **Default value:** the current timestamp, so 'now' if you do not specify this parameter.
+                          
+                        Format is mixed. It can be
+                        * a UNIX timestamp in UTC (seconds since Epoch) e.g.: `1657261221` - means 2022-07-08 6:20:21 GMT  
+                          (note: server and client clock might be different! see: /v2/system/clock endpoint to query server time)
+                        * a relative time spec compared to current time in form of 'now[-X<m|h|d>]' where 'm' means minutes, 'h' means hours and 'd' means days,
+                          e.g.: `now-10m` means 10 minutes earlier compared to current time,
+                          `now-2h` means 2 hours earlier and so on
+                          
+                        Can not point to the future!  
+                        (note: server validates according to his own clock!)
+          example: now-1h
+

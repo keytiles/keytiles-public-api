@@ -1,3 +1,20 @@
+# Release 2.8.0
+
+## New features
+- `reports-api-v1.yaml` - v1.5
+  - `GenerateReportRequestClass`: new optional `clientTimeZoneIANAName` (IANA, e.g. `Europe/Berlin`).
+    Reports service forwards this to Core Query API event-count endpoints as query parameter `clientTimezone`
+    (see `query-api-v3.yaml` — `/v2/stat/webhits/{containerId}/eventcounts` and `.../eventcounts/tiles`).
+    Used with `queryTuning=adaptive` to snap time groupings to the client's local calendar. Omit = UTC.
+    Invalid IANA → HTTP 400. Strongly recommended for manual generate when queries use group-by-time.
+    Precedence: generate field overrides `schedule.timeZoneIANAName` when set; else schedule zone; else UTC.
+  - `GenerateReportRequestClass.fromTimestamp` is now required (manual generate always needs a start of range).
+  - `GenerateReportRequestClass.groupByTime` documented — optional per-run period override (`X<m|h|d|w>`),
+    same format as `ReportQueryPluginBaseParameters.groupByTimePeriod`.
+  - Docs polish: `groupByTime` / `groupByTimePeriod` note adaptive snap / Core adjustments;
+    export `timeZoneIANAName` vs generate `clientTimeZoneIANAName` cross-referenced (presentation vs Core query).
+
+
 # Release 2.7.3
 
 ## Enhancements / Fixes
