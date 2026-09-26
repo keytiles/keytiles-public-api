@@ -445,6 +445,8 @@ type ReportQueryPluginBaseParameters struct {
 
 	// EventsIncluded Performance is always measured with events. In this field you define which event counts to include into the report.   E.g. "pageview", or custom events e.g. "30 seconds passed".   These will become the columns in your report.
 	//
+	// If left empty or null (or omitted) then all events are used.
+	//
 	// **See also:** `calculatedColumns` ;-)
 	EventsIncluded *[]string `json:"eventsIncluded,omitempty" yaml:"eventsIncluded,omitempty"`
 

@@ -1,7 +1,7 @@
 openapi: 3.0.1
 
 info:
-  version: "3.5"
+  version: "3.4"
   title: Keytiles Statistics query API
   description: >
 
@@ -62,18 +62,6 @@ info:
     and leave out the rest.
 
     Please refer to the "limit" and "threshold" parameter descriptions for more details on endpoints supporting this!
-
-    ### Query validation (dry run)
-
-    Event-count endpoints support an optional **`dryRun=true`** query parameter.  
-      
-    Use it when you only need to know whether Keytiles would **accept** the query (range, `groupBy`,
-    `queryTuning`, `clientTimezone`, filters, feasibility / retention) **without** loading statistics
-    from storage.  
-      
-    Typical clients: report generators and UIs that want to reject a bad range **before** starting expensive
-    multi-query work. Same URL, same parameters, same `200` / `400` contract as a normal call — only the
-    data payload is empty on success. See the `dryRun` parameter.
 
 servers:
   - url: https://api.keytiles.com/api
@@ -224,7 +212,6 @@ paths:
         - $ref: "common-types-v3.yaml#/components/parameters/toTimestamp"
         - $ref: "#/components/parameters/queryTuning"
         - $ref: "#/components/parameters/clientTimezone"
-        - $ref: "#/components/parameters/dryRun"
         - $ref: "#/components/parameters/groupBy"
         - $ref: "#/components/parameters/interest"
         - $ref: "#/components/parameters/eventTypesOnly"
@@ -250,10 +237,7 @@ paths:
 
       responses:
         "200":
-          description: >
-            OK response.  
-            With `dryRun=true`: query is feasible; statistics rows are empty — use timestamps / `problems` / `vars`
-            to see what a live call would use after `queryTuning`.
+          description: "OK response"
           content:
             application/json:
               schema:
@@ -277,10 +261,7 @@ paths:
               schema:
                 $ref: "common-types-v3.yaml#/components/schemas/BaseResponseV3Class"
         "400":
-          description: >
-            Something was wrong with the request (invalid parameters, unsupported filter, or the query is not
-            feasible for the requested range / time grouping with the data Keytiles still retains — same faults
-            as a live call).
+          description: "Something was wrong with the request"
           content:
             application/json:
               schema:
@@ -305,7 +286,6 @@ paths:
         - $ref: "common-types-v3.yaml#/components/parameters/toTimestamp"
         - $ref: "#/components/parameters/queryTuning"
         - $ref: "#/components/parameters/clientTimezone"
-        - $ref: "#/components/parameters/dryRun"
         - $ref: "#/components/parameters/groupBy"
         - $ref: "#/components/parameters/interest"
         - $ref: "#/components/parameters/includeTileDetails"
@@ -336,10 +316,7 @@ paths:
 
       responses:
         "200":
-          description: >
-            OK response.  
-            With `dryRun=true`: query is feasible; `aggregatedCounterRows` / `tiles` are empty — use timestamps /
-            `problems` / `vars` to see what a live call would use after `queryTuning`.
+          description: "OK response"
           content:
             application/json:
               schema:
@@ -363,10 +340,7 @@ paths:
               schema:
                 $ref: "common-types-v3.yaml#/components/schemas/BaseResponseV3Class"
         "400":
-          description: >
-            Something was wrong with the request (invalid parameters, unsupported filter, or the query is not
-            feasible for the requested range / time grouping with the data Keytiles still retains — same faults
-            as a live call).
+          description: "Something was wrong with the request"
           content:
             application/json:
               schema:
@@ -1053,7 +1027,7 @@ components:
 
         **Default:** omitted (= UTC calendar for adaptive snap). Invalid IANA → HTTP 400. With `extend` / `strict`
         the value is ignored for snapping (invalid still 400). Wrong zone is worse than omitting.  
-          
+
         **Why send it:** The contract for `fromTimestamp` and `toTimestamp` is clear, both are in UTC. And we expect clients to do the conversion
         to UTC this is clear. However with `queryTuning=adaptive` and a daily (`groupBy=time:1d`) chart, Keytiles floors to calendar
         midnight server side. If Keytiles at this point does not know the client time zone this flooring will happen in UTC time zone which
@@ -1064,45 +1038,6 @@ components:
         Especially important for half-hour offsets (India). Whole-hour zones still benefit for `now-…` leftovers.  
           
         Format: [IANA time zones](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones).
-
-    dryRun:
-      name: dryRun
-      in: query
-      required: false
-      schema:
-        type: boolean
-        default: false
-      example: true
-      description: >
-        When `true`, Keytiles validates the query **without loading statistics from storage**.  
-          
-        **Default:** `false` (normal query — return the measured statistics).  
-          
-        **What still runs (same as a live call):** auth / permission checks, parameter parsing, `queryTuning`
-        (`strict` / `extend` / `adaptive`) including `clientTimezone` snap / rescue-coarsen when applicable,
-        checking that the requested range and time grouping can be served with the data Keytiles still
-        retains for this Container, and filter / `groupBy` / `interest` / `sortBy` validation.  
-          
-        **What is skipped:** database / storage reads that would load the statistics (and tile details on the
-        `/eventcounts/tiles` endpoint).  
-          
-        **Success (`200`):** same response type as a live call.  
-        `requestedFromTimestamp` / `requestedToTimestamp` / `dataFromTimestamp` / `dataToTimestamp` are filled
-        for the planned window. Warning-level `problems` and `vars` (e.g. adaptive corrections) are included
-        as they would be on a live call.  
-        `aggregatedCounterRows` is empty (and `tiles` is empty / omitted on the tile endpoint).  
-        `resultColumns` / `keyColumnsMappings` may still be present when the server can derive them without
-        loading statistics — treat data payloads as intentionally empty.  
-          
-        **Failure (`400` / `401` / `403` / `404`):** same status and problem codes as a live call for the same
-        inputs. A dry run that would fail feasibility returns the same `400` you would get without `dryRun`.  
-          
-        **Why use it:** cheap pre-check before starting expensive work (e.g. a report with several queries that
-        share one time range). Send the **exact** parameters you intend for the live call — especially
-        `queryTuning` and `clientTimezone` — or the dry run can disagree with the later fetch.  
-          
-        **Not a guarantee of non-empty data.** Feasibility means “Keytiles can serve this query for the
-        requested range and grouping,” not “there were hits in that window.”
 
   schemas:
     # This enum defines error/warning codes belong to Stat API endpoints specifically

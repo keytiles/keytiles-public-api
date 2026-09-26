@@ -38,8 +38,14 @@ Please refer to the "groupBy" parameter description to see all possible options!
 If you have a high traffic website with many many Tiles (content) then you might get back huge data from queries even for a relatively short time range. Experience shows that most of this data might be not important for you in many cases.
 Therefore you have the possibility to limit Keytiles response size by defining "send me only the top X" tiles (as most relevant info) and leave out the rest.
 Please refer to the "limit" and "threshold" parameter descriptions for more details on endpoints supporting this!
+### Query validation (dry run)
+Event-count endpoints support an optional **`dryRun=true`** query parameter.
+  
+Use it when you only need to know whether Keytiles would **accept** the query (range, `groupBy`, `queryTuning`, `clientTimezone`, filters, feasibility / retention) **without** loading statistics from storage.
+  
+Typical clients: report generators and UIs that want to reject a bad range **before** starting expensive multi-query work. Same URL, same parameters, same `200` / `400` contract as a normal call — only the data payload is empty on success. See the `dryRun` parameter.
 
- * OpenAPI spec version: 3.4
+ * OpenAPI spec version: 3.5
  */
 import axios from 'axios';
 // eslint-disable-next-line @typescript-eslint/no-redeclare

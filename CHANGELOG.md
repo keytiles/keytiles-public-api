@@ -1,3 +1,14 @@
+# Release 2.9.0
+
+## New features
+- `query-api-v3.yaml` - v3.5
+  - `/v2/stat/webhits/{containerId}/eventcounts` and `/v2/stat/webhits/{containerId}/eventcounts/tiles`
+    - New optional `dryRun` boolean query parameter (default `false`). When `true`, Keytiles validates the
+      query (parameters, `queryTuning` / `clientTimezone`, filters, feasibility for the requested range and
+      time grouping) **without** loading statistics from storage. Same `200` / `400` contract as a live call;
+      on success the response envelope is filled (timestamps, warnings / `vars`) but data rows are empty.
+      Intended as a cheap pre-check before expensive multi-query work (e.g. report generation).
+
 # Release 2.8.0
 
 ## New features

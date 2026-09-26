@@ -906,6 +906,8 @@ components:
             E.g. "pageview", or custom events e.g. "30 seconds passed".  
             These will become the columns in your report.  
               
+            If left empty or null (or omitted) then all events are used.
+              
             **See also:** `calculatedColumns` ;-)
           type: array
           items:

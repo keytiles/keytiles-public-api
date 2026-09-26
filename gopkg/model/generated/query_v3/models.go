@@ -404,10 +404,16 @@ type TileEventCountersResponseClass struct {
 
 // TileGroupPathClass defines model for TileGroupPathClass.
 type TileGroupPathClass struct {
-	// Titles The list of titles we captured for this tile under this tileGroupPath. Please note: normally this should just be one title! If you see more than it is against our recommended best practices and you should take actions!
+	// Titles The list of titles we captured for this tile under this tileGroupPath.
+	//
+	// **Please note:** normally this should just return one title. If you see more than something is fishy and it goes against our recommended best practices so you should take some actions! You should check the so called "hit faults" - see [checking-and-troubleshooting/hit-faults](https://www.keytiles.com/developer-area/checking-and-troubleshooting/hit-faults) article!
+	//
+	// But anyways the list is ordered - index 0 item is the most recent one. Rest are let's say historical. So if you just need a Title (basically any) just grab item 0 that's it.
 	Titles *[]string `json:"titles,omitempty" yaml:"titles,omitempty"`
 
-	// Urls The list of (cleaned, means: removed query arguments, anchors) URLs we captured for this tile under this tileGroupPath
+	// Urls The list of (cleaned, means: removed query arguments, anchors) URLs we captured for this tile under this tileGroupPath.
+	//
+	// It is absolutely possible you get back multiple items as Keytiles is tracking all URLs we seen for this Tile. The list is ordered - index 0 item is the most recent one. Rest are let's say historical. So if you just need a URL (basically any) just grab item 0 that's it.
 	Urls *[]string `json:"urls,omitempty" yaml:"urls,omitempty"`
 }
 
@@ -437,6 +443,9 @@ type CampaignsOnly = string
 
 // ClientTimezone defines model for clientTimezone.
 type ClientTimezone = string
+
+// DryRun defines model for dryRun.
+type DryRun = bool
 
 // EventSourceNamesOnly defines model for eventSourceNamesOnly.
 type EventSourceNamesOnly = string
@@ -575,12 +584,30 @@ type GetV2StatWebhitsContainerIdEventcountsParams struct {
 
 	// ClientTimezone Optional IANA timezone of the client who picked the dates (browser / report locale), e.g. `Europe/Berlin`, `Asia/Kolkata`.
 	// **Default:** omitted (= UTC calendar for adaptive snap). Invalid IANA → HTTP 400. With `extend` / `strict` the value is ignored for snapping (invalid still 400). Wrong zone is worse than omitting.
+	//
 	// **Why send it:** The contract for `fromTimestamp` and `toTimestamp` is clear, both are in UTC. And we expect clients to do the conversion to UTC this is clear. However with `queryTuning=adaptive` and a daily (`groupBy=time:1d`) chart, Keytiles floors to calendar midnight server side. If Keytiles at this point does not know the client time zone this flooring will happen in UTC time zone which is not the correct flooring. Send your zone → that zone’s local midnight (Berlin summer: `22:00` UTC; India: `18:30` UTC). So without it, a `now-7d` daily chart often starts on the wrong day for the client.
 	//
 	// **When to send:** Strongly recommended whenever you use **adaptive** and care about local calendar days. Especially important for half-hour offsets (India). Whole-hour zones still benefit for `now-…` leftovers.
 	//
 	// Format: [IANA time zones](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones).
 	ClientTimezone *ClientTimezone `form:"clientTimezone,omitempty" json:"clientTimezone,omitempty" yaml:"clientTimezone,omitempty"`
+
+	// DryRun When `true`, Keytiles validates the query **without loading statistics from storage**.
+	//
+	// **Default:** `false` (normal query — return the measured statistics).
+	//
+	// **What still runs (same as a live call):** auth / permission checks, parameter parsing, `queryTuning` (`strict` / `extend` / `adaptive`) including `clientTimezone` snap / rescue-coarsen when applicable, checking that the requested range and time grouping can be served with the data Keytiles still retains for this Container, and filter / `groupBy` / `interest` / `sortBy` validation.
+	//
+	// **What is skipped:** database / storage reads that would load the statistics (and tile details on the `/eventcounts/tiles` endpoint).
+	//
+	// **Success (`200`):** same response type as a live call.   `requestedFromTimestamp` / `requestedToTimestamp` / `dataFromTimestamp` / `dataToTimestamp` are filled for the planned window. Warning-level `problems` and `vars` (e.g. adaptive corrections) are included as they would be on a live call.   `aggregatedCounterRows` is empty (and `tiles` is empty / omitted on the tile endpoint).   `resultColumns` / `keyColumnsMappings` may still be present when the server can derive them without loading statistics — treat data payloads as intentionally empty.
+	//
+	// **Failure (`400` / `401` / `403` / `404`):** same status and problem codes as a live call for the same inputs. A dry run that would fail feasibility returns the same `400` you would get without `dryRun`.
+	//
+	// **Why use it:** cheap pre-check before starting expensive work (e.g. a report with several queries that share one time range). Send the **exact** parameters you intend for the live call — especially `queryTuning` and `clientTimezone` — or the dry run can disagree with the later fetch.
+	//
+	// **Not a guarantee of non-empty data.** Feasibility means “Keytiles can serve this query for the requested range and grouping,” not “there were hits in that window.”
+	DryRun *DryRun `form:"dryRun,omitempty" json:"dryRun,omitempty" yaml:"dryRun,omitempty"`
 
 	// GroupBy Comma separated list of criteria you want to have the data grouped by.
 	//
@@ -897,12 +924,30 @@ type GetV2StatWebhitsContainerIdEventcountsTilesParams struct {
 
 	// ClientTimezone Optional IANA timezone of the client who picked the dates (browser / report locale), e.g. `Europe/Berlin`, `Asia/Kolkata`.
 	// **Default:** omitted (= UTC calendar for adaptive snap). Invalid IANA → HTTP 400. With `extend` / `strict` the value is ignored for snapping (invalid still 400). Wrong zone is worse than omitting.
+	//
 	// **Why send it:** The contract for `fromTimestamp` and `toTimestamp` is clear, both are in UTC. And we expect clients to do the conversion to UTC this is clear. However with `queryTuning=adaptive` and a daily (`groupBy=time:1d`) chart, Keytiles floors to calendar midnight server side. If Keytiles at this point does not know the client time zone this flooring will happen in UTC time zone which is not the correct flooring. Send your zone → that zone’s local midnight (Berlin summer: `22:00` UTC; India: `18:30` UTC). So without it, a `now-7d` daily chart often starts on the wrong day for the client.
 	//
 	// **When to send:** Strongly recommended whenever you use **adaptive** and care about local calendar days. Especially important for half-hour offsets (India). Whole-hour zones still benefit for `now-…` leftovers.
 	//
 	// Format: [IANA time zones](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones).
 	ClientTimezone *ClientTimezone `form:"clientTimezone,omitempty" json:"clientTimezone,omitempty" yaml:"clientTimezone,omitempty"`
+
+	// DryRun When `true`, Keytiles validates the query **without loading statistics from storage**.
+	//
+	// **Default:** `false` (normal query — return the measured statistics).
+	//
+	// **What still runs (same as a live call):** auth / permission checks, parameter parsing, `queryTuning` (`strict` / `extend` / `adaptive`) including `clientTimezone` snap / rescue-coarsen when applicable, checking that the requested range and time grouping can be served with the data Keytiles still retains for this Container, and filter / `groupBy` / `interest` / `sortBy` validation.
+	//
+	// **What is skipped:** database / storage reads that would load the statistics (and tile details on the `/eventcounts/tiles` endpoint).
+	//
+	// **Success (`200`):** same response type as a live call.   `requestedFromTimestamp` / `requestedToTimestamp` / `dataFromTimestamp` / `dataToTimestamp` are filled for the planned window. Warning-level `problems` and `vars` (e.g. adaptive corrections) are included as they would be on a live call.   `aggregatedCounterRows` is empty (and `tiles` is empty / omitted on the tile endpoint).   `resultColumns` / `keyColumnsMappings` may still be present when the server can derive them without loading statistics — treat data payloads as intentionally empty.
+	//
+	// **Failure (`400` / `401` / `403` / `404`):** same status and problem codes as a live call for the same inputs. A dry run that would fail feasibility returns the same `400` you would get without `dryRun`.
+	//
+	// **Why use it:** cheap pre-check before starting expensive work (e.g. a report with several queries that share one time range). Send the **exact** parameters you intend for the live call — especially `queryTuning` and `clientTimezone` — or the dry run can disagree with the later fetch.
+	//
+	// **Not a guarantee of non-empty data.** Feasibility means “Keytiles can serve this query for the requested range and grouping,” not “there were hits in that window.”
+	DryRun *DryRun `form:"dryRun,omitempty" json:"dryRun,omitempty" yaml:"dryRun,omitempty"`
 
 	// GroupBy Comma separated list of criteria you want to have the data grouped by.
 	//
