@@ -2,10 +2,9 @@
 
 ## New features
 - `query-api-v3.yaml` - v3.7
-  - `queryTuning=bestEffort` on event-count endpoints — opt-in mode that starts like `adaptive`, then may
-    clamp the range to retention/length caps (keeping calendar) and, only if still needed, fall back to UTC
-    midnight snap. Prefer `adaptive` when zone + window must stay; use `bestEffort` when a corrected series
-    is better than HTTP 400. Warnings / `vars` describe what changed.
+  - `queryTuning=bestEffort` on event-count endpoints — opt-in mode that starts like `adaptive`, then if still
+    failing may fall back to UTC midnight.
+  - Warning codes: `clientTimezone_ignored_for_feasibility`, `queryRange_clamped_to_retention`.
   - New `QueryTuningEnum` schema (`strict` | `extend` | `adaptive` | `bestEffort`, default `extend`);
     `queryTuning` parameter now references it (typed clients).
 

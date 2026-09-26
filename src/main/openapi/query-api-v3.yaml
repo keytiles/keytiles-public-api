@@ -1018,9 +1018,9 @@ components:
         Adaptive is recognizing this and turns that intent into aligned timestamps and a sensible time step.  
         What it would do is to return data starting from 1 week ago, but realizing the intention instead of starting the data from 16:48 it floors
         down fromTimestamp to midnight. So the user gets back really daily data points.  
-         * **bestEffort** — Like **adaptive**, but if the query would still fail Keytiles may shorten the time range
-        (keeping your timezone) or finally fall back to UTC midnights so you get a series instead of HTTP 400.
-        Prefer **adaptive** when the exact window and calendar must stay.
+         * **bestEffort** — Like **adaptive**, but if the query would still fail Keytiles may fall back to UTC
+        midnights (same asked window), and only then shorten the range on that UTC grid so you get a series
+        instead of HTTP 400. Prefer **adaptive** when the exact window and calendar must stay.
 
         IMPORTANT! It is **strongly recommended** to send `clientTimezone` when you use **adaptive**! It matters!
         Without it, “midnight” means **UTC**. With e.g. `Europe/Berlin`, midnight is **local** (in summer that is `22:00` UTC).
@@ -1048,10 +1048,11 @@ components:
         `groupBy=time:1d`, but that range sits farther back than hourly retention allows. **adaptive** correctly
         keeps your Berlin midnights and returns HTTP 400. Without the timezone the same dates often work (UTC days,
         daily table) — but that is a different chart.  
-        **bestEffort** first does everything **adaptive** would. If it would still fail, Keytiles may shorten the
-        range to what it can still serve **in your timezone**, or — only as a last step — fall back to UTC midnights
-        so you get a series instead of an error. Warnings / `vars` say what changed. Prefer **adaptive** when the
-        exact window and calendar must stay; use **bestEffort** when a corrected series is better than failing.  
+        **bestEffort** first does everything **adaptive** would. If it would still fail, Keytiles falls back to UTC
+        midnights on the **same** asked window (UTC floor `from` / ceil `to` when not live). Only if that still
+        cannot be served may it shorten the window on the **UTC** grid (it does not go back to your local calendar
+        for a shorter try). Warnings / `vars` say what changed. Prefer **adaptive** when the exact window and
+        calendar must stay; use **bestEffort** when a corrected series is better than failing.  
         Same as **adaptive**: only rewrites when `groupBy=time:…` is set; otherwise like **extend**.
 
     clientTimezone:
@@ -1144,8 +1145,8 @@ components:
         #   `resolution=minutely|hourly|daily` — which source granularity was required and unavailable
         #   `maxRetentionSeconds=<n>` — how long Keytiles keeps that granularity for this Container
         # Tune the range (more recent from/to), coarsen groupBy time, or omit clientTimezone when local
-        # midnight forced a finer tier. Alternatively `queryTuning=bestEffort` may clamp / fall back
-        # so Keytiles still returns something close to the original request.
+        # midnight forced a finer tier. Alternatively `queryTuning=bestEffort` may fall back to UTC midnights
+        # (same window) and only then shorten on that UTC grid.
         - queryRange_not_servable_missing_granularity
         # Length policy: the from-to span is wider than the maximum Keytiles allows for the required
         # source granularity (factory caps — e.g. minutely max ~3 days, hourly max ~62 days).
@@ -1154,7 +1155,7 @@ components:
         #   `resolution=minutely|hourly` — which tier's length cap was hit (daily has no such cap today)
         #   `maxQueryLengthSeconds=<n>` — maximum allowed span for that resolution
         # Shorten the range and/or coarsen groupBy time so a coarser tier (or a shorter window) applies.
-        # Alternatively `queryTuning=bestEffort` may adjust the request so Keytiles can still serve it.
+        # `queryTuning=bestEffort` tries UTC calendar first (same window), then may clamp on that UTC grid.
         - queryRange_not_servable_exceeds_max_length
         # You requested data from a specific timestamp in the query range but the 'from' timestamp was extended.
         # This comes with a warning level message only. It happens when Keytiles data granularity does not allow to serve data from timestamp you specified in the query range but must be aligned (pull it earlier)
@@ -1173,6 +1174,11 @@ components:
         # queryTuning=adaptive: groupBy=time:X was adjusted to a regular daily step and/or a wider step so the query can succeed.
         # Warning on placeName=groupBy. queryRange_from_corrected / queryRange_to_corrected cover timestamp changes.
         - groupByTime_corrected
+        # queryTuning=bestEffort: clientTimezone was ignored; rewriting used UTC midnights. placeName=clientTimezone.
+        - clientTimezone_ignored_for_feasibility
+        # queryTuning=bestEffort: fromTimestamp moved forward so the window fits retention / max query length
+        # on the current calendar grid (after UTC fallback that is UTC). placeName=fromTimestamp.
+        - queryRange_clamped_to_retention
         # The ID of the container was not provided - it is missing
         - containerId_missing
         # The ID of the Container is not valid - there is no Container with this ID

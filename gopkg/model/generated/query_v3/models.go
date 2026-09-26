@@ -33,6 +33,7 @@ const (
 	StatApiEndpointErrorCodesAuthenticationMissing                   StatApiEndpointErrorCodes = "authentication_missing"
 	StatApiEndpointErrorCodesAuthenticationUserDisabled              StatApiEndpointErrorCodes = "authentication_userDisabled"
 	StatApiEndpointErrorCodesAuthorizationNoPermission               StatApiEndpointErrorCodes = "authorization_noPermission"
+	StatApiEndpointErrorCodesClientTimezoneIgnoredForFeasibility     StatApiEndpointErrorCodes = "clientTimezone_ignored_for_feasibility"
 	StatApiEndpointErrorCodesContainerIdInvalid                      StatApiEndpointErrorCodes = "containerId_invalid"
 	StatApiEndpointErrorCodesContainerIdMissing                      StatApiEndpointErrorCodes = "containerId_missing"
 	StatApiEndpointErrorCodesContainerSetupInvalid                   StatApiEndpointErrorCodes = "containerSetup_invalid"
@@ -42,6 +43,7 @@ const (
 	StatApiEndpointErrorCodesGroupByTimeCorrected                    StatApiEndpointErrorCodes = "groupByTime_corrected"
 	StatApiEndpointErrorCodesMandatoryEmailSendingFailed             StatApiEndpointErrorCodes = "mandatoryEmailSending_failed"
 	StatApiEndpointErrorCodesQueryLimitReached                       StatApiEndpointErrorCodes = "query_limit_reached"
+	StatApiEndpointErrorCodesQueryRangeClampedToRetention            StatApiEndpointErrorCodes = "queryRange_clamped_to_retention"
 	StatApiEndpointErrorCodesQueryRangeCorrected                     StatApiEndpointErrorCodes = "queryRange_corrected"
 	StatApiEndpointErrorCodesQueryRangeExtended                      StatApiEndpointErrorCodes = "queryRange_extended"
 	StatApiEndpointErrorCodesQueryRangeFromCorrected                 StatApiEndpointErrorCodes = "queryRange_from_corrected"
@@ -77,12 +79,14 @@ const (
 
 // Defines values for StatApiEndpointLocalErrorCodes.
 const (
+	StatApiEndpointLocalErrorCodesClientTimezoneIgnoredForFeasibility     StatApiEndpointLocalErrorCodes = "clientTimezone_ignored_for_feasibility"
 	StatApiEndpointLocalErrorCodesContainerIdInvalid                      StatApiEndpointLocalErrorCodes = "containerId_invalid"
 	StatApiEndpointLocalErrorCodesContainerIdMissing                      StatApiEndpointLocalErrorCodes = "containerId_missing"
 	StatApiEndpointLocalErrorCodesContainerSetupInvalid                   StatApiEndpointLocalErrorCodes = "containerSetup_invalid"
 	StatApiEndpointLocalErrorCodesFilterNotSupported                      StatApiEndpointLocalErrorCodes = "filter_not_supported"
 	StatApiEndpointLocalErrorCodesGroupByEventTypeNotSet                  StatApiEndpointLocalErrorCodes = "groupBy_eventType_not_set"
 	StatApiEndpointLocalErrorCodesGroupByTimeCorrected                    StatApiEndpointLocalErrorCodes = "groupByTime_corrected"
+	StatApiEndpointLocalErrorCodesQueryRangeClampedToRetention            StatApiEndpointLocalErrorCodes = "queryRange_clamped_to_retention"
 	StatApiEndpointLocalErrorCodesQueryRangeCorrected                     StatApiEndpointLocalErrorCodes = "queryRange_corrected"
 	StatApiEndpointLocalErrorCodesQueryRangeExtended                      StatApiEndpointLocalErrorCodes = "queryRange_extended"
 	StatApiEndpointLocalErrorCodesQueryRangeFromCorrected                 StatApiEndpointLocalErrorCodes = "queryRange_from_corrected"
@@ -583,8 +587,8 @@ type GetV2StatWebhitsContainerIdEventcountsParams struct {
 	// the edges (start slightly earlier or end slightly later) so each bucket is complete. This matches behaviour before `queryTuning` existed. Warnings: `queryRange_from_extended`, `queryRange_to_extended`.   Example: 16:48 with `groupBy=time:1h` → data from 16:00, still hourly, warning explains the wider window.
 	//  * **adaptive** — **Reports and line charts.** scenario. Easier to understand through an example: when it is - let's say - 16:48
 	// when client sends in a request `fromTimestamp=now-7d`, `toTimestamp=now` and `groupBy=time:1d` it is very very unlikely user meant he wants to get data from 1 week ago 16:48 up until now... Since he provided `groupBy=time:1d` user is probably curious about a daily graph of last 1 week. Basically clients often trying to say: “last 30 days, daily chart”, “last 4 hours, 15-minute line”. Adaptive is recognizing this and turns that intent into aligned timestamps and a sensible time step.   What it would do is to return data starting from 1 week ago, but realizing the intention instead of starting the data from 16:48 it floors down fromTimestamp to midnight. So the user gets back really daily data points.
-	//  * **bestEffort** — Like **adaptive**, but if the query would still fail Keytiles may shorten the time range
-	// (keeping your timezone) or finally fall back to UTC midnights so you get a series instead of HTTP 400. Prefer **adaptive** when the exact window and calendar must stay.
+	//  * **bestEffort** — Like **adaptive**, but if the query would still fail Keytiles may fall back to UTC
+	// midnights (same asked window), and only then shorten the range on that UTC grid so you get a series instead of HTTP 400. Prefer **adaptive** when the exact window and calendar must stay.
 	// IMPORTANT! It is **strongly recommended** to send `clientTimezone` when you use **adaptive**! It matters! Without it, “midnight” means **UTC**. With e.g. `Europe/Berlin`, midnight is **local** (in summer that is `22:00` UTC). Same `now-7d` request then starts on a different day boundary — and may even read a different counter table. See `clientTimezone`.
 	//
 	// **adaptive** is sensitive to `groupBy=time:<value>`! It only rewrites the query when you ask for a time series (`groupBy=time:1h`, `time:1d`, …). No time grouping (totals, `groupBy=eventType`, …) → same as **extend**. With a time grouping it may: tidy awkward steps, snap timestamps to the midnight grid in your zone (or UTC), and if needed widen the step so the query can still run. Changes show up as warnings.
@@ -598,7 +602,7 @@ type GetV2StatWebhitsContainerIdEventcountsParams struct {
 	// When any value is changed by **adaptive** apart from the warning you get back in the response you also get back that value was changed to in `vars` section of the reponse.
 	//
 	//  * **bestEffort** — **When “please give me something” matters more than a perfect match.**
-	// Example: you ask for about a week of **local** daily points with `clientTimezone=Europe/Berlin` and `groupBy=time:1d`, but that range sits farther back than hourly retention allows. **adaptive** correctly keeps your Berlin midnights and returns HTTP 400. Without the timezone the same dates often work (UTC days, daily table) — but that is a different chart.   **bestEffort** first does everything **adaptive** would. If it would still fail, Keytiles may shorten the range to what it can still serve **in your timezone**, or — only as a last step — fall back to UTC midnights so you get a series instead of an error. Warnings / `vars` say what changed. Prefer **adaptive** when the exact window and calendar must stay; use **bestEffort** when a corrected series is better than failing.   Same as **adaptive**: only rewrites when `groupBy=time:…` is set; otherwise like **extend**.
+	// Example: you ask for about a week of **local** daily points with `clientTimezone=Europe/Berlin` and `groupBy=time:1d`, but that range sits farther back than hourly retention allows. **adaptive** correctly keeps your Berlin midnights and returns HTTP 400. Without the timezone the same dates often work (UTC days, daily table) — but that is a different chart.   **bestEffort** first does everything **adaptive** would. If it would still fail, Keytiles falls back to UTC midnights on the **same** asked window (UTC floor `from` / ceil `to` when not live). Only if that still cannot be served may it shorten the window on the **UTC** grid (it does not go back to your local calendar for a shorter try). Warnings / `vars` say what changed. Prefer **adaptive** when the exact window and calendar must stay; use **bestEffort** when a corrected series is better than failing.   Same as **adaptive**: only rewrites when `groupBy=time:…` is set; otherwise like **extend**.
 	QueryTuning *QueryTuning `form:"queryTuning,omitempty" json:"queryTuning,omitempty" yaml:"queryTuning,omitempty"`
 
 	// ClientTimezone Optional IANA timezone of the client who picked the dates (browser / report locale), e.g. `Europe/Berlin`, `Asia/Kolkata`.
@@ -927,8 +931,8 @@ type GetV2StatWebhitsContainerIdEventcountsTilesParams struct {
 	// the edges (start slightly earlier or end slightly later) so each bucket is complete. This matches behaviour before `queryTuning` existed. Warnings: `queryRange_from_extended`, `queryRange_to_extended`.   Example: 16:48 with `groupBy=time:1h` → data from 16:00, still hourly, warning explains the wider window.
 	//  * **adaptive** — **Reports and line charts.** scenario. Easier to understand through an example: when it is - let's say - 16:48
 	// when client sends in a request `fromTimestamp=now-7d`, `toTimestamp=now` and `groupBy=time:1d` it is very very unlikely user meant he wants to get data from 1 week ago 16:48 up until now... Since he provided `groupBy=time:1d` user is probably curious about a daily graph of last 1 week. Basically clients often trying to say: “last 30 days, daily chart”, “last 4 hours, 15-minute line”. Adaptive is recognizing this and turns that intent into aligned timestamps and a sensible time step.   What it would do is to return data starting from 1 week ago, but realizing the intention instead of starting the data from 16:48 it floors down fromTimestamp to midnight. So the user gets back really daily data points.
-	//  * **bestEffort** — Like **adaptive**, but if the query would still fail Keytiles may shorten the time range
-	// (keeping your timezone) or finally fall back to UTC midnights so you get a series instead of HTTP 400. Prefer **adaptive** when the exact window and calendar must stay.
+	//  * **bestEffort** — Like **adaptive**, but if the query would still fail Keytiles may fall back to UTC
+	// midnights (same asked window), and only then shorten the range on that UTC grid so you get a series instead of HTTP 400. Prefer **adaptive** when the exact window and calendar must stay.
 	// IMPORTANT! It is **strongly recommended** to send `clientTimezone` when you use **adaptive**! It matters! Without it, “midnight” means **UTC**. With e.g. `Europe/Berlin`, midnight is **local** (in summer that is `22:00` UTC). Same `now-7d` request then starts on a different day boundary — and may even read a different counter table. See `clientTimezone`.
 	//
 	// **adaptive** is sensitive to `groupBy=time:<value>`! It only rewrites the query when you ask for a time series (`groupBy=time:1h`, `time:1d`, …). No time grouping (totals, `groupBy=eventType`, …) → same as **extend**. With a time grouping it may: tidy awkward steps, snap timestamps to the midnight grid in your zone (or UTC), and if needed widen the step so the query can still run. Changes show up as warnings.
@@ -942,7 +946,7 @@ type GetV2StatWebhitsContainerIdEventcountsTilesParams struct {
 	// When any value is changed by **adaptive** apart from the warning you get back in the response you also get back that value was changed to in `vars` section of the reponse.
 	//
 	//  * **bestEffort** — **When “please give me something” matters more than a perfect match.**
-	// Example: you ask for about a week of **local** daily points with `clientTimezone=Europe/Berlin` and `groupBy=time:1d`, but that range sits farther back than hourly retention allows. **adaptive** correctly keeps your Berlin midnights and returns HTTP 400. Without the timezone the same dates often work (UTC days, daily table) — but that is a different chart.   **bestEffort** first does everything **adaptive** would. If it would still fail, Keytiles may shorten the range to what it can still serve **in your timezone**, or — only as a last step — fall back to UTC midnights so you get a series instead of an error. Warnings / `vars` say what changed. Prefer **adaptive** when the exact window and calendar must stay; use **bestEffort** when a corrected series is better than failing.   Same as **adaptive**: only rewrites when `groupBy=time:…` is set; otherwise like **extend**.
+	// Example: you ask for about a week of **local** daily points with `clientTimezone=Europe/Berlin` and `groupBy=time:1d`, but that range sits farther back than hourly retention allows. **adaptive** correctly keeps your Berlin midnights and returns HTTP 400. Without the timezone the same dates often work (UTC days, daily table) — but that is a different chart.   **bestEffort** first does everything **adaptive** would. If it would still fail, Keytiles falls back to UTC midnights on the **same** asked window (UTC floor `from` / ceil `to` when not live). Only if that still cannot be served may it shorten the window on the **UTC** grid (it does not go back to your local calendar for a shorter try). Warnings / `vars` say what changed. Prefer **adaptive** when the exact window and calendar must stay; use **bestEffort** when a corrected series is better than failing.   Same as **adaptive**: only rewrites when `groupBy=time:…` is set; otherwise like **extend**.
 	QueryTuning *QueryTuning `form:"queryTuning,omitempty" json:"queryTuning,omitempty" yaml:"queryTuning,omitempty"`
 
 	// ClientTimezone Optional IANA timezone of the client who picked the dates (browser / report locale), e.g. `Europe/Berlin`, `Asia/Kolkata`.

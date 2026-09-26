@@ -37,6 +37,8 @@ public enum StatApiEndpointErrorCodes {
   QUERYRANGE_FROM_CORRECTED("queryRange_from_corrected"),
   QUERYRANGE_TO_CORRECTED("queryRange_to_corrected"),
   GROUPBYTIME_CORRECTED("groupByTime_corrected"),
+  CLIENTTIMEZONE_IGNORED_FOR_FEASIBILITY("clientTimezone_ignored_for_feasibility"),
+  QUERYRANGE_CLAMPED_TO_RETENTION("queryRange_clamped_to_retention"),
   CONTAINERID_MISSING("containerId_missing"),
   CONTAINERID_INVALID("containerId_invalid"),
   CONTAINERSETUP_INVALID("containerSetup_invalid"),

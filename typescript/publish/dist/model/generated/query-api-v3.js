@@ -66,6 +66,8 @@ export const StatApiEndpointLocalErrorCodes = {
     queryRange_from_corrected: 'queryRange_from_corrected',
     queryRange_to_corrected: 'queryRange_to_corrected',
     groupByTime_corrected: 'groupByTime_corrected',
+    clientTimezone_ignored_for_feasibility: 'clientTimezone_ignored_for_feasibility',
+    queryRange_clamped_to_retention: 'queryRange_clamped_to_retention',
     containerId_missing: 'containerId_missing',
     containerId_invalid: 'containerId_invalid',
     containerSetup_invalid: 'containerSetup_invalid',
