@@ -45,9 +45,16 @@ Use it when you only need to know whether Keytiles would **accept** the query (r
   
 Typical clients: report generators and UIs that want to reject a bad range **before** starting expensive multi-query work. Same URL, same parameters, same `200` / `400` contract as a normal call — only the data payload is empty on success. See the `dryRun` parameter.
 
- * OpenAPI spec version: 3.6
+ * OpenAPI spec version: 3.7
  */
 import axios from 'axios';
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const QueryTuningEnum = {
+    strict: 'strict',
+    extend: 'extend',
+    adaptive: 'adaptive',
+    bestEffort: 'bestEffort',
+};
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const StatApiEndpointLocalErrorCodes = {
     queryRange_not_servable_missing_granularity: 'queryRange_not_servable_missing_granularity',
@@ -65,6 +72,13 @@ export const StatApiEndpointLocalErrorCodes = {
     filter_not_supported: 'filter_not_supported',
     sorting_column_not_in_interest: 'sorting_column_not_in_interest',
     groupBy_eventType_not_set: 'groupBy_eventType_not_set',
+};
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const QueryTuningParameter = {
+    strict: 'strict',
+    extend: 'extend',
+    adaptive: 'adaptive',
+    bestEffort: 'bestEffort',
 };
 /**
  * To optimize storage and response size Keytiles maps String identifiers to Numerical IDs. These are things like `eventType` or `userAgentType` etc.

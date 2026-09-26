@@ -1,7 +1,7 @@
 openapi: 3.0.1
 
 info:
-  version: "3.7"
+  version: "3.6"
   title: Keytiles Statistics query API
   description: >
 
@@ -987,7 +987,7 @@ components:
       in: query
       required: false
       schema:
-        $ref: "#/components/schemas/QueryTuningEnum"
+        type: string
       example: "extend"
       description: >
         Controls what Keytiles may change when your timestamps or time grouping do not line up with neat chart
@@ -1018,10 +1018,7 @@ components:
         Adaptive is recognizing this and turns that intent into aligned timestamps and a sensible time step.  
         What it would do is to return data starting from 1 week ago, but realizing the intention instead of starting the data from 16:48 it floors
         down fromTimestamp to midnight. So the user gets back really daily data points.  
-         * **bestEffort** — Like **adaptive**, but if the query would still fail Keytiles may shorten the time range
-        (keeping your timezone) or finally fall back to UTC midnights so you get a series instead of HTTP 400.
-        Prefer **adaptive** when the exact window and calendar must stay.
-
+          
         IMPORTANT! It is **strongly recommended** to send `clientTimezone` when you use **adaptive**! It matters!
         Without it, “midnight” means **UTC**. With e.g. `Europe/Berlin`, midnight is **local** (in summer that is `22:00` UTC).
         Same `now-7d` request then starts on a different day boundary — and may even read a different counter table.
@@ -1041,18 +1038,7 @@ components:
          * If `clientTimezone` is set, half-hour zones like India are handled on the same grid (local midnight is e.g. `18:30` UTC, not forced to a whole UTC hour).
 
         When any value is changed by **adaptive** apart from the warning you get back in the response you also get back that value was changed to in `vars`
-        section of the reponse.  
-          
-         * **bestEffort** — **When “please give me something” matters more than a perfect match.**  
-        Example: you ask for about a week of **local** daily points with `clientTimezone=Europe/Berlin` and
-        `groupBy=time:1d`, but that range sits farther back than hourly retention allows. **adaptive** correctly
-        keeps your Berlin midnights and returns HTTP 400. Without the timezone the same dates often work (UTC days,
-        daily table) — but that is a different chart.  
-        **bestEffort** first does everything **adaptive** would. If it would still fail, Keytiles may shorten the
-        range to what it can still serve **in your timezone**, or — only as a last step — fall back to UTC midnights
-        so you get a series instead of an error. Warnings / `vars` say what changed. Prefer **adaptive** when the
-        exact window and calendar must stay; use **bestEffort** when a corrected series is better than failing.  
-        Same as **adaptive**: only rewrites when `groupBy=time:…` is set; otherwise like **extend**.
+        section of the reponse.
 
     clientTimezone:
       name: clientTimezone
@@ -1065,18 +1051,17 @@ components:
         Optional IANA timezone of the client who picked the dates (browser / report locale), e.g. `Europe/Berlin`,
         `Asia/Kolkata`.
 
-        **Default:** omitted (= UTC calendar for adaptive / bestEffort snap). Invalid IANA → HTTP 400. With `extend` / `strict`
+        **Default:** omitted (= UTC calendar for adaptive snap). Invalid IANA → HTTP 400. With `extend` / `strict`
         the value is ignored for snapping (invalid still 400). Wrong zone is worse than omitting.  
           
         **Why send it:** The contract for `fromTimestamp` and `toTimestamp` is clear, both are in UTC. And we expect clients to do the conversion
-        to UTC this is clear. However with `queryTuning=adaptive` or `bestEffort` and a daily (`groupBy=time:1d`) chart, Keytiles floors to calendar
+        to UTC this is clear. However with `queryTuning=adaptive` and a daily (`groupBy=time:1d`) chart, Keytiles floors to calendar
         midnight server side. If Keytiles at this point does not know the client time zone this flooring will happen in UTC time zone which
         is not the correct flooring. Send your zone → that zone’s local midnight (Berlin summer: `22:00` UTC;
         India: `18:30` UTC). So without it, a `now-7d` daily chart often starts on the wrong day for the client.  
           
-        **When to send:** Strongly recommended whenever you use **adaptive** or **bestEffort** and care about local calendar days.
-        Especially important for half-hour offsets (India). Whole-hour zones still benefit for `now-…` leftovers.
-        Note: **bestEffort** may later ignore the zone for rewriting if local calendar cannot be served — see `queryTuning`.  
+        **When to send:** Strongly recommended whenever you use **adaptive** and care about local calendar days.
+        Especially important for half-hour offsets (India). Whole-hour zones still benefit for `now-…` leftovers.  
           
         Format: [IANA time zones](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones).
 
@@ -1094,7 +1079,7 @@ components:
         **Default:** `false` (normal query — return the measured statistics).  
           
         **What still runs (same as a live call):** auth / permission checks, parameter parsing, `queryTuning`
-        (`strict` / `extend` / `adaptive` / `bestEffort`) including `clientTimezone` snap / rescue-coarsen when applicable,
+        (`strict` / `extend` / `adaptive`) including `clientTimezone` snap / rescue-coarsen when applicable,
         checking that the requested range and time grouping can be served with the data Keytiles still
         retains for this Container, and filter / `groupBy` / `interest` / `sortBy` validation.  
           
@@ -1120,17 +1105,6 @@ components:
         requested range and grouping,” not “there were hits in that window.”
 
   schemas:
-    # Possible values for the `queryTuning` query parameter on event-count endpoints.
-    # Full behaviour of each value is documented on the parameter itself (`components/parameters/queryTuning`).
-    QueryTuningEnum:
-      type: string
-      default: extend
-      enum:
-        - strict
-        - extend
-        - adaptive
-        - bestEffort
-
     # This enum defines error/warning codes belong to Stat API endpoints specifically
     # note: no support in OpenApi for now how to document values so we just add the description as comments for now.
     #       see: https://github.com/OAI/OpenAPI-Specification/issues/348

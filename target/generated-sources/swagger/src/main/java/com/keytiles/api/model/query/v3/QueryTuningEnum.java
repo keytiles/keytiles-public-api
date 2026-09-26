@@ -15,75 +15,24 @@ package com.keytiles.api.model.query.v3;
 import java.util.Objects;
 import java.util.Arrays;
 
-import com.keytiles.api.model.common.types.v3.CommonErrorCodesV3;
-import com.keytiles.api.model.query.v3.StatApiEndpointLocalErrorCodes;
 
 import java.io.Serializable;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
- * Gets or Sets StatApiEndpointErrorCodes
+ * Gets or Sets QueryTuningEnum
  *
- * @Generator: Keytiles Codegen generated this as merged Enum - came from 'StatApiEndpointErrorCodes' schema model, composed from: StatApiEndpointLocalErrorCodes, CommonErrorCodesV3 
  */
-public enum StatApiEndpointErrorCodes {
-  QUERYRANGE_NOT_SERVABLE_MISSING_GRANULARITY("queryRange_not_servable_missing_granularity"),
-  QUERYRANGE_NOT_SERVABLE_EXCEEDS_MAX_LENGTH("queryRange_not_servable_exceeds_max_length"),
-  QUERYRANGE_FROM_EXTENDED("queryRange_from_extended"),
-  QUERYRANGE_TO_EXTENDED("queryRange_to_extended"),
-  QUERYRANGE_EXTENDED("queryRange_extended"),
-  QUERYRANGE_CORRECTED("queryRange_corrected"),
-  QUERYRANGE_FROM_CORRECTED("queryRange_from_corrected"),
-  QUERYRANGE_TO_CORRECTED("queryRange_to_corrected"),
-  GROUPBYTIME_CORRECTED("groupByTime_corrected"),
-  CONTAINERID_MISSING("containerId_missing"),
-  CONTAINERID_INVALID("containerId_invalid"),
-  CONTAINERSETUP_INVALID("containerSetup_invalid"),
-  FILTER_NOT_SUPPORTED("filter_not_supported"),
-  SORTING_COLUMN_NOT_IN_INTEREST("sorting_column_not_in_interest"),
-  GROUPBY_EVENTTYPE_NOT_SET("groupBy_eventType_not_set"),
-  URL_INVALID("url_invalid"),
-  ACTIONTOKEN_INTERNALERROR("actionToken_internalError"),
-  ACTIONTOKEN_MISSING("actionToken_missing"),
-  ACTIONTOKEN_INVALID("actionToken_invalid"),
-  ACTIONTOKEN_UNKNOWNTYPE("actionToken_unknownType"),
-  AUTHENTICATION_MISSING("authentication_missing"),
-  AUTHENTICATION_INTERNALERROR("authentication_internalError"),
-  AUTHENTICATION_INVALID_CREDENTIALS("authentication_invalid_credentials"),
-  AUTHENTICATION_USERDISABLED("authentication_userDisabled"),
-  AUTHENTICATION_BASE64DECODEFAILED("authentication_base64DecodeFailed"),
-  AUTHENTICATION_METHODNOTSUPPORTED("authentication_methodNotSupported"),
-  AUTHORIZATION_NOPERMISSION("authorization_noPermission"),
-  REQUESTPARAMETER_WRONGFORMAT("requestParameter_wrongFormat"),
-  REQUESTPARAMETER_MISSING("requestParameter_missing"),
-  REQUESTPARAMETER_INVALID("requestParameter_invalid"),
-  REQUESTPARAMETER_NOT_SUPPORTED("requestParameter_not_supported"),
-  REQUESTPARAMETER_POINTLESS("requestParameter_pointless"),
-  REQUESTPARAMETER_CONTRADICTING("requestParameter_contradicting"),
-  REQUESTPARAMETER_CONFLICT("requestParameter_conflict"),
-  RESOURCEDATA_WRONGFORMAT("resourceData_wrongFormat"),
-  RESOURCEDATA_MISSING("resourceData_missing"),
-  RESOURCEDATA_INVALID("resourceData_invalid"),
-  RESOURCEDATA_NOT_SUPPORTED("resourceData_not_supported"),
-  RESOURCEDATA_POINTLESS("resourceData_pointless"),
-  RESOURCEDATA_CONTRADICTING("resourceData_contradicting"),
-  RESOURCEDATA_CONFLICT("resourceData_conflict"),
-  RESOURCEVERSION_MISMATCH("resourceVersion_mismatch"),
-  MANDATORYEMAILSENDING_FAILED("mandatoryEmailSending_failed"),
-  REQUESTDATA_WRONGFORMAT("requestData_wrongFormat"),
-  REQUESTDATA_MISSING("requestData_missing"),
-  REQUESTDATA_INVALID("requestData_invalid"),
-  REQUESTDATA_NOT_SUPPORTED("requestData_not_supported"),
-  REQUESTDATA_CONTRADICTING("requestData_contradicting"),
-  QUERY_LIMIT_REACHED("query_limit_reached"),
-  FIELD_DEPRECATED("field_deprecated"),
-  UNDERLYING_RESOURCE_UNAVAILABLE("underlying_resource_unavailable"),
-  ALREADY_EXISTS("already_exists");
+public enum QueryTuningEnum {
+  STRICT("strict"),
+  EXTEND("extend"),
+  ADAPTIVE("adaptive"),
+  BESTEFFORT("bestEffort");
 
   private String value;
 
-  StatApiEndpointErrorCodes(String value) {
+  QueryTuningEnum(String value) {
     this.value = value;
   }
 
@@ -98,8 +47,8 @@ public enum StatApiEndpointErrorCodes {
   }
 
   @JsonCreator
-  public static StatApiEndpointErrorCodes fromValue(String input) {
-    for (StatApiEndpointErrorCodes b : StatApiEndpointErrorCodes.values()) {
+  public static QueryTuningEnum fromValue(String input) {
+    for (QueryTuningEnum b : QueryTuningEnum.values()) {
       if (b.value.equals(input)) {
         return b;
       }
