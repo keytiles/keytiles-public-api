@@ -46,6 +46,8 @@ export type ReturnFullChangelogParameter = boolean;
 export type ChangelogCommentParameter = string;
 export type StatApiEndpointLocalErrorCodes = typeof StatApiEndpointLocalErrorCodes[keyof typeof StatApiEndpointLocalErrorCodes];
 export declare const StatApiEndpointLocalErrorCodes: {
+    readonly queryRange_not_servable_missing_granularity: "queryRange_not_servable_missing_granularity";
+    readonly queryRange_not_servable_exceeds_max_length: "queryRange_not_servable_exceeds_max_length";
     readonly queryRange_from_extended: "queryRange_from_extended";
     readonly queryRange_to_extended: "queryRange_to_extended";
     readonly queryRange_extended: "queryRange_extended";

@@ -1,7 +1,7 @@
 openapi: 3.0.1
 
 info:
-  version: "3.6"
+  version: "3.5"
   title: Keytiles Statistics query API
   description: >
 
@@ -1120,7 +1120,7 @@ components:
         # Tune the range (more recent from/to), coarsen groupBy time, or omit clientTimezone when local
         # midnight forced a finer tier. Alternatively `queryTuning=bestEffort` may clamp / fall back
         # so Keytiles still returns something close to the original request.
-        - queryRange_not_servable_missing_granularity
+        - queryRange_not_servable
         # Length policy: the from-to span is wider than the maximum Keytiles allows for the required
         # source granularity (factory caps — e.g. minutely max ~3 days, hourly max ~62 days).
         # This is independent of retention: the window can be recent and still fail if it is too wide.

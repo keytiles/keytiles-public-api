@@ -45,11 +45,13 @@ Use it when you only need to know whether Keytiles would **accept** the query (r
   
 Typical clients: report generators and UIs that want to reject a bad range **before** starting expensive multi-query work. Same URL, same parameters, same `200` / `400` contract as a normal call — only the data payload is empty on success. See the `dryRun` parameter.
 
- * OpenAPI spec version: 3.5
+ * OpenAPI spec version: 3.6
  */
 import axios from 'axios';
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const StatApiEndpointLocalErrorCodes = {
+    queryRange_not_servable_missing_granularity: 'queryRange_not_servable_missing_granularity',
+    queryRange_not_servable_exceeds_max_length: 'queryRange_not_servable_exceeds_max_length',
     queryRange_from_extended: 'queryRange_from_extended',
     queryRange_to_extended: 'queryRange_to_extended',
     queryRange_extended: 'queryRange_extended',

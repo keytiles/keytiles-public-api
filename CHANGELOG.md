@@ -1,3 +1,13 @@
+# Release 2.10.0
+
+## New features
+- `query-api-v3.yaml` - v3.6
+  - New feasibility error codes on event-count planner failures (with `vars` for machine use):
+    - `queryRange_not_servable_missing_granularity` — range too far back for required granularity
+      (`resolution`, `maxRetentionSeconds`)
+    - `queryRange_not_servable_exceeds_max_length` — range wider than factory max span for that tier
+      (`resolution`, `maxQueryLengthSeconds`)
+
 # Release 2.9.0
 
 ## New features
