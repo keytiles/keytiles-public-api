@@ -1,3 +1,13 @@
+# Release 2.12.0
+
+## New features
+- `reports-api-v1.yaml` - v1.6
+  - `GenerateReportRequestClass.continueWithBestEffortIfNeeded` — consent to allow best-effort relaxation on generate.
+  - `ReportInstanceSection.warningMessage` — combined human-readable warnings for a section.
+  - Generate precheck error codes: `bestEffort_relaxation_required`, `queryRange_not_servable`.
+  - Docs: generation uses Core `queryTuning=bestEffort` (was incorrectly documented as adaptive-only);
+    `DataTable.dataFrom`/`dataTo` vs instance requested range clarified.
+
 # Release 2.11.0
 
 ## New features

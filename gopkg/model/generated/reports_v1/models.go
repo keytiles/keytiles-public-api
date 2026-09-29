@@ -57,11 +57,13 @@ const (
 	ReportsEndpointErrorCodesAuthenticationMissing            ReportsEndpointErrorCodes = "authentication_missing"
 	ReportsEndpointErrorCodesAuthenticationUserDisabled       ReportsEndpointErrorCodes = "authentication_userDisabled"
 	ReportsEndpointErrorCodesAuthorizationNoPermission        ReportsEndpointErrorCodes = "authorization_noPermission"
+	ReportsEndpointErrorCodesBestEffortRelaxationRequired     ReportsEndpointErrorCodes = "bestEffort_relaxation_required"
 	ReportsEndpointErrorCodesContainerIdInvalid               ReportsEndpointErrorCodes = "containerId_invalid"
 	ReportsEndpointErrorCodesContainerIdMissing               ReportsEndpointErrorCodes = "containerId_missing"
 	ReportsEndpointErrorCodesFieldDeprecated                  ReportsEndpointErrorCodes = "field_deprecated"
 	ReportsEndpointErrorCodesMandatoryEmailSendingFailed      ReportsEndpointErrorCodes = "mandatoryEmailSending_failed"
 	ReportsEndpointErrorCodesQueryLimitReached                ReportsEndpointErrorCodes = "query_limit_reached"
+	ReportsEndpointErrorCodesQueryRangeNotServable            ReportsEndpointErrorCodes = "queryRange_not_servable"
 	ReportsEndpointErrorCodesReportInstanceIdInvalid          ReportsEndpointErrorCodes = "reportInstanceId_invalid"
 	ReportsEndpointErrorCodesReportSetupExists                ReportsEndpointErrorCodes = "reportSetup_exists"
 	ReportsEndpointErrorCodesReportSetupIdInvalid             ReportsEndpointErrorCodes = "reportSetupId_invalid"
@@ -91,11 +93,13 @@ const (
 
 // Defines values for ReportsEndpointLocalErrorCodes.
 const (
-	ReportsEndpointLocalErrorCodesContainerIdInvalid      ReportsEndpointLocalErrorCodes = "containerId_invalid"
-	ReportsEndpointLocalErrorCodesContainerIdMissing      ReportsEndpointLocalErrorCodes = "containerId_missing"
-	ReportsEndpointLocalErrorCodesReportInstanceIdInvalid ReportsEndpointLocalErrorCodes = "reportInstanceId_invalid"
-	ReportsEndpointLocalErrorCodesReportSetupExists       ReportsEndpointLocalErrorCodes = "reportSetup_exists"
-	ReportsEndpointLocalErrorCodesReportSetupIdInvalid    ReportsEndpointLocalErrorCodes = "reportSetupId_invalid"
+	ReportsEndpointLocalErrorCodesBestEffortRelaxationRequired ReportsEndpointLocalErrorCodes = "bestEffort_relaxation_required"
+	ReportsEndpointLocalErrorCodesContainerIdInvalid           ReportsEndpointLocalErrorCodes = "containerId_invalid"
+	ReportsEndpointLocalErrorCodesContainerIdMissing           ReportsEndpointLocalErrorCodes = "containerId_missing"
+	ReportsEndpointLocalErrorCodesQueryRangeNotServable        ReportsEndpointLocalErrorCodes = "queryRange_not_servable"
+	ReportsEndpointLocalErrorCodesReportInstanceIdInvalid      ReportsEndpointLocalErrorCodes = "reportInstanceId_invalid"
+	ReportsEndpointLocalErrorCodesReportSetupExists            ReportsEndpointLocalErrorCodes = "reportSetup_exists"
+	ReportsEndpointLocalErrorCodesReportSetupIdInvalid         ReportsEndpointLocalErrorCodes = "reportSetupId_invalid"
 )
 
 // DataTable DataTable is the output of queries - a self contained table of data with Axis columns (optional) and >1 Data columns. Plus of course the data rows.
@@ -109,10 +113,10 @@ type DataTable struct {
 	// DataColumns List of "Data" columns. The `index` is important as that tells the position in a Row. The row value of Data columns are numbers.
 	DataColumns []DataTableDataColumn `json:"dataColumns" yaml:"dataColumns"`
 
-	// DataFromTimestamp The data in the table is starting from this timestamp. This can be different from the original requested from-to query range... This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT
+	// DataFromTimestamp Start of the data actually covered by this table (UNIX timestamp, UTC seconds).   May differ from the report instance `fromTimestamp` / `toTimestamp` (what you requested) when Core aligned or relaxed the query — compare those fields for “requested vs shown”.
 	DataFromTimestamp int32 `json:"dataFromTimestamp" yaml:"dataFromTimestamp"`
 
-	// DataToTimestamp The data in the table is until this timestamp. This can be different from the original requested from-to query range... This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT
+	// DataToTimestamp End of the data actually covered by this table (UNIX timestamp, UTC seconds).   May differ from the report instance `fromTimestamp` / `toTimestamp` (what you requested) when Core aligned or relaxed the query — compare those fields for “requested vs shown”.
 	DataToTimestamp int32 `json:"dataToTimestamp" yaml:"dataToTimestamp"`
 
 	// PerformanceReverseOrder Copy of `ReportQuery.parameters.performanceReverseOrder` flag at that time this table was generated.
@@ -180,14 +184,14 @@ type ExportReportInstanceRequestClass struct {
 	SectionsOnly *[]int `json:"sectionsOnly,omitempty" yaml:"sectionsOnly,omitempty"`
 
 	// TimeZoneIANAName Optional IANA timezone used **only for export presentation** (e.g. Excel datetime cells and metadata), e.g. `Europe/Berlin`. Report data stores time buckets as UTC UNIX timestamps; this field shifts how those instants are shown in the exported file. Omit → UTC wall clock in the file.
-	// **Not the same as** `GenerateReportRequestClass.clientTimeZoneIANAName` (that one is forwarded to Core Query API as `clientTimezone` for `queryTuning=adaptive` snap during **generation**). Export timezone does not re-query Core and does not change stored report data.
+	// **Not the same as** `GenerateReportRequestClass.clientTimeZoneIANAName` (that one is forwarded to Core Query API as `clientTimezone` for calendar snap during **generation** with `queryTuning=bestEffort`). Export timezone does not re-query Core and does not change stored report data.
 	TimeZoneIANAName *string `json:"timeZoneIANAName,omitempty" yaml:"timeZoneIANAName,omitempty"`
 }
 
 // GenerateReportRequestClass defines model for GenerateReportRequestClass.
 type GenerateReportRequestClass struct {
 	// ClientTimeZoneIANAName Optional IANA timezone of the client who picked the query range (browser / UI locale), e.g. `Europe/Berlin`, `Asia/Kolkata`.
-	// `fromTimestamp` / `toTimestamp` are always UTC. This field does **not** reinterpret those values. It is forwarded to Keytiles Core Query API as `clientTimezone` so that `queryTuning=adaptive` can snap time groupings to the client's local calendar (e.g. local midnight for daily charts).
+	// `fromTimestamp` / `toTimestamp` are always UTC. This field does **not** reinterpret those values. It is forwarded to Keytiles Core Query API as `clientTimezone` so that `queryTuning=bestEffort` (adaptive-first) can snap time groupings to the client's local calendar (e.g. local midnight for daily charts). See also `continueWithBestEffortIfNeeded` and Query API `queryTuning`.
 	// **Precedence for Core `clientTimezone` on generate:**
 	//   * If this field is set → use it (manual generate **overrides** `schedule.timeZoneIANAName`).
 	//   * Else if the report setup has a `schedule` → use `schedule.timeZoneIANAName`.
@@ -198,6 +202,25 @@ type GenerateReportRequestClass struct {
 	// **Not the same as** `ExportReportInstanceRequestClass.timeZoneIANAName` (export presentation only).
 	// Format: [IANA time zones](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones).
 	ClientTimeZoneIANAName *string `json:"clientTimeZoneIANAName" yaml:"clientTimeZoneIANAName"`
+
+	// ContinueWithBestEffortIfNeeded Optional. Default is `false`.
+	//
+	// **In a nutshell:**   * **`false`:** stricter. More generate requests may fail if the time range does not fit cleanly.
+	//   Change the range, or retry with this set to `true`.
+	// * **`true`:** more tolerant. Keytiles may relax a bit so you still get a report with data.
+	//   Watch the **warnings** returned on the generate response (per section) and later on each
+	//   `ReportInstanceSection.warningMessage` — something was adjusted.
+	//
+	// If Keytiles cannot produce the report even then, generate fails either way — pick a different (usually shorter or more recent) time range.
+	//
+	// **In more detail:**   Before generation starts, Keytiles checks whether your chosen time range can be served for every section while keeping the intended calendar (especially important when you send `clientTimeZoneIANAName`).
+	//
+	// Sometimes that is not possible — for example the range goes too far back for the requested time grouping. Keytiles *could* still produce charts by relaxing a bit (e.g. using UTC day boundaries instead of your local ones, or shortening the window). That is the “best effort” compromise this flag allows.
+	//
+	// With **`false`**, if any section would need that compromise, generation is **rejected** — change the time range, or retry with **`true`**. With **`true`**, generation **continues**; compromised sections still get data and the warnings explain what changed. Prefer changing the range when you care about exact local days or the full window.
+	//
+	// **See also — Query API `queryTuning`:** Read about [`queryTuning`](query-api-v3.yaml) parameter  there for the full picture.
+	ContinueWithBestEffortIfNeeded *bool `json:"continueWithBestEffortIfNeeded" yaml:"continueWithBestEffortIfNeeded"`
 
 	// ExecuteQueryIdsOnly A report might contain multiple ReportQuery parts, all of them has its unique ID within the report.
 	// It is possible to generate only specific queries instead of the full report - by providing a list of those ReportQuery IDs here.
@@ -360,6 +383,9 @@ type ReportInstanceSection struct {
 	// GenerationTookMillis Number of milliseconds the processing took on server side
 	GenerationTookMillis *int32                `json:"generationTookMillis" yaml:"generationTookMillis"`
 	MetaData             externalRef0.MetaData `json:"metaData" yaml:"metaData"`
+
+	// WarningMessage In case the generation returned warnings for any reason here is the human readable combined warning message. This can be a multi-line text as well.
+	WarningMessage *string `json:"warningMessage" yaml:"warningMessage"`
 }
 
 // ReportInstanceSectionState It takes time for a report until it is fully generated. Report sections are going through a lifecycle and these are their states.
@@ -480,12 +506,12 @@ type ReportQueryPluginBaseParameters struct {
 	//
 	// Override the concrete period with `groupByTimePeriod` when you need an exact step.
 	// This will produce `AxisColumn` with `id="time"` in the generated `DataTable`. Cell values look like `"1780956000-1781042400"` — two UNIX timestamps (UTC seconds) encoding the bucket from/to.
-	// **Note (Core Query API):** Reports generate with `queryTuning=adaptive`. When a time grouping is used, Core may align awkward periods and snap the range to a local-midnight grid (see `clientTimezone` / generate `clientTimeZoneIANAName` / `schedule.timeZoneIANAName`). Feasibility rescue may coarsen the period; compare `DataTable.dataFromTimestamp` / `dataToTimestamp` with the requested range.
+	// **Note (Core Query API):** Reports generate with `queryTuning=bestEffort` (adaptive first; may relax further if needed — see generate `continueWithBestEffortIfNeeded` and Query API `queryTuning`). When a time grouping is used, Core may align awkward periods and snap the range to a midnight grid (see `clientTimezone` / generate `clientTimeZoneIANAName` / `schedule.timeZoneIANAName`). Feasibility rescue may coarsen the period or relax the calendar/window. Compare `DataTable.dataFromTimestamp` / `dataToTimestamp` with the report instance `fromTimestamp` / `toTimestamp` (the range you asked for).
 	GroupByTime *bool `json:"groupByTime,omitempty" yaml:"groupByTime,omitempty"`
 
 	// GroupByTimePeriod Optional explicit time bucket size when `groupByTime=true`. Format: `X<m|h|d|w>` where X is a >0 integer (`m` = minutes, `h` = hours, `d` = days, `w` = weeks). Examples: `30m`, `2h`, `1d`, `1w`.
 	// If omitted, Keytiles picks a best-effort period from the query range (see `groupByTime`).
-	// It should still make sense for the range / schedule (e.g. do not set `2h` on an hourly report). Overly fine periods on long ranges may be rejected or adjusted by Core (`queryTuning=adaptive`).
+	// It should still make sense for the range / schedule (e.g. do not set `2h` on an hourly report). Overly fine periods on long ranges may be rejected or adjusted by Core (`queryTuning=bestEffort`).
 	// Invalid format → validation error on save / generate.
 	GroupByTimePeriod *string `json:"groupByTimePeriod,omitempty" yaml:"groupByTimePeriod,omitempty"`
 

@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: "1.6"
+  version: "1.5"
   title: Keytiles Reporting API
   description: >
     API endpoints to manage / query / use Keytiles Reporting.
@@ -601,12 +601,7 @@ paths:
               schema:
                 $ref: "common-types-v3.yaml#/components/schemas/MessageResponseV3Class"
         "400":
-          description: >
-            There were problems with the request — more details in the response.  
-              
-            Generate precheck may return `ReportsEndpointLocalErrorCodes`:
-            `bestEffort_relaxation_required` (retry with `continueWithBestEffortIfNeeded=true` or change range)
-            or `queryRange_not_servable` (change range only).
+          description: "There were problems with the request or the resource you sent on this request - more details you get in the response."
           content:
             application/json:
               schema:
@@ -804,15 +799,6 @@ components:
         - reportInstanceId_invalid
         # ReportSetup with this ID already exists
         - reportSetup_exists
-        # Manual generate rejected: at least one section would need best-effort relaxation (e.g. UTC calendar /
-        # shortened window) but continueWithBestEffortIfNeeded was false / omitted.
-        # UI should offer: retry with continueWithBestEffortIfNeeded=true, or change the time range.
-        # Human message / problems list name the affected section(s).
-        - bestEffort_relaxation_required
-        # Manual generate rejected: even with best-effort relaxation Keytiles cannot serve the range for one or
-        # more sections. Changing continueWithBestEffortIfNeeded will not help — pick a different (usually
-        # shorter or more recent) time range. Human message / problems list name the affected section(s).
-        - queryRange_not_servable
 
     # Let's merge the "local" error codes with the "global" ones in this enum
     # Reports API endpoints can return the union of them
@@ -895,12 +881,10 @@ components:
             This will produce `AxisColumn` with `id="time"` in the generated `DataTable`. Cell values look like
             `"1780956000-1781042400"` — two UNIX timestamps (UTC seconds) encoding the bucket from/to.
 
-            **Note (Core Query API):** Reports generate with `queryTuning=bestEffort` (adaptive first; may relax
-            further if needed — see generate `continueWithBestEffortIfNeeded` and Query API `queryTuning`).
-            When a time grouping is used, Core may align awkward periods and snap the range to a midnight grid
-            (see `clientTimezone` / generate `clientTimeZoneIANAName` / `schedule.timeZoneIANAName`). Feasibility
-            rescue may coarsen the period or relax the calendar/window. Compare `DataTable.dataFromTimestamp` /
-            `dataToTimestamp` with the report instance `fromTimestamp` / `toTimestamp` (the range you asked for).
+            **Note (Core Query API):** Reports generate with `queryTuning=adaptive`. When a time grouping is used,
+            Core may align awkward periods and snap the range to a local-midnight grid (see `clientTimezone` /
+            generate `clientTimeZoneIANAName` / `schedule.timeZoneIANAName`). Feasibility rescue may coarsen the
+            period; compare `DataTable.dataFromTimestamp` / `dataToTimestamp` with the requested range.
           type: boolean
         groupByTimePeriod:
           description: >
@@ -910,7 +894,7 @@ components:
             If omitted, Keytiles picks a best-effort period from the query range (see `groupByTime`).
 
             It should still make sense for the range / schedule (e.g. do not set `2h` on an hourly report).
-            Overly fine periods on long ranges may be rejected or adjusted by Core (`queryTuning=bestEffort`).
+            Overly fine periods on long ranges may be rejected or adjusted by Core (`queryTuning=adaptive`).
 
             Invalid format → validation error on save / generate.
           type: string
@@ -1451,17 +1435,13 @@ components:
           type: integer
           format: int32
           description: >
-            Start of the data actually covered by this table (UNIX timestamp, UTC seconds).  
-            May differ from the report instance `fromTimestamp` / `toTimestamp` (what you requested) when Core
-            aligned or relaxed the query — compare those fields for “requested vs shown”.
+            The data in the table is starting from this timestamp. This can be different from the original requested from-to query range... This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT
           example: 1657261221
         dataToTimestamp:
           type: integer
           format: int32
           description: >
-            End of the data actually covered by this table (UNIX timestamp, UTC seconds).  
-            May differ from the report instance `fromTimestamp` / `toTimestamp` (what you requested) when Core
-            aligned or relaxed the query — compare those fields for “requested vs shown”.
+            The data in the table is until this timestamp. This can be different from the original requested from-to query range... This is a UNIX timestamp in UTC (seconds since Epoch) e.g.: 1657261221 - means 2022-07-08 6:20:21 GMT
           example: 1657261221
         comment:
           description: You can add a textual comment to this table - if this is present we display this on top of the table.
@@ -1533,10 +1513,6 @@ components:
         errorMessage:
           type: string
           description: "In case the generation failed for any reason here is the human readable error message. This can be a multi-line text as well."
-          nullable: true
-        warningMessage:
-          type: string
-          description: "In case the generation returned warnings for any reason here is the human readable combined warning message. This can be a multi-line text as well."
           nullable: true
 
     ReportInstance:
@@ -1762,8 +1738,8 @@ components:
             those instants are shown in the exported file. Omit → UTC wall clock in the file.
 
             **Not the same as** `GenerateReportRequestClass.clientTimeZoneIANAName` (that one is forwarded to
-            Core Query API as `clientTimezone` for calendar snap during **generation** with
-            `queryTuning=bestEffort`). Export timezone does not re-query Core and does not change stored report data.
+            Core Query API as `clientTimezone` for `queryTuning=adaptive` snap during **generation**).
+            Export timezone does not re-query Core and does not change stored report data.
           example: Europe/Berlin
 
     GenerateReportRequestClass:
@@ -1862,9 +1838,8 @@ components:
 
             `fromTimestamp` / `toTimestamp` are always UTC. This field does **not** reinterpret those
             values. It is forwarded to Keytiles Core Query API as `clientTimezone` so that
-            `queryTuning=bestEffort` (adaptive-first) can snap time groupings to the client's local calendar
-            (e.g. local midnight for daily charts). See also `continueWithBestEffortIfNeeded` and Query API
-            `queryTuning`.
+            `queryTuning=adaptive` can snap time groupings to the client's local calendar
+            (e.g. local midnight for daily charts).
 
             **Precedence for Core `clientTimezone` on generate:**
               * If this field is set → use it (manual generate **overrides** `schedule.timeZoneIANAName`).
@@ -1880,37 +1855,4 @@ components:
 
             Format: [IANA time zones](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones).
           example: Europe/Berlin
-          nullable: true
-        continueWithBestEffortIfNeeded:
-          type: boolean
-          description: >
-            Optional. Default is `false`.  
-              
-            **In a nutshell:**  
-            * **`false`:** stricter. More generate requests may fail if the time range does not fit cleanly.
-              Change the range, or retry with this set to `true`.  
-            * **`true`:** more tolerant. Keytiles may relax a bit so you still get a report with data.
-              Watch the **warnings** returned on the generate response (per section) and later on each
-              `ReportInstanceSection.warningMessage` — something was adjusted.  
-              
-            If Keytiles cannot produce the report even then, generate fails either way — pick a different
-            (usually shorter or more recent) time range.  
-              
-            **In more detail:**  
-            Before generation starts, Keytiles checks whether your chosen time range can be served for every
-            section while keeping the intended calendar (especially important when you send
-            `clientTimeZoneIANAName`).  
-              
-            Sometimes that is not possible — for example the range goes too far back for the requested
-            time grouping. Keytiles *could* still produce charts by relaxing a bit (e.g. using UTC day
-            boundaries instead of your local ones, or shortening the window). That is the “best effort”
-            compromise this flag allows.  
-              
-            With **`false`**, if any section would need that compromise, generation is **rejected** —
-            change the time range, or retry with **`true`**. With **`true`**, generation **continues**;
-            compromised sections still get data and the warnings explain what changed. Prefer changing
-            the range when you care about exact local days or the full window.  
-              
-            **See also — Query API `queryTuning`:** Read about [`queryTuning`](query-api-v3.yaml) parameter 
-            there for the full picture.
           nullable: true

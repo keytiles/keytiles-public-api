@@ -4,7 +4,7 @@
  * Keytiles Reporting API
  * API endpoints to manage / query / use Keytiles Reporting.
 
- * OpenAPI spec version: 1.5
+ * OpenAPI spec version: 1.6
  */
 import axios from 'axios';
 // eslint-disable-next-line @typescript-eslint/no-redeclare
@@ -14,6 +14,8 @@ export const ReportsEndpointLocalErrorCodes = {
     reportSetupId_invalid: 'reportSetupId_invalid',
     reportInstanceId_invalid: 'reportInstanceId_invalid',
     reportSetup_exists: 'reportSetup_exists',
+    bestEffort_relaxation_required: 'bestEffort_relaxation_required',
+    queryRange_not_servable: 'queryRange_not_servable',
 };
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const ReportRecipientsRoles = {
