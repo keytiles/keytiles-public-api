@@ -55,6 +55,7 @@ export declare const ReportsEndpointLocalErrorCodes: {
     readonly reportSetup_exists: "reportSetup_exists";
     readonly bestEffort_relaxation_required: "bestEffort_relaxation_required";
     readonly queryRange_not_servable: "queryRange_not_servable";
+    readonly report_sections_failed: "report_sections_failed";
 };
 /**
  * NOTE! Error codes is an Enum. Unfortunately in OpenApi (so far) there is no possibility to provide description for Enum values. But we have detailed description of each error codes! Please check the OpenApi file in our Github repo - you find them as comments for each Enum values!

@@ -77,6 +77,7 @@ export const ReportsEndpointLocalErrorCodes = {
   reportSetup_exists: 'reportSetup_exists',
   bestEffort_relaxation_required: 'bestEffort_relaxation_required',
   queryRange_not_servable: 'queryRange_not_servable',
+  report_sections_failed: 'report_sections_failed',
 } as const;
 
 /**

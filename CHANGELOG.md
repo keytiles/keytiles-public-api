@@ -1,3 +1,9 @@
+# Release 2.12.1
+
+## New features
+- `reports-api-v1.yaml` - v1.6 stays in place
+  - Added warning code `report_sections_failed` (For manual report generation request)
+
 # Release 2.12.0
 
 ## New features

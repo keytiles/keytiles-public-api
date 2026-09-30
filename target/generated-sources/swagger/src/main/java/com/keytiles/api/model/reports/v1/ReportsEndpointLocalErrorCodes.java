@@ -31,7 +31,8 @@ public enum ReportsEndpointLocalErrorCodes {
   REPORTINSTANCEID_INVALID("reportInstanceId_invalid"),
   REPORTSETUP_EXISTS("reportSetup_exists"),
   BESTEFFORT_RELAXATION_REQUIRED("bestEffort_relaxation_required"),
-  QUERYRANGE_NOT_SERVABLE("queryRange_not_servable");
+  QUERYRANGE_NOT_SERVABLE("queryRange_not_servable"),
+  REPORT_SECTIONS_FAILED("report_sections_failed");
 
   private String value;
 

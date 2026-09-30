@@ -65,6 +65,7 @@ const (
 	ReportsEndpointErrorCodesQueryLimitReached                ReportsEndpointErrorCodes = "query_limit_reached"
 	ReportsEndpointErrorCodesQueryRangeNotServable            ReportsEndpointErrorCodes = "queryRange_not_servable"
 	ReportsEndpointErrorCodesReportInstanceIdInvalid          ReportsEndpointErrorCodes = "reportInstanceId_invalid"
+	ReportsEndpointErrorCodesReportSectionsFailed             ReportsEndpointErrorCodes = "report_sections_failed"
 	ReportsEndpointErrorCodesReportSetupExists                ReportsEndpointErrorCodes = "reportSetup_exists"
 	ReportsEndpointErrorCodesReportSetupIdInvalid             ReportsEndpointErrorCodes = "reportSetupId_invalid"
 	ReportsEndpointErrorCodesRequestDataContradicting         ReportsEndpointErrorCodes = "requestData_contradicting"
@@ -98,6 +99,7 @@ const (
 	ReportsEndpointLocalErrorCodesContainerIdMissing           ReportsEndpointLocalErrorCodes = "containerId_missing"
 	ReportsEndpointLocalErrorCodesQueryRangeNotServable        ReportsEndpointLocalErrorCodes = "queryRange_not_servable"
 	ReportsEndpointLocalErrorCodesReportInstanceIdInvalid      ReportsEndpointLocalErrorCodes = "reportInstanceId_invalid"
+	ReportsEndpointLocalErrorCodesReportSectionsFailed         ReportsEndpointLocalErrorCodes = "report_sections_failed"
 	ReportsEndpointLocalErrorCodesReportSetupExists            ReportsEndpointLocalErrorCodes = "reportSetup_exists"
 	ReportsEndpointLocalErrorCodesReportSetupIdInvalid         ReportsEndpointLocalErrorCodes = "reportSetupId_invalid"
 )

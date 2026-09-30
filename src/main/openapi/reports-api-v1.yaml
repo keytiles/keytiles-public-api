@@ -591,6 +591,10 @@ paths:
 
             **note:** The ID of the new report instance is immediately generated and returned in `X-ReportInstanceId` response header!
             By knowing the ID you can query this report instance later.
+
+            Warning-level `problems` may include `report_sections_failed` when one or more sections failed
+            precheck for a reason other than range-not-servable — generation still proceeds; check the
+            instance for per-section `errorMessage` / `warningMessage`.
           headers:
             "X-ReportInstanceId":
               schema:
@@ -813,6 +817,11 @@ components:
         # more sections. Changing continueWithBestEffortIfNeeded will not help — pick a different (usually
         # shorter or more recent) time range. Human message / problems list name the affected section(s).
         - queryRange_not_servable
+        # Manual generate accepted (e.g. HTTP 202) but one or more sections failed precheck for a reason other
+        # than queryRange_not_servable (setup / query / unexpected). Severity is warning — generation still
+        # proceeds; open the report instance for per-section errorMessage / details. Human message names
+        # the affected section(s).
+        - report_sections_failed
 
     # Let's merge the "local" error codes with the "global" ones in this enum
     # Reports API endpoints can return the union of them
