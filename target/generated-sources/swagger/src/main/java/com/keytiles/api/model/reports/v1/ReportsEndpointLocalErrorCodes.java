@@ -32,7 +32,8 @@ public enum ReportsEndpointLocalErrorCodes {
   REPORTSETUP_EXISTS("reportSetup_exists"),
   BESTEFFORT_RELAXATION_REQUIRED("bestEffort_relaxation_required"),
   QUERYRANGE_NOT_SERVABLE("queryRange_not_servable"),
-  REPORT_SECTIONS_FAILED("report_sections_failed");
+  REPORT_SECTIONS_FAILED("report_sections_failed"),
+  REPORTINSTANCE_STILL_GENERATING("reportInstance_still_generating");
 
   private String value;
 

@@ -1,3 +1,10 @@
+# Release 2.12.2
+
+- `reports-api-v1.yaml` - v1.6 stays in place
+  - DELETE report instance / report setup: document HTTP **409** when generation is still in progress
+    (`reportInstance_still_generating` — one code for both endpoints) — contract for race protection
+    (reports service implementation still TODO).
+
 # Release 2.12.1
 
 ## New features

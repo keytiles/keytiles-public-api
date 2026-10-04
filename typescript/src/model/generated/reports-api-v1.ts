@@ -78,6 +78,7 @@ export const ReportsEndpointLocalErrorCodes = {
   bestEffort_relaxation_required: 'bestEffort_relaxation_required',
   queryRange_not_servable: 'queryRange_not_servable',
   report_sections_failed: 'report_sections_failed',
+  reportInstance_still_generating: 'reportInstance_still_generating',
 } as const;
 
 /**
@@ -925,6 +926,7 @@ export const putV1ReportsContainersRestContainerIdReportSetupReportSetupId = <TD
  * In case you do not want to lose all previous instances consider simply just remove the 'schedule' of the report instead of deleting it! If you do so then the report will not run automatically anymore.  
   
 Only users with "admin" role in the Data Container can delete a report setup.
+If any report instance of this setup is still in state `generating`, the delete is rejected with HTTP 409 (`reportInstance_still_generating`) so an in-flight generation cannot race with cascade cleanup. Wait until generation finishes (or fails) and retry.
 
  * @summary To delete a specific report setup of the Container as well as all previously generated report instances.
  */
@@ -1057,6 +1059,7 @@ export const getV1ReportsContainersRestContainerIdReportInstanceReportInstanceId
 
 /**
  * Only users with "admin" role in Data Container can do this.
+If the instance is still in state `generating`, the delete is rejected with HTTP 409 (`reportInstance_still_generating`). Wait until generation finishes and retry. (Same idea as export, which also rejects non-complete instances with 409.)
 
  * @summary To permanently delete a specific report instance - after this this report is not available anymore.
  */

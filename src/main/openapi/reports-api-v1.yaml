@@ -320,6 +320,10 @@ paths:
         In case you do not want to lose all previous instances consider simply just remove the 'schedule' of the report instead of deleting it! If you do so then the report will not run automatically anymore.  
           
         Only users with "admin" role in the Data Container can delete a report setup.
+
+        If any report instance of this setup is still in state `generating`, the delete is rejected with HTTP 409
+        (`reportInstance_still_generating`) so an in-flight generation cannot race with cascade cleanup.
+        Wait until generation finishes (or fails) and retry.
       tags:
         - Container level Report setup management REST API
       parameters:
@@ -350,6 +354,14 @@ paths:
                 $ref: "common-types-v3.yaml#/components/schemas/MessageResponseV3Class"
         "404":
           description: "The container does not exist (or disabled) or the requested report setup does not exist - more details in the response!"
+          content:
+            application/json:
+              schema:
+                $ref: "common-types-v3.yaml#/components/schemas/MessageResponseV3Class"
+        "409":
+          description: >
+            Conflict — at least one report instance of this setup is still generating
+            (`reportInstance_still_generating`). Delete is not allowed until generation finishes.
           content:
             application/json:
               schema:
@@ -739,6 +751,10 @@ paths:
       summary: "To permanently delete a specific report instance - after this this report is not available anymore."
       description: >
         Only users with "admin" role in Data Container can do this.
+
+        If the instance is still in state `generating`, the delete is rejected with HTTP 409
+        (`reportInstance_still_generating`). Wait until generation finishes and retry.
+        (Same idea as export, which also rejects non-complete instances with 409.)
       tags:
         - Container level Report instance REST API
       parameters:
@@ -769,6 +785,14 @@ paths:
                 $ref: "common-types-v3.yaml#/components/schemas/MessageResponseV3Class"
         "404":
           description: "The container does not exist (or disabled) or the requested report instance does not exist - more details in the response!"
+          content:
+            application/json:
+              schema:
+                $ref: "common-types-v3.yaml#/components/schemas/MessageResponseV3Class"
+        "409":
+          description: >
+            Conflict — the report instance exists but is still generating
+            (`reportInstance_still_generating`). Delete is not allowed until generation finishes.
           content:
             application/json:
               schema:
@@ -822,6 +846,10 @@ components:
         # proceeds; open the report instance for per-section errorMessage / details. Human message names
         # the affected section(s).
         - report_sections_failed
+        # DELETE report instance (or DELETE report setup) rejected: a report instance is still
+        # in state `generating`. For setup delete this means at least one of its instances.
+        # Cascade / instance delete would race with in-flight generation. Wait and retry.
+        - reportInstance_still_generating
 
     # Let's merge the "local" error codes with the "global" ones in this enum
     # Reports API endpoints can return the union of them

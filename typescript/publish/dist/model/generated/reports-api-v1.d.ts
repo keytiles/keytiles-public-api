@@ -56,6 +56,7 @@ export declare const ReportsEndpointLocalErrorCodes: {
     readonly bestEffort_relaxation_required: "bestEffort_relaxation_required";
     readonly queryRange_not_servable: "queryRange_not_servable";
     readonly report_sections_failed: "report_sections_failed";
+    readonly reportInstance_still_generating: "reportInstance_still_generating";
 };
 /**
  * NOTE! Error codes is an Enum. Unfortunately in OpenApi (so far) there is no possibility to provide description for Enum values. But we have detailed description of each error codes! Please check the OpenApi file in our Github repo - you find them as comments for each Enum values!
@@ -792,6 +793,7 @@ export declare const putV1ReportsContainersRestContainerIdReportSetupReportSetup
  * In case you do not want to lose all previous instances consider simply just remove the 'schedule' of the report instead of deleting it! If you do so then the report will not run automatically anymore.
   
 Only users with "admin" role in the Data Container can delete a report setup.
+If any report instance of this setup is still in state `generating`, the delete is rejected with HTTP 409 (`reportInstance_still_generating`) so an in-flight generation cannot race with cascade cleanup. Wait until generation finishes (or fails) and retry.
 
  * @summary To delete a specific report setup of the Container as well as all previously generated report instances.
  */
@@ -846,6 +848,7 @@ export declare const postV1ReportsContainersActionsContainerIdReportInstanceRepo
 export declare const getV1ReportsContainersRestContainerIdReportInstanceReportInstanceId: <TData = AxiosResponse<ReportInstance>>(containerId: string, reportInstanceId: string, options?: AxiosRequestConfig) => Promise<TData>;
 /**
  * Only users with "admin" role in Data Container can do this.
+If the instance is still in state `generating`, the delete is rejected with HTTP 409 (`reportInstance_still_generating`). Wait until generation finishes and retry. (Same idea as export, which also rejects non-complete instances with 409.)
 
  * @summary To permanently delete a specific report instance - after this this report is not available anymore.
  */

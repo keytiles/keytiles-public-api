@@ -65,6 +65,7 @@ const (
 	ReportsEndpointErrorCodesQueryLimitReached                ReportsEndpointErrorCodes = "query_limit_reached"
 	ReportsEndpointErrorCodesQueryRangeNotServable            ReportsEndpointErrorCodes = "queryRange_not_servable"
 	ReportsEndpointErrorCodesReportInstanceIdInvalid          ReportsEndpointErrorCodes = "reportInstanceId_invalid"
+	ReportsEndpointErrorCodesReportInstanceStillGenerating    ReportsEndpointErrorCodes = "reportInstance_still_generating"
 	ReportsEndpointErrorCodesReportSectionsFailed             ReportsEndpointErrorCodes = "report_sections_failed"
 	ReportsEndpointErrorCodesReportSetupExists                ReportsEndpointErrorCodes = "reportSetup_exists"
 	ReportsEndpointErrorCodesReportSetupIdInvalid             ReportsEndpointErrorCodes = "reportSetupId_invalid"
@@ -94,14 +95,15 @@ const (
 
 // Defines values for ReportsEndpointLocalErrorCodes.
 const (
-	ReportsEndpointLocalErrorCodesBestEffortRelaxationRequired ReportsEndpointLocalErrorCodes = "bestEffort_relaxation_required"
-	ReportsEndpointLocalErrorCodesContainerIdInvalid           ReportsEndpointLocalErrorCodes = "containerId_invalid"
-	ReportsEndpointLocalErrorCodesContainerIdMissing           ReportsEndpointLocalErrorCodes = "containerId_missing"
-	ReportsEndpointLocalErrorCodesQueryRangeNotServable        ReportsEndpointLocalErrorCodes = "queryRange_not_servable"
-	ReportsEndpointLocalErrorCodesReportInstanceIdInvalid      ReportsEndpointLocalErrorCodes = "reportInstanceId_invalid"
-	ReportsEndpointLocalErrorCodesReportSectionsFailed         ReportsEndpointLocalErrorCodes = "report_sections_failed"
-	ReportsEndpointLocalErrorCodesReportSetupExists            ReportsEndpointLocalErrorCodes = "reportSetup_exists"
-	ReportsEndpointLocalErrorCodesReportSetupIdInvalid         ReportsEndpointLocalErrorCodes = "reportSetupId_invalid"
+	ReportsEndpointLocalErrorCodesBestEffortRelaxationRequired  ReportsEndpointLocalErrorCodes = "bestEffort_relaxation_required"
+	ReportsEndpointLocalErrorCodesContainerIdInvalid            ReportsEndpointLocalErrorCodes = "containerId_invalid"
+	ReportsEndpointLocalErrorCodesContainerIdMissing            ReportsEndpointLocalErrorCodes = "containerId_missing"
+	ReportsEndpointLocalErrorCodesQueryRangeNotServable         ReportsEndpointLocalErrorCodes = "queryRange_not_servable"
+	ReportsEndpointLocalErrorCodesReportInstanceIdInvalid       ReportsEndpointLocalErrorCodes = "reportInstanceId_invalid"
+	ReportsEndpointLocalErrorCodesReportInstanceStillGenerating ReportsEndpointLocalErrorCodes = "reportInstance_still_generating"
+	ReportsEndpointLocalErrorCodesReportSectionsFailed          ReportsEndpointLocalErrorCodes = "report_sections_failed"
+	ReportsEndpointLocalErrorCodesReportSetupExists             ReportsEndpointLocalErrorCodes = "reportSetup_exists"
+	ReportsEndpointLocalErrorCodesReportSetupIdInvalid          ReportsEndpointLocalErrorCodes = "reportSetupId_invalid"
 )
 
 // DataTable DataTable is the output of queries - a self contained table of data with Axis columns (optional) and >1 Data columns. Plus of course the data rows.

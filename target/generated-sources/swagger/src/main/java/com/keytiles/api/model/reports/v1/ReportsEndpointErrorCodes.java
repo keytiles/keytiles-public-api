@@ -36,6 +36,7 @@ public enum ReportsEndpointErrorCodes {
   BESTEFFORT_RELAXATION_REQUIRED("bestEffort_relaxation_required"),
   QUERYRANGE_NOT_SERVABLE("queryRange_not_servable"),
   REPORT_SECTIONS_FAILED("report_sections_failed"),
+  REPORTINSTANCE_STILL_GENERATING("reportInstance_still_generating"),
   URL_INVALID("url_invalid"),
   ACTIONTOKEN_INTERNALERROR("actionToken_internalError"),
   ACTIONTOKEN_MISSING("actionToken_missing"),
